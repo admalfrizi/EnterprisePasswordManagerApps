@@ -1,0 +1,14 @@
+site:
+  title: "DummyProjects"
+
+server:
+  files:
+    dev:
+      contentRoot: "build/processedResources/js/main/public"
+      script: "build/kotlin-webpack/js/developmentExecutable/dummyprojects.js"
+      api: "build/libs/dummyprojects.jar"
+    prod:
+      script: "build/kotlin-webpack/js/productionExecutable/dummyprojects.js"
+      siteRoot: ".kobweb/site"
+
+  port: 8080
