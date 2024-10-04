@@ -2,12 +2,14 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 compose.resources {
@@ -23,16 +25,16 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
 
-//        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-//        instrumentedTestVariant {
-//            sourceSetTree.set(KotlinSourceSetTree.test)
-//
-//            dependencies {
-////                implementation(libs.core.ktx)
-//                implementation(libs.compose.ui.test.junit4.android)
-//                debugImplementation(libs.compose.ui.test.manifest)
-//            }
-//        }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant {
+            sourceSetTree.set(KotlinSourceSetTree.test)
+
+            dependencies {
+//                implementation(libs.core.ktx)
+                implementation(libs.compose.ui.test.junit4.android)
+                debugImplementation(libs.compose.ui.test.manifest)
+            }
+        }
     }
     
     jvm("desktop")
@@ -57,34 +59,51 @@ kotlin {
 //            implementation(libs.androidx.material3)
             implementation(libs.ktor.client.okhttp)
         }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.voyager.navigator)
-            implementation(libs.navigation.compose)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodel)
+                implementation(libs.androidx.lifecycle.runtime.compose)
+                implementation(libs.voyager.navigator)
+                implementation(libs.navigation.compose)
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
 //
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.logging)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+
+            }
         }
+
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
 
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
+
+//        iosMain.dependencies {
+//            implementation(libs.ktor.client.darwin)
+//        }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
