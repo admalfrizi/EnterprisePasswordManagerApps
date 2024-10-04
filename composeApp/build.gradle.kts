@@ -2,7 +2,6 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -56,7 +55,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 //            implementation(libs.androidx.material3)
-//            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -72,21 +71,25 @@ kotlin {
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
 //
-//            implementation(libs.ktor.client.core)
-//            implementation(libs.ktor.client.logging)
-//            implementation(libs.ktor.client.content.negotiation)
-//            implementation(libs.ktor.client.okhttp)
-//            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
 
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+
         commonTest.dependencies {
-//            implementation(libs.kotlin.test)
-//            implementation(libs.kotlin.test.junit)
-//            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.test.junit)
+            implementation(libs.ktor.client.mock)
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
