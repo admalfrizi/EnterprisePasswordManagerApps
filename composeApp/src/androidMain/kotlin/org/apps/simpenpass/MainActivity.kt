@@ -22,6 +22,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.allViews
 import androidx.core.view.updatePadding
+import io.ktor.client.engine.okhttp.OkHttp
+import org.apps.simpenpass.data.remoteData.AuthApi
+import org.apps.simpenpass.data.remoteData.createHttpClient
 import org.apps.simpenpass.style.primaryColor
 import org.apps.simpenpass.style.secondaryColor
 
@@ -31,15 +34,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 //            ChangeStatusBarColor(color = Color(0xFF003376))
-            App()
+            App(
+                client = createHttpClient(OkHttp.create())
+            )
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }
 
 //@RequiresApi(Build.VERSION_CODES.O)

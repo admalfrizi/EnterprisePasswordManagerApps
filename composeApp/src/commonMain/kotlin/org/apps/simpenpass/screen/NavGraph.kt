@@ -27,6 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import io.ktor.client.HttpClient
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
@@ -45,7 +46,12 @@ import org.apps.simpenpass.utils.detectRoute
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ContentNavGraph(navController: NavHostController, paddingValues: PaddingValues? = null,sheetState: ModalBottomSheetState){
+fun ContentNavGraph(
+    navController: NavHostController,
+    paddingValues: PaddingValues? = null,
+    sheetState: ModalBottomSheetState,
+    client: HttpClient
+){
     val isLogged = true
     val density = LocalDensity.current
 
@@ -56,7 +62,7 @@ fun ContentNavGraph(navController: NavHostController, paddingValues: PaddingValu
     NavHost(navController,startDestination = if(isLogged) Screen.Main.route else Screen.Auth.route, modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
-            authNavGraph(navController)
+            authNavGraph(navController, client)
             navigation(
                 route = Screen.Main.route,startDestination = Screen.Home.route,
                 enterTransition = { EnterTransition.None },
@@ -189,10 +195,10 @@ fun ContentNavGraph(navController: NavHostController, paddingValues: PaddingValu
     }
 }
 
-fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.authNavGraph(navController: NavHostController,client: HttpClient) {
     navigation(route = Screen.Auth.route,startDestination = Screen.Login.route){
         composable(route = Screen.Login.route){
-            AuthScreen(navController)
+            AuthScreen(navController,client)
         }
 
         composable(route = Screen.Register.route){

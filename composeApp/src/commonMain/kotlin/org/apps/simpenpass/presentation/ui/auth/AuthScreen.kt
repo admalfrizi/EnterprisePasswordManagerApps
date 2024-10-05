@@ -36,8 +36,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import io.ktor.client.HttpClient
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.authComponents.DialogAuthEmpty
@@ -54,7 +56,11 @@ import resources.email_ic
 import resources.user_password_login
 
 @Composable
-fun AuthScreen(navHostController: NavHostController) {
+fun AuthScreen(
+    navHostController: NavHostController,
+    client: HttpClient,
+    authViewModel: AuthViewModel = viewModel()
+) {
 
     Box(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize().background(authScreenBgColor)

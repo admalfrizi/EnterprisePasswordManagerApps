@@ -23,6 +23,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -43,6 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.screen.BottomNavMenuData
@@ -61,7 +64,9 @@ import resources.visibility_non_ic
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun RootScreen() {
+fun RootScreen(
+    client: HttpClient
+) {
     val navController = rememberNavController()
     val routeNav = listOf(
         BottomNavMenuData.Home,
@@ -77,79 +82,12 @@ fun RootScreen() {
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val shouldShowBottomBar = navController.currentBackStackEntryAsState().value?.destination?.route in routeNav.map { it.route }
 
-
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(top = 18.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "Nama Akun",
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        style = MaterialTheme.typography.h6,
-                        color = secondaryColor
-                    )
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                sheetState.hide()
-                            }
-                        },
-                        content = {
-                            Icon(
-                                Icons.Filled.Clear,
-                                ""
-                            )
-                        }
-                    )
-                }
-                Spacer(
-                    modifier = Modifier.height(10.dp)
-                )
-                DataInfoHolder(
-                    Res.drawable.user_ic,"Username"
-                )
-                Spacer(
-                    modifier = Modifier.height(17.dp)
-                )
-                DataInfoHolder(
-                    Res.drawable.email_ic,"Email"
-                )
-                Spacer(
-                    modifier = Modifier.height(17.dp)
-                )
-                DataInfoHolder(
-                    Res.drawable.pass_ic,"Password", isPassData = true
-                )
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
-                Divider()
-                OptionMenuHolder(
-                    Res.drawable.edit_anggota_ic,
-                    "Copy URL"
-                )
-                OptionMenuHolder(
-                    Res.drawable.edit_anggota_ic,
-                    "Pin to Most Used"
-                )
-                OptionMenuHolder(
-                    Res.drawable.edit_anggota_ic,
-                    "Edit Data Password"
-                )
-                OptionMenuHolder(
-                    Res.drawable.edit_anggota_ic,
-                    "Hapus Data Password"
-                )
-            }
+            DetailPassData(scope,sheetState)
         },
         sheetBackgroundColor = Color.White
     ){
@@ -164,8 +102,80 @@ fun RootScreen() {
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState)
+            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState,client)
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Nama Akun",
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                style = MaterialTheme.typography.h6,
+                color = secondaryColor
+            )
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                    }
+                },
+                content = {
+                    Icon(
+                        Icons.Filled.Clear,
+                        ""
+                    )
+                }
+            )
+        }
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        DataInfoHolder(
+            Res.drawable.user_ic,"Username"
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
+        )
+        DataInfoHolder(
+            Res.drawable.email_ic,"Email"
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
+        )
+        DataInfoHolder(
+            Res.drawable.pass_ic,"Password", isPassData = true
+        )
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+        Divider()
+        OptionMenuHolder(
+            Res.drawable.edit_anggota_ic,
+            "Copy URL"
+        )
+        OptionMenuHolder(
+            Res.drawable.edit_anggota_ic,
+            "Pin to Most Used"
+        )
+        OptionMenuHolder(
+            Res.drawable.edit_anggota_ic,
+            "Edit Data Password"
+        )
+        OptionMenuHolder(
+            Res.drawable.edit_anggota_ic,
+            "Hapus Data Password"
+        )
     }
 }
 

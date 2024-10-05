@@ -58,6 +58,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 //            implementation(libs.androidx.material3)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.android)
         }
         val commonMain by getting {
             dependencies {
@@ -73,7 +74,8 @@ kotlin {
                 implementation(libs.navigation.compose)
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
-//
+
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.logging)

@@ -7,4 +7,5 @@ enum class ApiState {
     TOO_MANY_REQUEST,
     TIMEOUT,
     NO_INTERNET,
+    UNKNOWN
 }

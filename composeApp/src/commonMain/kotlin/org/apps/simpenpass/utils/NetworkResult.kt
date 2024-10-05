@@ -8,6 +8,10 @@ data class NetworkResult<out T>(val state: ApiState, val data: T?, val message: 
             return NetworkResult(ApiState.SUCCESS, data, null)
         }
 
+        fun <T> unknown(msg: String,data: T?): NetworkResult<T> {
+            return NetworkResult(ApiState.UNKNOWN, data, null)
+        }
+
         fun <T> error(msg: String, data: T?): NetworkResult<T> {
             return NetworkResult(ApiState.ERROR_SERVER, data, msg)
         }
