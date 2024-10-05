@@ -15,6 +15,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +43,11 @@ import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
 import org.apps.simpenpass.utils.detectRoute
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ContentNavGraph(navController: NavHostController, paddingValues: PaddingValues? = null){
-    val isLogged = true;
-    val density = LocalDensity.current;
+fun ContentNavGraph(navController: NavHostController, paddingValues: PaddingValues? = null,sheetState: ModalBottomSheetState){
+    val isLogged = true
+    val density = LocalDensity.current
 
     val parentRoute = navController.currentDestination?.parent?.route
 
@@ -74,7 +77,7 @@ fun ContentNavGraph(navController: NavHostController, paddingValues: PaddingValu
                                 }
                             } }
                 ){
-                    HomeScreen(navController)
+                    HomeScreen(navController, sheetState)
                 }
 
                 composable(route =  Screen.Group.route,

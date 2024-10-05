@@ -2,7 +2,6 @@ package org.apps.simpenpass.presentation.ui.main.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
-import androidx.compose.material.IconButton
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import org.apps.simpenpass.presentation.components.homeComponents.DataPassHolder
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
@@ -35,11 +33,12 @@ import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.arrow_right_ic
-import resources.menu_ic
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContentView(
-    navController: NavController
+    navController: NavController,
+    sheetState: ModalBottomSheetState
 ) {
     Box(modifier = Modifier.fillMaxWidth()){
         Column(
@@ -63,15 +62,15 @@ fun HomeContentView(
             Spacer(
                 modifier = Modifier.height(11.dp)
             )
-            DataPassHolder("Nama Akun", "Email")
+            DataPassHolder("Nama Akun", "Email",sheetState)
             Spacer(
                 modifier = Modifier.height(11.dp)
             )
-            DataPassHolder("Nama Akun", "Email")
+            DataPassHolder("Nama Akun", "Email",sheetState)
             Spacer(
                 modifier = Modifier.height(11.dp)
             )
-            DataPassHolder("Nama Akun", "Email")
+            DataPassHolder("Nama Akun", "Email", sheetState)
             Spacer(
                 modifier = Modifier.height(11.dp)
             )
@@ -183,15 +182,15 @@ fun HomeContentView(
             Spacer(
                 modifier = Modifier.height(11.dp)
             )
-            DataPassHolder("Nama Akun", "Email")
+            DataPassHolder("Nama Akun", "Email", sheetState)
             Spacer(
                 modifier = Modifier.height(11.dp)
             )
-            DataPassHolder("Nama Akun", "Email")
+            DataPassHolder("Nama Akun", "Email", sheetState)
             Spacer(
                 modifier = Modifier.height(11.dp)
             )
-            DataPassHolder("Nama Akun", "Email")
+            DataPassHolder("Nama Akun", "Email", sheetState)
             Spacer(
                 modifier = Modifier.height(7.dp)
             )

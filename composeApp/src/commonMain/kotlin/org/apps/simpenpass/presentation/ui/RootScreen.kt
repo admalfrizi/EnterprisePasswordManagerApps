@@ -1,43 +1,60 @@
 package org.apps.simpenpass.presentation.ui
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
-import org.apps.simpenpass.presentation.ui.auth.AuthScreen
-import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
-import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
-import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
-import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
-import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
-import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
-import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
-import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
-import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
-import org.apps.simpenpass.screen.Screen
-import org.apps.simpenpass.screen.authNavGraph
+import org.apps.simpenpass.style.secondaryColor
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import resources.Res
+import resources.copy_paste
+import resources.edit_anggota_ic
+import resources.email_ic
+import resources.pass_ic
+import resources.user_ic
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RootScreen() {
     val navController = rememberNavController()
@@ -50,21 +67,153 @@ fun RootScreen() {
         mutableStateOf(true)
     }
 
+    val scope = rememberCoroutineScope()
+
+    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val shouldShowBottomBar = navController.currentBackStackEntryAsState().value?.destination?.route in routeNav.map { it.route }
 
-    Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
-        bottomBar = {
-            if(shouldShowBottomBar){
-                AnimatedVisibility(visible){
-                    BottomNavigationBar(navController, routeNav)
+
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetElevation = 0.dp,
+        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        sheetContent = {
+            Column(
+                modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Nama Akun",
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        style = MaterialTheme.typography.h6,
+                        color = secondaryColor
+                    )
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                            }
+                        },
+                        content = {
+                            Icon(
+                                Icons.Filled.Clear,
+                                ""
+                            )
+                        }
+                    )
                 }
+                Spacer(
+                    modifier = Modifier.height(10.dp)
+                )
+                DataInfoHolder(
+                    Res.drawable.user_ic,"Username"
+                )
+                Spacer(
+                    modifier = Modifier.height(17.dp)
+                )
+                DataInfoHolder(
+                    Res.drawable.email_ic,"Email"
+                )
+                Spacer(
+                    modifier = Modifier.height(17.dp)
+                )
+                DataInfoHolder(
+                    Res.drawable.pass_ic,"Password"
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                Divider()
+                OptionMenuHolder(
+                    Res.drawable.edit_anggota_ic,
+                    "Copy URL"
+                )
+            }
+        },
+        sheetBackgroundColor = Color.White
+    ){
+        Scaffold(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+            bottomBar = {
+                if(shouldShowBottomBar){
+                    AnimatedVisibility(visible){
+                        BottomNavigationBar(navController, routeNav)
+                    }
+
+                }
+            }
+        ) { paddingValues ->
+            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState)
+        }
+    }
+}
+
+@Composable
+fun OptionMenuHolder(icon: DrawableResource,
+                     title: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painterResource(icon),"",
+            modifier = Modifier.size(44.dp),
+            colorFilter = ColorFilter.tint(color = secondaryColor)
+        )
+        Spacer(
+            modifier = Modifier.width(19.dp)
+        )
+        Text(
+            title,
+            style = MaterialTheme.typography.subtitle2,
+            color = secondaryColor,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Start
+        )
+
+    }
+}
+
+@Composable
+fun DataInfoHolder(
+    icon: DrawableResource,
+    title: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painterResource(icon),"",
+            modifier = Modifier.size(28.dp)
+        )
+        Spacer(
+            modifier = Modifier.width(19.dp)
+        )
+        Text(
+            title,
+            style = MaterialTheme.typography.subtitle2,
+            color = secondaryColor,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Start
+        )
+        IconButton(
+            onClick = {
 
             }
-
-
+        ){
+            Image(
+                painterResource(Res.drawable.copy_paste),"",
+            )
         }
-    ) { paddingValues ->
-        ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues)
+
+
     }
 }
