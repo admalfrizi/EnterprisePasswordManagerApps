@@ -64,9 +64,7 @@ import resources.visibility_non_ic
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun RootScreen(
-    client: HttpClient
-) {
+fun RootScreen() {
     val navController = rememberNavController()
     val routeNav = listOf(
         BottomNavMenuData.Home,
@@ -102,7 +100,7 @@ fun RootScreen(
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState,client)
+            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState)
         }
     }
 }

@@ -59,6 +59,7 @@ kotlin {
 //            implementation(libs.androidx.material3)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.koin.android)
         }
         val commonMain by getting {
             dependencies {
@@ -74,7 +75,7 @@ kotlin {
                 implementation(libs.navigation.compose)
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
-
+                implementation(libs.koin.core)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
@@ -88,6 +89,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.koin.jvm)
         }
 
         val iosX64Main by getting

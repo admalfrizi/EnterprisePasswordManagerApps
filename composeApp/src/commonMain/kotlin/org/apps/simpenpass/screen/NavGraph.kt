@@ -50,7 +50,6 @@ fun ContentNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
-    client: HttpClient
 ){
     val isLogged = true
     val density = LocalDensity.current
@@ -62,7 +61,7 @@ fun ContentNavGraph(
     NavHost(navController,startDestination = if(isLogged) Screen.Main.route else Screen.Auth.route, modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
-            authNavGraph(navController, client)
+            authNavGraph(navController)
             navigation(
                 route = Screen.Main.route,startDestination = Screen.Home.route,
                 enterTransition = { EnterTransition.None },
@@ -195,10 +194,10 @@ fun ContentNavGraph(
     }
 }
 
-fun NavGraphBuilder.authNavGraph(navController: NavHostController,client: HttpClient) {
+fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(route = Screen.Auth.route,startDestination = Screen.Login.route){
         composable(route = Screen.Login.route){
-            AuthScreen(navController,client)
+            AuthScreen(navController)
         }
 
         composable(route = Screen.Register.route){

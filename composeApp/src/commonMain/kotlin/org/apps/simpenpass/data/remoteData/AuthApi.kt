@@ -9,42 +9,29 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.models.UserData
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.NetworkResult
 
-class AuthApi(
-    private val httpClient : HttpClient
-) {
-    suspend fun login(email: String, password: String): NetworkResult<UserData> {
+class AuthApi {
+    private val httpClient = HttpClient()
+
+    fun login(email: String, password: String): Flow<NetworkResult<UserData>> = flow {
+        emit(NetworkResult.Loading())
         try {
             val response : HttpResponse = httpClient.post("login"){
                 contentType(ContentType.Application.Json)
                 setBody(LoginRequest(email ,password))
             }
-
-           response.status.value.let { statusCode ->
-                when(statusCode){
-                    in 200..299 -> {
-                        return NetworkResult.success(response.body<UserData>())
-                    }
-                    401 -> {
-                        return NetworkResult.unauthorized("Maaf Anda Belum Login", null)
-                    }
-                    500 -> {
-                        return NetworkResult.error("Server Anda Error",null)
-                    }
-                    504 -> {
-                        return NetworkResult.timeout("Waktu Request Abis",null)
-                    }
-                    else -> {
-                        return NetworkResult.unknown("Unknown Error", null)
-                    }
-                }
-            }
+            emit(NetworkResult.Success(response.body<UserData>()))
         } catch (e: UnresolvedAddressException) {
-           return NetworkResult.noInternet("No Internet Connection", null)
+           emit(NetworkResult.Error(e))
         }
+    }.catch {
+        emit(NetworkResult.Error(it))
     }
 }

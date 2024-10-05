@@ -14,6 +14,8 @@ androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
 compose = "1.7.3"
 material = "1.6.7"
+koin = "4.0.0"
+koinCompose = "4.0.0"
 junit = "4.13.2"
 kotlin = "2.0.20"
 ktor = "2.3.12"
@@ -64,6 +66,11 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", ve
 #core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtx" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-jvm = { group = "io.insert-koin", name = "koin-core-jvm", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinCompose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

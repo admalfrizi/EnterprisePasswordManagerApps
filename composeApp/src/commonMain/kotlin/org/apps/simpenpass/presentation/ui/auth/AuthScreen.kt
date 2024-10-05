@@ -36,10 +36,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.authComponents.DialogAuthEmpty
@@ -58,7 +61,6 @@ import resources.user_password_login
 @Composable
 fun AuthScreen(
     navHostController: NavHostController,
-    client: HttpClient,
     authViewModel: AuthViewModel = viewModel()
 ) {
 
@@ -67,7 +69,7 @@ fun AuthScreen(
     ) {
         val interactionSource = remember { MutableInteractionSource() }
         val isShowDialog = remember { mutableStateOf(false) }
-        val isSuccess = remember { mutableStateOf(false) }
+        val isValidated = remember { mutableStateOf(false) }
 
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
@@ -95,7 +97,7 @@ fun AuthScreen(
             }
         }
 
-        if(!isSuccess.value){
+        if(!isValidated.value){
             if(isShowDialog.value){
                 validateRes(email,password,isShowDialog,msg)
             }
@@ -195,7 +197,7 @@ fun AuthScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(20.dp),
                 onClick = {
-                    validateForm(isShowDialog,isSuccess)
+                    validateForm(isShowDialog,isValidated)
                 }
             ) {
                 Text(

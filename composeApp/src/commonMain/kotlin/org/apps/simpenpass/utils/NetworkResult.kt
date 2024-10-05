@@ -1,32 +1,7 @@
 package org.apps.simpenpass.utils
 
-data class NetworkResult<out T>(val state: ApiState, val data: T?, val message: String?) {
-
-    companion object {
-
-        fun <T> success(data: T?): NetworkResult<T> {
-            return NetworkResult(ApiState.SUCCESS, data, null)
-        }
-
-        fun <T> unknown(msg: String,data: T?): NetworkResult<T> {
-            return NetworkResult(ApiState.UNKNOWN, data, null)
-        }
-
-        fun <T> error(msg: String, data: T?): NetworkResult<T> {
-            return NetworkResult(ApiState.ERROR_SERVER, data, msg)
-        }
-
-        fun <T> unauthorized(msg: String, data: T?): NetworkResult<T> {
-            return NetworkResult(ApiState.UNAUTHORIZED, data, msg)
-        }
-
-        fun <T> timeout(msg: String, data: T?): NetworkResult<T> {
-            return NetworkResult(ApiState.TIMEOUT, data, msg)
-        }
-
-        fun <T> noInternet(msg: String, data: T?): NetworkResult<T> {
-            return NetworkResult(ApiState.NO_INTERNET, data, msg)
-        }
-
-    }
+sealed class NetworkResult<T> {
+    class Loading<T> : NetworkResult<T>()
+    class Success<T>(val data: T) : NetworkResult<T>()
+    class Error<T>(val error: Throwable) : NetworkResult<T>()
 }
