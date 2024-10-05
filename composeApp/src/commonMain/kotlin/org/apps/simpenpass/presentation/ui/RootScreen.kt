@@ -2,7 +2,9 @@ package org.apps.simpenpass.presentation.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +56,8 @@ import resources.edit_anggota_ic
 import resources.email_ic
 import resources.pass_ic
 import resources.user_ic
+import resources.visibility_ic
+import resources.visibility_non_ic
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -79,10 +84,10 @@ fun RootScreen() {
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
             Column(
-                modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(top = 18.dp)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -122,7 +127,7 @@ fun RootScreen() {
                     modifier = Modifier.height(17.dp)
                 )
                 DataInfoHolder(
-                    Res.drawable.pass_ic,"Password"
+                    Res.drawable.pass_ic,"Password", isPassData = true
                 )
                 Spacer(
                     modifier = Modifier.height(16.dp)
@@ -131,6 +136,18 @@ fun RootScreen() {
                 OptionMenuHolder(
                     Res.drawable.edit_anggota_ic,
                     "Copy URL"
+                )
+                OptionMenuHolder(
+                    Res.drawable.edit_anggota_ic,
+                    "Pin to Most Used"
+                )
+                OptionMenuHolder(
+                    Res.drawable.edit_anggota_ic,
+                    "Edit Data Password"
+                )
+                OptionMenuHolder(
+                    Res.drawable.edit_anggota_ic,
+                    "Hapus Data Password"
                 )
             }
         },
@@ -156,27 +173,29 @@ fun RootScreen() {
 fun OptionMenuHolder(icon: DrawableResource,
                      title: String,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painterResource(icon),"",
-            modifier = Modifier.size(44.dp),
-            colorFilter = ColorFilter.tint(color = secondaryColor)
-        )
-        Spacer(
-            modifier = Modifier.width(19.dp)
-        )
-        Text(
-            title,
-            style = MaterialTheme.typography.subtitle2,
-            color = secondaryColor,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Start
-        )
+    Box(modifier = Modifier.fillMaxWidth().clickable {  },){
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painterResource(icon),"",
+                modifier = Modifier.size(44.dp),
+                colorFilter = ColorFilter.tint(color = secondaryColor)
+            )
+            Spacer(
+                modifier = Modifier.width(19.dp)
+            )
+            Text(
+                title,
+                style = MaterialTheme.typography.subtitle2,
+                color = secondaryColor,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
 
+        }
     }
 }
 
@@ -184,36 +203,70 @@ fun OptionMenuHolder(icon: DrawableResource,
 fun DataInfoHolder(
     icon: DrawableResource,
     title: String,
+    isPassData : Boolean = false
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painterResource(icon),"",
-            modifier = Modifier.size(28.dp)
-        )
-        Spacer(
-            modifier = Modifier.width(19.dp)
-        )
-        Text(
-            title,
-            style = MaterialTheme.typography.subtitle2,
-            color = secondaryColor,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Start
-        )
-        IconButton(
-            onClick = {
+    var showPassword by remember { mutableStateOf(value = false) }
+
+    Box(
+        modifier = Modifier.fillMaxWidth().clickable {
+
+        }
+    ){
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painterResource(icon),"",
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(
+                modifier = Modifier.width(19.dp)
+            )
+            Text(
+                title,
+                style = MaterialTheme.typography.subtitle2,
+                color = secondaryColor,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
+            if(isPassData){
+                if(showPassword){
+                    IconButton(
+                        onClick = {
+                            showPassword = false
+                        }
+                    ){
+                        Image(
+                            painterResource(Res.drawable.visibility_ic),"",
+                        )
+                    }
+                } else {
+                    IconButton(
+                        onClick = {
+                            showPassword = true
+                        }
+                    ){
+                        Image(
+                            painterResource(Res.drawable.visibility_non_ic),"",
+                        )
+                    }
+                }
 
             }
-        ){
-            Image(
-                painterResource(Res.drawable.copy_paste),"",
-            )
+            IconButton(
+                onClick = {
+
+                }
+            ){
+                Image(
+                    painterResource(Res.drawable.copy_paste),"",
+                )
+            }
+
+
         }
-
-
     }
+
 }
