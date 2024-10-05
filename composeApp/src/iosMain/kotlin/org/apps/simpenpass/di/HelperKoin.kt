@@ -1,7 +1,9 @@
 package org.apps.simpenpass.di
 
+import org.koin.core.context.startKoin
+
 fun initKoin() {
-    org.koin.core.context.startKoin {
+    startKoin {
         modules(
             appModules, ktorModules,repoModule
         )
