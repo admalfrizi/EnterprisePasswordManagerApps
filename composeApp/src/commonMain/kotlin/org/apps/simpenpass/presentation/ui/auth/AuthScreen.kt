@@ -24,6 +24,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.authComponents.DialogAuthEmpty
@@ -59,54 +61,58 @@ fun AuthScreen(
     authViewModel: AuthViewModel = viewModel()
 ) {
 
-    Box(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize().background(authScreenBgColor)
-    ) {
-        val interactionSource = remember { MutableInteractionSource() }
-        val isShowDialog = remember { mutableStateOf(false) }
-        val isValidated = remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isShowDialog = remember { mutableStateOf(false) }
+    val isValidated = remember { mutableStateOf(false) }
 
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var msg by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var msg by remember { mutableStateOf("") }
 
-        var emailFocus by remember { mutableStateOf(false) }
-        var passwordFocus by remember { mutableStateOf(false) }
+    var emailFocus by remember { mutableStateOf(false) }
+    var passwordFocus by remember { mutableStateOf(false) }
 
-        val loginState by authViewModel.authState.collectAsState()
+    val loginState by authViewModel.authState.collectAsState()
 
-        fun validateForm(isShowDialog: MutableState<Boolean>,isValidated: MutableState<Boolean>){
-            if(email.isEmpty() && password.isEmpty()){
-                isShowDialog.value = true
-            } else if(password.isEmpty()){
-                isShowDialog.value = true
-                msg = "Password anda Kosong !"
-            } else if(!isValidEmail(email)){
-                isShowDialog.value = true
-                msg = "Format email anda tidak benar"
-            } else {
-                isValidated.value = true
-            }
+    fun validateForm(isShowDialog: MutableState<Boolean>,isValidated: MutableState<Boolean>){
+        if(email.isEmpty() && password.isEmpty()){
+            isShowDialog.value = true
+        } else if(password.isEmpty()){
+            isShowDialog.value = true
+            msg = "Password anda Kosong !"
+        } else if(!isValidEmail(email)){
+            isShowDialog.value = true
+            msg = "Format email anda tidak benar"
+        } else {
+            isValidated.value = true
+        }
+    }
+
+    if(!isValidated.value){
+        if(isShowDialog.value){
+            validateRes(email,password,isShowDialog,msg)
+        }
+    } else {
+        if(loginState.isLoading){
+            DialogLoading {  }
         }
 
-        if(!isValidated.value){
-            if(isShowDialog.value){
-                validateRes(email,password,isShowDialog,msg)
-            }
-        } else {
-            if(loginState.isLoading){
-                DialogLoading {  }
-            }
-
-            if(loginState.isLoggedIn){
-                navHostController.navigate(Screen.Home.route){
-                    popUpTo(Screen.Auth.route){
-                        inclusive = true
-                    }
+        if(loginState.isLoggedIn){
+            navHostController.navigate(Screen.Home.route){
+                popUpTo(Screen.Auth.route){
+                    inclusive = true
                 }
             }
         }
+    }
 
+    LaunchedEffect(Unit){
+        authViewModel.login(LoginRequest(email, password))
+    }
+
+    Box(
+        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize().background(authScreenBgColor)
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             verticalArrangement = Arrangement.Center
