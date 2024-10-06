@@ -71,6 +71,7 @@ koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin"
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-jvm = { group = "io.insert-koin", name = "koin-core-jvm", version.ref = "koin" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinCompose" }
+koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinCompose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

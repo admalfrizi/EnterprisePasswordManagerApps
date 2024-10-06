@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
@@ -51,6 +50,7 @@ import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.linkColor
 import org.apps.simpenpass.utils.isValidEmail
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.email_ic
 import resources.user_password_login
@@ -58,7 +58,7 @@ import resources.user_password_login
 @Composable
 fun AuthScreen(
     navHostController: NavHostController,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = koinViewModel()
 ) {
 
     val interactionSource = remember { MutableInteractionSource() }

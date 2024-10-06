@@ -73,8 +73,10 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtime.compose)
                 implementation(libs.voyager.navigator)
                 implementation(libs.navigation.compose)
+                
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
+
                 implementation(libs.koin.core)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.ktor.client.core)
@@ -82,7 +84,7 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
-
+                implementation(libs.koin.composeVM)
             }
         }
 
