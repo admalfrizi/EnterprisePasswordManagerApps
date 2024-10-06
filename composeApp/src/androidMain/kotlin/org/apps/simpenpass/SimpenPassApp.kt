@@ -3,7 +3,9 @@ package org.apps.simpenpass
 import android.app.Application
 import org.apps.simpenpass.di.appModules
 import org.apps.simpenpass.di.ktorModules
+import org.apps.simpenpass.di.remoteDataModule
 import org.apps.simpenpass.di.repoModule
+import org.apps.simpenpass.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -13,9 +15,8 @@ class SimpenPassApp : Application() {
         startKoin {
             androidContext(this@SimpenPassApp)
             modules(
-                appModules, ktorModules,repoModule
+                appModules, ktorModules,repoModule, remoteDataModule,viewModelModule
             )
-
         }
     }
 }

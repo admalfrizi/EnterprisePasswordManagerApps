@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -26,6 +25,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,13 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import io.ktor.client.HttpClient
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.authComponents.DialogAuthEmpty
@@ -78,7 +73,9 @@ fun AuthScreen(
         var emailFocus by remember { mutableStateOf(false) }
         var passwordFocus by remember { mutableStateOf(false) }
 
-        fun validateForm(isShowDialog: MutableState<Boolean>,isSuccess: MutableState<Boolean>){
+        val loginState by authViewModel.authState.collectAsState()
+
+        fun validateForm(isShowDialog: MutableState<Boolean>,isValidated: MutableState<Boolean>){
             if(email.isEmpty() && password.isEmpty()){
                 isShowDialog.value = true
             } else if(password.isEmpty()){
@@ -88,12 +85,7 @@ fun AuthScreen(
                 isShowDialog.value = true
                 msg = "Format email anda tidak benar"
             } else {
-                isSuccess.value = true
-                navHostController.navigate(Screen.Home.route){
-                    popUpTo(Screen.Auth.route){
-                        inclusive = true
-                    }
-                }
+                isValidated.value = true
             }
         }
 
@@ -102,8 +94,16 @@ fun AuthScreen(
                 validateRes(email,password,isShowDialog,msg)
             }
         } else {
-            DialogLoading {
+            if(loginState.isLoading){
+                DialogLoading {  }
+            }
 
+            if(loginState.isLoggedIn){
+                navHostController.navigate(Screen.Home.route){
+                    popUpTo(Screen.Auth.route){
+                        inclusive = true
+                    }
+                }
             }
         }
 

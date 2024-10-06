@@ -1,31 +1,10 @@
 package org.apps.simpenpass
 
-import android.app.Activity
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.allViews
-import androidx.core.view.updatePadding
-import io.ktor.client.engine.okhttp.OkHttp
-import org.apps.simpenpass.data.remoteData.AuthApi
-import org.apps.simpenpass.style.primaryColor
-import org.apps.simpenpass.style.secondaryColor
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
