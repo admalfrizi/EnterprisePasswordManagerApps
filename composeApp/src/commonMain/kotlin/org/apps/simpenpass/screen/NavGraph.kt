@@ -27,7 +27,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import io.ktor.client.HttpClient
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
@@ -51,7 +50,7 @@ fun ContentNavGraph(
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
 ){
-    val isLogged = true
+    val isLogged = false
     val density = LocalDensity.current
 
     val parentRoute = navController.currentDestination?.parent?.route

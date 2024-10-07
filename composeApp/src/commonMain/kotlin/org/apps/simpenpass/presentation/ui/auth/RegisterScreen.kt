@@ -12,13 +12,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -31,9 +29,13 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,10 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
-import org.apps.simpenpass.presentation.components.DialogWarning
-import org.apps.simpenpass.presentation.components.authComponents.DialogAuthEmpty
-import org.apps.simpenpass.presentation.components.authComponents.DialogAuthWarning
+import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.authComponents.DialogRegisterEmpty
 import org.apps.simpenpass.presentation.components.authComponents.DialogRegisterWarning
 import org.apps.simpenpass.screen.Screen
@@ -60,6 +61,7 @@ import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.linkColor
 import org.apps.simpenpass.utils.isValidEmail
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.email_ic
 import resources.pass_ic
@@ -68,15 +70,21 @@ import resources.user_password_login
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RegisterScreen(navHostController: NavHostController) {
+fun RegisterScreen(
+    navHostController: NavHostController,
+    authViewModel: AuthViewModel = koinViewModel()
+) {
 
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
+    val registerState by authViewModel.authState.collectAsState()
 
     var msg by remember { mutableStateOf("") }
 
     val isShowDialog = remember { mutableStateOf(false) }
-    val isSuccess = remember { mutableStateOf(false) }
+    val isValidated = remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     var user by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -104,166 +112,189 @@ fun RegisterScreen(navHostController: NavHostController) {
             isShowDialog.value = true
             msg = "Password anda tidak benar !"
         } else {
-            isSuccess.value = true
-            navHostController.navigate(Screen.Login.route)
+            isValidated.value = true
+            authViewModel.register(RegisterRequest(user, email, password))
         }
     }
 
-    if(!isSuccess.value){
+    if(!isValidated.value){
         if(isShowDialog.value){
             validateReg(email,password,isShowDialog,msg)
         }
     }
 
-    val bringIntoViewRequester = remember { BringIntoViewRequester() }
-    val coroutineScope = rememberCoroutineScope()
+    if(registerState.isLoading){
+        DialogLoading(onDismissRequest = {  })
+    }
 
-    Box(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize().background(
-            authScreenBgColor
-        ).imePadding()
+    if(registerState.isRegistered){
+        coroutineScope.launch {
+            snackBarHostState.showSnackbar("Berhasil Register")
+        }
+        navHostController.navigate(Screen.Login.route)
+    }
+
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
+
+    Scaffold(
+        modifier = Modifier.imePadding(),
+        snackbarHost = {
+            SnackbarHost(snackBarHostState)
+        }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize()
+                .background(
+                    authScreenBgColor
+                ).imePadding()
         ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                text = "Silahkan Mengisi Data Diri untuk Bisa Menggunakan Aplikasi ini",
-                style = MaterialTheme.typography.h1,
-                fontSize = 32.sp
-            )
-            Spacer(
-                modifier = Modifier.height(42.dp)
-            )
-            CustomTextField(
-                interactionSource = interactionSource,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().onFocusChanged { focusState -> userFocus = focusState.isFocused },
-                labelHints = "Nama",
-                value = user,
-                leadingIcon =  {
-                    Icon(
-                        painterResource(Res.drawable.user_ic),
-                        tint = if(isFocused) Color(0xFF2060A8) else Color(0xFF384A92),
-                        contentDescription = ""
-                    )
-                },
-                isFocus = userFocus,
-                onValueChange = {
-                    user = it
-                },
-                focusColor = Color(0xFF4433DB)
-            )
-            Spacer(
-                modifier = Modifier.height(21.dp)
-            )
-            CustomTextField(
-                interactionSource = interactionSource,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().onFocusChanged { focusState -> emailFocus = focusState.isFocused },
-                labelHints = "Email",
-                value = email,
-                leadingIcon =  {
-                    Icon(
-                        painterResource(Res.drawable.email_ic),
-                        tint = if(isFocused) Color(0xFF2060A8) else Color(0xFF384A92),
-                        contentDescription = ""
-                    )
-                },
-                isFocus = emailFocus,
-                onValueChange = {
-                    email = it
-                },
-                focusColor = Color(0xFF4433DB)
-            )
-            Spacer(
-                modifier = Modifier.height(21.dp)
-            )
-            CustomTextField(
-                isPassword = true,
-                interactionSource = interactionSource,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().onFocusChanged { focusState -> passwordFocus = focusState.isFocused },
-                labelHints = "Password",
-                value = password,
-                leadingIcon =  {
-                    Image(
-                        painterResource(Res.drawable.user_password_login),
-                        contentDescription = ""
-                    )
-                },
-                isFocus = passwordFocus,
-                onValueChange = {
-                    password = it
-                },
-                focusColor = Color(0xFF4433DB)
-            )
-            Spacer(
-                modifier = Modifier.height(21.dp)
-            )
-            CustomTextField(
-                isPassword = true,
-                interactionSource = interactionSource,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
-                    .onFocusChanged { focusState -> cpassFocus = focusState.isFocused }
-                    .bringIntoViewRequester(bringIntoViewRequester)
-                    .onFocusEvent {
-                        if(it.isFocused){
-                            coroutineScope.launch {
-                                bringIntoViewRequester.bringIntoView()
-                            }
-                        }
-                    },
-                labelHints = "Konfirmasi Password",
-                value = cpassword,
-                leadingIcon =  {
-                    Icon(
-                        painterResource(Res.drawable.pass_ic),
-                        tint = if(isFocused) Color(0xFF2060A8) else Color(0xFF384A92),
-                        contentDescription = ""
-                    )
-                },
-                onValueChange = {
-                    cpassword = it
-                },
-                isFocus = cpassFocus,
-                focusColor = Color(0xFF4433DB)
-            )
-            Spacer(
-                modifier = Modifier.height(42.dp)
-            )
-            Button(
-                elevation = ButtonDefaults.elevation(0.dp),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth().height(40.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
-                shape = RoundedCornerShape(20.dp),
-                onClick = { validateForm() }){
-                Text(
-                    text = "Daftarkan",
-                    color = fontColor1,
-                    style = MaterialTheme.typography.button
-                )
-            }
-            Spacer(
-                modifier = Modifier.height(14.dp)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().clickable {
-                    navHostController.navigate(Screen.Login.route)
-                },
-                horizontalArrangement = Arrangement.Center
+            Column(
+                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    "Sudah Punya Akun ?",
-                    color = fontColor1,
-                    style = MaterialTheme.typography.subtitle1
+                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                    text = "Silahkan Mengisi Data Diri untuk Bisa Menggunakan Aplikasi ini",
+                    style = MaterialTheme.typography.h1,
+                    fontSize = 32.sp
                 )
                 Spacer(
-                    modifier = Modifier.width(5.dp)
+                    modifier = Modifier.height(42.dp)
                 )
-                Text(
-                    "Silahkan Login",
-                    color = linkColor,
-                    style = MaterialTheme.typography.subtitle1
+                CustomTextField(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                        .onFocusChanged { focusState -> userFocus = focusState.isFocused },
+                    labelHints = "Nama",
+                    value = user,
+                    leadingIcon = {
+                        Icon(
+                            painterResource(Res.drawable.user_ic),
+                            tint = if (isFocused) Color(0xFF2060A8) else Color(0xFF384A92),
+                            contentDescription = ""
+                        )
+                    },
+                    isFocus = userFocus,
+                    onValueChange = {
+                        user = it
+                    },
+                    focusColor = Color(0xFF4433DB)
                 )
+                Spacer(
+                    modifier = Modifier.height(21.dp)
+                )
+                CustomTextField(
+                    interactionSource = interactionSource,
+                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                        .onFocusChanged { focusState -> emailFocus = focusState.isFocused },
+                    labelHints = "Email",
+                    value = email,
+                    leadingIcon = {
+                        Icon(
+                            painterResource(Res.drawable.email_ic),
+                            tint = if (isFocused) Color(0xFF2060A8) else Color(0xFF384A92),
+                            contentDescription = ""
+                        )
+                    },
+                    isFocus = emailFocus,
+                    onValueChange = {
+                        email = it
+                    },
+                    focusColor = Color(0xFF4433DB)
+                )
+                Spacer(
+                    modifier = Modifier.height(21.dp)
+                )
+                CustomTextField(
+                    isPassword = true,
+                    interactionSource = interactionSource,
+                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                        .onFocusChanged { focusState -> passwordFocus = focusState.isFocused },
+                    labelHints = "Password",
+                    value = password,
+                    leadingIcon = {
+                        Image(
+                            painterResource(Res.drawable.user_password_login),
+                            contentDescription = ""
+                        )
+                    },
+                    isFocus = passwordFocus,
+                    onValueChange = {
+                        password = it
+                    },
+                    focusColor = Color(0xFF4433DB)
+                )
+                Spacer(
+                    modifier = Modifier.height(21.dp)
+                )
+                CustomTextField(
+                    isPassword = true,
+                    interactionSource = interactionSource,
+                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                        .onFocusChanged { focusState -> cpassFocus = focusState.isFocused }
+                        .bringIntoViewRequester(bringIntoViewRequester)
+                        .onFocusEvent {
+                            if (it.isFocused) {
+                                coroutineScope.launch {
+                                    bringIntoViewRequester.bringIntoView()
+                                }
+                            }
+                        },
+                    labelHints = "Konfirmasi Password",
+                    value = cpassword,
+                    leadingIcon = {
+                        Icon(
+                            painterResource(Res.drawable.pass_ic),
+                            tint = if (isFocused) Color(0xFF2060A8) else Color(0xFF384A92),
+                            contentDescription = ""
+                        )
+                    },
+                    onValueChange = {
+                        cpassword = it
+                    },
+                    isFocus = cpassFocus,
+                    focusColor = Color(0xFF4433DB)
+                )
+                Spacer(
+                    modifier = Modifier.height(42.dp)
+                )
+                Button(
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth()
+                        .height(40.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
+                    shape = RoundedCornerShape(20.dp),
+                    onClick = { validateForm() }) {
+                    Text(
+                        text = "Daftarkan",
+                        color = fontColor1,
+                        style = MaterialTheme.typography.button
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(14.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        navHostController.navigate(Screen.Login.route)
+                    },
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        "Sudah Punya Akun ?",
+                        color = fontColor1,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Spacer(
+                        modifier = Modifier.width(5.dp)
+                    )
+                    Text(
+                        "Silahkan Login",
+                        color = linkColor,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                }
             }
         }
     }
