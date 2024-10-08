@@ -30,6 +30,7 @@ napierVersion = "2.7.1"
 coreKtx = "1.6.1"
 datastore = "1.1.1"
 splittiesAppContext = "3.0.0"
+atomicfu = "0.23.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -80,6 +81,7 @@ napier-log = { group = "io.github.aakira", name = "napier", version.ref = "napie
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 splitties-appcontext = { group = "com.louiscad.splitties", name = "splitties-appctx", version.ref = "splittiesAppContext" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -89,6 +89,7 @@ kotlin {
                 implementation(libs.napier.log)
                 api(libs.datastore.preferences)
                 api(libs.datastore)
+                implementation(libs.atomicfu)
             }
         }
 
