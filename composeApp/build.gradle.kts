@@ -87,8 +87,8 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.koin.composeVM)
                 implementation(libs.napier.log)
-                api(libs.datastore.preferences)
-                api(libs.datastore)
+                implementation(libs.datastore.preferences)
+                implementation(libs.datastore)
                 implementation(libs.atomicfu)
             }
         }
