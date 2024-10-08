@@ -4,11 +4,9 @@ import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import org.apps.simpenpass.data.source.localStorage.DataPrefFunc
-import org.apps.simpenpass.data.source.localStorage.LocalStoreData
+import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteUserSources
 import org.apps.simpenpass.models.LocalUserStore
-import org.apps.simpenpass.models.UserData
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.utils.NetworkResult

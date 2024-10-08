@@ -1,6 +1,5 @@
 package org.apps.simpenpass.presentation.ui.auth
 
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +76,6 @@ class AuthViewModel(
                             it.copy(
                                 isLoading = false,
                                 isRegistered = true,
-                                error = null,
                                 userData = result.data
                             )
                         }

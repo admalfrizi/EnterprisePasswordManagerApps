@@ -1,7 +1,6 @@
 package org.apps.simpenpass.di
 
-import org.apps.simpenpass.data.source.localStorage.DataPrefFunc
-import org.apps.simpenpass.data.source.localStorage.LocalStoreData
+import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.utils.createDataStore
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module

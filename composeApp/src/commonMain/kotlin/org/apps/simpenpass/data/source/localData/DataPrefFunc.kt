@@ -1,4 +1,4 @@
-package org.apps.simpenpass.data.source.localStorage
+package org.apps.simpenpass.data.source.localData
 
 import org.apps.simpenpass.models.LocalUserStore
 import org.apps.simpenpass.models.UserData
