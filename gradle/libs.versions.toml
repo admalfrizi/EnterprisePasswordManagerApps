@@ -11,7 +11,7 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.0"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose-plugin = "1.6.11"
+compose-plugin = "1.7.0-rc01"
 compose = "1.7.3"
 material = "1.6.7"
 koin = "4.0.0"
@@ -28,6 +28,8 @@ material3Android = "1.3.0"
 slf4j = "2.0.16"
 napierVersion = "2.7.1"
 coreKtx = "1.6.1"
+datastore = "1.1.1"
+splittiesAppContext = "3.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -75,6 +77,9 @@ koin-jvm = { group = "io.insert-koin", name = "koin-core-jvm", version.ref = "ko
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinCompose" }
 koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinCompose" }
 napier-log = { group = "io.github.aakira", name = "napier", version.ref = "napierVersion" }
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+splitties-appcontext = { group = "com.louiscad.splitties", name = "splitties-appctx", version.ref = "splittiesAppContext" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

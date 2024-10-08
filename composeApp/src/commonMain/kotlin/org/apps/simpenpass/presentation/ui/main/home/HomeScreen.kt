@@ -31,7 +31,6 @@ import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.add_option_ic
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(navController: NavHostController,sheetState: ModalBottomSheetState) {
     Scaffold(

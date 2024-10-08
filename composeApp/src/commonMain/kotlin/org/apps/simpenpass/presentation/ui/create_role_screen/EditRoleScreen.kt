@@ -71,7 +71,6 @@ import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.delete_ic
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EditRoleScreen(navController: NavController) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -98,7 +97,6 @@ fun EditRoleScreen(navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OverlayContent(
     navController: NavController,

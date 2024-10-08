@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
+import org.apps.simpenpass.di.dataStoreModule
 import org.apps.simpenpass.di.ktorModules
 import org.apps.simpenpass.di.remoteDataModule
 import org.apps.simpenpass.di.repoModule
@@ -20,13 +21,13 @@ import org.koin.compose.KoinApplication
 fun App() {
     val navController = rememberNavController()
     Napier.base(DebugAntilog())
-    KoinApplication(
-        application = {
-            modules(
-                ktorModules, repoModule, remoteDataModule, viewModelModule
-            )
-        },
-    ){
+//    KoinApplication(
+//        application = {
+//            modules(
+//                dataStoreModule,ktorModules, repoModule, remoteDataModule, viewModelModule
+//            )
+//        },
+//    ){
         AppTheme(
             navController = navController,
             content = {
@@ -40,5 +41,5 @@ fun App() {
                 }
             }
         )
-    }
+//    }
 }

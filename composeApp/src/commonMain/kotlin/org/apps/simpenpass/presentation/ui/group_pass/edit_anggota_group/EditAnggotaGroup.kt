@@ -66,7 +66,6 @@ import resources.role_change
 import resources.user_ic
 import resources.your_data_ic
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EditAnggotaGroup(navController: NavController) {
     val itemsData = listOf(
@@ -97,7 +96,6 @@ fun EditAnggotaGroup(navController: NavController) {
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OptionMenu(sheetState: ModalBottomSheetState, scope: CoroutineScope) {
     Column {
@@ -156,7 +154,6 @@ fun OptionMenu(sheetState: ModalBottomSheetState, scope: CoroutineScope) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ScaffoldContent(navController: NavController,itemsData: List<MemberGroupData>,scope: CoroutineScope,sheetState: ModalBottomSheetState) {
     Scaffold(

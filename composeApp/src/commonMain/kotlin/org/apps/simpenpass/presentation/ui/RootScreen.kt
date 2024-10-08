@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,14 +56,16 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.copy_paste
+import resources.delete_pass_data
 import resources.edit_anggota_ic
+import resources.edit_data_pass
 import resources.email_ic
 import resources.pass_ic
+import resources.url_link
 import resources.user_ic
 import resources.visibility_ic
 import resources.visibility_non_ic
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RootScreen() {
     val navController = rememberNavController()
@@ -105,7 +108,6 @@ fun RootScreen() {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
     Column(
@@ -159,7 +161,7 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
         )
         Divider()
         OptionMenuHolder(
-            Res.drawable.edit_anggota_ic,
+            Res.drawable.url_link,
             "Copy URL"
         )
         OptionMenuHolder(
@@ -167,11 +169,11 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
             "Pin to Most Used"
         )
         OptionMenuHolder(
-            Res.drawable.edit_anggota_ic,
+            Res.drawable.edit_data_pass,
             "Edit Data Password"
         )
         OptionMenuHolder(
-            Res.drawable.edit_anggota_ic,
+            Res.drawable.delete_pass_data,
             "Hapus Data Password"
         )
     }
@@ -234,7 +236,7 @@ fun DataInfoHolder(
             )
             Text(
                 title,
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.body2,
                 color = secondaryColor,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Start

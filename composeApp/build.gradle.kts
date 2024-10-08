@@ -60,6 +60,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
+            implementation(libs.splitties.appcontext)
         }
         val commonMain by getting {
             dependencies {
@@ -86,6 +87,8 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.koin.composeVM)
                 implementation(libs.napier.log)
+                api(libs.datastore.preferences)
+                api(libs.datastore)
             }
         }
 

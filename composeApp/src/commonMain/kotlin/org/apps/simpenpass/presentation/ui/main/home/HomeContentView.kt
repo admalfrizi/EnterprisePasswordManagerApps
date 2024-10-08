@@ -34,7 +34,6 @@ import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.arrow_right_ic
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContentView(
     navController: NavController,

@@ -104,7 +104,7 @@ fun RecoveryPassScreen(navHostController: NavHostController) {
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth().height(40.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
-                onClick = { navHostController.navigate(Screen.Main.route) }){
+                onClick = {  }){
                 Text(
                     text = "Kirim Kode",
                     color = fontColor1,

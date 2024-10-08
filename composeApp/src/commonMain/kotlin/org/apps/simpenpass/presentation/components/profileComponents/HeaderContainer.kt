@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
@@ -34,7 +35,8 @@ import resources.add_ic
 import resources.group_add_ic
 
 @Composable
-fun HeaderContainer(nameUser: String?) {
+fun HeaderContainer(nameUser: String?,email: String?) {
+    Napier.v("nameUser : $nameUser, email : $email")
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,7 +52,7 @@ fun HeaderContainer(nameUser: String?) {
                     modifier = Modifier.size(76.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
                 ){
                     Text(
-                        text = profileNameInitials("Armando Verrera"),
+                        text = profileNameInitials(nameUser ?: ""),
                         style = MaterialTheme.typography.h5,
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -70,7 +72,7 @@ fun HeaderContainer(nameUser: String?) {
                         modifier = Modifier.height(10.dp)
                     )
                     Text(
-                        "Email",
+                        email?: "",
                         style = MaterialTheme.typography.subtitle1,
                         color = fontColor1,
                         modifier = Modifier.padding(start = 16.dp),

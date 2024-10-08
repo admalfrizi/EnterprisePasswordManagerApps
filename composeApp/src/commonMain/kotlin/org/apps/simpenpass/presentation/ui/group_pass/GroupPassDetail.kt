@@ -79,7 +79,6 @@ import resources.edit_ic
 import resources.menu_ic
 import resources.your_data_ic
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GroupPassDetail(navController: NavController) {
     val tabsName = listOf("Password", "Anggota")
@@ -182,7 +181,6 @@ fun GroupPassDetail(navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ContentView(navController: NavController,tabsName: List<String>, sheetState: ModalBottomSheetState,scope: CoroutineScope) {
     var indexTab by remember { mutableStateOf(0) }

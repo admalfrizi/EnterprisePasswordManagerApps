@@ -17,6 +17,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,11 +38,21 @@ import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.primaryColor
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.arrow_right_ic
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController,
+    profileViewModel: ProfileViewModel = koinViewModel()
+) {
+    val profileState by profileViewModel.profileState.collectAsState()
+
+    LaunchedEffect(Unit){
+        profileViewModel.getUserData()
+    }
+
     Scaffold(
         backgroundColor = Color(0xFFF1F1F1),
         modifier = Modifier.fillMaxWidth(),
@@ -61,27 +73,40 @@ fun ProfileScreen(navController: NavController) {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
-                HeaderContainer("Armando Verirea")
+                HeaderContainer(profileState.userData?.name, profileState.userData?.email)
                 Spacer(
                     modifier= Modifier.height(11.dp)
                 )
 
-                SettingListView(navController)
+                SettingListView(navController, profileState,profileViewModel)
             }
         }
     )
 }
 
+
+
 @Composable
-fun SettingListView(navController: NavController) {
+fun SettingListView(navController: NavController, profileState: ProfileState, profileViewModel: ProfileViewModel) {
     var isLogoutWarningShow by remember { mutableStateOf(false) }
 
     if(isLogoutWarningShow){
-        DialogWarning(dialogTitle = "Anda akan Logout dari Aplikasi ini !", dialogText = "Silahkan untuk Memasukan Kembali Password Anda !", onDismissRequest = {isLogoutWarningShow = false}, onClick = { navController.navigate(Screen.Auth.route){
+        DialogWarning(
+            dialogTitle = "Anda akan Logout dari Aplikasi ini !",
+            dialogText = "Silahkan untuk Memasukan Kembali Password Anda !",
+            onDismissRequest = {isLogoutWarningShow = false},
+            onClick = {
+                profileViewModel.logout()
+            }
+        )
+    }
+
+    if(profileState.isLogout){
+        navController.navigate(Screen.Auth.route){
             popUpTo(Screen.Home.route){
                 inclusive = true
             }
-        }})
+        }
     }
 
     Column(

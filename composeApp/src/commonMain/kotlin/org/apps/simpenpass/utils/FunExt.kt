@@ -10,11 +10,15 @@ fun isValidEmail(email: String): Boolean{
     return emailPattern.matches(email)
 }
 
-fun profileNameInitials(name: String): String{
-    return name
-        .split(' ')
-        .mapNotNull { it.firstOrNull()?.toString() }
-        .reduce { acc, s -> acc + s }
+fun profileNameInitials(name: String?): String {
+    return if (name == null) {
+        ""
+    } else {
+        name
+            .split(' ')
+            .mapNotNull { it.firstOrNull()?.toString() }
+            .reduce { acc, s -> acc + s } ?: ""
+    }
 }
 
 fun detectRoute(navController: NavController): String? {

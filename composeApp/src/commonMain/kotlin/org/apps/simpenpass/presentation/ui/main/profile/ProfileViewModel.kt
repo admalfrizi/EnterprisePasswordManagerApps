@@ -1,0 +1,72 @@
+package org.apps.simpenpass.presentation.ui.main.profile
+
+import androidx.compose.runtime.Stable
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.apps.simpenpass.data.repository.AuthRepository
+import org.apps.simpenpass.models.LocalUserStore
+import org.apps.simpenpass.models.UserData
+import org.apps.simpenpass.models.request.LoginRequest
+import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.utils.NetworkResult
+
+class ProfileViewModel(
+    private val repo : AuthRepository
+) : ViewModel() {
+
+    private val _profileState = MutableStateFlow(ProfileState())
+    val profileState: StateFlow<ProfileState> get() = _profileState
+
+    fun logout(){
+        viewModelScope.launch {
+            repo.logout().collect { result ->
+                when(result) {
+                    is NetworkResult.Error -> {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = false,
+                                isLogout = true,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getUserData(){
+        viewModelScope.launch {
+            _profileState.update {
+                it.copy(
+                    userData = repo.getUserData()
+                )
+            }
+        }
+    }
+}
+
+data class ProfileState (
+    val isLogout: Boolean = false,
+    val isLoading: Boolean = false,
+    val userData: LocalUserStore? = null,
+    val error: String? = null
+)
