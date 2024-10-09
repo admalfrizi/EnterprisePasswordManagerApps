@@ -56,10 +56,10 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
             val userData = remoteUserSources.logout(token!!)
             if(userData.success){
                 emit(userData.data?.let { NetworkResult.Success(it.user) })
-                localData.clearToken()
             } else {
                 emit(NetworkResult.Error(userData.message))
             }
+            localData.clearUserData()
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }

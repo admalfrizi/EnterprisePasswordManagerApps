@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.apps.simpenpass.models.LocalUserStore
@@ -47,16 +46,9 @@ class LocalStoreData(
         return result
     }
 
-    override suspend fun clearToken() {
-        dataStore.edit { pref ->
-            pref.remove(TOKEN_USER)
-        }
-    }
-
     override suspend fun clearUserData() {
-        dataStore.edit { preferences ->
-            preferences.remove(NAME_USER)
-            preferences.remove(EMAIL_USER)
+        dataStore.edit { pref ->
+            pref.clear()
         }
     }
 

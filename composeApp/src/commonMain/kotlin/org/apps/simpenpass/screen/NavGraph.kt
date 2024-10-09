@@ -15,25 +15,23 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
-import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
@@ -51,16 +49,28 @@ import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
 import org.apps.simpenpass.utils.detectRoute
 import org.koin.compose.viewmodel.koinViewModel
 
+
 @Composable
 fun ContentNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
-    density: Density
+    authViewModel : AuthViewModel = koinViewModel()
 ){
-    NavHost(navController,startDestination = Screen.Main.route, modifier = Modifier.fillMaxSize().padding(
+    var isLoggedIn by remember { mutableStateOf(false) }
+    val stateAuth by authViewModel.authState.collectAsState()
+    val density = LocalDensity.current
+
+    PlatformColors(Color(0xFF052E58))
+
+    if(stateAuth.token != null){
+        isLoggedIn = true
+    }
+
+    NavHost(navController,startDestination = if(isLoggedIn) Screen.Main.route else Screen.Auth.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
+            authNavGraph(navController)
             navigation(
                 route = Screen.Main.route,startDestination = Screen.Home.route,
                 enterTransition = { EnterTransition.None },

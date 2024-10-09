@@ -128,10 +128,10 @@ fun RegisterScreen(
     }
 
     if(registerState.isRegistered){
+        navHostController.navigate(Screen.Login.route)
         coroutineScope.launch {
             snackBarHostState.showSnackbar("Berhasil Register")
         }
-        navHostController.navigate(Screen.Login.route)
     }
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
