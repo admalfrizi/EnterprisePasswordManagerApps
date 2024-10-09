@@ -3,11 +3,18 @@ package org.apps.simpenpass.di
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.apps.simpenpass.utils.dataStoreFileName
+import org.apps.simpenpass.utils.getDataStore
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import splitties.init.directBootCtx
 
 actual fun platformModule() = module {
     single<HttpClientEngine> { OkHttp.create() }
+    single {
+        getDataStore {
+            androidContext().filesDir.resolve("datastore/$dataStoreFileName").absolutePath
+        }
+    }
 }
 
 //actual fun valuePathData(): String {

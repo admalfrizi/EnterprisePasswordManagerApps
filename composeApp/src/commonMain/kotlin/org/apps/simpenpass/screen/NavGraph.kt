@@ -48,7 +48,6 @@ import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
-import org.apps.simpenpass.utils.createDataStore
 import org.apps.simpenpass.utils.detectRoute
 import org.koin.compose.viewmodel.koinViewModel
 

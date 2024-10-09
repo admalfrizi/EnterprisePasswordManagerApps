@@ -21,8 +21,6 @@ private val lock = SynchronizedObject()
 //    }
 //}
 
-expect fun createDataStore(context : Any? = null): DataStore<Preferences>
-
 fun getDataStore(producePath: () -> String): DataStore<Preferences> {
     return synchronized(lock) {
         if (::dataStore.isInitialized) {

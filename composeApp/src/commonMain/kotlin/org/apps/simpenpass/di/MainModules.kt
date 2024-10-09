@@ -1,13 +1,12 @@
 package org.apps.simpenpass.di
 
 import org.apps.simpenpass.data.source.localData.LocalStoreData
-import org.apps.simpenpass.utils.createDataStore
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
-expect fun platformModule(): Module
+internal expect fun platformModule(): Module
 
 fun initKoin(appDeclaration: KoinAppDeclaration? = null) = startKoin {
     appDeclaration?.invoke(this)
@@ -22,10 +21,6 @@ fun initKoin(appDeclaration: KoinAppDeclaration? = null) = startKoin {
 }
 
 val dataStoreModule = module {
-    single {
-        createDataStore()
-    }
-
     single {
         LocalStoreData(
             dataStore = get()
