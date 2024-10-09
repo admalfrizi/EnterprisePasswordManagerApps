@@ -1,23 +1,17 @@
 package org.apps.simpenpass.presentation.ui.main.profile
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,24 +20,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.flow.collectLatest
 import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.profileComponents.HeaderContainer
 import org.apps.simpenpass.presentation.components.profileComponents.SettingsListHolder
-import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
-import org.apps.simpenpass.style.primaryColor
 import org.apps.simpenpass.style.secondaryColor
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import resources.Res
-import resources.arrow_right_ic
 
 @Composable
 fun ProfileScreen(
@@ -54,12 +40,8 @@ fun ProfileScreen(
 //    var name: String? by remember { mutableStateOf(null) }
 //    var email: String? by remember { mutableStateOf(null) }
 
-    LaunchedEffect(Unit){
-        profileViewModel.getUserData()
-        profileViewModel.getUserToken()
-    }
 
-//    Napier.d("Token: ${profileState.token}")
+    Napier.d("Token: ${profileState.token}")
 //    Napier.d("User: name:${profileState.userData?.name}, email:${profileState.userData?.email}")
 
     Scaffold(
