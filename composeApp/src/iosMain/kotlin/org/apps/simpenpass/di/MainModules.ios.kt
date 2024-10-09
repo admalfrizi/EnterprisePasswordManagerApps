@@ -8,7 +8,6 @@ actual fun platformModule() = module {
     single<HttpClientEngine> { Darwin.create() }
 }
 
-
 actual fun valuePathData(): String {
     TODO("Not yet implemented")
 }
