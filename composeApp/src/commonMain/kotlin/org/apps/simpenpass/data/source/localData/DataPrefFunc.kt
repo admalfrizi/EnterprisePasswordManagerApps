@@ -8,7 +8,7 @@ interface DataPrefFunc {
     suspend fun saveUserData(user: UserData)
     suspend fun saveUserToken(token: String)
     suspend fun getToken(): String?
-    suspend fun getUserData() : Flow<LocalUserStore?>
+    suspend fun getUserData() : LocalUserStore
     suspend fun clearToken()
     suspend fun clearUserData()
 }

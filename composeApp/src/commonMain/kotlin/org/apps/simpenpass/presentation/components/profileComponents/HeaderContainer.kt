@@ -35,8 +35,7 @@ import resources.add_ic
 import resources.group_add_ic
 
 @Composable
-fun HeaderContainer(nameUser: String?,email: String?) {
-    Napier.v("nameUser : $nameUser, email : $email")
+fun HeaderContainer(nameUser: String,email: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,7 +51,7 @@ fun HeaderContainer(nameUser: String?,email: String?) {
                     modifier = Modifier.size(76.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
                 ){
                     Text(
-                        text = profileNameInitials(nameUser),
+                        text = if(nameUser.isNotEmpty()) profileNameInitials(nameUser) else "",
                         style = MaterialTheme.typography.h5,
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -64,7 +63,7 @@ fun HeaderContainer(nameUser: String?,email: String?) {
                     modifier = Modifier.padding(vertical = 12.dp)
                 ) {
                     Text(
-                        "$nameUser",
+                        nameUser,
                         style = MaterialTheme.typography.button,
                         modifier = Modifier.padding(start = 16.dp),
                     )

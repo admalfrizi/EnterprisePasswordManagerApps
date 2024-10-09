@@ -40,12 +40,11 @@ class LocalStoreData(
         return tokenData
     }
 
-    override suspend fun getUserData(): Flow<LocalUserStore> {
-        val userData = dataStore.data.map { prefs ->
-            LocalUserStore(name = prefs[NAME_USER], email = prefs[EMAIL_USER])
-        }
+    override suspend fun getUserData(): LocalUserStore {
+        val userData = dataStore.data.first()
+        val result = LocalUserStore(name = userData[NAME_USER] ?: "", email = userData[EMAIL_USER] ?: "")
 
-        return userData
+        return result
     }
 
     override suspend fun clearToken() {

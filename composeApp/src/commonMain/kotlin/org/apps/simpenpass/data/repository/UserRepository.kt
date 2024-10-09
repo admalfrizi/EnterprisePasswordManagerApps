@@ -2,7 +2,6 @@ package org.apps.simpenpass.data.repository
 
 import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
@@ -12,19 +11,18 @@ import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.utils.NetworkResult
 
-class AuthRepository(private val remoteUserSources: RemoteUserSources,private val localData : LocalStoreData) {
+class UserRepository(private val remoteUserSources: RemoteUserSources,private val localData : LocalStoreData) {
     fun login(data: LoginRequest)  = flow {
         emit(NetworkResult.Loading())
         try {
             val userData = remoteUserSources.login(data)
             if(userData.success){
-                localData.saveUserData(userData.data?.user!!)
-                localData.saveUserToken(userData.data.accessToken)
-                emit(NetworkResult.Success(userData.data.user))
+                userData.data?.user?.let { localData.saveUserData(it) }
+                userData.data?.accessToken?.let { localData.saveUserToken(it) }
+                emit(NetworkResult.Success(userData.data?.user))
             } else {
                 emit(NetworkResult.Error(userData.message))
             }
-            Napier.v("Response: ${localData.getUserData()}")
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
@@ -60,7 +58,7 @@ class AuthRepository(private val remoteUserSources: RemoteUserSources,private va
                 if(storeToken.isNotEmpty()){
                     val userData = remoteUserSources.logout(storeToken)
                     if(userData.success){
-                        emit(NetworkResult.Success(userData.data?.accessToken))
+                        emit(NetworkResult.Success(userData.data))
                         localData.clearToken()
                     } else {
                         emit(NetworkResult.Error(userData.message))
@@ -76,7 +74,7 @@ class AuthRepository(private val remoteUserSources: RemoteUserSources,private va
         Napier.v("Response Message: ${error.message}")
     }
 
-    suspend fun getUserData(): Flow<LocalUserStore> {
+    suspend fun getUserData(): LocalUserStore {
         return localData.getUserData()
     }
 

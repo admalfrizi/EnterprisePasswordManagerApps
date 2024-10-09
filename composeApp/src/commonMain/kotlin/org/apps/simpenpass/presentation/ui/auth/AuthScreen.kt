@@ -107,7 +107,7 @@ fun AuthScreen(
     }
 
     if(loginState.isLoggedIn){
-        navHostController.navigate(Screen.Home.route){
+        navHostController.navigate("root"){
             popUpTo(Screen.Auth.route){
                 inclusive = true
             }

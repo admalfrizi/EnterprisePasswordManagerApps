@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.collectLatest
 import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.profileComponents.HeaderContainer
@@ -49,17 +50,16 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel = koinViewModel()
 ) {
     val profileState by profileViewModel.profileState.collectAsState()
-    var name: String? by remember { mutableStateOf(null) }
-    var email: String? by remember { mutableStateOf(null) }
+//    var name: String? by remember { mutableStateOf(null) }
+//    var email: String? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit){
         profileViewModel.getUserData()
-
-        profileState.userData?.collectLatest {
-            name = it?.name
-            email = it?.email
-        }
+        profileViewModel.getUserToken()
     }
+
+//    Napier.d("Token: ${profileState.token}")
+//    Napier.d("User: name:${profileState.userData?.name}, email:${profileState.userData?.email}")
 
     Scaffold(
         backgroundColor = Color(0xFFF1F1F1),
@@ -81,7 +81,10 @@ fun ProfileScreen(
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
-                HeaderContainer(name, email)
+                HeaderContainer(
+                    nameUser = profileState.userData?.name ?: "",
+                    email = profileState.userData?.email ?: ""
+                )
                 Spacer(
                     modifier= Modifier.height(11.dp)
                 )
@@ -111,7 +114,7 @@ fun SettingListView(navController: NavController, profileState: ProfileState, pr
 
     if(profileState.isLogout){
         navController.navigate(Screen.Auth.route){
-            popUpTo(Screen.Home.route){
+            popUpTo("root"){
                 inclusive = true
             }
         }

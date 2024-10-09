@@ -7,12 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.data.repository.AuthRepository
+import org.apps.simpenpass.data.repository.UserRepository
+import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.models.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
 
 class ProfileViewModel(
-    private val repo : AuthRepository
+    private val repo : UserRepository
 ) : ViewModel() {
 
     private val _profileState = MutableStateFlow(ProfileState())
@@ -59,11 +60,22 @@ class ProfileViewModel(
             }
         }
     }
+
+    fun getUserToken(){
+        viewModelScope.launch {
+            _profileState.update {
+                it.copy(
+                    token = repo.getToken()
+                )
+            }
+        }
+    }
 }
 
 data class ProfileState(
     val isLogout: Boolean = false,
     val isLoading: Boolean = false,
-    val userData: Flow<LocalUserStore?>? = null,
+    val userData: LocalUserStore? = null,
+    val token: String? = null,
     val error: String? = null
 )

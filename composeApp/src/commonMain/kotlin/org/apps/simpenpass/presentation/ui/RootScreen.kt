@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -49,11 +51,13 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
+import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.copy_paste
 import resources.delete_pass_data
@@ -67,7 +71,9 @@ import resources.visibility_ic
 import resources.visibility_non_ic
 
 @Composable
-fun RootScreen() {
+fun RootScreen(
+    density: Density
+) {
     val navController = rememberNavController()
     val routeNav = listOf(
         BottomNavMenuData.Home,
@@ -103,7 +109,7 @@ fun RootScreen() {
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState)
+            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState,density)
         }
     }
 }

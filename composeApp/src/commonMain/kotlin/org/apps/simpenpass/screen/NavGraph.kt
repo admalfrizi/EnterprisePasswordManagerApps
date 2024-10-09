@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -32,7 +33,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
-import org.apps.simpenpass.data.repository.AuthRepository
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
@@ -56,29 +56,11 @@ fun ContentNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
-    authViewModel: AuthViewModel = koinViewModel()
+    density: Density
 ){
-    var isLogged = false
-    val density = LocalDensity.current
-    val stateAuth by authViewModel.authState.collectAsState()
-
-
-    LaunchedEffect(Unit){
-        authViewModel.getToken()
-        Napier.d("Response Token: ${stateAuth.token}")
-        if(stateAuth.token != null){
-            isLogged = true
-        }
-    }
-
-
-
-    PlatformColors(Color(0xFF052E58))
-
-    NavHost(navController,startDestination = if(isLogged) Screen.Main.route else Screen.Auth.route, modifier = Modifier.fillMaxSize().padding(
+    NavHost(navController,startDestination = Screen.Main.route, modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
-            authNavGraph(navController)
             navigation(
                 route = Screen.Main.route,startDestination = Screen.Home.route,
                 enterTransition = { EnterTransition.None },
