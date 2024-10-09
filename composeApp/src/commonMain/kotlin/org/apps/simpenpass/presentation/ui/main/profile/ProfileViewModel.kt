@@ -2,6 +2,7 @@ package org.apps.simpenpass.presentation.ui.main.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,9 +20,9 @@ class ProfileViewModel(
     private val _profileState = MutableStateFlow(ProfileState())
     val profileState: StateFlow<ProfileState> get() = _profileState
 
-    fun logout(){
+    fun logout(token: String){
         viewModelScope.launch {
-            repo.logout().collect { result ->
+            repo.logout(token).collect { result ->
                 when(result) {
                     is NetworkResult.Error -> {
                         _profileState.update {
@@ -45,6 +46,9 @@ class ProfileViewModel(
                                 isLogout = true,
                             )
                         }
+                    }
+                    else -> {
+
                     }
                 }
             }

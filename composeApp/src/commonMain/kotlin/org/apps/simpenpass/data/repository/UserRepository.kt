@@ -50,21 +50,15 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
         Napier.v("Response Message: ${error.message}")
     }
 
-    fun logout() = flow {
+    fun logout(token: String?) = flow {
         emit(NetworkResult.Loading())
         try {
-            val storeToken = localData.getToken()
-            if (storeToken != null) {
-                if(storeToken.isNotEmpty()){
-                    val userData = remoteUserSources.logout(storeToken)
-                    if(userData.success){
-                        emit(NetworkResult.Success(userData.data))
-                        localData.clearToken()
-                    } else {
-                        emit(NetworkResult.Error(userData.message))
-                    }
-                    Napier.d("Response: $userData")
-                }
+            val userData = remoteUserSources.logout(token!!)
+            if(userData.success){
+                emit(userData.data?.let { NetworkResult.Success(it.user) })
+                localData.clearToken()
+            } else {
+                emit(NetworkResult.Error(userData.message))
             }
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))

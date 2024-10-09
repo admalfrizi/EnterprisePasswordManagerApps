@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.collectLatest
+import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.profileComponents.HeaderContainer
 import org.apps.simpenpass.presentation.components.profileComponents.SettingsListHolder
@@ -107,7 +108,7 @@ fun SettingListView(navController: NavController, profileState: ProfileState, pr
             dialogText = "Silahkan untuk Memasukan Kembali Password Anda !",
             onDismissRequest = {isLogoutWarningShow = false},
             onClick = {
-                profileViewModel.logout()
+                profileViewModel.logout(profileState.token!!)
             }
         )
     }
@@ -118,6 +119,10 @@ fun SettingListView(navController: NavController, profileState: ProfileState, pr
                 inclusive = true
             }
         }
+    }
+
+    if(profileState.isLoading){
+        DialogLoading {}
     }
 
     Column(

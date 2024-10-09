@@ -10,9 +10,5 @@ data class UserData(
     @SerialName("name")
     val name: String,
     @SerialName("email")
-    val email: String,
-    @SerialName("created_at")
-    val created_at: String,
-    @SerialName("updated_at")
-    val updated_at: String,
+    val email: String
 )

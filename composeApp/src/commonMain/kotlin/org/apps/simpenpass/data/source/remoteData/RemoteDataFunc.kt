@@ -9,5 +9,5 @@ import org.apps.simpenpass.models.response.UserResponseData
 interface RemoteDataFunc {
     suspend fun login(data: LoginRequest): BaseResponse<UserResponseData>
     suspend fun register(data: RegisterRequest) : BaseResponse<UserResponseData>
-    suspend fun logout(token: String) : BaseResponse<UserResponseData>
+    suspend fun logout(token: String?) : BaseResponse<UserResponseData>
 }

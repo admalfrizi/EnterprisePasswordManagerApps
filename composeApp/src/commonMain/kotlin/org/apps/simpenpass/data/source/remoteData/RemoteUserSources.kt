@@ -11,7 +11,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.headers
 import io.ktor.util.network.UnresolvedAddressException
-import org.apps.simpenpass.models.UserData
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.response.BaseResponse
@@ -45,14 +44,16 @@ class RemoteUserSources(private val httpClient: HttpClient) : RemoteDataFunc {
         }
     }
 
-    override suspend fun logout(token: String): BaseResponse<UserResponseData> {
+    override suspend fun logout(token: String?): BaseResponse<UserResponseData> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "logout"){
+                contentType(ContentType.Application.Json)
                 headers {
                     append(HttpHeaders.Accept, "application/json")
                     append(HttpHeaders.Authorization, "Bearer $token")
                 }
             }
+            Napier.v("Response Data: ${response.body<BaseResponse<UserResponseData>>()}")
             return response.body<BaseResponse<UserResponseData>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
