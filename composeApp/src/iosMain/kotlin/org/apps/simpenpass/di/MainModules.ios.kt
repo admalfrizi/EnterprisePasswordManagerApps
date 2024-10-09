@@ -9,14 +9,14 @@ actual fun platformModule() = module {
     single<HttpClientEngine> { Darwin.create() }
 }
 
-actual fun valuePathData(): String {
-    val documentDirectory = NSFileManager.defaultManager.URLForDirectory(
-        directory = NSDocumentDirectory,
-        inDomain = NSUserDomainMask,
-        appropriateForURL = null,
-        create = false,
-        error = null
-    )
-
-    return requireNotNull(documentDirectory).path + "/$dataStoreFileName"
-}
+//actual fun valuePathData(): String {
+//    val documentDirectory = NSFileManager.defaultManager.URLForDirectory(
+//        directory = NSDocumentDirectory,
+//        inDomain = NSUserDomainMask,
+//        appropriateForURL = null,
+//        create = false,
+//        error = null
+//    )
+//
+//    return requireNotNull(documentDirectory).path + "/$dataStoreFileName"
+//}

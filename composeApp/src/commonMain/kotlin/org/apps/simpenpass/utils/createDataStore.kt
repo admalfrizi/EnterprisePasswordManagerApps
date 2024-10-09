@@ -11,13 +11,27 @@ import okio.Path.Companion.toPath
 private lateinit var dataStore: DataStore<Preferences>
 private val lock = SynchronizedObject()
 
-fun createDataStore(producePath: () -> String): DataStore<Preferences> = synchronized(lock) {
-    if(::dataStore.isInitialized) {
-        dataStore
-    } else {
-        PreferenceDataStoreFactory.createWithPath(
-            produceFile = { producePath().toPath() }
-        )
+//fun createDataStore(producePath: () -> String): DataStore<Preferences> = synchronized(lock) {
+//    if(::dataStore.isInitialized) {
+//        dataStore
+//    } else {
+//        PreferenceDataStoreFactory.createWithPath(
+//            produceFile = { producePath().toPath() }
+//        )
+//    }
+//}
+
+expect fun createDataStore(context : Any? = null): DataStore<Preferences>
+
+fun getDataStore(producePath: () -> String): DataStore<Preferences> {
+    return synchronized(lock) {
+        if (::dataStore.isInitialized) {
+            dataStore
+        } else {
+            PreferenceDataStoreFactory.createWithPath(
+                produceFile = { producePath().toPath() }
+            ).also { dataStore = it }
+        }
     }
 }
 

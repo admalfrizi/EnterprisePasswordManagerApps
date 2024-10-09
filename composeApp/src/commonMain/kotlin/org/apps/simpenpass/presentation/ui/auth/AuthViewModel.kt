@@ -84,6 +84,16 @@ class AuthViewModel(
             }
         }
     }
+
+    fun getToken(){
+        viewModelScope.launch {
+            _authState.update {
+                it.copy(
+                    token = repo.getToken()
+                )
+            }
+        }
+    }
 }
 
 data class AuthState (
@@ -91,5 +101,6 @@ data class AuthState (
     val isRegistered: Boolean = false,
     val isLoggedIn: Boolean = false,
     val userData: UserData? = null,
+    val token: String? = null,
     val error: String? = null
 )

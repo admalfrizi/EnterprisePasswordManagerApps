@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -27,9 +30,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
+import org.apps.simpenpass.data.repository.AuthRepository
+import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
+import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
 import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
@@ -41,19 +48,31 @@ import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
+import org.apps.simpenpass.utils.createDataStore
 import org.apps.simpenpass.utils.detectRoute
+import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ContentNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
+    authViewModel: AuthViewModel = koinViewModel()
 ){
-    val isLogged = false
+    var isLogged = false
     val density = LocalDensity.current
+    val stateAuth by authViewModel.authState.collectAsState()
 
-    val parentRoute = navController.currentDestination?.parent?.route
+
+    LaunchedEffect(Unit){
+        authViewModel.getToken()
+        Napier.d("Response Token: ${stateAuth.token}")
+        if(stateAuth.token != null){
+            isLogged = true
+        }
+    }
+
+
 
     PlatformColors(Color(0xFF052E58))
 

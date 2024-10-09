@@ -43,7 +43,7 @@ class AuthRepository(private val remoteUserSources: RemoteUserSources,private va
             } else {
                 emit(NetworkResult.Error(userData.message))
             }
-            Napier.d("Response: $userData")
+            Napier.d("Response Data: $userData")
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
@@ -78,5 +78,9 @@ class AuthRepository(private val remoteUserSources: RemoteUserSources,private va
 
     suspend fun getUserData(): Flow<LocalUserStore> {
         return localData.getUserData()
+    }
+
+    suspend fun getToken(): String? {
+        return localData.getToken()
     }
 }

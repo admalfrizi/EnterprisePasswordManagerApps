@@ -42,9 +42,8 @@ class LocalStoreData(
 
     override suspend fun getUserData(): Flow<LocalUserStore> {
         val userData = dataStore.data.map { prefs ->
-            LocalUserStore(name = prefs[NAME_USER] ?: "", email = prefs[EMAIL_USER] ?: "")
+            LocalUserStore(name = prefs[NAME_USER], email = prefs[EMAIL_USER])
         }
-//        val userData = LocalUserStore(name = prefs[NAME_USER] ?: "", email = prefs[EMAIL_USER] ?: "")
 
         return userData
     }

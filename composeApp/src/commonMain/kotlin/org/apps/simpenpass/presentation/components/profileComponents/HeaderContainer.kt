@@ -52,7 +52,7 @@ fun HeaderContainer(nameUser: String?,email: String?) {
                     modifier = Modifier.size(76.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
                 ){
                     Text(
-                        text = profileNameInitials(nameUser ?: ""),
+                        text = profileNameInitials(nameUser),
                         style = MaterialTheme.typography.h5,
                         modifier = Modifier.align(Alignment.Center)
                     )

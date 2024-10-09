@@ -23,9 +23,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration? = null) = startKoin {
 
 val dataStoreModule = module {
     single {
-        createDataStore {
-            valuePathData()
-        }
+        createDataStore()
     }
 
     single {
@@ -36,4 +34,4 @@ val dataStoreModule = module {
 }
 
 
-expect fun valuePathData() : String
+//expect fun valuePathData() : String
