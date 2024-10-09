@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.apps.simpenpass.models.LocalUserStore
@@ -15,7 +16,7 @@ class LocalStoreData(
     companion object {
         private val TOKEN_USER = stringPreferencesKey("token_user")
         private val NAME_USER = stringPreferencesKey("name_user")
-        private val EMAIL_USER = stringPreferencesKey("name_user")
+        private val EMAIL_USER = stringPreferencesKey("email_user")
     }
 
     override suspend fun saveUserData(user: UserData) {
@@ -27,7 +28,7 @@ class LocalStoreData(
 
     override suspend fun saveUserToken(token: String) {
         dataStore.edit { pref ->
-            pref[NAME_USER] = token
+            pref[TOKEN_USER] = token
         }
     }
 
@@ -39,9 +40,11 @@ class LocalStoreData(
         return tokenData
     }
 
-    override suspend fun getUserData(): LocalUserStore? {
-        val prefs = dataStore.data.first()
-        val userData = LocalUserStore(name = prefs[NAME_USER] ?: "", email = prefs[EMAIL_USER] ?: "")
+    override suspend fun getUserData(): Flow<LocalUserStore> {
+        val userData = dataStore.data.map { prefs ->
+            LocalUserStore(name = prefs[NAME_USER] ?: "", email = prefs[EMAIL_USER] ?: "")
+        }
+//        val userData = LocalUserStore(name = prefs[NAME_USER] ?: "", email = prefs[EMAIL_USER] ?: "")
 
         return userData
     }

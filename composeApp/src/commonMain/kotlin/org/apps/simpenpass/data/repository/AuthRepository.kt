@@ -2,6 +2,7 @@ package org.apps.simpenpass.data.repository
 
 import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
@@ -17,11 +18,13 @@ class AuthRepository(private val remoteUserSources: RemoteUserSources,private va
         try {
             val userData = remoteUserSources.login(data)
             if(userData.success){
-                userData.data?.user?.let { localData.saveUserData(it) }
-                emit(NetworkResult.Success(userData.data?.user))
+                localData.saveUserData(userData.data?.user!!)
+                localData.saveUserToken(userData.data.accessToken)
+                emit(NetworkResult.Success(userData.data.user))
             } else {
                 emit(NetworkResult.Error(userData.message))
             }
+            Napier.v("Response: ${localData.getUserData()}")
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
@@ -73,9 +76,7 @@ class AuthRepository(private val remoteUserSources: RemoteUserSources,private va
         Napier.v("Response Message: ${error.message}")
     }
 
-    suspend fun getUserData(): LocalUserStore? {
+    suspend fun getUserData(): Flow<LocalUserStore> {
         return localData.getUserData()
     }
-
-
 }

@@ -1,17 +1,14 @@
 package org.apps.simpenpass.presentation.ui.main.profile
 
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.AuthRepository
 import org.apps.simpenpass.models.LocalUserStore
-import org.apps.simpenpass.models.UserData
-import org.apps.simpenpass.models.request.LoginRequest
-import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class ProfileViewModel(
@@ -64,9 +61,9 @@ class ProfileViewModel(
     }
 }
 
-data class ProfileState (
+data class ProfileState(
     val isLogout: Boolean = false,
     val isLoading: Boolean = false,
-    val userData: LocalUserStore? = null,
+    val userData: Flow<LocalUserStore?>? = null,
     val error: String? = null
 )
