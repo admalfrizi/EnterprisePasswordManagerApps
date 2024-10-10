@@ -19,5 +19,4 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
     override suspend fun logout(token: String?): BaseResponse<UserResponseData> {
         TODO("Not yet implemented")
     }
-
 }
