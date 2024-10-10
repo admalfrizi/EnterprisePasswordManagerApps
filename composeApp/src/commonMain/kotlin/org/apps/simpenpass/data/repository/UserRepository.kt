@@ -2,6 +2,7 @@ package org.apps.simpenpass.data.repository
 
 import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
@@ -72,7 +73,7 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
         return localData.getUserData()
     }
 
-    suspend fun getToken(): String? {
-        return localData.getToken()
+    fun getToken(): Flow<String> {
+        return localData.getToken
     }
 }

@@ -2,6 +2,7 @@ package org.apps.simpenpass.presentation.ui.main.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -27,17 +28,21 @@ class ProfileViewModel(
         }
 
         viewModelScope.launch {
-            _profileState.update {
-                it.copy(
-                    token = repo.getToken()
-                )
+            repo.getToken().collect { token ->
+                _profileState.update {
+                    it.copy(
+                        token = token
+                    )
+                }
             }
+
         }
     }
 
     fun logout(token: String){
         viewModelScope.launch {
             repo.logout(token).collect { result ->
+                Napier.v("Response Token: $token")
                 when(result) {
                     is NetworkResult.Error -> {
                         _profileState.update {

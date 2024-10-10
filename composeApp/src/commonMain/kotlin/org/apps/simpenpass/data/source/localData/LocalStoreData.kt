@@ -1,9 +1,13 @@
 package org.apps.simpenpass.data.source.localData
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.apps.simpenpass.models.LocalUserStore
@@ -31,13 +35,19 @@ class LocalStoreData(
         }
     }
 
-    override suspend fun getToken(): String? {
-        val tokenData = dataStore.data.map { prefs ->
-            prefs[TOKEN_USER]
-        }.first()
+    val getToken : Flow<String> = dataStore.data
+        .catch { e ->
+            if(e is IOException){
+                emit(emptyPreferences())
+            } else {
+                throw e
+            }
+        }.map { prefs ->
+            val tokenData = prefs[TOKEN_USER] ?: ""
+            tokenData
+        }
 
-        return tokenData
-    }
+
 
     override suspend fun getUserData(): LocalUserStore {
         val userData = dataStore.data.first()

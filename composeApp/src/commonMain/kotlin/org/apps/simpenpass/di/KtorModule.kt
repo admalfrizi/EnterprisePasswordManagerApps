@@ -3,22 +3,16 @@ package org.apps.simpenpass.di
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.koin.dsl.module
 
 
 @OptIn(ExperimentalSerializationApi::class)
 val ktorModules = module {
     single {
-        val localUserStore = LocalStoreData(dataStore = get())
-
         HttpClient(engine = get()) {
             install(ContentNegotiation) {
                 json(
@@ -30,16 +24,28 @@ val ktorModules = module {
                     }
                 )
             }
-            install(Auth){
-                bearer {
-                    loadTokens {
-                        BearerTokens(
-                            accessToken = localUserStore.getToken() ?: "",
-                            refreshToken = "" // No need for refreshToken
-                        )
-                    }
-                }
-            }
+//            install(Auth){
+//                bearer {
+//                    loadTokens {
+//                        BearerTokens(
+//                            accessToken = tokenData(tokenData = get()) ?: "",
+//                            refreshToken = "" // No need for refreshToken
+//                        )
+//                    }
+//                }
+//            }
         }.also { Napier.base(DebugAntilog()) }
     }
 }
+
+//suspend fun tokenData(tokenData: LocalStoreData): String? {
+//    val cachedToken = MutableStateFlow<String?>("")
+//
+//    tokenData.getToken.collect {
+//        cachedToken.value = it
+//    }
+//
+//    val token = cachedToken.value
+//
+//    return token
+//}

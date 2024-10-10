@@ -63,7 +63,7 @@ fun ContentNavGraph(
 
     PlatformColors(Color(0xFF052E58))
 
-    if(stateAuth.token != null){
+    if(stateAuth.token != null && stateAuth.token != ""){
         isLoggedIn = true
     }
 

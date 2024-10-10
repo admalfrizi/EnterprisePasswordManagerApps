@@ -21,11 +21,14 @@ class AuthViewModel(
 
     init {
         viewModelScope.launch {
-            _authState.update {
-                it.copy(
-                    token = repo.getToken()
-                )
+            repo.getToken().collect { token ->
+                _authState.update {
+                    it.copy(
+                        token = token
+                    )
+                }
             }
+
         }
     }
 
