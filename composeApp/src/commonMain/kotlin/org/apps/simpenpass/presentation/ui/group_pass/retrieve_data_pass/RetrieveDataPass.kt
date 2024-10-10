@@ -4,7 +4,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,28 +35,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import org.apps.simpenpass.models.DataPass
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.import_data_pass
-import resources.menu_ic
 
 
 @Composable
 fun RetrieveDataPass(navController: NavController) {
 
-    val dataList = listOf(
-        DataPass(1,"Nama Ini", "adam@gmail.com"),
-        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-        DataPass(3, "In4t4t4i Juga", "whdkw@gmail.554tcom"),
-        DataPass(4,"Ihthtrhni Juga", "whdkgrgw@gmail.com"),
-        DataPass(5,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-    )
+//    val dataList = listOf(
+//        DataPass(1,"Nama Ini", "adam@gmail.com"),
+//        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
+//        DataPass(3, "In4t4t4i Juga", "whdkw@gmail.554tcom"),
+//        DataPass(4,"Ihthtrhni Juga", "whdkgrgw@gmail.com"),
+//        DataPass(5,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
+//    )
 
     val selectedItems = remember {
         mutableStateListOf<DataPass>()
@@ -164,36 +161,36 @@ fun RetrieveDataPass(navController: NavController) {
             )
         }
     ){
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ){
-            items(dataList){ item ->
-                DataPassCheckHolder(
-                    dataPass = item,
-                    onLongSelect = {
-
-                    },
-                    isSelected = selectedItems.contains(item),
-                    onSelect = {
-                        if(!isSelectionMode){
-                            isSelectionMode = true
-                        }
-
-                        if (selectedItems.contains(item)) {
-                            selectedItems.remove(item)
-                        } else {
-                            selectedItems.add(item)
-                        }
-                    },
-                    isSelectionMode = isSelectionMode
-                )
-            }
-        }
+//        LazyColumn(
+//            modifier = Modifier.fillMaxSize()
+//        ){
+//            items(dataList){ item ->
+//                DataPassCheckHolder(
+//                    dataPass = item,
+//                    onLongSelect = {
+//
+//                    },
+//                    isSelected = selectedItems.contains(item),
+//                    onSelect = {
+//                        if(!isSelectionMode){
+//                            isSelectionMode = true
+//                        }
+//
+//                        if (selectedItems.contains(item)) {
+//                            selectedItems.remove(item)
+//                        } else {
+//                            selectedItems.add(item)
+//                        }
+//                    },
+//                    isSelectionMode = isSelectionMode
+//                )
+//            }
+//        }
     }
 }
 
 @Composable
-fun DataPassCheckHolder(dataPass: DataPass,onLongSelect: () -> Unit, isSelected: Boolean, onSelect: () -> Unit,isSelectionMode: Boolean) {
+fun DataPassCheckHolder(dataPass: DataPass, onLongSelect: () -> Unit, isSelected: Boolean, onSelect: () -> Unit, isSelectionMode: Boolean) {
     Box(
         modifier = Modifier.fillMaxWidth()
             .background(

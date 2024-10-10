@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import org.apps.simpenpass.models.LocalUserStore
-import org.apps.simpenpass.models.UserData
+import org.apps.simpenpass.models.user_data.LocalUserStore
+import org.apps.simpenpass.models.user_data.UserData
 
 class LocalStoreData(
     private val dataStore: DataStore<Preferences>

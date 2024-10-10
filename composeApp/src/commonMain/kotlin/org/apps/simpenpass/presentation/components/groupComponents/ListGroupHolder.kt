@@ -1,6 +1,5 @@
 package org.apps.simpenpass.presentation.components.groupComponents
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -24,15 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import org.apps.simpenpass.models.GrupPassData
+import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
-import org.jetbrains.compose.resources.painterResource
-import resources.Res
-import resources.add_ic
-import resources.group_add_ic
 
 @Composable
 fun ListGroupHolder(navController: NavController, item: GrupPassData) {

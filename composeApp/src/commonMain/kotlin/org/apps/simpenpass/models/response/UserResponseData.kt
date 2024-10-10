@@ -2,7 +2,7 @@ package org.apps.simpenpass.models.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.apps.simpenpass.models.UserData
+import org.apps.simpenpass.models.user_data.UserData
 
 @Serializable
 data class UserResponseData(

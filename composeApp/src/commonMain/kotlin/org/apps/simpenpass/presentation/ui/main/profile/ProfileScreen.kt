@@ -42,7 +42,6 @@ fun ProfileScreen(
 
 
     Napier.d("Token: ${profileState.token}")
-//    Napier.d("User: name:${profileState.userData?.name}, email:${profileState.userData?.email}")
 
     Scaffold(
         backgroundColor = Color(0xFFF1F1F1),
@@ -104,6 +103,7 @@ fun SettingListView(navController: NavController, profileState: ProfileState, pr
     }
 
     if(profileState.isLoading){
+        isLogoutWarningShow = false
         DialogLoading {}
     }
 

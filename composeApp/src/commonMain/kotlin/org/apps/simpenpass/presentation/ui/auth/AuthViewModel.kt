@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.UserRepository
-import org.apps.simpenpass.models.UserData
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.utils.NetworkResult

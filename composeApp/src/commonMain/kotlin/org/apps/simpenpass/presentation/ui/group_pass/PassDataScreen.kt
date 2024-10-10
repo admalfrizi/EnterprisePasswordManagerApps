@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.DataPass
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -53,13 +53,13 @@ import resources.pass_data_ic
 fun PassDataScreen(navController: NavController,isShowBottomSheet: ModalBottomSheetState,scope: CoroutineScope) {
 
     val filterList = listOf("Semua","Developer","Dosen")
-    val dataList = listOf(
-        DataPass(1,"Nama Ini", "adam@gmail.com"),
-        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-        DataPass(3, "In4t4t4i Juga", "whdkw@gmail.554tcom"),
-        DataPass(4,"Ihthtrhni Juga", "whdkgrgw@gmail.com"),
-        DataPass(5,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-    )
+//    val dataList = listOf(
+//        DataPass(1,"Nama Ini", "adam@gmail.com"),
+//        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
+//        DataPass(3, "In4t4t4i Juga", "whdkw@gmail.554tcom"),
+//        DataPass(4,"Ihthtrhni Juga", "whdkgrgw@gmail.com"),
+//        DataPass(5,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
+//    )
 
 //    val dataList by remember { mutableStateOf(emptyList<DataPass>()) }
 
@@ -68,48 +68,48 @@ fun PassDataScreen(navController: NavController,isShowBottomSheet: ModalBottomSh
     ) {
         AddPassDataBtnHolder(isShowBottomSheet,scope)
         FilterRow(filterList)
-        if(dataList.isEmpty()){
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                EmptyDataPassWarning(
-                    modifier = Modifier.fillMaxWidth(),)
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(dataList){ data ->
-                    Box(
-                        modifier = Modifier.fillMaxWidth().background(Color.White)
-                    ) {
-                        Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Column {
-                                Text(
-                                    data.accountName,
-                                    style = MaterialTheme.typography.body1,
-                                    color = secondaryColor
-                                )
-                                Spacer(modifier = Modifier.height(7.dp))
-                                Text(
-                                    data.email,
-                                    style = MaterialTheme.typography.subtitle1,
-                                    color = secondaryColor
-                                )
-                            }
-                            IconButton(
-                                onClick = {}
-                            ){
-                                Image(
-                                    painterResource(Res.drawable.menu_ic),""
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//        if(dataList.isEmpty()){
+//            Box(
+//                modifier = Modifier.fillMaxSize(),
+//                contentAlignment = Alignment.Center,
+//            ) {
+//                EmptyDataPassWarning(
+//                    modifier = Modifier.fillMaxWidth(),)
+//            }
+//        } else {
+//            LazyColumn(
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                items(dataList){ data ->
+//                    Box(
+//                        modifier = Modifier.fillMaxWidth().background(Color.White)
+//                    ) {
+//                        Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+//                            Column {
+//                                Text(
+//                                    data.accountName,
+//                                    style = MaterialTheme.typography.body1,
+//                                    color = secondaryColor
+//                                )
+//                                Spacer(modifier = Modifier.height(7.dp))
+//                                Text(
+//                                    data.email,
+//                                    style = MaterialTheme.typography.subtitle1,
+//                                    color = secondaryColor
+//                                )
+//                            }
+//                            IconButton(
+//                                onClick = {}
+//                            ){
+//                                Image(
+//                                    painterResource(Res.drawable.menu_ic),""
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
 
     }

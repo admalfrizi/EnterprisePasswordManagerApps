@@ -1,4 +1,4 @@
-package org.apps.simpenpass.models
+package org.apps.simpenpass.models.user_data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

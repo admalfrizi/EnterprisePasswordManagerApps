@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteUserSources
-import org.apps.simpenpass.models.LocalUserStore
+import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.utils.NetworkResult

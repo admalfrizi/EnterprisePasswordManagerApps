@@ -8,23 +8,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -35,10 +27,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,20 +39,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.MemberGroupData
-import org.apps.simpenpass.presentation.ui.create_role_screen.BottomSheetContent
+import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.add_member_ic
-import resources.copy_paste
 import resources.delete_ic
-import resources.edit_ic
 import resources.menu_ic
 import resources.role_change
-import resources.user_ic
-import resources.your_data_ic
 
 @Composable
 fun EditAnggotaGroup(navController: NavController) {
@@ -155,7 +138,7 @@ fun OptionMenu(sheetState: ModalBottomSheetState, scope: CoroutineScope) {
 }
 
 @Composable
-fun ScaffoldContent(navController: NavController,itemsData: List<MemberGroupData>,scope: CoroutineScope,sheetState: ModalBottomSheetState) {
+fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupData>, scope: CoroutineScope, sheetState: ModalBottomSheetState) {
     Scaffold(
         topBar = {
             TopAppBar(

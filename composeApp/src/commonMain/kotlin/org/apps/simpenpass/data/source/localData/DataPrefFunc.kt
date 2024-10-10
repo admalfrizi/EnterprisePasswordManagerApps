@@ -1,7 +1,7 @@
 package org.apps.simpenpass.data.source.localData
 
-import org.apps.simpenpass.models.LocalUserStore
-import org.apps.simpenpass.models.UserData
+import org.apps.simpenpass.models.user_data.LocalUserStore
+import org.apps.simpenpass.models.user_data.UserData
 
 interface DataPrefFunc {
     suspend fun saveUserData(user: UserData)

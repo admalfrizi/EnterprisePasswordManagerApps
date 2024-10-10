@@ -1,14 +1,7 @@
 package org.apps.simpenpass
 
 import android.content.Context
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import org.apps.simpenpass.data.source.localData.DataPrefFunc
-import org.apps.simpenpass.models.LocalUserStore
-import org.apps.simpenpass.models.UserData
 
 private val Context.dataStore by preferencesDataStore(name = "user_data")
 

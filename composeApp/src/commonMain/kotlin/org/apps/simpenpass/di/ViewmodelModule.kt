@@ -11,7 +11,6 @@ val viewModelModule = module {
         AuthViewModel(
             repo = get()
         )
-
     }
 
     viewModel {
