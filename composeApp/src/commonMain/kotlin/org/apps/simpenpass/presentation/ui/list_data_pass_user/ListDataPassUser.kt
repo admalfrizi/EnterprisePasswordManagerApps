@@ -39,13 +39,6 @@ fun ListDataPassUser(
     navController: NavController,
     listDataViewModel: ListDataViewModel = koinViewModel()
 ) {
-//    val dataList = listOf(
-//        DataPass(1,"Nama Ini", "adam@gmail.com"),
-//        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-//        DataPass(3, "In4t4t4i Juga", "whdkw@gmail.554tcom"),
-//        DataPass(4,"Ihthtrhni Juga", "whdkgrgw@gmail.com"),
-//        DataPass(5,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-//    )
     val state by listDataViewModel.listDataState.collectAsState()
 
     var isDropdownShow by remember { mutableStateOf(false) }
