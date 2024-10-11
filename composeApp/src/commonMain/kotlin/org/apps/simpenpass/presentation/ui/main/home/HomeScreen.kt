@@ -1,5 +1,6 @@
 package org.apps.simpenpass.presentation.ui.main.home
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,8 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import org.apps.simpenpass.presentation.components.EmptyWarning
+import org.apps.simpenpass.presentation.components.homeComponents.GroupDataSection
 import org.apps.simpenpass.presentation.components.homeComponents.HeaderContainer
+import org.apps.simpenpass.presentation.components.homeComponents.MostUsedSection
+import org.apps.simpenpass.presentation.components.homeComponents.UserPassDataSection
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
@@ -86,7 +92,7 @@ fun HomeScreen(
                 HeaderContainer(homeState.name,navController)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                HomeContentView(navController,sheetState)
+                HomeContentView(navController,sheetState,homeViewModel)
                 Spacer(
                     modifier = Modifier.height(11.dp)
                 )
@@ -95,3 +101,44 @@ fun HomeScreen(
     )
 }
 
+@Composable
+fun HomeContentView(
+    navController: NavController,
+    sheetState: ModalBottomSheetState,
+    homeViewModel: HomeViewModel
+) {
+    val homeState by homeViewModel.homeState.collectAsState()
+
+    Box(modifier = Modifier.fillMaxWidth()){
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if(homeState.passDataList?.isNotEmpty() == true){
+                MostUsedSection(homeState.passDataList!!,sheetState)
+            }
+
+            if(homeState.passDataList?.isNotEmpty() == true){
+                GroupDataSection(homeState.passDataList!!)
+            }
+            Spacer(
+                modifier = Modifier.height(15.dp)
+            )
+            if (homeState.passDataList?.isNotEmpty() == true){
+                UserPassDataSection(homeState.passDataList!!,sheetState,navController)
+            }
+
+            if(homeState.passDataList?.isEmpty() == true){
+                EmptyWarning(
+                    modifier = Modifier.fillMaxWidth(),
+                    warnTitle = "Anda Belum Memiliki Data Password",
+                    warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
+                    btnTxt = "Tambahkan Password",
+                    isEnableBtn = true,
+                    onSelect = {
+                        navController.navigate(Screen.PassData.route)
+                    }
+                )
+            }
+        }
+    }
+}

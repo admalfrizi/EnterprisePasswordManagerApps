@@ -17,13 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.empty_ic
-import resources.pass_ic
 
 @Composable
 fun EmptyWarning(
@@ -55,7 +53,7 @@ fun EmptyWarning(
         )
         Text(
             warnText,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             style = MaterialTheme.typography.subtitle1,
             color = secondaryColor,
             textAlign = TextAlign.Center

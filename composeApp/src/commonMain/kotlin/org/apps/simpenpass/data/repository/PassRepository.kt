@@ -1,10 +1,49 @@
 package org.apps.simpenpass.data.repository
 
+import io.github.aakira.napier.Napier
+import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
+import org.apps.simpenpass.models.request.InsertDataRequest
+import org.apps.simpenpass.utils.NetworkResult
 
 class PassRepository(
     private val remotePassSources: RemotePassDataSources,
     private val localData : LocalStoreData
 ) {
+     fun createUserPassData(formData: InsertDataRequest) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.createUserPass(token,formData)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }
+
+    fun listUserPassData() = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.listUserPassData(token)
+                if(result.success){
+                    emit(NetworkResult.Success(result.data))
+                }
+                Napier.d("List Data ${result.data.toString()}")
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+        Napier.d("Error Data ${error.message}")
+    }
 }

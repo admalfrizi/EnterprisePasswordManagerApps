@@ -37,15 +37,3 @@ val ktorModules = module {
         }.also { Napier.base(DebugAntilog()) }
     }
 }
-
-//suspend fun tokenData(tokenData: LocalStoreData): String? {
-//    val cachedToken = MutableStateFlow<String?>("")
-//
-//    tokenData.getToken.collect {
-//        cachedToken.value = it
-//    }
-//
-//    val token = cachedToken.value
-//
-//    return token
-//}

@@ -1,6 +1,7 @@
 package org.apps.simpenpass.di
 
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
+import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormViewModel
 import org.apps.simpenpass.presentation.ui.main.home.HomeViewModel
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileViewModel
 import org.koin.core.module.dsl.viewModel
@@ -21,6 +22,13 @@ val viewModelModule = module {
 
     viewModel {
         HomeViewModel(
+            userRepo = get(),
+            passRepo = get()
+        )
+    }
+
+    viewModel {
+        FormViewModel(
             repo = get()
         )
     }
