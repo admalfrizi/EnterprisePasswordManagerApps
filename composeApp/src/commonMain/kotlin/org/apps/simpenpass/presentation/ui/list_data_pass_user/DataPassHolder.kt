@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.apps.simpenpass.models.pass_data.DataPass
+import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -22,7 +23,7 @@ import resources.copy_paste
 import resources.edit_pass_ic
 
 @Composable
-fun DataPassHolder(item : DataPass) {
+fun DataPassHolder(item : PassResponseData) {
     Box(modifier = Modifier.fillMaxWidth()){
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp),
@@ -35,7 +36,7 @@ fun DataPassHolder(item : DataPass) {
                     color = secondaryColor
                 )
                 Text(
-                    item.email,
+                    item.email ?: "",
                     style = MaterialTheme.typography.subtitle1,
                     color = secondaryColor
                 )

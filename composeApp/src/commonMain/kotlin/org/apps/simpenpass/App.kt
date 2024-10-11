@@ -14,7 +14,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     val navController = rememberNavController()
-
     Napier.base(DebugAntilog())
 
     AppTheme(

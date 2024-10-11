@@ -5,6 +5,7 @@ import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -18,12 +19,14 @@ class LocalStoreData(
 ) : DataPrefFunc {
     companion object {
         private val TOKEN_USER = stringPreferencesKey("token_user")
+        private val ID_USER = intPreferencesKey("id_user")
         private val NAME_USER = stringPreferencesKey("name_user")
         private val EMAIL_USER = stringPreferencesKey("email_user")
     }
 
     override suspend fun saveUserData(user: UserData) {
         dataStore.edit { pref ->
+            pref[ID_USER] = user.id
             pref[NAME_USER] = user.name
             pref[EMAIL_USER] = user.email
         }
@@ -51,7 +54,8 @@ class LocalStoreData(
 
     override suspend fun getUserData(): LocalUserStore {
         val userData = dataStore.data.first()
-        val result = LocalUserStore(name = userData[NAME_USER] ?: "", email = userData[EMAIL_USER] ?: "")
+        val result = LocalUserStore(
+            id = userData[ID_USER], name = userData[NAME_USER] ?: "", email = userData[EMAIL_USER] ?: "")
 
         return result
     }

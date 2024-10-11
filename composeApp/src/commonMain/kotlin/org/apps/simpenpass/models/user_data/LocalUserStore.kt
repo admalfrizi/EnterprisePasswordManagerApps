@@ -1,6 +1,7 @@
 package org.apps.simpenpass.models.user_data
 
 data class LocalUserStore(
+    val id: Int? = null,
     val name: String? = "",
     val email: String? = ""
 )

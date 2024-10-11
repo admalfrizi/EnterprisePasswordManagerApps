@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,22 +20,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.presentation.ui.main.home.UserDataPassHolder
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 
 @Composable
 fun UserPassDataSection(
-    listData : List<PassResponseData>,
-    sheetState: ModalBottomSheetState,
+    listData : List<PassResponseData?>,
+    sheetState: ModalBottomSheetDataValue<PassResponseData>,
     navController: NavController
 ) {
+    val limitData = listData.take(3)
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             "Data Anda",
             style = MaterialTheme.typography.body2,
-            color = secondaryColor
+            color = secondaryColor,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
         )
         Spacer(
             modifier = Modifier.height(11.dp)
@@ -49,17 +53,17 @@ fun UserPassDataSection(
 //            modifier = Modifier.height(11.dp)
 //        )
 //        DataPassHolder("Nama Akun", "Email", sheetState)
-//        Spacer(
-//            modifier = Modifier.height(7.dp)
-//        )
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().heightIn(max = (limitData.size * 86).dp),
+            userScrollEnabled = false
         ) {
-            items(listData) { data ->
-                DataPassHolder(data.accountName!!, data.email!!, sheetState)
+            items(limitData) { data ->
+                UserDataPassHolder(data!!, sheetState)
             }
         }
-
+        Spacer(
+            modifier = Modifier.height(7.dp)
+        )
         if(listData.size > 3) {
             Button(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -77,6 +81,5 @@ fun UserPassDataSection(
                 }
             )
         }
-
     }
 }

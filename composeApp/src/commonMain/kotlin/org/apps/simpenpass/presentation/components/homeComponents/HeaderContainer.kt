@@ -15,14 +15,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import resources.Res
@@ -30,7 +27,11 @@ import resources.group_ic
 import resources.pass_data_ic
 
 @Composable
-fun HeaderContainer(nameUser: String?, navController: NavController) {
+fun HeaderContainer(
+    nameUser: String?,
+    totalUserDataPass: Int,
+    navController: NavController
+) {
 
     Box(
         modifier = Modifier
@@ -66,8 +67,8 @@ fun HeaderContainer(nameUser: String?, navController: NavController) {
                     modifier = Modifier.width(16.dp)
                 )
                 InfoContainer(
-                    titleInfo = "Jumlah Data Password",
-                    vlData = 20,
+                    titleInfo = "Jumlah Data Password Anda",
+                    vlData = totalUserDataPass,
                     bgColor = Color(0xFF1E559C),
                     iconInfo = Res.drawable.pass_data_ic
                 )

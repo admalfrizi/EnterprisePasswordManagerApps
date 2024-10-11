@@ -47,7 +47,8 @@ class HomeViewModel(
                     is NetworkResult.Success -> {
                         _homeState.update {
                             it.copy(
-                                passDataList = result.data
+                                passDataList = result.data!!,
+                                isLoading = false
                             )
                         }
                     }
@@ -61,7 +62,7 @@ class HomeViewModel(
 
 data class HomeState(
     val name: String? = null,
-    val passDataList : List<PassResponseData>? = emptyList(),
+    val passDataList : List<PassResponseData> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )

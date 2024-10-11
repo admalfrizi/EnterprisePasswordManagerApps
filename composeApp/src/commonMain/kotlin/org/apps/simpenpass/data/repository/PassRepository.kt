@@ -17,7 +17,8 @@ class PassRepository(
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
-                val result = remotePassSources.createUserPass(token,formData)
+                val userId = localData.getUserData().id
+                val result = remotePassSources.createUserPass(token,formData,userId!!)
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 }
@@ -27,13 +28,19 @@ class PassRepository(
         }
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+         Napier.d("Error Data ${error.message}")
     }
+
+//    fun editUserPassData() = flow {
+//
+//    }
 
     fun listUserPassData() = flow {
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
-                val result = remotePassSources.listUserPassData(token)
+                val userId = localData.getUserData().id
+                val result = remotePassSources.listUserPassData(token, userId!!)
                 if(result.success){
                     emit(NetworkResult.Success(result.data))
                 }
@@ -44,6 +51,5 @@ class PassRepository(
         }
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
-        Napier.d("Error Data ${error.message}")
     }
 }

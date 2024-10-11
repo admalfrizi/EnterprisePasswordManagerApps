@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.IconButton
@@ -15,6 +16,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,15 +27,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.menu_ic
 
 @Composable
-fun ListDataPassUser(navController: NavController) {
+fun ListDataPassUser(
+    navController: NavController,
+    listDataViewModel: ListDataViewModel = koinViewModel()
+) {
 //    val dataList = listOf(
 //        DataPass(1,"Nama Ini", "adam@gmail.com"),
 //        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
@@ -41,6 +46,7 @@ fun ListDataPassUser(navController: NavController) {
 //        DataPass(4,"Ihthtrhni Juga", "whdkgrgw@gmail.com"),
 //        DataPass(5,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
 //    )
+    val state by listDataViewModel.listDataState.collectAsState()
 
     var isDropdownShow by remember { mutableStateOf(false) }
 
@@ -104,29 +110,40 @@ fun ListDataPassUser(navController: NavController) {
             )
         },
         content = {
-//            if(dataList.isEmpty()){
-//                Box(
-//                    modifier = Modifier.fillMaxSize(),
-//                    contentAlignment = Alignment.Center,
-//                ) {
-//                    EmptyWarning(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        warnTitle = "Data Password anda Kosong",
-//                        warnText = "Silahkan membuat Data Password yang baru !",
-//                        isEnableBtn = true,
-//                        btnTxt = "Buat Data Password Baru",
-//                        onSelect = {
-//
-//                        }
-//                    )
-//                }
-//            } else {
-//                LazyColumn {
-//                    items(dataList){ item ->
-//                        DataPassHolder(item)
-//                    }
-//                }
-//            }
+            if(state.data.isEmpty() && !state.isLoading){
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    EmptyWarning(
+                        modifier = Modifier.fillMaxWidth(),
+                        warnTitle = "Data Password anda Kosong",
+                        warnText = "Silahkan membuat Data Password yang baru !",
+                        isEnableBtn = true,
+                        btnTxt = "Buat Data Password Baru",
+                        onSelect = {
+
+                        }
+                    )
+                }
+            }
+
+            if(state.data.isNotEmpty()){
+                LazyColumn {
+                    items(state.data){ item ->
+                        DataPassHolder(item)
+                    }
+                }
+            }
+
+            if(state.isLoading){
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     )
 }

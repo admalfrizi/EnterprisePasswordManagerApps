@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PassResponseData(
     @SerialName("account_name")
-    val accountName: String?,
+    val accountName: String,
     @SerialName("desc")
     val desc: String?,
     @SerialName("email")

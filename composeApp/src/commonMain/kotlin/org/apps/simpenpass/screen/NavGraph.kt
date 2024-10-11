@@ -15,7 +15,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import org.apps.simpenpass.PlatformColors
+import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
@@ -46,6 +47,7 @@ import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
+import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 import org.apps.simpenpass.utils.detectRoute
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -54,7 +56,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ContentNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
-    sheetState: ModalBottomSheetState,
+    sheetState: ModalBottomSheetDataValue<PassResponseData>,
+    snackbarHostState: SnackbarHostState,
     authViewModel : AuthViewModel = koinViewModel()
 ){
     var isLoggedIn by remember { mutableStateOf(false) }
@@ -144,7 +147,7 @@ fun ContentNavGraph(
                 tween(700)
             ) },
                 exitTransition = {slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, tween(700))}){
-                FormScreen(navController)
+                FormScreen(navController, snackBarHostState =  snackbarHostState)
             }
             composable(route = Screen.ListPassDataUser.route, enterTransition = {fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                     slideInVertically(animationSpec = tween(durationMillis = 300)) {

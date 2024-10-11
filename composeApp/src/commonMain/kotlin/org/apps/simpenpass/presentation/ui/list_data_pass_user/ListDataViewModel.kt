@@ -1,4 +1,4 @@
-package org.apps.simpenpass.presentation.ui.create_data_pass.users
+package org.apps.simpenpass.presentation.ui.list_data_pass_user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,54 +7,52 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassRepository
-import org.apps.simpenpass.models.request.InsertDataRequest
-import org.apps.simpenpass.presentation.ui.main.home.HomeState
+import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.NetworkResult
 
-class FormViewModel(
+class ListDataViewModel(
     private val repo: PassRepository
-) : ViewModel(){
+) : ViewModel() {
 
-    private val _formState = MutableStateFlow(FormState())
-    val formState = _formState.asStateFlow()
+    private val _listDataState = MutableStateFlow(ListDataState())
+    val listDataState = _listDataState.asStateFlow()
 
-    fun createUserPassData(formData: InsertDataRequest){
+    init {
         viewModelScope.launch {
-            repo.createUserPassData(formData).collect { result ->
+            repo.listUserPassData().collect { result ->
                 when(result) {
                     is NetworkResult.Error -> {
-                        _formState.update {
+                        _listDataState.update {
                             it.copy(
-                                error = result.error
+                                error = result.error,
                             )
                         }
                     }
                     is NetworkResult.Loading -> {
-                        _formState.update {
+                        _listDataState.update {
                             it.copy(
-                                isLoading = true,
-                                isSuccess = false,
+                                isLoading = true
                             )
                         }
                     }
                     is NetworkResult.Success -> {
-                        _formState.update {
+                        _listDataState.update {
                             it.copy(
-                                isLoading = false,
-                                isSuccess = true,
-                                msg = result.data.message
+                                data = result.data!!,
+                                isLoading = false
                             )
                         }
                     }
                 }
+
             }
         }
     }
+
 }
 
-data class FormState(
+data class ListDataState(
     val isLoading : Boolean = false,
-    val isSuccess: Boolean = false,
-    val error : String? = null,
-    val msg : String? = null
+    val data : List<PassResponseData> = emptyList(),
+    val error : String? = null
 )

@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
@@ -28,7 +27,6 @@ import resources.arrow_right_ic
 
 @Composable
 fun GroupDataSection(
-    listData : List<PassResponseData>
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()

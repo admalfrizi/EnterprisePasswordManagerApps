@@ -20,14 +20,12 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
 
 class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
-    override suspend fun createUserPass(token: String, formData: InsertDataRequest): BaseResponse<PassResponseData> {
+    override suspend fun createUserPass(token: String, formData: InsertDataRequest,id: Int): BaseResponse<PassResponseData> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "userPass"){
                 contentType(ContentType.Application.Json)
                 setBody(formData)
-                url {
-                    parameters.append("id", formData.userId.toString())
-                }
+                parameter("userId", id)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
             return response.body<BaseResponse<PassResponseData>>()
@@ -42,14 +40,15 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         TODO("Not yet implemented")
     }
 
-    override suspend fun listUserPassData(token: String): BaseResponse<List<PassResponseData>> {
+    override suspend fun listUserPassData(token: String, id: Int): BaseResponse<List<PassResponseData>> {
         try {
-            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "userPass"){
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "userDataPass"){
                 contentType(ContentType.Application.Json)
-                parameter("userId", 1)
+                parameter("userId", id)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
-            Napier.d("Response Code ${response.call.request.url}")
+            Napier.d("Response URL ${response.call.request.url}")
+            Napier.d("Response Code ${response.status.value}")
             return response.body<BaseResponse<List<PassResponseData>>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)

@@ -1,7 +1,6 @@
 package org.apps.simpenpass.presentation.components.formComponents
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.IconButton
@@ -30,19 +29,16 @@ import resources.visibility_non_ic
 fun FormTextField(
     modifier: Modifier,
     value: String,
-    isFocus : Boolean,
     isPassword: Boolean = false,
     onValueChange : (String) -> Unit,
     labelHints : String,
-    leadingIcon : @Composable() (() -> Unit)?,
-    interactionSource: MutableInteractionSource
+    leadingIcon : @Composable() (() -> Unit)?
 ) {
 
     var showPassword by remember { mutableStateOf(value = false) }
 
     OutlinedTextField(
         singleLine = true,
-        interactionSource = interactionSource,
         modifier = modifier,
         value = value ,
         textStyle = MaterialTheme.typography.subtitle1,
@@ -54,9 +50,10 @@ fun FormTextField(
                 style = MaterialTheme.typography.subtitle1
             )
         },
-        colors = TextFieldDefaults.textFieldColors(
+        colors = TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = Color.White,
-            focusedIndicatorColor = if (isFocus) secondaryColor else Color.Black,
+            focusedBorderColor = secondaryColor,
+            unfocusedBorderColor = Color.Black,
             cursorColor = Color(0xFF384A92),
             textColor = Color(0xFF384A92)
         ),

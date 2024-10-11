@@ -25,6 +25,8 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -45,10 +47,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.ModalBottomSheetDataValue
+import org.apps.simpenpass.utils.maskString
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -74,22 +79,27 @@ fun RootScreen() {
     val visible by remember {
         mutableStateOf(true)
     }
-
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+    val myModalBottomSheet = rememberBottomSheetMenu<PassResponseData>(sheetState)
+
     val shouldShowBottomBar = navController.currentBackStackEntryAsState().value?.destination?.route in routeNav.map { it.route }
 
     ModalBottomSheetLayout(
-        sheetState = sheetState,
+        sheetState = myModalBottomSheet.modalBottomSheetState,
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            DetailPassData(scope,sheetState)
+            DetailPassData(scope,sheetState,myModalBottomSheet.data.value)
         },
         sheetBackgroundColor = Color.White
     ){
         Scaffold(
+            snackbarHost = {
+                SnackbarHost(snackBarHostState)
+            },
             modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
             bottomBar = {
                 if(shouldShowBottomBar){
@@ -100,13 +110,20 @@ fun RootScreen() {
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState)
+            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,myModalBottomSheet,snackBarHostState)
         }
     }
 }
 
 @Composable
-fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+fun <T : Any> rememberBottomSheetMenu(
+    modalBottomSheetState: ModalBottomSheetState,
+): ModalBottomSheetDataValue<T> {
+    return ModalBottomSheetDataValue(modalBottomSheetState)
+}
+
+@Composable
+fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, data: PassResponseData?) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
@@ -116,7 +133,7 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "Nama Akun",
+                data?.accountName ?: "",
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 style = MaterialTheme.typography.h6,
                 color = secondaryColor
@@ -139,19 +156,19 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
             modifier = Modifier.height(10.dp)
         )
         DataInfoHolder(
-            Res.drawable.user_ic,"Username"
+            Res.drawable.user_ic,data?.username ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.email_ic,"Email"
+            Res.drawable.email_ic,data?.email ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.pass_ic,"Password", isPassData = true
+            Res.drawable.pass_ic, data?.password ?: "" , isPassData = true
         )
         Spacer(
             modifier = Modifier.height(16.dp)
@@ -232,7 +249,7 @@ fun DataInfoHolder(
                 modifier = Modifier.width(19.dp)
             )
             Text(
-                title,
+                checkData(title, isPassData, showPassword),
                 style = MaterialTheme.typography.body2,
                 color = secondaryColor,
                 modifier = Modifier.weight(1f),
@@ -260,7 +277,6 @@ fun DataInfoHolder(
                         )
                     }
                 }
-
             }
             IconButton(
                 onClick = {
@@ -275,5 +291,17 @@ fun DataInfoHolder(
 
         }
     }
+}
 
+fun checkData(data: String, isPassData: Boolean, showPassword: Boolean): String {
+    return if(isPassData){
+        if(showPassword){
+            data
+        }
+        else {
+            maskString(data)
+        }
+    } else {
+        data
+    }
 }

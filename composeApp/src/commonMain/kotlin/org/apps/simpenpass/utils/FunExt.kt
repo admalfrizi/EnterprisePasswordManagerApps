@@ -21,10 +21,13 @@ fun detectRoute(navController: NavController): String? {
     val mainRoute = navController.previousBackStackEntry?.destination?.route
 
     return mainRoute
-
 }
 
 @Composable
 fun popUpLoading(isDismiss : MutableState<Boolean>){
     DialogLoading(onDismissRequest = {isDismiss.value})
+}
+
+fun maskString(data: String): String {
+    return "*".repeat(data.length)
 }

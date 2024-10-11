@@ -23,7 +23,6 @@ import resources.arrow_right_ic
 
 @Composable
 fun MostUsedSection(
-    listData : List<PassResponseData>,
     sheetState: ModalBottomSheetState
 ) {
     Column(
@@ -47,17 +46,17 @@ fun MostUsedSection(
         Spacer(
             modifier = Modifier.height(11.dp)
         )
-        DataPassHolder("Nama Akun", "Email",sheetState)
-        Spacer(
-            modifier = Modifier.height(11.dp)
-        )
-        DataPassHolder("Nama Akun", "Email",sheetState)
-        Spacer(
-            modifier = Modifier.height(11.dp)
-        )
-        DataPassHolder("Nama Akun", "Email", sheetState)
-        Spacer(
-            modifier = Modifier.height(11.dp)
-        )
+//        DataPassHolder("Nama Akun", "Email",sheetState)
+//        Spacer(
+//            modifier = Modifier.height(11.dp)
+//        )
+//        DataPassHolder("Nama Akun", "Email",sheetState)
+//        Spacer(
+//            modifier = Modifier.height(11.dp)
+//        )
+//        DataPassHolder("Nama Akun", "Email", sheetState)
+//        Spacer(
+//            modifier = Modifier.height(11.dp)
+//        )
     }
 }

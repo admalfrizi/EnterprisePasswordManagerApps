@@ -4,41 +4,91 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.InsertDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
+import org.apps.simpenpass.presentation.components.formComponents.FormTextField
+import org.apps.simpenpass.presentation.components.formComponents.HeaderContainer
+import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FormScreen(
     navController: NavController,
-    formViewModel: FormViewModel = koinViewModel()
+    formViewModel: FormViewModel = koinViewModel(),
+    snackBarHostState: SnackbarHostState
 ) {
-    val isDismiss = remember { mutableStateOf(true) }
-    val isLoading = remember { mutableStateOf(false) }
+    val isDismiss = remember { mutableStateOf(false) }
+    val formState by formViewModel.formState.collectAsState()
+    val scope = rememberCoroutineScope()
 
-    if(isLoading.value){
+    var nmAccount by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var jnsPass by remember { mutableStateOf("") }
+    var passData by remember { mutableStateOf("") }
+    var urlPass by remember { mutableStateOf("") }
+    var desc by remember { mutableStateOf("") }
+
+    val formData = InsertDataRequest(
+        accountName = nmAccount,
+        username = userName,
+        desc = desc,
+        email = email,
+        jenisData = jnsPass,
+        password = passData,
+        url = urlPass,
+    )
+
+    if(formState.isLoading){
         popUpLoading(isDismiss)
+    }
+
+    if(formState.isSuccess){
+        navController.navigateUp()
+        scope.launch {
+            snackBarHostState.showSnackbar("Data Berhasil Ditambahkan")
+        }
     }
 
     Scaffold(
         bottomBar = {
-            BtnForm({
-                isLoading.value = true
-                navController.navigateUp()
-            },{ navController.navigateUp() },Modifier
+            BtnForm(
+                { formViewModel.createUserPassData(formData) },
+                { navController.navigateUp() },
+                Modifier
                 .fillMaxWidth()
                 .height(80.dp)
                 .background(secondaryColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
@@ -46,16 +96,236 @@ fun FormScreen(
         },
         content = {
             Box(
-                modifier = Modifier.padding(it).fillMaxSize()
+                modifier = Modifier.padding(it).fillMaxSize().verticalScroll(rememberScrollState())
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    FormContentView()
+                    HeaderContainer()
+                    Spacer(
+                        modifier = Modifier.height(15.dp)
+                    )
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Nama Akun",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        FormTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = nmAccount,
+                            labelHints = "Isi Nama Akun",
+                            leadingIcon = null,
+                            onValueChange = {
+                                nmAccount = it
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Username",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        FormTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = userName,
+                            labelHints = "Isi Username",
+                            leadingIcon = null,
+                            onValueChange = {
+                                userName = it
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Jenis Password",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        FormTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = jnsPass,
+                            labelHints = "Isi Jenis Password",
+                            leadingIcon = null,
+                            onValueChange = {
+                                jnsPass = it
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Email",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        FormTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = email,
+                            labelHints = "Isi Email",
+                            leadingIcon = null,
+                            onValueChange = {
+                                email = it
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Password",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        FormTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = passData,
+                            labelHints = "Isi Data Password",
+                            leadingIcon = null,
+                            onValueChange = {
+                                passData = it
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "URL Website",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        FormTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = urlPass,
+                            labelHints = "Isi Data URL",
+                            leadingIcon = null,
+                            onValueChange = {
+                                urlPass = it
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Catatan/Deskripsi",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        FormTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = desc,
+                            labelHints = "Isi Catatan Berikut Ini",
+                            leadingIcon = null,
+                            onValueChange = {
+                                desc = it
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Data Tambahan",
+                            style = MaterialTheme.typography.body2,
+                            color = secondaryColor
+                        )
+                        Spacer(
+                            modifier = Modifier.height(9.dp)
+                        )
+                        Row {
+                            Card(
+                                modifier = Modifier.width(168.dp).weight(1f),
+                                backgroundColor = Color(0xFF4470A9),
+                                shape = RoundedCornerShape(10.dp),
+                                elevation = 0.dp
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(14.dp),
+                                ) {
+                                    Text(
+                                        "Nama Akun",
+                                        style = MaterialTheme.typography.body1,
+                                        color = fontColor1
+                                    )
+                                    Spacer(
+                                        modifier = Modifier.height(26.dp)
+                                    )
+                                    Text(
+                                        "Dari Grup Apa",
+                                        style = MaterialTheme.typography.subtitle1,
+                                        color = fontColor1,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+                            Spacer(
+                                modifier = Modifier.width(7.dp)
+                            )
+                            Card(
+                                modifier = Modifier.width(168.dp).weight(1f),
+                                backgroundColor = Color(0xFF4470A9),
+                                shape = RoundedCornerShape(10.dp),
+                                elevation = 0.dp
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(14.dp),
+                                ) {
+                                    Text(
+                                        "Nama Akun",
+                                        style = MaterialTheme.typography.body1,
+                                        color = fontColor1
+                                    )
+                                    Spacer(
+                                        modifier = Modifier.height(26.dp)
+                                    )
+                                    Text(
+                                        "Dari Grup Apa",
+                                        style = MaterialTheme.typography.subtitle1,
+                                        color = fontColor1,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(
+                            modifier = Modifier.height(14.dp)
+                        )
+                    }
                 }
             }
         }
     )
 }
-
