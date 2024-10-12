@@ -38,7 +38,7 @@ class ListDataViewModel(
                     is NetworkResult.Success -> {
                         _listDataState.update {
                             it.copy(
-                                data = result.data!!,
+                                data = result.data.data!!,
                                 isLoading = false
                             )
                         }

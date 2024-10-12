@@ -31,6 +31,8 @@ coreKtx = "1.6.1"
 datastore = "1.1.1"
 splittiesAppContext = "3.0.0"
 atomicfu = "0.23.2"
+mockk = "1.13.13"
+kotest = "6.0.0.M1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -83,6 +85,9 @@ datastore = { module = "androidx.datastore:datastore", version.ref = "datastore"
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 splitties-appcontext = { group = "com.louiscad.splitties", name = "splitties-appctx", version.ref = "splittiesAppContext" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+mockk-common = { module = "io.mockk:mockk-common", version.ref = "mockk" }
+mockk-native = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

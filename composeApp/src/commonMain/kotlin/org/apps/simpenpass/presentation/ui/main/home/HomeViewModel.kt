@@ -47,7 +47,7 @@ class HomeViewModel(
                     is NetworkResult.Success -> {
                         _homeState.update {
                             it.copy(
-                                passDataList = result.data!!,
+                                passDataList = result.data.data!!,
                                 isLoading = false
                             )
                         }

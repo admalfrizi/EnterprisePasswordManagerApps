@@ -113,14 +113,13 @@ kotlin {
             }
         }
 
-//        iosMain.dependencies {
-//            implementation(libs.ktor.client.darwin)
-//        }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlin.test.junit)
             implementation(libs.ktor.client.mock)
+            implementation(libs.koin.test)
+            implementation(libs.kotest.assertions.core)
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
@@ -142,6 +141,8 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -160,6 +161,7 @@ android {
     buildFeatures {
         compose = true
     }
+
     dependencies {
         debugImplementation(compose.uiTooling)
     }

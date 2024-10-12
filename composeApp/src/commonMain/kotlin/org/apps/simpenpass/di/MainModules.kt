@@ -1,5 +1,6 @@
 package org.apps.simpenpass.di
 
+import io.ktor.client.engine.HttpClientEngine
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module

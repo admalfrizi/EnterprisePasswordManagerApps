@@ -42,9 +42,23 @@ class PassRepository(
                 val userId = localData.getUserData().id
                 val result = remotePassSources.listUserPassData(token, userId!!)
                 if(result.success){
-                    emit(NetworkResult.Success(result.data))
+                    emit(NetworkResult.Success(result))
                 }
                 Napier.d("List Data ${result.data.toString()}")
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }
+
+    fun testListUserPassData(token: String, userId: Int) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            val result = remotePassSources.listUserPassData(token, userId)
+            if(result.success){
+                emit(NetworkResult.Success(result))
             }
         } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
