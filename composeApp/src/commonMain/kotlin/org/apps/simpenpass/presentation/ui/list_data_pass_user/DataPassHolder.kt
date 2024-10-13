@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -59,7 +60,9 @@ fun DataPassHolder(item : PassResponseData) {
                     )
                 }
             }
-
         }
+        Divider(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }

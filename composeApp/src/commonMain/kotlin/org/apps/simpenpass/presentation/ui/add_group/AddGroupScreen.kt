@@ -25,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
@@ -52,10 +53,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -74,6 +78,7 @@ import resources.add_description_ic
 import resources.add_pic_ic
 import resources.add_role_group_ic
 import resources.edit_anggota_ic
+import resources.edit_group_name_ic
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -83,6 +88,7 @@ fun AddGroupScreen(navController: NavController) {
     val interactionSource = remember { MutableInteractionSource() }
     val isLoading = remember { mutableStateOf(false) }
     val isDismiss = remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
 
     if(isLoading.value){
         popUpLoading(isDismiss)
@@ -93,8 +99,13 @@ fun AddGroupScreen(navController: NavController) {
         skipHalfExpanded = true
     )
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val underlineColor = if (isFocused) Color.White else Color.Transparent
+    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
+
+    if(sheetState.isVisible){
+        focusManager.clearFocus()
+    }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -279,28 +290,75 @@ fun AddGroupScreen(navController: NavController) {
                         Spacer(
                             modifier = Modifier.width(18.dp)
                         )
-                        TextField(
-                            value = grupName,
-                            onValueChange = {
-                                grupName = it
-                            },
-                            textStyle = MaterialTheme.typography.caption.copy(color = Color.White),
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            maxLines = 1,
-                            placeholder = {
-                                    Text(
-                                        "Isi Nama Grup",
-                                        modifier = Modifier.fillMaxWidth(),
-                                        style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
-                                    )
+                        Box(
+                            modifier = Modifier.padding(start = 0.dp).fillMaxWidth()
+                        ) {
+                            BasicTextField(
+                                value = grupName,
+                                onValueChange = {
+                                    grupName = it
                                 },
-                            colors = TextFieldDefaults.textFieldColors(
-                                unfocusedIndicatorColor = Color.White,
-                                focusedIndicatorColor = Color.White,
-                                backgroundColor = Color.Transparent
+                                modifier = Modifier.padding(0.dp).onFocusChanged { focusState ->
+                                    isFocused = focusState.isFocused
+                                },
+                                decorationBox = { innerTextField ->
+                                    Column {
+                                        // Draw the actual text field content
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box {
+                                                if (grupName.isEmpty()) {
+                                                    Text(
+                                                        text = "Isi Nama Grup Ini",
+                                                        style =  MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
+                                                    )
+                                                }
+                                                innerTextField()
+                                            }
+
+                                            if (grupName.isEmpty()) {
+                                                Image(
+                                                    painterResource(Res.drawable.edit_group_name_ic),""
+                                                )
+                                            }
+                                        }
+                                        Divider(
+                                            color = underlineColor,
+                                            thickness = 2.dp,
+                                            modifier = Modifier.padding(top = 6.dp) // Adjust the position
+                                        )
+                                    }
+                                },
+                                cursorBrush = SolidColor(Color.White),
+                                textStyle = MaterialTheme.typography.caption.copy(color = Color.White),
+                                singleLine = false,
                             )
-                        )
+                        }
+//                        TextField(
+//                            value = grupName,
+//                            onValueChange = {
+//                                grupName = it
+//                            },
+//                            textStyle = MaterialTheme.typography.caption.copy(color = Color.White),
+//                            singleLine = true,
+//                            modifier = Modifier.fillMaxWidth(),
+//                            maxLines = 1,
+//                            placeholder = {
+//                                    Text(
+//                                        "Isi Nama Grup",
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
+//                                    )
+//                                },
+//                            colors = TextFieldDefaults.textFieldColors(
+//                                unfocusedIndicatorColor = Color.White,
+//                                focusedIndicatorColor = Color.White,
+//                                backgroundColor = Color.Transparent
+//                            )
+//                        )
 
 //                        {
 //                            TextFieldDefaults.TextFieldDecorationBox(
