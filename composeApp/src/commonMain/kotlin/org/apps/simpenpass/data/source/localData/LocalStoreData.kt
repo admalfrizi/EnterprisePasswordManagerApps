@@ -3,12 +3,14 @@ package org.apps.simpenpass.data.source.localData
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.apps.simpenpass.models.user_data.LocalUserStore
@@ -18,10 +20,17 @@ class LocalStoreData(
     private val dataStore: DataStore<Preferences>
 ) : DataPrefFunc {
     companion object {
+        private val LOGIN_CHECKED = booleanPreferencesKey("is_login")
         private val TOKEN_USER = stringPreferencesKey("token_user")
         private val ID_USER = intPreferencesKey("id_user")
         private val NAME_USER = stringPreferencesKey("name_user")
         private val EMAIL_USER = stringPreferencesKey("email_user")
+    }
+
+    override suspend fun setLoggedInStatus(isLogged: Boolean) {
+        dataStore.edit { pref ->
+            pref[LOGIN_CHECKED] = isLogged
+        }
     }
 
     override suspend fun saveUserData(user: UserData) {
@@ -35,6 +44,15 @@ class LocalStoreData(
     override suspend fun saveUserToken(token: String) {
         dataStore.edit { pref ->
             pref[TOKEN_USER] = token
+        }
+    }
+
+    override suspend fun checkLoggedIn(): Flow<Boolean> {
+        val getStatus = dataStore.data
+        return getStatus.catch {
+            emptyFlow<Boolean>()
+        }.map { pref ->
+            pref[LOGIN_CHECKED] ?: false
         }
     }
 

@@ -40,9 +40,6 @@ fun ProfileScreen(
 //    var name: String? by remember { mutableStateOf(null) }
 //    var email: String? by remember { mutableStateOf(null) }
 
-
-    Napier.d("Token: ${profileState.token}")
-
     Scaffold(
         backgroundColor = Color(0xFFF1F1F1),
         modifier = Modifier.fillMaxWidth(),

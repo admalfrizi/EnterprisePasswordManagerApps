@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
@@ -66,9 +67,11 @@ fun ContentNavGraph(
 
     PlatformColors(Color(0xFF052E58))
 
-    if(stateAuth.token != null && stateAuth.token != ""){
+    if(stateAuth.token != null && stateAuth.token != "" && stateAuth.isLoggedIn){
         isLoggedIn = true
     }
+
+    Napier.v("Token Code : ${stateAuth.token}")
 
     NavHost(navController,startDestination = if(isLoggedIn) Screen.Main.route else Screen.Auth.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()

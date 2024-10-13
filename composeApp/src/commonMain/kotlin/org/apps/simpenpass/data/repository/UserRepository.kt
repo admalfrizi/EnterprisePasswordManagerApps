@@ -20,6 +20,7 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
             if(userData.success){
                 userData.data?.user?.let { localData.saveUserData(it) }
                 userData.data?.accessToken?.let { localData.saveUserToken(it) }
+                localData.setLoggedInStatus(true)
                 emit(NetworkResult.Success(userData.data?.user))
             } else {
                 emit(NetworkResult.Error(userData.message))
@@ -75,5 +76,9 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
 
     fun getToken(): Flow<String> {
         return localData.getToken
+    }
+
+    suspend fun getStatusLoggedIn(): Flow<Boolean> {
+        return localData.checkLoggedIn()
     }
 }

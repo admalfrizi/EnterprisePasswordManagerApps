@@ -2,10 +2,15 @@ package org.apps.simpenpass.di
 
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
+import kotlinx.cinterop.ExperimentalForeignApi
 import org.apps.simpenpass.utils.dataStoreFileName
 import org.apps.simpenpass.utils.getDataStore
 import org.koin.dsl.module
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSUserDomainMask
 
+@OptIn(ExperimentalForeignApi::class)
 actual fun platformModule() = module {
     single<HttpClientEngine> { Darwin.create() }
     single {

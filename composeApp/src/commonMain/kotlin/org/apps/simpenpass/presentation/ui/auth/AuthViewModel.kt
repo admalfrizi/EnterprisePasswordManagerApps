@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.UserRepository
@@ -21,14 +22,23 @@ class AuthViewModel(
 
     init {
         viewModelScope.launch {
-            repo.getToken().collect { token ->
+            repo.getToken().collectLatest { token ->
                 _authState.update {
                     it.copy(
                         token = token
                     )
                 }
             }
+        }
 
+        viewModelScope.launch {
+            repo.getStatusLoggedIn().collectLatest { status ->
+                _authState.update {
+                    it.copy(
+                        isLoggedIn = status
+                    )
+                }
+            }
         }
     }
 
@@ -55,7 +65,6 @@ class AuthViewModel(
                         _authState.update {
                             it.copy(
                                 isLoading = false,
-                                isLoggedIn = true,
                                 userData = result.data
                             )
                         }

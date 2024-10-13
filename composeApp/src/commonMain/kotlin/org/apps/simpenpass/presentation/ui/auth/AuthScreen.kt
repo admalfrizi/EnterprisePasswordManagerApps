@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
@@ -112,6 +113,7 @@ fun AuthScreen(
                 inclusive = true
             }
         }
+        Napier.d("Response: ${loginState.token}")
     }
 
     if(loginState.error?.isNotEmpty() == true){
