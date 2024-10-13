@@ -71,7 +71,8 @@ fun ContentNavGraph(
         isLoggedIn = true
     }
 
-    Napier.v("Token Code : ${stateAuth.token}")
+//    Napier.v("Token Code : ${stateAuth.token}")
+//    Napier.v("loggedIn Status : ${stateAuth.isLoggedIn}")
 
     NavHost(navController,startDestination = if(isLoggedIn) Screen.Main.route else Screen.Auth.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
