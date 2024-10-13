@@ -61,6 +61,7 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
             } else {
                 emit(NetworkResult.Error(userData.message))
             }
+            localData.setLoggedInStatus(false)
             localData.clearUserData()
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
