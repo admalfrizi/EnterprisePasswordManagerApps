@@ -92,7 +92,7 @@ fun RootScreen() {
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            DetailPassData(scope,sheetState,myModalBottomSheet.data.value)
+            DetailPassData(scope,myModalBottomSheet,myModalBottomSheet.data.value)
         },
         sheetBackgroundColor = Color.White
     ){
@@ -123,7 +123,7 @@ fun <T : Any> rememberBottomSheetMenu(
 }
 
 @Composable
-fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, data: PassResponseData?) {
+fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetDataValue<PassResponseData>, data: PassResponseData?) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
@@ -141,7 +141,7 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, dat
             IconButton(
                 onClick = {
                     scope.launch {
-                        sheetState.hide()
+                        sheetState.closeModal()
                     }
                 },
                 content = {

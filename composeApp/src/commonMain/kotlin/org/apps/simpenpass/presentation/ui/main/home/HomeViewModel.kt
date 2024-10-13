@@ -27,6 +27,10 @@ class HomeViewModel(
             }
         }
 
+        getData()
+    }
+
+    fun getData() {
         viewModelScope.launch {
             passRepo.listUserPassData().collect { result ->
                 when(result) {
@@ -57,7 +61,6 @@ class HomeViewModel(
             }
         }
     }
-
 }
 
 data class HomeState(

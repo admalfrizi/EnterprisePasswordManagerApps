@@ -15,7 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -24,6 +24,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,6 +54,7 @@ import resources.Res
 import resources.add_option_ic
 import resources.menu_ic
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -59,6 +63,10 @@ fun HomeScreen(
 ) {
 
     val homeState by homeViewModel.homeState.collectAsState()
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = homeState.isLoading,
+        onRefresh = homeViewModel::getData
+    )
 
     Scaffold(
         topBar = {
@@ -98,17 +106,27 @@ fun HomeScreen(
             )
         },
         content = {
-            Column(
-                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+            Box(
+                modifier = Modifier.padding(it).pullRefresh(pullRefreshState)
             ) {
-                HeaderContainer(homeState.name,homeState.passDataList.size,navController)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                HomeContentView(navController,sheetState,homeViewModel)
-                Spacer(
-                    modifier = Modifier.height(11.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+                ) {
+                    HeaderContainer(homeState.name,homeState.passDataList.size,navController)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HomeContentView(navController,sheetState,homeViewModel)
+                    Spacer(
+                        modifier = Modifier.height(11.dp)
+                    )
+                }
+                PullRefreshIndicator(
+                    refreshing = homeState.isLoading,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    contentColor = secondaryColor
                 )
             }
+
         }
     )
 }
@@ -121,40 +139,29 @@ fun HomeContentView(
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
 
-    Box(modifier = Modifier.fillMaxWidth()){
-
-        if(homeState.passDataList.isEmpty() && !homeState.isLoading){
-            EmptyWarning(
-                modifier = Modifier.fillMaxSize(),
-                warnTitle = "Anda Belum Memiliki Data Password",
-                warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
-                btnTxt = "Tambahkan Password",
-                isEnableBtn = true,
-                onSelect = {
-                    navController.navigate(Screen.PassData.route)
-                }
-            )
-        }
-
-        if(homeState.isLoading){
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ){
-                CircularProgressIndicator()
+    if(homeState.passDataList.isEmpty() && !homeState.isLoading) {
+        EmptyWarning(
+            modifier = Modifier.fillMaxSize(),
+            warnTitle = "Anda Belum Memiliki Data Password",
+            warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
+            btnTxt = "Tambahkan Password",
+            isEnableBtn = true,
+            onSelect = {
+                navController.navigate(Screen.PassData.route)
             }
-        }
+        )
+    }
 
-        if(homeState.passDataList.isNotEmpty()){
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+    if(homeState.passDataList.isNotEmpty()){
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
 //                MostUsedSection(sheetState)
-                GroupDataSection()
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
-                UserPassDataSection(homeState.passDataList,sheetState,navController)
-            }
+            GroupDataSection()
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+            UserPassDataSection(homeState.passDataList,sheetState,navController)
         }
     }
 }

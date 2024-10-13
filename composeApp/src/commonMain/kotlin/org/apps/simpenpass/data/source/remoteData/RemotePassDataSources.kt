@@ -1,6 +1,5 @@
 package org.apps.simpenpass.data.source.remoteData
 
-import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -47,8 +46,6 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
                 parameter("userId", id)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
-            Napier.d("Response URL ${response.call.request.url}")
-            Napier.d("Response Code ${response.status.value}")
             return response.body<BaseResponse<List<PassResponseData>>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)

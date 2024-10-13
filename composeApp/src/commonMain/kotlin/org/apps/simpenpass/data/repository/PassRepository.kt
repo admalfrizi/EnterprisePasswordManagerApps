@@ -44,7 +44,6 @@ class PassRepository(
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 }
-                Napier.d("List Data ${result.data.toString()}")
             }
         } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))

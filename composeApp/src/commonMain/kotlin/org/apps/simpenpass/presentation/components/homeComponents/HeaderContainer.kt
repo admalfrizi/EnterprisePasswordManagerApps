@@ -32,7 +32,6 @@ fun HeaderContainer(
     totalUserDataPass: Int,
     navController: NavController
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,7 +86,7 @@ fun HeaderContainer(
                 InfoContainer(
                     titleInfo = "Total Data Password Grup",
                     vlData = 5,
-                    bgColor = Color(0xFF1E559C),
+                    bgColor = Color(0xFF1A8B7E),
                     iconInfo = Res.drawable.pass_data_ic
                 )
                 Spacer(
