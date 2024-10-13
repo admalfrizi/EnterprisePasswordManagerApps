@@ -14,6 +14,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,14 +28,15 @@ import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHold
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun GroupScreen(navController: NavController) {
+fun GroupScreen(
+    navController: NavController,
+    groupViewModel: GroupViewModel = koinViewModel()
+) {
 
-    val groupList = listOf(
-        GrupPassData(1, "Nama Grup", "Deskripsi Grup"),
-        GrupPassData(2, "Nama Grup", "Deskripsi Grup")
-    )
+    val groupState by groupViewModel.groupState.collectAsState()
 
 //    val groupList by remember { mutableStateOf(emptyList<GrupPassData>()) }
 
@@ -73,7 +76,7 @@ fun GroupScreen(navController: NavController) {
               Spacer(
                   modifier = Modifier.height(9.dp)
               )
-              if(groupList.isEmpty()){
+              if(groupState.groupData.isEmpty()){
                   Box(
                       modifier = Modifier.fillMaxSize(),
                       contentAlignment = Alignment.Center,
@@ -88,7 +91,7 @@ fun GroupScreen(navController: NavController) {
                   LazyColumn(
                       modifier = Modifier.fillMaxWidth(),
                   ) {
-                      items(groupList) { item ->
+                      items(groupState.groupData) { item ->
                           ListGroupHolder(navController, item)
                       }
                   }

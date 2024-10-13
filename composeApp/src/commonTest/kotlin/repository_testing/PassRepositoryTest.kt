@@ -32,7 +32,7 @@ class PassRepositoryTest : KoinTest{
     }
 
     @Test
-    fun `respository result message test success`() = runBlocking {
+    fun `list user Pass data result message test success`() = runBlocking {
         val remotePassDataSources = RemotePassDataSources(apiClient)
         val localStoreData = LocalStoreData(get())
         val passRepo = PassRepository(remotePassDataSources,localStoreData)
@@ -52,11 +52,10 @@ class PassRepositoryTest : KoinTest{
         }
 
         assertEquals(false,result.value.isEmpty())
-
     }
 
     @Test
-    fun `respository result data test success`() = runBlocking {
+    fun `list user pass data result data test success`() = runBlocking {
         val remotePassDataSources = RemotePassDataSources(apiClient)
         val localStoreData = LocalStoreData(get())
         val passRepo = PassRepository(remotePassDataSources,localStoreData)
@@ -78,17 +77,11 @@ class PassRepositoryTest : KoinTest{
         assertEquals(true,result.isNotEmpty())
         assertEquals(6,result.first().id)
 
-//        assertSoftly(firstRepository) {
-//            this.id shouldBe 0
-//            this.accountName shouldBe ""
-//            this.email shouldBe ""
-//        }
-
     }
 
 
     @Test
-    fun `respository result message test error`() = runBlocking {
+    fun `list user pass data result message test error`() = runBlocking {
         val remotePassDataSources = RemotePassDataSources(apiClient)
         val localStoreData = LocalStoreData(get())
         val passRepo = PassRepository(remotePassDataSources,localStoreData)
@@ -110,6 +103,5 @@ class PassRepositoryTest : KoinTest{
         }
 
         assertEquals("",result.value)
-
     }
 }
