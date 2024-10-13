@@ -29,7 +29,7 @@ import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
 
 @Composable
-fun ListGroupHolder(navController: NavController, item: GrupPassData) {
+fun ListGroupHolder(navController: NavController, item: GrupPassData?) {
     Column {
         Card(
             modifier = Modifier.fillMaxWidth().clickable{
@@ -45,7 +45,7 @@ fun ListGroupHolder(navController: NavController, item: GrupPassData) {
                     modifier = Modifier.size(58.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
                 ){
                     Text(
-                        text = profileNameInitials(item.nm_grup),
+                        text = profileNameInitials(item?.nm_grup!!),
                         style = MaterialTheme.typography.body1,
                         fontSize = 24.sp,
                         color = Color.White,
@@ -57,7 +57,7 @@ fun ListGroupHolder(navController: NavController, item: GrupPassData) {
                 )
                 Column {
                     Text(
-                        item.nm_grup,
+                        item?.nm_grup!!,
                         style = MaterialTheme.typography.body1,
                         color = secondaryColor
                     )
