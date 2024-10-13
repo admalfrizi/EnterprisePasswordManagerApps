@@ -80,7 +80,10 @@ class LocalStoreData(
 
     override suspend fun clearUserData() {
         dataStore.edit { pref ->
-            pref.clear()
+            pref.remove(TOKEN_USER)
+            pref.remove(ID_USER)
+            pref.remove(NAME_USER)
+            pref.remove(EMAIL_USER)
         }
     }
 

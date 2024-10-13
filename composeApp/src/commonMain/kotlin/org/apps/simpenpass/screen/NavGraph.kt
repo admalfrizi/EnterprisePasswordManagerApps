@@ -67,9 +67,11 @@ fun ContentNavGraph(
 
     PlatformColors(Color(0xFF052E58))
 
-    if(stateAuth.token != null && stateAuth.token != "" && stateAuth.isLoggedIn){
+    if(stateAuth.isLoggedIn){
         isLoggedIn = true
     }
+
+    Napier.d("isLoggedIn: $isLoggedIn")
 
     NavHost(navController,startDestination = if(isLoggedIn) Screen.Main.route else Screen.Auth.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
