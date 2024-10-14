@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +46,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.response.PassResponseData
@@ -53,7 +53,6 @@ import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
 import org.apps.simpenpass.style.secondaryColor
-import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 import org.apps.simpenpass.utils.maskString
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -83,17 +82,17 @@ fun RootScreen() {
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
-    val myModalBottomSheet = rememberBottomSheetMenu<PassResponseData>(sheetState)
 
     val shouldShowBottomBar = navController.currentBackStackEntryAsState().value?.destination?.route in routeNav.map { it.route }
 
     ModalBottomSheetLayout(
-        sheetState = myModalBottomSheet.modalBottomSheetState,
+        sheetState = sheetState,
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            DetailPassData(scope,myModalBottomSheet,myModalBottomSheet.data.value)
+            DetailPassData(scope,sheetState,dataDetail)
         },
         sheetBackgroundColor = Color.White
     ){
@@ -111,23 +110,13 @@ fun RootScreen() {
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,myModalBottomSheet,snackBarHostState)
+            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState,dataDetail,snackBarHostState)
         }
     }
 }
 
 @Composable
-fun <T : Any> rememberBottomSheetMenu(
-    modalBottomSheetState: ModalBottomSheetState,
-): ModalBottomSheetDataValue<T> {
-    return ModalBottomSheetDataValue(modalBottomSheetState)
-}
-
-@Composable
-fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetDataValue<PassResponseData>, data: PassResponseData?) {
-
-    Napier.v("Data Option Details : $data")
-
+fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, data: MutableState<PassResponseData?>) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
@@ -137,7 +126,7 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetDataValue<
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                data?.accountName ?: "",
+                data.value?.accountName ?: "",
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 style = MaterialTheme.typography.h6,
                 color = secondaryColor
@@ -145,7 +134,7 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetDataValue<
             IconButton(
                 onClick = {
                     scope.launch {
-                        sheetState.closeModal()
+                        sheetState.hide()
                     }
                 },
                 content = {
@@ -160,19 +149,19 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetDataValue<
             modifier = Modifier.height(10.dp)
         )
         DataInfoHolder(
-            Res.drawable.user_ic,data?.username ?: ""
+            Res.drawable.user_ic,data.value?.username ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.email_ic,data?.email ?: ""
+            Res.drawable.email_ic,data.value?.email ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.pass_ic, data?.password ?: "" , isPassData = true
+            Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
         )
         Spacer(
             modifier = Modifier.height(16.dp)

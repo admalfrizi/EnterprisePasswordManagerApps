@@ -19,6 +19,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -28,6 +29,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,7 +49,6 @@ import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
-import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -58,7 +59,8 @@ import resources.menu_ic
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    sheetState: ModalBottomSheetDataValue<PassResponseData>,
+    sheetState: ModalBottomSheetState,
+    dataPass: MutableState<PassResponseData?>,
     homeViewModel: HomeViewModel = koinViewModel()
 ) {
 
@@ -114,7 +116,7 @@ fun HomeScreen(
                 ) {
                     HeaderContainer(homeState.name,homeState.passDataList.size,navController)
                     Spacer(modifier = Modifier.height(16.dp))
-                    HomeContentView(navController,sheetState,homeViewModel)
+                    HomeContentView(navController,sheetState,dataPass,homeViewModel)
                     Spacer(
                         modifier = Modifier.height(11.dp)
                     )
@@ -134,7 +136,8 @@ fun HomeScreen(
 @Composable
 fun HomeContentView(
     navController: NavController,
-    sheetState: ModalBottomSheetDataValue<PassResponseData>,
+    sheetState: ModalBottomSheetState,
+    dataPass: MutableState<PassResponseData?>,
     homeViewModel: HomeViewModel
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
@@ -161,13 +164,13 @@ fun HomeContentView(
             Spacer(
                 modifier = Modifier.height(16.dp)
             )
-            UserPassDataSection(homeState.passDataList,sheetState,navController)
+            UserPassDataSection(homeState.passDataList,dataPass,sheetState,navController)
         }
     }
 }
 
 @Composable
-fun UserDataPassHolder(dataPass: PassResponseData, sheetState: ModalBottomSheetDataValue<PassResponseData>) {
+fun UserDataPassHolder(dataPass: PassResponseData, sheetState: ModalBottomSheetState, dataParse: MutableState<PassResponseData?> ) {
     val scope = rememberCoroutineScope()
     Card(
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
@@ -201,7 +204,18 @@ fun UserDataPassHolder(dataPass: PassResponseData, sheetState: ModalBottomSheetD
                 },
                 onClick = {
                     scope.launch {
-                        sheetState.openModal(dataPass)
+                        dataParse.value = PassResponseData(
+                            accountName = dataPass.accountName,
+                            desc = dataPass.desc,
+                            email = dataPass.accountName,
+                            id = dataPass.id,
+                            jenisData = dataPass.jenisData,
+                            password = dataPass.password,
+                            url = dataPass.url,
+                            userId = dataPass.userId,
+                            username = dataPass.username
+                        )
+                        sheetState.show()
                     }
                 }
             )

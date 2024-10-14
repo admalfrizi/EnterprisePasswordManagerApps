@@ -15,8 +15,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +33,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
@@ -48,7 +49,6 @@ import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
-import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 import org.apps.simpenpass.utils.detectRoute
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -57,7 +57,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ContentNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
-    sheetState: ModalBottomSheetDataValue<PassResponseData>,
+    sheetState: ModalBottomSheetState,
+    data: MutableState<PassResponseData?>,
     snackbarHostState: SnackbarHostState,
     authViewModel : AuthViewModel = koinViewModel()
 ){
@@ -95,7 +96,7 @@ fun ContentNavGraph(
                                 }
                             } }
                 ){
-                    HomeScreen(navController, sheetState)
+                    HomeScreen(navController, sheetState, data)
                 }
 
                 composable(route =  Screen.Group.route,

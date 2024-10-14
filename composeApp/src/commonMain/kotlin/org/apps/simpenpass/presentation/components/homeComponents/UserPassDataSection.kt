@@ -13,8 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -23,12 +25,12 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.main.home.UserDataPassHolder
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
-import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 
 @Composable
 fun UserPassDataSection(
     listData : List<PassResponseData?>,
-    sheetState: ModalBottomSheetDataValue<PassResponseData>,
+    data: MutableState<PassResponseData?>,
+    sheetState: ModalBottomSheetState,
     navController: NavController
 ) {
     val limitData = listData.take(3)
@@ -44,21 +46,12 @@ fun UserPassDataSection(
         Spacer(
             modifier = Modifier.height(11.dp)
         )
-//        DataPassHolder("Nama Akun", "Email", sheetState)
-//        Spacer(
-//            modifier = Modifier.height(11.dp)
-//        )
-//        DataPassHolder("Nama Akun", "Email", sheetState)
-//        Spacer(
-//            modifier = Modifier.height(11.dp)
-//        )
-//        DataPassHolder("Nama Akun", "Email", sheetState)
         LazyColumn(
             modifier = Modifier.fillMaxWidth().heightIn(max = (limitData.size * 86).dp),
             userScrollEnabled = false
         ) {
-            items(limitData) { data ->
-                UserDataPassHolder(data!!, sheetState)
+            items(limitData) { dataPass ->
+                UserDataPassHolder(dataPass!!, sheetState,data)
             }
         }
         Spacer(
