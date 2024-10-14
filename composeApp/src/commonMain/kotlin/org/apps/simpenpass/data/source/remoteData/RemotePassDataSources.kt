@@ -35,8 +35,21 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         }
     }
 
-    override suspend fun editPassData(data: RegisterRequest): BaseResponse<PassResponseData> {
-        TODO("Not yet implemented")
+    override suspend fun editPassData(token: String,editData: InsertDataRequest, passId: Int): BaseResponse<PassResponseData> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "userPass"){
+                contentType(ContentType.Application.Json)
+                setBody(editData)
+                parameter("passId", editData)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<PassResponseData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
     }
 
     override suspend fun listUserPassData(token: String, id: Int): BaseResponse<List<PassResponseData>> {
@@ -50,6 +63,24 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
         } catch (e: Exception) {
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun getUserPassDataById(
+        token: String,
+        passId: Int
+    ): BaseResponse<PassResponseData> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "userPass/$passId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            return response.body<BaseResponse<PassResponseData>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
             throw Exception(e.message)
         }
     }

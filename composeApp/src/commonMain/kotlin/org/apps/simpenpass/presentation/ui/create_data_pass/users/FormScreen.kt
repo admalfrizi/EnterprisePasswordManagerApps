@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.InsertDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
@@ -48,7 +49,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FormScreen(
     navController: NavController,
     formViewModel: FormViewModel = koinViewModel(),
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    passId: Int
 ) {
     val isDismiss = remember { mutableStateOf(false) }
     val formState by formViewModel.formState.collectAsState()
@@ -83,10 +85,30 @@ fun FormScreen(
         }
     }
 
+    if(passId.toString().isNotEmpty()){
+        formViewModel.loadDataPassById(passId)
+
+        userName = formState.passData?.username!!
+        nmAccount = formState.passData?.accountName!!
+        desc = formState.passData?.desc!!
+        email = formState.passData?.email!!
+        jnsPass = formState.passData?.jenisData!!
+        passData = formState.passData?.password!!
+        urlPass = formState.passData?.url!!
+    }
+
+    Napier.v("Pass Id = $passId")
+
     Scaffold(
         bottomBar = {
             BtnForm(
-                { formViewModel.createUserPassData(formData) },
+                {
+                    if(passId.toString().isNotEmpty()){
+                        formViewModel.editUserPassData()
+                    } else {
+                        formViewModel.createUserPassData(formData)
+                    }
+                },
                 { navController.navigateUp() },
                 Modifier
                 .fillMaxWidth()

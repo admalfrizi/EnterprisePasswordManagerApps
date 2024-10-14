@@ -30,9 +30,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
@@ -144,12 +146,19 @@ fun ContentNavGraph(
                     ProfileScreen(navController)
                 }
             }
-            composable(route = Screen.PassData.route,enterTransition = { return@composable slideIntoContainer(
+            composable(route = Screen.FormPassData.route,enterTransition = { return@composable slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Up,
                 tween(700)
             ) },
-                exitTransition = {slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, tween(700))}){
-                FormScreen(navController, snackBarHostState =  snackbarHostState)
+                exitTransition = {slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, tween(700))},
+                arguments = listOf(
+                    navArgument(Screen.FormPassData.ARG_PASS_ID){
+                        type = NavType.IntType
+                    }
+                )
+            ){
+                val passId = requireNotNull(it.arguments?.getInt(Screen.FormPassData.ARG_PASS_ID))
+                FormScreen(navController, snackBarHostState =  snackbarHostState, passId = passId)
             }
             composable(route = Screen.ListPassDataUser.route, enterTransition = {fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                     slideInVertically(animationSpec = tween(durationMillis = 300)) {

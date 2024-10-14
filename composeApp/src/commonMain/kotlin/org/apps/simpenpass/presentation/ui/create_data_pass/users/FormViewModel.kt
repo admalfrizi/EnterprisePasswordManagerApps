@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.models.request.InsertDataRequest
+import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.main.home.HomeState
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -50,10 +51,47 @@ class FormViewModel(
             }
         }
     }
+
+    fun loadDataPassById(passId: Int) {
+        viewModelScope.launch {
+            repo.getUserPassDataById(passId).collect { result ->
+                when(result){
+                    is NetworkResult.Error -> {
+                        _formState.update {
+                            it.copy(
+                                error = result.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                passData = result.data.data
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun editUserPassData() {
+
+    }
 }
 
 data class FormState(
     val isLoading : Boolean = false,
+    val passData: PassResponseData? = null,
     val isSuccess: Boolean = false,
     val error : String? = null,
     val msg : String? = null

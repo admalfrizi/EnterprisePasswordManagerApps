@@ -65,4 +65,20 @@ class PassRepository(
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
     }
+
+    fun getUserPassDataById(passId: Int) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.getUserPassDataById(token, passId)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }
 }

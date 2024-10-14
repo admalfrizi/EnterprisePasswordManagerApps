@@ -94,7 +94,7 @@ fun HomeScreen(
                        }
                     )
                     IconButton(
-                        onClick = {navController.navigate(Screen.PassData.route) },
+                        onClick = {navController.navigate(Screen.FormPassData.route) },
                         content = {
                             Icon(
                                 painterResource(Res.drawable.add_option_ic),
@@ -150,7 +150,7 @@ fun HomeContentView(
             btnTxt = "Tambahkan Password",
             isEnableBtn = true,
             onSelect = {
-                navController.navigate(Screen.PassData.route)
+                navController.navigate(Screen.FormPassData.route)
             }
         )
     }

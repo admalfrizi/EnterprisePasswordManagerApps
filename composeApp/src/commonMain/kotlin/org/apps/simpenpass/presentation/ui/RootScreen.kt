@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.aakira.napier.Napier
@@ -53,6 +54,7 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
+import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 import org.apps.simpenpass.utils.maskString
@@ -94,7 +96,7 @@ fun RootScreen() {
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            DetailPassData(scope,sheetState,dataDetail)
+            DetailPassData(scope,sheetState,dataDetail, navController)
         },
         sheetBackgroundColor = Color.White
     ){
@@ -118,7 +120,7 @@ fun RootScreen() {
 }
 
 @Composable
-fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, data: MutableState<PassResponseData?>) {
+fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, data: MutableState<PassResponseData?>, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
@@ -179,7 +181,10 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, dat
         )
         OptionMenuHolder(
             Res.drawable.edit_data_pass,
-            "Edit Data Password"
+            "Edit Data Password",
+            {
+                navController.navigate(Screen.FormPassData.passDataId(data.value?.id!!))
+            }
         )
         OptionMenuHolder(
             Res.drawable.delete_pass_data,
@@ -189,10 +194,16 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, dat
 }
 
 @Composable
-fun OptionMenuHolder(icon: DrawableResource,
-                     title: String,
+fun OptionMenuHolder(
+    icon: DrawableResource,
+    title: String,
+    onClick: (() -> Unit)? = null
 ) {
-    Box(modifier = Modifier.fillMaxWidth().clickable {  },){
+    Box(modifier = Modifier.fillMaxWidth().clickable {
+        if (onClick !=null){
+            onClick()
+        }
+    },){
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
