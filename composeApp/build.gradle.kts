@@ -77,7 +77,9 @@ kotlin {
                 
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
-
+                implementation(libs.coil.compose)
+                implementation(libs.calf.file.picker)
+                implementation(libs.calf.file.picker.coil)
                 implementation(libs.koin.core)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.ktor.client.core)

@@ -37,7 +37,6 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -53,18 +52,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
+import com.mohamedrejeb.calf.core.LocalPlatformContext
+import com.mohamedrejeb.calf.io.readByteArray
+import com.mohamedrejeb.calf.picker.FilePickerFileType
+import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
@@ -89,6 +94,7 @@ fun AddGroupScreen(navController: NavController) {
     val isLoading = remember { mutableStateOf(false) }
     val isDismiss = remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
+    var byteArray by remember { mutableStateOf(ByteArray(0)) }
 
     if(isLoading.value){
         popUpLoading(isDismiss)
@@ -102,6 +108,17 @@ fun AddGroupScreen(navController: NavController) {
     val underlineColor = if (isFocused) Color.White else Color.Transparent
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
+    val context = LocalPlatformContext.current
+    val launcher = rememberFilePickerLauncher(
+        type = FilePickerFileType.Image,
+        onResult = { files ->
+            scope.launch {
+                files.firstOrNull()?.let {
+                    byteArray = it.readByteArray(context)
+                }
+            }
+        }
+    )
 
     if(sheetState.isVisible){
         focusManager.clearFocus()
@@ -278,14 +295,26 @@ fun AddGroupScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
-                            modifier = Modifier.background(Color(0xFF78A1D7), shape = CircleShape).size(100.dp)
+                            modifier = Modifier.background(Color(0xFF78A1D7), shape = CircleShape).size(100.dp).clickable {
+                                launcher.launch()
+                            }.clip(CircleShape)
                         ) {
-                            Image(
-                                painterResource(Res.drawable.add_pic_ic),
-                                "",
-                                alignment = Alignment.Center,
-                                modifier = Modifier.padding(18.dp)
-                            )
+                            if(byteArray.isNotEmpty()){
+                                AsyncImage(
+                                    model = byteArray,
+                                    modifier = Modifier.size(100.dp),
+                                    contentDescription = "Profile Picture",
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Image(
+                                    painterResource(Res.drawable.add_pic_ic),
+                                    "",
+                                    alignment = Alignment.Center,
+                                    modifier = Modifier.padding(18.dp)
+                                )
+                            }
+
                         }
                         Spacer(
                             modifier = Modifier.width(18.dp)
@@ -337,53 +366,6 @@ fun AddGroupScreen(navController: NavController) {
                                 singleLine = false,
                             )
                         }
-//                        TextField(
-//                            value = grupName,
-//                            onValueChange = {
-//                                grupName = it
-//                            },
-//                            textStyle = MaterialTheme.typography.caption.copy(color = Color.White),
-//                            singleLine = true,
-//                            modifier = Modifier.fillMaxWidth(),
-//                            maxLines = 1,
-//                            placeholder = {
-//                                    Text(
-//                                        "Isi Nama Grup",
-//                                        modifier = Modifier.fillMaxWidth(),
-//                                        style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
-//                                    )
-//                                },
-//                            colors = TextFieldDefaults.textFieldColors(
-//                                unfocusedIndicatorColor = Color.White,
-//                                focusedIndicatorColor = Color.White,
-//                                backgroundColor = Color.Transparent
-//                            )
-//                        )
-
-//                        {
-//                            TextFieldDefaults.TextFieldDecorationBox(
-//                                value = grupName,
-//                                innerTextField = it,
-//                                enabled = true,
-//                                singleLine = true,
-//                                interactionSource = interactionSource,
-//                                visualTransformation = VisualTransformation.None,
-//                                placeholder = {
-//                                    Text(
-//                                        "Isi Nama Grup",
-//                                        modifier = Modifier.fillMaxWidth(),
-//                                        style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
-//                                    )
-//                                },
-//                                colors = TextFieldDefaults.textFieldColors(
-//                                    textColor = Color.White,
-//                                    backgroundColor = Color.Transparent,
-//                                ),
-//                                contentPadding = TextFieldDefaults.textFieldWithoutLabelPadding(
-//                                    start = 0.dp
-//                                )
-//                            )
-//                        }
                     }
                 }
                 Spacer(
