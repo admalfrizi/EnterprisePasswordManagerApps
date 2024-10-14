@@ -34,7 +34,7 @@ class FormViewModel(
                         _formState.update {
                             it.copy(
                                 isLoading = true,
-                                isSuccess = false,
+                                isCreated = false,
                             )
                         }
                     }
@@ -42,7 +42,7 @@ class FormViewModel(
                         _formState.update {
                             it.copy(
                                 isLoading = false,
-                                isSuccess = true,
+                                isCreated = true,
                                 msg = result.data.message
                             )
                         }
@@ -74,7 +74,6 @@ class FormViewModel(
                         _formState.update {
                             it.copy(
                                 isLoading = false,
-                                isSuccess = true,
                                 passData = result.data.data
                             )
                         }
@@ -92,7 +91,7 @@ class FormViewModel(
 data class FormState(
     val isLoading : Boolean = false,
     val passData: PassResponseData? = null,
-    val isSuccess: Boolean = false,
+    val isCreated: Boolean = false,
     val error : String? = null,
     val msg : String? = null
 )

@@ -5,21 +5,21 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PassResponseData(
     @SerialName("account_name")
-    val accountName: String,
+    var accountName: String,
     @SerialName("desc")
-    val desc: String?,
+    var desc: String?,
     @SerialName("email")
-    val email: String?,
+    var email: String?,
     @SerialName("id")
     val id: Int?,
     @SerialName("jenis_data")
-    val jenisData: String?,
+    var jenisData: String?,
     @SerialName("password")
-    val password: String?,
+    var password: String?,
     @SerialName("url")
-    val url: String?,
+    var url: String?,
     @SerialName("user_id")
     val userId: Int?,
     @SerialName("username")
-    val username: String?
+    var username: String?
 )

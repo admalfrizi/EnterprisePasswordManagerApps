@@ -15,7 +15,7 @@ sealed class Screen(val route : String) {
     data object Group : Screen(route = "group")
 
     data object FormPassData: Screen(route = "formPassData/{passId}"){
-        fun passDataId(passId : Int) = "formPassData/$passId"
+        fun passDataId(passId : String) = "formPassData/$passId"
 
         const val ARG_PASS_ID = "passId"
     }

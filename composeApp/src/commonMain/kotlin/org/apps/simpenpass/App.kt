@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.ui.RootScreen
+import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

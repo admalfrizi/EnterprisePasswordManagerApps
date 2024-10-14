@@ -21,6 +21,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +51,7 @@ fun FormScreen(
     navController: NavController,
     formViewModel: FormViewModel = koinViewModel(),
     snackBarHostState: SnackbarHostState,
-    passId: Int
+    passId: String
 ) {
     val isDismiss = remember { mutableStateOf(false) }
     val formState by formViewModel.formState.collectAsState()
@@ -78,38 +79,66 @@ fun FormScreen(
         popUpLoading(isDismiss)
     }
 
-    if(formState.isSuccess){
+    if(formState.isCreated){
         navController.navigateUp()
         scope.launch {
             snackBarHostState.showSnackbar("Data Berhasil Ditambahkan")
         }
     }
 
-    if(passId.toString().isNotEmpty()){
-        formViewModel.loadDataPassById(passId)
+    LaunchedEffect(Unit){
+        if(passId.isNotEmpty() && passId != "{passId}"){
+            formViewModel.loadDataPassById(passId.toInt())
+        }
+    }
 
+    if(formState.passData != null){
         userName = formState.passData?.username!!
         nmAccount = formState.passData?.accountName!!
         desc = formState.passData?.desc!!
         email = formState.passData?.email!!
-        jnsPass = formState.passData?.jenisData!!
+        jnsPass = formState.passData?.jenisData ?: ""
         passData = formState.passData?.password!!
-        urlPass = formState.passData?.url!!
+        urlPass = formState.passData?.url ?: ""
     }
 
-    Napier.v("Pass Id = $passId")
+//    if(passId.isNotEmpty()){
+//        formViewModel.loadDataPassById(passId.toInt())
+//
+//        userName = formState.passData?.username!!
+//        nmAccount = formState.passData?.accountName!!
+//        desc = formState.passData?.desc!!
+//        email = formState.passData?.email!!
+//        jnsPass = formState.passData?.jenisData!!
+//        passData = formState.passData?.password!!
+//        urlPass = formState.passData?.url!!
+//    }
+
+//    Napier.v("Data Pass = ${formState.passData}")
 
     Scaffold(
         bottomBar = {
             BtnForm(
                 {
-                    if(passId.toString().isNotEmpty()){
+                    if(passId.isNotEmpty() && passId != "{passId}"){
                         formViewModel.editUserPassData()
                     } else {
                         formViewModel.createUserPassData(formData)
                     }
                 },
-                { navController.navigateUp() },
+                {
+                    if(formState.passData != null){
+                        nmAccount = ""
+                        userName = ""
+                        desc = ""
+                        email = ""
+                        jnsPass = ""
+                        passData = ""
+                        urlPass = ""
+                    }
+
+                    navController.navigateUp()
+                },
                 Modifier
                 .fillMaxWidth()
                 .height(80.dp)
@@ -146,6 +175,10 @@ fun FormScreen(
                             labelHints = "Isi Nama Akun",
                             leadingIcon = null,
                             onValueChange = {
+                                if(formState.passData != null){
+                                    formState.passData?.accountName = it
+                                }
+
                                 nmAccount = it
                             }
                         )
@@ -167,6 +200,9 @@ fun FormScreen(
                             labelHints = "Isi Username",
                             leadingIcon = null,
                             onValueChange = {
+                                if(formState.passData != null){
+                                    formState.passData?.username = it
+                                }
                                 userName = it
                             }
                         )
@@ -188,6 +224,10 @@ fun FormScreen(
                             labelHints = "Isi Jenis Password",
                             leadingIcon = null,
                             onValueChange = {
+                                if(formState.passData != null){
+                                    formState.passData?.jenisData = it
+                                }
+
                                 jnsPass = it
                             }
                         )
@@ -209,6 +249,10 @@ fun FormScreen(
                             labelHints = "Isi Email",
                             leadingIcon = null,
                             onValueChange = {
+                                if(formState.passData != null){
+                                    formState.passData?.email = it
+                                }
+
                                 email = it
                             }
                         )
@@ -230,6 +274,10 @@ fun FormScreen(
                             labelHints = "Isi Data Password",
                             leadingIcon = null,
                             onValueChange = {
+                                if(formState.passData != null){
+                                    formState.passData?.password = it
+                                }
+
                                 passData = it
                             }
                         )
@@ -251,6 +299,10 @@ fun FormScreen(
                             labelHints = "Isi Data URL",
                             leadingIcon = null,
                             onValueChange = {
+                                if(formState.passData != null){
+                                    formState.passData?.url = it
+                                }
+
                                 urlPass = it
                             }
                         )
@@ -272,6 +324,10 @@ fun FormScreen(
                             labelHints = "Isi Catatan Berikut Ini",
                             leadingIcon = null,
                             onValueChange = {
+                                if(formState.passData != null){
+                                    formState.passData?.desc = it
+                                }
+
                                 desc = it
                             }
                         )

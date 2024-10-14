@@ -35,6 +35,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
@@ -62,7 +63,8 @@ fun ContentNavGraph(
     sheetState: ModalBottomSheetState,
     data: MutableState<PassResponseData?>,
     snackbarHostState: SnackbarHostState,
-    authViewModel : AuthViewModel = koinViewModel()
+    authViewModel : AuthViewModel = koinViewModel(),
+    navigateToFormWithArgs : MutableState<(PassResponseData)->Unit>
 ){
     var isLoggedIn by remember { mutableStateOf(false) }
     val stateAuth by authViewModel.authState.collectAsState()
@@ -98,7 +100,15 @@ fun ContentNavGraph(
                                 }
                             } }
                 ){
-                    HomeScreen(navController, sheetState, data)
+                    HomeScreen(
+                        navController,
+                        sheetState,
+                        data,
+                        passDataId = navigateToFormWithArgs,
+                        navigateToFormEdit = {
+                            navController.navigate(Screen.FormPassData.passDataId(it))
+                        }
+                    )
                 }
 
                 composable(route =  Screen.Group.route,
@@ -153,11 +163,13 @@ fun ContentNavGraph(
                 exitTransition = {slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, tween(700))},
                 arguments = listOf(
                     navArgument(Screen.FormPassData.ARG_PASS_ID){
-                        type = NavType.IntType
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = ""
                     }
                 )
             ){
-                val passId = requireNotNull(it.arguments?.getInt(Screen.FormPassData.ARG_PASS_ID))
+                val passId = requireNotNull(it.arguments?.getString(Screen.FormPassData.ARG_PASS_ID))
                 FormScreen(navController, snackBarHostState =  snackbarHostState, passId = passId)
             }
             composable(route = Screen.ListPassDataUser.route, enterTransition = {fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +

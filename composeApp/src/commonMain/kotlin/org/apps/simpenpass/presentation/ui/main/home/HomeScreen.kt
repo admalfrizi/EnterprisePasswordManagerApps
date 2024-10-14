@@ -29,6 +29,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,7 +62,9 @@ fun HomeScreen(
     navController: NavHostController,
     sheetState: ModalBottomSheetState,
     dataPass: MutableState<PassResponseData?>,
-    homeViewModel: HomeViewModel = koinViewModel()
+    homeViewModel: HomeViewModel = koinViewModel(),
+    passDataId: MutableState<(PassResponseData) -> Unit>,
+    navigateToFormEdit: (String) -> Unit
 ) {
 
     val homeState by homeViewModel.homeState.collectAsState()
@@ -69,6 +72,10 @@ fun HomeScreen(
         refreshing = homeState.isLoading,
         onRefresh = homeViewModel::getData
     )
+
+    passDataId.value = { passData ->
+        navigateToFormEdit(passData.id.toString())
+    }
 
     Scaffold(
         topBar = {

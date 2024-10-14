@@ -50,6 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.screen.BottomNavMenuData
@@ -90,13 +91,14 @@ fun RootScreen() {
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
 
     val shouldShowBottomBar = navController.currentBackStackEntryAsState().value?.destination?.route in routeNav.map { it.route }
+    val onClick = remember { mutableStateOf<(PassResponseData) -> Unit>({}) }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            DetailPassData(scope,sheetState,dataDetail, navController)
+            DetailPassData(scope,sheetState,dataDetail, onClick)
         },
         sheetBackgroundColor = Color.White
     ){
@@ -114,13 +116,19 @@ fun RootScreen() {
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState,dataDetail,snackBarHostState)
+            ContentNavGraph(navController, if(!shouldShowBottomBar) null else paddingValues,sheetState,dataDetail,snackBarHostState, navigateToFormWithArgs = onClick)
         }
     }
 }
 
 @Composable
-fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, data: MutableState<PassResponseData?>, navController: NavController) {
+fun DetailPassData(
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState,
+    data: MutableState<PassResponseData?>,
+    navigateToToEditForm : MutableState<(PassResponseData)->Unit>
+) {
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
@@ -183,7 +191,10 @@ fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetState, dat
             Res.drawable.edit_data_pass,
             "Edit Data Password",
             {
-                navController.navigate(Screen.FormPassData.passDataId(data.value?.id!!))
+                navigateToToEditForm.value(data.value!!)
+                scope.launch {
+                    sheetState.hide()
+                }
             }
         )
         OptionMenuHolder(
