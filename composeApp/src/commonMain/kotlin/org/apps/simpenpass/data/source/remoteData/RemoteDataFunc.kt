@@ -1,5 +1,7 @@
 package org.apps.simpenpass.data.source.remoteData
 
+import org.apps.simpenpass.models.pass_data.GrupPassData
+import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.InsertDataRequest
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
