@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.response.PassResponseData
@@ -124,6 +125,9 @@ fun <T : Any> rememberBottomSheetMenu(
 
 @Composable
 fun DetailPassData(scope: CoroutineScope, sheetState: ModalBottomSheetDataValue<PassResponseData>, data: PassResponseData?) {
+
+    Napier.v("Data Option Details : $data")
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
