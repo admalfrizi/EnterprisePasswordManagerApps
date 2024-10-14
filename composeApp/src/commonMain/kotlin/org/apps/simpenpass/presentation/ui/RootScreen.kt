@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.response.PassResponseData
@@ -53,6 +54,7 @@ import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.ModalBottomSheetDataValue
 import org.apps.simpenpass.utils.maskString
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
