@@ -52,6 +52,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.email_ic
+import resources.jenis_data_pass_ic
 import resources.menu_ic
 import resources.pass_ic
 import resources.url_link
@@ -214,6 +215,12 @@ fun PassDataInfo(
         }
         Spacer(
             modifier = Modifier.height(10.dp)
+        )
+        DataInfoHolder(
+            Res.drawable.jenis_data_pass_ic,data.value?.jenisData ?: ""
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
             Res.drawable.user_ic,data.value?.username ?: ""

@@ -184,7 +184,7 @@ fun ContentNavGraph(
                         navController.navigate(Screen.FormPassData.passDataId(it))
                     },
                     navigateBack = {
-
+                        navController.navigateUp()
                     }
                 )
             }
