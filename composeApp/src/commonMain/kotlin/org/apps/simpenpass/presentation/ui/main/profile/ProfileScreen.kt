@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.components.DialogLoading
 import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.profileComponents.HeaderContainer

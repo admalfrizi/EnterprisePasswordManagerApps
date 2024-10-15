@@ -1,10 +1,7 @@
 package org.apps.simpenpass.presentation.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -37,32 +32,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
+import org.apps.simpenpass.presentation.components.rootComponents.DataInfoHolder
+import org.apps.simpenpass.presentation.components.rootComponents.OptionMenuHolder
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
-import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
-import org.apps.simpenpass.utils.ModalBottomSheetDataValue
-import org.apps.simpenpass.utils.maskString
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
 import resources.Res
-import resources.copy_paste
 import resources.delete_pass_data
 import resources.edit_anggota_ic
 import resources.edit_data_pass
@@ -70,8 +55,6 @@ import resources.email_ic
 import resources.pass_ic
 import resources.url_link
 import resources.user_ic
-import resources.visibility_ic
-import resources.visibility_non_ic
 
 @Composable
 fun RootScreen() {
@@ -204,121 +187,5 @@ fun DetailPassData(
     }
 }
 
-@Composable
-fun OptionMenuHolder(
-    icon: DrawableResource,
-    title: String,
-    onClick: (() -> Unit)? = null
-) {
-    Box(modifier = Modifier.fillMaxWidth().clickable {
-        if (onClick !=null){
-            onClick()
-        }
-    },){
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painterResource(icon),"",
-                modifier = Modifier.size(44.dp),
-                colorFilter = ColorFilter.tint(color = secondaryColor)
-            )
-            Spacer(
-                modifier = Modifier.width(19.dp)
-            )
-            Text(
-                title,
-                style = MaterialTheme.typography.subtitle2,
-                color = secondaryColor,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Start
-            )
-
-        }
-    }
-}
-
-@Composable
-fun DataInfoHolder(
-    icon: DrawableResource,
-    title: String,
-    isPassData : Boolean = false
-) {
-    var showPassword by remember { mutableStateOf(value = false) }
-
-    Box(
-        modifier = Modifier.fillMaxWidth().clickable {
-
-        }
-    ){
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painterResource(icon),"",
-                modifier = Modifier.size(28.dp)
-            )
-            Spacer(
-                modifier = Modifier.width(19.dp)
-            )
-            Text(
-                checkData(title, isPassData, showPassword),
-                style = MaterialTheme.typography.body2,
-                color = secondaryColor,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Start
-            )
-            if(isPassData){
-                if(showPassword){
-                    IconButton(
-                        onClick = {
-                            showPassword = false
-                        }
-                    ){
-                        Image(
-                            painterResource(Res.drawable.visibility_ic),"",
-                        )
-                    }
-                } else {
-                    IconButton(
-                        onClick = {
-                            showPassword = true
-                        }
-                    ){
-                        Image(
-                            painterResource(Res.drawable.visibility_non_ic),"",
-                        )
-                    }
-                }
-            }
-            IconButton(
-                onClick = {
-
-                }
-            ){
-                Image(
-                    painterResource(Res.drawable.copy_paste),"",
-                )
-            }
 
 
-        }
-    }
-}
-
-fun checkData(data: String, isPassData: Boolean, showPassword: Boolean): String {
-    return if(isPassData){
-        if(showPassword){
-            data
-        }
-        else {
-            maskString(data)
-        }
-    } else {
-        data
-    }
-}
