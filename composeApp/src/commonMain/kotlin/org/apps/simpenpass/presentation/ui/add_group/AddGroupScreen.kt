@@ -44,6 +44,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -295,7 +296,10 @@ fun AddGroupScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
-                            modifier = Modifier.background(Color(0xFF78A1D7), shape = CircleShape).size(100.dp).clickable {
+                            modifier = Modifier.background(Color(0xFF78A1D7), shape = CircleShape).size(100.dp).clickable(
+                                interactionSource = interactionSource,
+                                indication = ripple(bounded = false)
+                            ) {
                                 launcher.launch()
                             }.clip(CircleShape)
                         ) {

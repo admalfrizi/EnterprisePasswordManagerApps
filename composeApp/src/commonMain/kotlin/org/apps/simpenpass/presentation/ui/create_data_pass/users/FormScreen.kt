@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.InsertDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
@@ -86,6 +85,13 @@ fun FormScreen(
         }
     }
 
+    if(formState.isUpdated) {
+        navController.navigateUp()
+        scope.launch {
+            snackBarHostState.showSnackbar("Data Berhasil Diperbarui")
+        }
+    }
+
     LaunchedEffect(Unit){
         if(passId.isNotEmpty() && passId != "{passId}"){
             formViewModel.loadDataPassById(passId.toInt())
@@ -102,26 +108,14 @@ fun FormScreen(
         urlPass = formState.passData?.url ?: ""
     }
 
-//    if(passId.isNotEmpty()){
-//        formViewModel.loadDataPassById(passId.toInt())
-//
-//        userName = formState.passData?.username!!
-//        nmAccount = formState.passData?.accountName!!
-//        desc = formState.passData?.desc!!
-//        email = formState.passData?.email!!
-//        jnsPass = formState.passData?.jenisData!!
-//        passData = formState.passData?.password!!
-//        urlPass = formState.passData?.url!!
-//    }
-
-//    Napier.v("Data Pass = ${formState.passData}")
+//    Napier.v("Data Pass = $formData")
 
     Scaffold(
         bottomBar = {
             BtnForm(
                 {
                     if(passId.isNotEmpty() && passId != "{passId}"){
-                        formViewModel.editUserPassData()
+                        formViewModel.editUserPassData(passId = passId.toInt(), formData)
                     } else {
                         formViewModel.createUserPassData(formData)
                     }
@@ -142,7 +136,8 @@ fun FormScreen(
                 Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .background(secondaryColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                .background(secondaryColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+                isPassIdExist = passId.isNotEmpty() && passId != "{passId}"
             )
         },
         content = {
