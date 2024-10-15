@@ -23,7 +23,7 @@ interface PassDataFunc {
 }
 
 interface GroupPassDataFunc {
-    suspend fun createUserPass(token: String,formData: InsertDataRequest, id: Int): BaseResponse<PassResponseData>
-    suspend fun editPassData(data: RegisterRequest) : BaseResponse<PassResponseData>
-    suspend fun listUserPassData(token: String, id: Int) : BaseResponse<List<PassResponseData>>
+    suspend fun createGroup(token: String,formData: InsertDataRequest, id: Int): BaseResponse<GrupPassData>
+    suspend fun updateGroupData(data: RegisterRequest) : BaseResponse<GrupPassData>
+    suspend fun listUserJoinedGroup(token: String, userId: Int) : BaseResponse<List<PassResponseData>>
 }

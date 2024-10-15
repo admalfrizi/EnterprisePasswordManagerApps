@@ -179,7 +179,14 @@ fun ContentNavGraph(
                     slideOutVertically(animationSpec = tween(durationMillis = 300)) {
                         with(density) { (30).dp.roundToPx() }
                     }}){
-                ListDataPassUser(navController)
+                ListDataPassUser(
+                    navigateToFormEdit = {
+                        navController.navigate(Screen.FormPassData.passDataId(it))
+                    },
+                    navigateBack = {
+
+                    }
+                )
             }
 
             composable(
