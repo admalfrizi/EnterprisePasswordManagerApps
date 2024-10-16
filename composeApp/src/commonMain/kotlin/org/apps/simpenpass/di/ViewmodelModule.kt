@@ -42,6 +42,9 @@ val viewModelModule = module {
     }
 
     viewModel {
-        GroupViewModel()
+        GroupViewModel(
+            repoGroup = get(),
+            repoMemberGroupRepository = get()
+        )
     }
 }
