@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -21,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
 import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHolder
@@ -33,12 +33,11 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun GroupScreen(
     navController: NavController,
-    groupViewModel: GroupViewModel = koinViewModel()
+    groupViewModel: GroupViewModel = koinViewModel(),
+    navigateToGrupDtl : (String) -> Unit
 ) {
 
     val groupState by groupViewModel.groupState.collectAsState()
-
-//    val groupList by remember { mutableStateOf(emptyList<GrupPassData>()) }
 
     Scaffold(
       backgroundColor = Color(0xFFF1F1F1),
@@ -76,6 +75,15 @@ fun GroupScreen(
               Spacer(
                   modifier = Modifier.height(9.dp)
               )
+              if(groupState.isLoading){
+                  Box(
+                      modifier = Modifier.fillMaxSize(),
+                      contentAlignment = Alignment.Center,
+                  ) {
+                      CircularProgressIndicator()
+                  }
+              }
+
               if(groupState.groupData.isEmpty()){
                   Box(
                       modifier = Modifier.fillMaxSize(),
@@ -92,7 +100,7 @@ fun GroupScreen(
                       modifier = Modifier.fillMaxWidth(),
                   ) {
                       items(groupState.groupData) { item ->
-                          ListGroupHolder(navController, item)
+                          ListGroupHolder(item, { navigateToGrupDtl(item?.id.toString()) })
                       }
                   }
               }

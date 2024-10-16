@@ -2,7 +2,8 @@ package org.apps.simpenpass.data.source.remoteData
 
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
-import org.apps.simpenpass.models.request.InsertDataRequest
+import org.apps.simpenpass.models.request.AddMemberRequest
+import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.response.BaseResponse
@@ -16,14 +17,28 @@ interface UserDataFunc {
 }
 
 interface PassDataFunc {
-    suspend fun createUserPass(token: String,formData: InsertDataRequest, id: Int): BaseResponse<PassResponseData>
-    suspend fun editPassData(token: String, editData: InsertDataRequest, passId: Int) : BaseResponse<PassResponseData>
+    suspend fun createUserPass(token: String, formData: PassDataRequest, id: Int): BaseResponse<PassResponseData>
+    suspend fun editPassData(token: String, editData: PassDataRequest, passId: Int) : BaseResponse<PassResponseData>
     suspend fun listUserPassData(token: String, id: Int) : BaseResponse<List<PassResponseData>>
     suspend fun getUserPassDataById(token: String, passId: Int) : BaseResponse<PassResponseData>
 }
 
 interface GroupPassDataFunc {
-    suspend fun createGroup(token: String,formData: InsertDataRequest, id: Int): BaseResponse<GrupPassData>
-    suspend fun updateGroupData(data: RegisterRequest) : BaseResponse<GrupPassData>
-    suspend fun listUserJoinedGroup(token: String, userId: Int) : BaseResponse<List<PassResponseData>>
+    suspend fun createGroup(
+        token: String,
+        formData: PassDataRequest,
+        id: Int
+    ): BaseResponse<GrupPassData>
+
+    suspend fun updateGroupData(data: RegisterRequest): BaseResponse<GrupPassData>
+    suspend fun listJoinedGroupBasedOnUser(
+        token: String,
+        userId: Int
+    ): BaseResponse<List<GrupPassData>>
+}
+
+interface MemberGroupDataFunc {
+    suspend fun addMemberToGroup(token: String, addData: AddMemberRequest, id: Int): BaseResponse<GrupPassData>
+    suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
+    suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
 }

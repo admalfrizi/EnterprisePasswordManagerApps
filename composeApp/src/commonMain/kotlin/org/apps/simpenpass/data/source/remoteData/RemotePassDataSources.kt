@@ -12,13 +12,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
-import org.apps.simpenpass.models.request.InsertDataRequest
+import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
 
 class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
-    override suspend fun createUserPass(token: String, formData: InsertDataRequest,id: Int): BaseResponse<PassResponseData> {
+    override suspend fun createUserPass(token: String, formData: PassDataRequest, id: Int): BaseResponse<PassResponseData> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "userPass"){
                 contentType(ContentType.Application.Json)
@@ -34,7 +34,7 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         }
     }
 
-    override suspend fun editPassData(token: String,editData: InsertDataRequest, passId: Int): BaseResponse<PassResponseData> {
+    override suspend fun editPassData(token: String, editData: PassDataRequest, passId: Int): BaseResponse<PassResponseData> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateData"){
                 contentType(ContentType.Application.Json)

@@ -22,18 +22,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import org.apps.simpenpass.models.pass_data.GrupPassData
-import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
 
 @Composable
-fun ListGroupHolder(navController: NavController, item: GrupPassData?) {
+fun ListGroupHolder(
+    item: GrupPassData?,
+    onClick: () -> Unit
+) {
     Column {
         Card(
             modifier = Modifier.fillMaxWidth().clickable{
-                navController.navigate(Screen.GroupPass.route)
+                onClick()
             },
             elevation = 0.dp
         ) {
@@ -65,7 +66,7 @@ fun ListGroupHolder(navController: NavController, item: GrupPassData?) {
                         modifier = Modifier.height(6.dp)
                     )
                     Text(
-                        item.desc,
+                        item.deskripsi ?: "Isian Deskripsi",
                         style = MaterialTheme.typography.subtitle1,
                         color = secondaryColor
                     )

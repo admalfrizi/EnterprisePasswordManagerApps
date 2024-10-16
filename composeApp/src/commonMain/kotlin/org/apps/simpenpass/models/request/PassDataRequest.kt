@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class InsertDataRequest(
+data class PassDataRequest(
     @SerialName("account_name")
     val accountName: String?,
     @SerialName("desc")

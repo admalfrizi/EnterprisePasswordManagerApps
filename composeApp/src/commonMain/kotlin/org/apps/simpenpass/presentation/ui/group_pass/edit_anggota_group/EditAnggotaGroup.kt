@@ -52,9 +52,9 @@ import resources.role_change
 @Composable
 fun EditAnggotaGroup(navController: NavController) {
     val itemsData = listOf(
-        MemberGroupData(1, "Nama Orang", "Email", true, "Posisi"),
-        MemberGroupData(2, "Nama Orang", "Email", false, "Posisi"),
-        MemberGroupData(3, "Nama Orang", "Email", false, "Posisi"),
+        MemberGroupData(1, "Nama Orang", "Email", true),
+        MemberGroupData(2, "Nama Orang", "Email", false),
+        MemberGroupData(3, "Nama Orang", "Email", false),
         )
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -193,7 +193,7 @@ fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupDat
                             modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
                         ) {
                             Text(
-                                text = profileNameInitials(item.nm_people),
+                                text = profileNameInitials(item.nama_anggota),
                                 style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
                                 modifier = Modifier.align(Alignment.Center)
                             )
@@ -206,12 +206,12 @@ fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupDat
                             horizontalAlignment = Alignment.Start
                         ) {
                             Text(
-                                item.nm_people,
+                                item.nama_anggota,
                                 style = MaterialTheme.typography.h6,
                                 color = secondaryColor
                             )
                             Text(
-                                item.email,
+                                item.email_anggota,
                                 style = MaterialTheme.typography.subtitle1,
                                 color = secondaryColor
                             )
@@ -219,7 +219,7 @@ fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupDat
                                 modifier = Modifier.height(9.dp)
                             )
                             Text(
-                                item.role_position,
+                                "",
                                 style = MaterialTheme.typography.subtitle1,
                                 color = secondaryColor
                             )

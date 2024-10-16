@@ -35,7 +35,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
@@ -136,7 +135,9 @@ fun ContentNavGraph(
                                 }
                             }
                         } }) {
-                    GroupScreen(navController)
+                    GroupScreen(navController, navigateToGrupDtl = {
+                        navController.navigate(Screen.GroupPassDtl.groupId(it))
+                    })
                 }
 
                 composable(route = Screen.Profile.route,
@@ -190,7 +191,7 @@ fun ContentNavGraph(
             }
 
             composable(
-                route = Screen.GroupPass.route,
+                route = Screen.GroupPassDtl.route,
                 enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                         slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
                             with(density) { 30.dp.roundToPx() }
@@ -199,9 +200,18 @@ fun ContentNavGraph(
                         slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
                             with(density) { (-30).dp.roundToPx() }
                         }
-                }
+                },
+                arguments = listOf(
+                    navArgument(Screen.GroupPassDtl.ARG_GROUP_ID){
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = ""
+                    }
+                )
             ) {
-                GroupPassDetail(navController)
+                val groupId = requireNotNull(it.arguments?.getString(Screen.GroupPassDtl.ARG_GROUP_ID))
+
+                GroupPassDetail(navController, groupId = groupId)
             }
 
             composable(route = Screen.EditAnggota.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +

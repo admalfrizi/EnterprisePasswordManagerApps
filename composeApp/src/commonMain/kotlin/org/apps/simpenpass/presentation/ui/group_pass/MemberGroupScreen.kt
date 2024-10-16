@@ -8,15 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.IconButton
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.presentation.ui.main.group.GroupState
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
@@ -36,19 +41,41 @@ import resources.email_ic
 import resources.whatsapp_ic
 
 @Composable
-fun MemberGroupScreen(navController: NavController) {
-    val isAdmin = true
+fun MemberGroupScreen(
+    navController: NavController,
+    groupState: GroupState
+) {
+    val memberData = groupState.memberGroupData
+
     Column {
         EditAnggotaBtnHolder(navController)
         Spacer(
             modifier = Modifier.height(16.dp)
         )
-        AnggotaDataHolder(isAdmin)
+        if(groupState.isLoading){
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        if(memberData.isNotEmpty()){
+            LazyColumn {
+                items(memberData){ item ->
+                    AnggotaDataHolder(item!!)
+                }
+            }
+        }
+
+
+//        AnggotaDataHolder(isAdmin,memberData)
     }
 }
 
 @Composable
-fun AnggotaDataHolder(isAdmin : Boolean) {
+fun AnggotaDataHolder(item: MemberGroupData) {
     Box(modifier = Modifier.fillMaxWidth().background(color = Color.White)){
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 11.dp),
@@ -56,7 +83,7 @@ fun AnggotaDataHolder(isAdmin : Boolean) {
         ) {
             Column {
                 Text(
-                    "Nama Anggota",
+                    item.nama_anggota,
                     style = MaterialTheme.typography.body1,
                     color = secondaryColor
                 )
@@ -68,7 +95,7 @@ fun AnggotaDataHolder(isAdmin : Boolean) {
                     Spacer(modifier = Modifier.width(19.dp))
                     Column {
                         Text(
-                            "Email",
+                            item.email_anggota,
                             style = MaterialTheme.typography.subtitle1,
                             color = secondaryColor
                         )
@@ -83,7 +110,7 @@ fun AnggotaDataHolder(isAdmin : Boolean) {
             Column(
                 horizontalAlignment = Alignment.End
             ) {
-                if(isAdmin){
+                if(item.isGroupAdmin!!){
                     Card(
                         backgroundColor = Color(0xFF78A1D7),
                         shape = RoundedCornerShape(4.dp)
@@ -99,7 +126,7 @@ fun AnggotaDataHolder(isAdmin : Boolean) {
                     }
                     Spacer(modifier = Modifier.height(14.dp))
                 }
-                Row(modifier = Modifier.padding(vertical = if(isAdmin) 0.dp  else 19.dp)) {
+                Row(modifier = Modifier.padding(vertical = if(item.isGroupAdmin!!) 0.dp  else 19.dp)) {
                     Image(
                         painterResource(Res.drawable.whatsapp_ic),
                         "",
@@ -126,7 +153,7 @@ fun EditAnggotaBtnHolder(navController: NavController) {
             navController.navigate(Screen.EditAnggota.route)
         }
     ){
-        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier.size(55.dp).background(color = Color(0xFF78A1D7),shape = RoundedCornerShape(7.dp))
             ) {

@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
-import org.apps.simpenpass.models.request.InsertDataRequest
+import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class PassRepository(
     private val remotePassSources: RemotePassDataSources,
     private val localData : LocalStoreData
 ) {
-     fun createUserPassData(formData: InsertDataRequest) = flow {
+     fun createUserPassData(formData: PassDataRequest) = flow {
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
@@ -31,7 +31,7 @@ class PassRepository(
          Napier.d("Error Data ${error.message}")
     }
 
-    fun editUserPassData(editData: InsertDataRequest, passId: Int) = flow {
+    fun editUserPassData(editData: PassDataRequest, passId: Int) = flow {
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->

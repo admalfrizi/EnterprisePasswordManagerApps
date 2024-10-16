@@ -10,40 +10,42 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.GrupPassData
-import org.apps.simpenpass.models.request.PassDataRequest
-import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.utils.Constants
 
-class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassDataFunc {
-    override suspend fun createGroup(
+class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupDataFunc {
+    override suspend fun addMemberToGroup(
         token: String,
-        formData: PassDataRequest,
+        addData: AddMemberRequest,
         id: Int
     ): BaseResponse<GrupPassData> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateGroupData(data: RegisterRequest): BaseResponse<GrupPassData> {
+    override suspend fun deleteOneMemberFromGroup(
+        token: String,
+        userId: Int
+    ): BaseResponse<GrupPassData> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun listJoinedGroupBasedOnUser(
+    override suspend fun listUserJoinedInGroup(
         token: String,
-        userId: Int
-    ): BaseResponse<List<GrupPassData>> {
+        groupId: Int
+    ): BaseResponse<List<MemberGroupData>> {
         try {
-            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "groupPass/$userId"){
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "memberGroup/$groupId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
 
-            return response.body<BaseResponse<List<GrupPassData>>>()
+            return response.body<BaseResponse<List<MemberGroupData>>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){
             throw Exception(e.message)
         }
     }
-
 }

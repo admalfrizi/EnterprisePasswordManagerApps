@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassRepository
-import org.apps.simpenpass.models.request.InsertDataRequest
+import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -18,7 +18,7 @@ class FormViewModel(
     private val _formState = MutableStateFlow(FormState())
     val formState = _formState.asStateFlow()
 
-    fun createUserPassData(formData: InsertDataRequest){
+    fun createUserPassData(formData: PassDataRequest){
         viewModelScope.launch {
             repo.createUserPassData(formData).collect { result ->
                 when(result) {
@@ -82,7 +82,7 @@ class FormViewModel(
         }
     }
 
-    fun editUserPassData(passId: Int, editData: InsertDataRequest ) {
+    fun editUserPassData(passId: Int, editData: PassDataRequest ) {
         viewModelScope.launch {
             repo.editUserPassData(editData, passId).collect { result ->
                 when(result){

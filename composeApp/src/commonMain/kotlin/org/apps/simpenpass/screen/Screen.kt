@@ -20,7 +20,11 @@ sealed class Screen(val route : String) {
         const val ARG_PASS_ID = "passId"
     }
     data object ListPassDataUser : Screen(route = "listPassData")
-    data object GroupPassDtl : Screen(route = "groupDetail")
+    data object GroupPassDtl : Screen(route = "groupDetail/{groupId}"){
+        fun groupId(groupId : String) = "groupDetail/$groupId"
+
+        const val ARG_GROUP_ID = "groupId"
+    }
 
     data object EditAnggota : Screen(route = "editAnggota")
     data object RetrieveDataPass : Screen(route = "retrieveData")

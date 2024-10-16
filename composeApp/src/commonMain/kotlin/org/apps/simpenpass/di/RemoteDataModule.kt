@@ -1,6 +1,7 @@
 package org.apps.simpenpass.di
 
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
+import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteUserSources
 import org.koin.dsl.module
@@ -20,6 +21,12 @@ val remoteDataModule = module {
 
     single {
         RemoteGroupDataSources(
+            httpClient = get()
+        )
+    }
+
+    single {
+        RemoteMemberDataSources(
             httpClient = get()
         )
     }

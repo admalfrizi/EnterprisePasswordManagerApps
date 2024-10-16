@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.request.InsertDataRequest
+import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.formComponents.HeaderContainer
@@ -64,7 +64,7 @@ fun FormScreen(
     var urlPass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
 
-    val formData = InsertDataRequest(
+    val formData = PassDataRequest(
         accountName = nmAccount,
         username = userName,
         desc = desc,

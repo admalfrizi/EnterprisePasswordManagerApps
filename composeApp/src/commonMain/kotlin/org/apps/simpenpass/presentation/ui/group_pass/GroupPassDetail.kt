@@ -41,6 +41,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,8 +55,11 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.presentation.ui.main.group.GroupState
+import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
@@ -62,14 +67,20 @@ import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.edit_ic
 import resources.menu_ic
 import resources.your_data_ic
 
 @Composable
-fun GroupPassDetail(navController: NavController) {
+fun GroupPassDetail(
+    navController: NavController,
+    groupViewModel: GroupViewModel = koinViewModel(),
+    groupId: String
+) {
     val tabsName = listOf("Password", "Anggota")
+    val groupState by groupViewModel.groupState.collectAsState()
 
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -82,6 +93,12 @@ fun GroupPassDetail(navController: NavController) {
     )
 
     var selectedOption by remember { mutableStateOf(-1) }
+
+    LaunchedEffect(groupId) {
+        groupViewModel.getMemberDataGroup(groupId)
+    }
+
+    Napier.v("Grup Id = $groupId")
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -164,13 +181,19 @@ fun GroupPassDetail(navController: NavController) {
 
     ){
 
-        ContentView(navController,tabsName,sheetState,scope)
+        ContentView(navController,tabsName,sheetState,scope,groupState)
 
     }
 }
 
 @Composable
-fun ContentView(navController: NavController,tabsName: List<String>, sheetState: ModalBottomSheetState,scope: CoroutineScope) {
+fun ContentView(
+    navController: NavController,
+    tabsName: List<String>,
+    sheetState: ModalBottomSheetState,
+    scope: CoroutineScope,
+    groupState: GroupState,
+) {
     var indexTab by remember { mutableStateOf(0) }
     var isDropdownShow by remember { mutableStateOf(false) }
 
@@ -323,7 +346,7 @@ fun ContentView(navController: NavController,tabsName: List<String>, sheetState:
                                 modifier = Modifier.height(20.dp)
                             )
                             Text(
-                                "23",
+                                groupState.memberGroupData.size.toString(),
                                 style = MaterialTheme.typography.body2,
                                 fontSize = 24.sp
                             )
@@ -359,7 +382,7 @@ fun ContentView(navController: NavController,tabsName: List<String>, sheetState:
                     }
 
                     1 -> {
-                        MemberGroupScreen(navController)
+                        MemberGroupScreen(navController,groupState)
                     }
                 }
             }
