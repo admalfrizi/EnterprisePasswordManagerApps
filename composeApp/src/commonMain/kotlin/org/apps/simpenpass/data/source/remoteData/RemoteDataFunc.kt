@@ -1,5 +1,6 @@
 package org.apps.simpenpass.data.source.remoteData
 
+import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.AddMemberRequest
@@ -35,6 +36,10 @@ interface GroupPassDataFunc {
         token: String,
         userId: Int
     ): BaseResponse<List<GrupPassData>>
+    suspend fun detailGroupData(
+        token: String,
+        groupId: Int
+    ): BaseResponse<DtlGrupPass>
 }
 
 interface MemberGroupDataFunc {

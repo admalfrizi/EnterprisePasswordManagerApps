@@ -16,17 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
@@ -35,10 +27,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,14 +43,11 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
+import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
 import org.apps.simpenpass.presentation.ui.main.group.GroupState
 import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
-import org.apps.simpenpass.screen.Screen
-import org.apps.simpenpass.style.btnColor
-import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.DrawableResource
@@ -70,7 +55,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.edit_ic
-import resources.menu_ic
 import resources.your_data_ic
 
 @Composable
@@ -92,99 +76,23 @@ fun GroupPassDetail(
         MethodSelection(2, Res.drawable.your_data_ic, "Ambil Dari Data Anda"),
     )
 
-    var selectedOption by remember { mutableStateOf(-1) }
-
     LaunchedEffect(groupId) {
         groupViewModel.getMemberDataGroup(groupId)
+        groupViewModel.getDetailGroup(groupId)
     }
-
-    Napier.v("Grup Id = $groupId")
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            Column(
-                modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Pilih Metode untuk Menambahkan Data Password Baru", modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6, color = secondaryColor)
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                sheetState.hide()
-                            }
-                        },
-                        content = {
-                            Icon(
-                                Icons.Filled.Clear,
-                                ""
-                            )
-                        }
-                    )
-                }
-                Spacer(
-                    modifier = Modifier.height(13.dp)
-                )
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(13.dp),
-                ) {
-                    items(itemsData) { item ->
-                        ListOptionHolder(
-                            icon = item.icon,
-                            title = item.title,
-                            isSelected = selectedOption == item.id,
-                            onSelected = { selectedOption = item.id}
-                        )
-                    }
-                }
-                Spacer(
-                    modifier = Modifier.height(31.dp)
-                )
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = selectedOption != -1,
-                    onClick = {
-                        if(selectedOption == 1){
-                            navController.navigate(Screen.FormPassData.route)
-                            scope.launch {
-                                sheetState.hide()
-                            }
-                        } else if(selectedOption == 2) {
-                            navController.navigate(Screen.RetrieveDataPass.route){
-                                restoreState = true
-                            }
-                            scope.launch {
-                                sheetState.hide()
-                            }
-                        }
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = ButtonDefaults.elevation(0.dp),
-                    colors = ButtonDefaults.buttonColors(btnColor),
-                    content = {
-                        Text(
-                            "Pilih",
-                            style = MaterialTheme.typography.h6,
-                            color = fontColor1
-                        )
-                    }
-                )
-            }
-
+            OptionAddData(scope,sheetState,itemsData,navController)
         },
 
     ){
-
-        ContentView(navController,tabsName,sheetState,scope,groupState)
-
+        ContentView(navController,tabsName,sheetState,scope,groupState,groupId)
     }
 }
+
 
 @Composable
 fun ContentView(
@@ -193,70 +101,15 @@ fun ContentView(
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
     groupState: GroupState,
+    groupId: String,
 ) {
     var indexTab by remember { mutableStateOf(0) }
-    var isDropdownShow by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         backgroundColor = Color(0xFFF1F1F1),
         topBar = {
-            TopAppBar(
-                backgroundColor = secondaryColor,
-                title = {
-                    Text(
-                        "Detail Grup"
-                    )
-                },
-                elevation = 0.dp,
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        },
-                        content = {
-                            Image(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                "",
-                                colorFilter = ColorFilter.tint(Color.White)
-                            )
-                        }
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            isDropdownShow = true
-                        },
-                        content = {
-                            Image(
-                                painterResource(Res.drawable.menu_ic),
-                                "",
-                                colorFilter = ColorFilter.tint(Color.White)
-                            )
-                        }
-                    )
-                    DropdownMenu(
-                        expanded = isDropdownShow,
-                        onDismissRequest = { isDropdownShow = false }
-                    ) {
-                        DropdownMenuItem(
-                            content = {
-                                Text(text = "Edit Data Grup")
-                            },
-                            onClick = {
-                            }
-                        )
-                        DropdownMenuItem(
-                            content = {
-                                Text(text = "Hapus Grup Ini")
-                            },
-                            onClick = {
-                            }
-                        )
-                    }
-                }
-            )
+            TopBarDtl(navController)
         },
         content = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -276,7 +129,7 @@ fun ContentView(
                                 .background(color = Color(0xFF78A1D7), shape = CircleShape)
                         ){
                             Text(
-                                text = profileNameInitials("Nama Grup"),
+                                text = profileNameInitials("fgrf"),
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 36.sp,
                                 color = Color.White,
@@ -287,13 +140,13 @@ fun ContentView(
                         Column(modifier = Modifier.align(Alignment.CenterVertically)) {
                             Spacer(modifier = Modifier.height(14.dp))
                             Text(
-                                "Nama Grup",
+                                groupState.dtlGroupData?.nm_grup ?: "",
                                 style = MaterialTheme.typography.button,
                                 color = secondaryColor
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                "Deskripsi Grup",
+                                groupState.dtlGroupData?.desc ?: "",
                                 style = MaterialTheme.typography.subtitle1,
                                 color = secondaryColor
                             )
@@ -382,7 +235,7 @@ fun ContentView(
                     }
 
                     1 -> {
-                        MemberGroupScreen(navController,groupState)
+                        MemberGroupScreen(navController,groupState,groupId)
                     }
                 }
             }

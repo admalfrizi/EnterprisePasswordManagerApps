@@ -20,7 +20,6 @@ class MemberGroupRepository(
                 if (result.success) {
                     emit(NetworkResult.Success(result))
                 }
-                Napier.v("Data Group : ${result.data}")
             }
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error("No Internet Connection"))

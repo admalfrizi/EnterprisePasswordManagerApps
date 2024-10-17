@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
+import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.utils.NetworkResult
@@ -85,10 +86,44 @@ class GroupViewModel(
             }
         }
     }
+
+    fun getDetailGroup(groupId: String) {
+        viewModelScope.launch {
+            repoGroup.detailGroup(groupId.toInt()).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                dtlGroupData = res.data.data!!,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class GroupState(
     val groupData: List<GrupPassData?> = emptyList(),
+    val dtlGroupData: DtlGrupPass? = null,
     val memberGroupData: List<MemberGroupData?> = emptyList(),
     val msg: String = "",
     val isError: Boolean = false,

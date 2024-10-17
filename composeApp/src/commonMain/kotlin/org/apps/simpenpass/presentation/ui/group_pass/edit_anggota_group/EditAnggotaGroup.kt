@@ -29,6 +29,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,9 +43,12 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.presentation.ui.main.group.GroupState
+import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.add_member_ic
 import resources.delete_ic
@@ -50,16 +56,22 @@ import resources.menu_ic
 import resources.role_change
 
 @Composable
-fun EditAnggotaGroup(navController: NavController) {
-    val itemsData = listOf(
-        MemberGroupData(1, "Nama Orang", "Email", true),
-        MemberGroupData(2, "Nama Orang", "Email", false),
-        MemberGroupData(3, "Nama Orang", "Email", false),
-        )
+fun EditAnggotaGroup(
+    navController: NavController,
+    groupViewModel: GroupViewModel = koinViewModel(),
+    groupId: String
+) {
+    val groupState by groupViewModel.groupState.collectAsState()
+    val itemsData = groupState.memberGroupData
+
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(groupId){
+        groupViewModel.getMemberDataGroup(groupId)
+    }
 
     ModalBottomSheetLayout(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -73,7 +85,8 @@ fun EditAnggotaGroup(navController: NavController) {
                 navController = navController,
                 itemsData,
                 scope,
-                sheetState
+                sheetState,
+                groupState
             )
         }
     )
@@ -138,7 +151,13 @@ fun OptionMenu(sheetState: ModalBottomSheetState, scope: CoroutineScope) {
 }
 
 @Composable
-fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupData>, scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+fun ScaffoldContent(
+    navController: NavController,
+    itemsData: List<MemberGroupData?>,
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState,
+    groupState: GroupState
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -179,9 +198,8 @@ fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupDat
             )
         }
     ){
-
         LazyColumn {
-            items(itemsData){ item ->
+            items(groupState.memberGroupData){ item ->
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -193,7 +211,7 @@ fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupDat
                             modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
                         ) {
                             Text(
-                                text = profileNameInitials(item.nama_anggota),
+                                text = profileNameInitials(item?.nama_anggota!!),
                                 style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
                                 modifier = Modifier.align(Alignment.Center)
                             )
@@ -206,7 +224,7 @@ fun ScaffoldContent(navController: NavController, itemsData: List<MemberGroupDat
                             horizontalAlignment = Alignment.Start
                         ) {
                             Text(
-                                item.nama_anggota,
+                                item?.nama_anggota!!,
                                 style = MaterialTheme.typography.h6,
                                 color = secondaryColor
                             )

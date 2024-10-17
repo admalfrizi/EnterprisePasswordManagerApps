@@ -9,6 +9,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
+import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.RegisterRequest
@@ -39,6 +40,21 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             }
 
             return response.body<BaseResponse<List<GrupPassData>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun detailGroupData(token: String, groupId: Int): BaseResponse<DtlGrupPass> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "dtlGroup/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<DtlGrupPass>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

@@ -3,7 +3,7 @@ package org.apps.simpenpass.screen
 sealed class Screen(val route : String) {
     data object NavScreen : Screen(route = "navScreen")
     data object Auth : Screen(route = "auth")
-    data object GroupPass : Screen(route = "groupPass")
+
 
     data object Login : Screen(route = "login")
     data object Register : Screen(route = "register")
@@ -14,20 +14,27 @@ sealed class Screen(val route : String) {
     data object Profile : Screen(route = "profile")
     data object Group : Screen(route = "group")
 
+    data object GroupPass : Screen(route = "groupPass/dtl/{groupId}"){
+        fun groupId(groupId : String) = "groupPass/dtl/$groupId"
+
+        const val ARG_GROUP_ID = "groupId"
+    }
+
     data object FormPassData: Screen(route = "formPassData/{passId}"){
         fun passDataId(passId : String) = "formPassData/$passId"
 
         const val ARG_PASS_ID = "passId"
     }
     data object ListPassDataUser : Screen(route = "listPassData")
-    data object GroupPassDtl : Screen(route = "groupDetail/{groupId}"){
-        fun groupId(groupId : String) = "groupDetail/$groupId"
+    data object GroupPassDtl : Screen(route = "groupDetail")
+
+    data object EditAnggota : Screen(route = "groupPass/dtl/editAnggota/{groupId}"){
+        fun groupId(groupId : String) = "groupPass/dtl/editAnggota/$groupId"
 
         const val ARG_GROUP_ID = "groupId"
     }
 
-    data object EditAnggota : Screen(route = "editAnggota")
-    data object RetrieveDataPass : Screen(route = "retrieveData")
+    data object RetrieveDataPass : Screen(route = "groupPass/dtl/retrieveData")
     data object AddGroupPass : Screen(route = "addGroup")
     data object EditRole : Screen(route = "editRole")
 }

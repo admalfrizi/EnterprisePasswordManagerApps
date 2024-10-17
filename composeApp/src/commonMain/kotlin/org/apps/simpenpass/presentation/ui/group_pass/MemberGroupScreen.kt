@@ -43,12 +43,15 @@ import resources.whatsapp_ic
 @Composable
 fun MemberGroupScreen(
     navController: NavController,
-    groupState: GroupState
+    groupState: GroupState,
+    groupId: String,
 ) {
     val memberData = groupState.memberGroupData
 
     Column {
-        EditAnggotaBtnHolder(navController)
+        EditAnggotaBtnHolder {
+            navController.navigate(Screen.EditAnggota.groupId(groupId))
+        }
         Spacer(
             modifier = Modifier.height(16.dp)
         )
@@ -68,9 +71,6 @@ fun MemberGroupScreen(
                 }
             }
         }
-
-
-//        AnggotaDataHolder(isAdmin,memberData)
     }
 }
 
@@ -147,10 +147,10 @@ fun AnggotaDataHolder(item: MemberGroupData) {
 }
 
 @Composable
-fun EditAnggotaBtnHolder(navController: NavController) {
+fun EditAnggotaBtnHolder(onClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
-            navController.navigate(Screen.EditAnggota.route)
+            onClick()
         }
     ){
         Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
