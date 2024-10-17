@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
+import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
 
 class MemberGroupRepository(
@@ -29,4 +30,7 @@ class MemberGroupRepository(
         Napier.v("Error Member : ${error.message}")
     }
 
+    suspend fun getUserData(): LocalUserStore {
+        return localData.getUserData()
+    }
 }

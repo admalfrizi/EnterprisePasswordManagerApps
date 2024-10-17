@@ -1,7 +1,7 @@
 package org.apps.simpenpass.models.request
 
 data class AddMemberRequest(
-    val add_member: List<AddMember>
+    var add_member: List<AddMember?>
 )
 
 data class AddMember(

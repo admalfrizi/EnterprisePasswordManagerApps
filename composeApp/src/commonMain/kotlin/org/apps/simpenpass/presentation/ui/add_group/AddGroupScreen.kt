@@ -16,13 +16,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
@@ -49,6 +49,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,6 +90,7 @@ import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.add_description_ic
 import resources.add_pic_ic
@@ -98,7 +100,10 @@ import resources.edit_group_name_ic
 
 @OptIn(InternalVoyagerApi::class)
 @Composable
-fun AddGroupScreen(navController: NavController) {
+fun AddGroupScreen(
+    navController: NavController,
+    addGroupViewModel: AddGroupViewModel = koinViewModel()
+) {
     var grupName by rememberSaveable { mutableStateOf("") }
     var currentBottomSheet: ContentType? by remember { mutableStateOf(null) }
     val desc = remember { mutableStateOf("") }
@@ -109,6 +114,7 @@ fun AddGroupScreen(navController: NavController) {
     val isDismiss = remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
     var byteArray by remember { mutableStateOf(ByteArray(0)) }
+    val addGroupState by addGroupViewModel.addGroupState.collectAsState()
 
     if(isLoading.value){
         popUpLoading(isDismiss)
@@ -214,7 +220,7 @@ fun AddGroupScreen(navController: NavController) {
             }
         ){
             Column(
-                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Box(
                     modifier = Modifier.fillMaxWidth()
@@ -330,38 +336,43 @@ fun AddGroupScreen(navController: NavController) {
                 Spacer(
                     modifier = Modifier.height(14.dp)
                 )
-                Box(modifier = Modifier.fillMaxWidth().background(color = Color.White)){
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier.size(47.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
-                        ){
-                            Text(
-                                text = profileNameInitials("Armando Vereira"),
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 16.sp,
-                                color = Color.White,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                        Spacer(
-                            modifier = Modifier.width(25.dp)
-                        )
-                        Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Armando Vereira",
-                                style = MaterialTheme.typography.body1,
-                                color = secondaryColor
-                            )
-                            Text(
-                                "Email",
-                                style = MaterialTheme.typography.subtitle1,
-                                color = secondaryColor
-                            )
+                LazyColumn {
+                    items(addGroupState.memberList!!){ memberItem ->
+                        Box(modifier = Modifier.fillMaxWidth().background(color = Color.White)){
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier.size(47.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
+                                ){
+                                    Text(
+                                        text = profileNameInitials(memberItem.name),
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 16.sp,
+                                        color = Color.White,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                                Spacer(
+                                    modifier = Modifier.width(25.dp)
+                                )
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    verticalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        memberItem.name,
+                                        style = MaterialTheme.typography.body1,
+                                        color = secondaryColor
+                                    )
+                                    Text(
+                                        memberItem.email,
+                                        style = MaterialTheme.typography.subtitle1,
+                                        color = secondaryColor
+                                    )
+                                }
+                            }
                         }
                     }
                 }
