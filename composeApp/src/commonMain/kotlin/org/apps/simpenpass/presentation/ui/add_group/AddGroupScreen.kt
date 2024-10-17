@@ -34,7 +34,9 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -46,10 +48,12 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,17 +65,23 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import coil3.compose.AsyncImage
 import com.mohamedrejeb.calf.core.LocalPlatformContext
 import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.presentation.components.addGroupComponents.BottomSheetContent
+import org.apps.simpenpass.presentation.components.addGroupComponents.ContentType
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
@@ -86,11 +96,14 @@ import resources.add_role_group_ic
 import resources.edit_anggota_ic
 import resources.edit_group_name_ic
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(InternalVoyagerApi::class)
 @Composable
 fun AddGroupScreen(navController: NavController) {
-    var grupName by remember { mutableStateOf("") }
-    var desc by remember { mutableStateOf("") }
+    var grupName by rememberSaveable { mutableStateOf("") }
+    var currentBottomSheet: ContentType? by remember { mutableStateOf(null) }
+    val desc = remember { mutableStateOf("") }
+    val findMember = remember { mutableStateOf("") }
+
     val interactionSource = remember { MutableInteractionSource() }
     val isLoading = remember { mutableStateOf(false) }
     val isDismiss = remember { mutableStateOf(true) }
@@ -103,7 +116,8 @@ fun AddGroupScreen(navController: NavController) {
 
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
+        skipHalfExpanded = true,
+        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
     val keyboardController = LocalSoftwareKeyboardController.current
     val underlineColor = if (isFocused) Color.White else Color.Transparent
@@ -125,112 +139,28 @@ fun AddGroupScreen(navController: NavController) {
         focusManager.clearFocus()
     }
 
+    BackHandler(
+        enabled = sheetState.isVisible,
+        onBack = {
+            scope.launch {
+                sheetState.hide()
+            }
+        }
+    )
+
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            Column(
-                modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth().imePadding()
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Isi Deskripsi Grup", modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6, color = secondaryColor)
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                sheetState.hide()
-                                keyboardController?.hide()
-                            }
-                        },
-                        content = {
-                            Icon(
-                                Icons.Filled.Clear,
-                                ""
-                            )
-                        }
-                    )
-                }
-                Spacer(
-                    modifier = Modifier.height(19.dp)
-                )
-                BasicTextField(
-                    value = desc,
-                    onValueChange = {
-                        desc = it
-                    },
-                    textStyle = MaterialTheme.typography.caption.copy(color = secondaryColor),
-                    singleLine = false,
-                    modifier = Modifier.fillMaxWidth().height(269.dp),
-                    cursorBrush = SolidColor(secondaryColor),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide()
-                        }
-                    )
-                ){
-                    TextFieldDefaults.OutlinedTextFieldDecorationBox(
-                        border = {
-                            TextFieldDefaults.BorderBox(
-                                enabled = true,
-                                interactionSource = interactionSource,
-                                colors = TextFieldDefaults.textFieldColors(
-                                    unfocusedIndicatorColor = Color.Black,
-                                ),
-                                shape = RoundedCornerShape(9.dp),
-                                isError = false,
-                                unfocusedBorderThickness = 1.dp,
-                            )
-                        },
-                        value = desc,
-                        innerTextField = it,
-                        enabled = true,
-                        singleLine = false,
-                        interactionSource = interactionSource,
-                        visualTransformation = VisualTransformation.None,
-                        placeholder = {
-                            Text(
-                                "Silahkan Tulis Deskripsi Disini....",
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB)),
-                            )
-                        },
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.White,
-                            backgroundColor = Color.White,
-                            unfocusedIndicatorColor = Color.Black
-                        ),
-                        contentPadding = TextFieldDefaults.textFieldWithoutLabelPadding(
-                            start = 16.dp
-                        )
-                    )
-                }
-                Spacer(
-                    modifier = Modifier.height(22.dp)
-                )
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            desc = ""
-                        }
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = ButtonDefaults.elevation(0.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
-                    content = {
-                        Text(
-                            "Tambahkan",
-                            style = MaterialTheme.typography.h6,
-                            color = fontColor1
-                        )
-                    }
+            currentBottomSheet?.let {
+                BottomSheetContent(
+                    contentType = it,
+                    scope = scope,
+                    sheetState = sheetState,
+                    keyboardController = keyboardController!!,
+                    desc,
+                    findMember,
+                    interactionSource = interactionSource
                 )
             }
         }
@@ -375,10 +305,18 @@ fun AddGroupScreen(navController: NavController) {
                 Spacer(
                     modifier = Modifier.height(17.dp)
                 )
-                BtnHolder({ scope.launch {
-                    sheetState.show()
-                } },"Isi Deskripsi Grup",Res.drawable.add_description_ic)
-                BtnHolder({  },"Tambah Anggota Baru", Res.drawable.edit_anggota_ic)
+                BtnHolder({
+                    currentBottomSheet = ContentType.ADD_DESC
+                    scope.launch {
+                        sheetState.show()
+                    }
+                },"Isi Deskripsi Grup",Res.drawable.add_description_ic)
+                BtnHolder({
+                    currentBottomSheet = ContentType.ADD_MEMBER
+                    scope.launch {
+                        sheetState.show()
+                    }
+                },"Tambah Anggota Baru", Res.drawable.edit_anggota_ic)
                 BtnHolder({ navController.navigate(Screen.EditRole.route) },"Tambah Role Grup",Res.drawable.add_role_group_ic)
                 Spacer(
                     modifier = Modifier.height(14.dp)
@@ -462,5 +400,206 @@ fun BtnHolder(onClick: () -> Unit, titleAction: String, drawable: DrawableResour
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AddDescSection(
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState,
+    keyboardController: SoftwareKeyboardController?,
+    desc: MutableState<String>,
+    interactionSource: MutableInteractionSource
+) {
+    Column(
+        modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth().imePadding()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Isi Deskripsi Grup", modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6, color = secondaryColor)
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                        keyboardController?.hide()
+                    }
+                },
+                content = {
+                    Icon(
+                        Icons.Filled.Clear,
+                        ""
+                    )
+                }
+            )
+        }
+        Spacer(
+            modifier = Modifier.height(19.dp)
+        )
+        BasicTextField(
+            value = desc.value,
+            onValueChange = {
+                desc.value = it
+            },
+            textStyle = MaterialTheme.typography.caption.copy(color = secondaryColor),
+            singleLine = false,
+            modifier = Modifier.fillMaxWidth().height(269.dp),
+            cursorBrush = SolidColor(secondaryColor),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            )
+        ){
+            TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                border = {
+                    TextFieldDefaults.BorderBox(
+                        enabled = true,
+                        interactionSource = interactionSource,
+                        colors = TextFieldDefaults.textFieldColors(
+                            unfocusedIndicatorColor = Color.Black,
+                        ),
+                        shape = RoundedCornerShape(9.dp),
+                        isError = false,
+                        unfocusedBorderThickness = 1.dp,
+                    )
+                },
+                value = desc.value,
+                innerTextField = it,
+                enabled = true,
+                singleLine = false,
+                interactionSource = interactionSource,
+                visualTransformation = VisualTransformation.None,
+                placeholder = {
+                    Text(
+                        "Silahkan Tulis Deskripsi Disini....",
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB)),
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = Color.White,
+                    backgroundColor = Color.White,
+                    unfocusedIndicatorColor = Color.Black
+                ),
+                contentPadding = TextFieldDefaults.textFieldWithoutLabelPadding(
+                    start = 16.dp
+                )
+            )
+        }
+        Spacer(
+            modifier = Modifier.height(22.dp)
+        )
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                scope.launch {
+                    sheetState.hide()
+                    desc.value = ""
+                }
+            },
+            shape = RoundedCornerShape(20.dp),
+            elevation = ButtonDefaults.elevation(0.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+            content = {
+                Text(
+                    "Tambahkan",
+                    style = MaterialTheme.typography.h6,
+                    color = fontColor1
+                )
+            }
+        )
+    }
+}
 
+@Composable
+fun AddMemberSection(
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState,
+    findMember: MutableState<String>,
+    keyboardController: SoftwareKeyboardController?
+){
+    Column(
+        modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth().imePadding()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Silahkan Tambahkan Anggota Baru",
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                style = MaterialTheme.typography.h6,
+                color = secondaryColor
+            )
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                        keyboardController?.hide()
+                    }
+                },
+                content = {
+                    Icon(
+                        Icons.Filled.Clear,
+                        ""
+                    )
+                }
+            )
+        }
+        Spacer(
+            modifier = Modifier.height(19.dp)
+        )
 
+        OutlinedTextField(
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            value = findMember.value ,
+            textStyle = MaterialTheme.typography.subtitle1,
+            onValueChange = {
+                findMember.value = it
+            },
+            placeholder = {
+                Text(
+                    text = "Cari Anggota Baru Disini..." ,
+                    color = Color(0xFF9E9E9E),
+                    style = MaterialTheme.typography.subtitle1
+                )
+            },
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                focusedIndicatorColor = secondaryColor,
+                unfocusedIndicatorColor = Color.Black,
+                cursorColor = Color(0xFF384A92),
+                textColor = Color(0xFF384A92)
+            ),
+            shape = RoundedCornerShape(10.dp),
+            leadingIcon = null,
+        )
+        Spacer(
+            modifier = Modifier.height(19.dp)
+        )
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                scope.launch {
+                    sheetState.hide()
+                }
+            },
+            shape = RoundedCornerShape(20.dp),
+            elevation = ButtonDefaults.elevation(0.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+            content = {
+                Text(
+                    "Tambahkan Anggota",
+                    style = MaterialTheme.typography.h6,
+                    color = fontColor1
+                )
+            }
+        )
+    }
+}
