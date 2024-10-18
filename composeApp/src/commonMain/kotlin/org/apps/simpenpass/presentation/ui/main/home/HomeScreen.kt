@@ -69,6 +69,8 @@ fun HomeScreen(
         navigateToFormEdit(passData.id.toString())
     }
 
+
+
     Scaffold(
         content = {
             Box(
@@ -133,7 +135,7 @@ fun HomeContentView(
 }
 
 @Composable
-fun UserDataPassHolder(dataPass: PassResponseData, sheetState: ModalBottomSheetState, dataParse: MutableState<PassResponseData?> ) {
+fun UserDataPassHolder(dataPass: PassResponseData, sheetState: ModalBottomSheetState, dataParse: MutableState<PassResponseData?>) {
     val scope = rememberCoroutineScope()
     Card(
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),

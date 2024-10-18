@@ -36,7 +36,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
@@ -53,9 +52,9 @@ import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
+import org.apps.simpenpass.style.primaryColor
 import org.apps.simpenpass.utils.detectRoute
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @Composable
 fun ContentNavGraph(
@@ -70,8 +69,20 @@ fun ContentNavGraph(
     var isLoggedIn by remember { mutableStateOf(false) }
     val stateAuth by authViewModel.authState.collectAsState()
     val density = LocalDensity.current
+    val checkNav = navController.currentBackStackEntry?.destination?.parent?.route
+    var bottomEdgeColor by remember { mutableStateOf(Color.White) }
 
-    PlatformColors(Color(0xFF052E58))
+    if(checkNav == Screen.Auth.route || checkNav == Screen.Main.route || navController.currentBackStackEntry?.destination?.route == Screen.FormPassData.route){
+        bottomEdgeColor = primaryColor
+    } else {
+        bottomEdgeColor = Color(0xFFF1F1F1)
+    }
+
+    if(sheetState.isVisible){
+        bottomEdgeColor = Color.White
+    }
+
+    PlatformColors(Color(0xFF052E58),bottomEdgeColor)
 
     if(stateAuth.isLoggedIn){
         isLoggedIn = true

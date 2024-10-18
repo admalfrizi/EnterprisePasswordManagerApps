@@ -11,4 +11,7 @@ expect fun getPlatform(): Platform
 
 
 @Composable
-expect fun PlatformColors(statusBarColor: Color)
+expect fun PlatformColors(
+    statusBarColor: Color,
+    bottomEdgeColor: Color
+)

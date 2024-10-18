@@ -2,13 +2,10 @@ package org.apps.simpenpass
 
 import android.app.Activity
 import android.os.Build
-import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
@@ -20,7 +17,8 @@ actual fun getPlatform(): Platform = AndroidPlatform()
 
 @Composable
 actual fun PlatformColors(
-    statusBarColor: Color
+    statusBarColor: Color,
+    bottomEdgeColor: Color
 ){
     val view = LocalView.current
 

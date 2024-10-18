@@ -11,5 +11,6 @@ actual fun getPlatform(): Platform = JVMPlatform()
 
 @Composable
 actual fun PlatformColors(
-    statusBarColor: Color
+    statusBarColor: Color,
+    bottomEdgeColor: Color
 ){}
