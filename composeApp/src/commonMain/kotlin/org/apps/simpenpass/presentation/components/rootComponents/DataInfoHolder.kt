@@ -1,7 +1,6 @@
 package org.apps.simpenpass.presentation.components.rootComponents
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.apps.simpenpass.style.secondaryColor
@@ -33,16 +33,17 @@ import resources.visibility_non_ic
 
 @Composable
 fun DataInfoHolder(
+    warnCopy: () -> Unit,
     icon: DrawableResource,
     title: String,
     isPassData : Boolean = false
 ) {
     var showPassword by remember { mutableStateOf(value = false) }
+    val clipboardManager = LocalClipboardManager.current
+
 
     Box(
-        modifier = Modifier.fillMaxWidth().clickable {
-
-        }
+        modifier = Modifier.fillMaxWidth()
     ){
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -88,7 +89,10 @@ fun DataInfoHolder(
             }
             IconButton(
                 onClick = {
-
+                    clipboardManager.setText(
+                        androidx.compose.ui.text.AnnotatedString(title)
+                    )
+                    warnCopy()
                 }
             ){
                 Image(
