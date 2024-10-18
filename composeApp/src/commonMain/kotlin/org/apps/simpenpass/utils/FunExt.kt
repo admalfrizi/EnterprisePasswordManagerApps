@@ -33,3 +33,4 @@ fun maskString(data: String): String {
 }
 
 expect fun setToast(message: String)
+expect fun copyText(text: String)

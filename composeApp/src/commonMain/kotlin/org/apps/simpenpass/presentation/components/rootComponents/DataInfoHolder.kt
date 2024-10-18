@@ -19,10 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.copyText
 import org.apps.simpenpass.utils.maskString
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -39,8 +39,6 @@ fun DataInfoHolder(
     isPassData : Boolean = false
 ) {
     var showPassword by remember { mutableStateOf(value = false) }
-    val clipboardManager = LocalClipboardManager.current
-
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -89,9 +87,7 @@ fun DataInfoHolder(
             }
             IconButton(
                 onClick = {
-                    clipboardManager.setText(
-                        androidx.compose.ui.text.AnnotatedString(title)
-                    )
+                    copyText(title)
                     warnCopy()
                 }
             ){

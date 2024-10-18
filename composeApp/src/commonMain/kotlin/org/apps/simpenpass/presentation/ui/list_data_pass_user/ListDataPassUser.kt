@@ -23,8 +23,6 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -50,6 +48,7 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.rootComponents.DataInfoHolder
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -71,11 +70,10 @@ fun ListDataPassUser(
     var isDropdownShow by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     ModalBottomSheetLayout(
         sheetContent = {
-            PassDataInfo(scope,sheetState,dataDetail,snackbarHostState)
+            PassDataInfo(scope,sheetState,dataDetail)
         },
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -83,7 +81,6 @@ fun ListDataPassUser(
     ){
         Scaffold(
             modifier = Modifier.fillMaxWidth(),
-            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
                     backgroundColor = secondaryColor,
@@ -186,8 +183,7 @@ fun ListDataPassUser(
 fun PassDataInfo(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    data: MutableState<PassResponseData?>,
-    snakbarHostState: SnackbarHostState,
+    data: MutableState<PassResponseData?>
 ) {
 
     Column(
@@ -223,9 +219,7 @@ fun PassDataInfo(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snakbarHostState.showSnackbar("Data Jenis Telah Disalin")
-                }
+                setToast("Data Jenis telah Disalin")
             },Res.drawable.jenis_data_pass_ic,data.value?.jenisData ?: ""
         )
         Spacer(
@@ -233,9 +227,7 @@ fun PassDataInfo(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snakbarHostState.showSnackbar("Data Usernama Telah Disalin")
-                }
+                setToast("Data Username telah Disalin")
             },Res.drawable.user_ic,data.value?.username ?: ""
         )
         Spacer(
@@ -243,9 +235,7 @@ fun PassDataInfo(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snakbarHostState.showSnackbar("Data Email Telah Disalin")
-                }
+                setToast("Data Email telah Disalin")
             }, Res.drawable.email_ic,data.value?.email ?: ""
         )
         Spacer(
@@ -253,9 +243,7 @@ fun PassDataInfo(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snakbarHostState.showSnackbar("Data Password Telah Disalin")
-                }
+                setToast("Data Password telah Disalin")
             },Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
         )
         Spacer(
@@ -263,9 +251,7 @@ fun PassDataInfo(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snakbarHostState.showSnackbar("Data URL Telah Disalin")
-                }
+                setToast("Data URL telah Disalin")
             },Res.drawable.url_link, data.value?.url ?: ""
         )
     }

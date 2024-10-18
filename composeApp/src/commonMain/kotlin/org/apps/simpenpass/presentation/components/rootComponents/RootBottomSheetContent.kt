@@ -18,7 +18,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -40,6 +39,7 @@ import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.setToast
 import resources.Res
 import resources.delete_pass_data
 import resources.edit_anggota_ic
@@ -53,7 +53,6 @@ import resources.user_ic
 
 @Composable
 fun RootBottomSheetContent(
-    snackbarHostState: SnackbarHostState,
     checkNavString: String,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
@@ -64,7 +63,6 @@ fun RootBottomSheetContent(
 ) {
     if(checkNavString in Screen.Home.route){
         DetailPassData(
-            snackbarHostState,
             scope,
             sheetState,
             data,
@@ -179,7 +177,6 @@ fun AddGroupMethod(
 
 @Composable
 fun DetailPassData(
-    snackbarHostState: SnackbarHostState,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     data: MutableState<PassResponseData?>,
@@ -219,9 +216,7 @@ fun DetailPassData(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snackbarHostState.showSnackbar("Data Jenis Telah Disalin")
-                }
+                setToast("Data Username Telah Disalin")
             },Res.drawable.user_ic,data.value?.username ?: ""
         )
         Spacer(
@@ -229,9 +224,7 @@ fun DetailPassData(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snackbarHostState.showSnackbar("Data Jenis Telah Disalin")
-                }
+                setToast("Data Email Telah Disalin")
             },Res.drawable.email_ic,data.value?.email ?: ""
         )
         Spacer(
@@ -239,9 +232,7 @@ fun DetailPassData(
         )
         DataInfoHolder(
             {
-                scope.launch {
-                    snackbarHostState.showSnackbar("Data Jenis Telah Disalin")
-                }
+                setToast("Data Password Telah Disalin")
             },Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
         )
         Spacer(
