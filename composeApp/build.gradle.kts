@@ -100,6 +100,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.koin.jvm)
+            implementation(libs.ktor.client.okhttp)
         }
 
         val iosX64Main by getting

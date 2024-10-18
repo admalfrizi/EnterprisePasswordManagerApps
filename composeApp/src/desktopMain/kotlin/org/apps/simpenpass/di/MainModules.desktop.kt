@@ -1,7 +1,16 @@
 package org.apps.simpenpass.di
 
-import org.koin.core.module.Module
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.okhttp.OkHttp
+import org.apps.simpenpass.utils.dataStoreFileName
+import org.apps.simpenpass.utils.getDataStore
+import org.koin.dsl.module
 
-actual fun platformModule(): Module {
-    TODO("Not yet implemented")
+actual fun platformModule() = module {
+    single<HttpClientEngine> { OkHttp.create() }
+    single {
+        getDataStore {
+            dataStoreFileName
+        }
+    }
 }
