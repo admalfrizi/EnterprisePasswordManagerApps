@@ -137,7 +137,7 @@ fun ContentNavGraph(
                                 }
                             }
                         } }) {
-                    GroupScreen(navController, navigateToGrupDtl = {
+                    GroupScreen(navigateToGrupDtl = {
                         navController.navigate(Screen.GroupPass.groupId(it))
                     },sheetState = sheetState)
                 }

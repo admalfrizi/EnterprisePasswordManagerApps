@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
@@ -34,7 +33,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun GroupScreen(
-    navController: NavController,
     groupViewModel: GroupViewModel = koinViewModel(),
     navigateToGrupDtl : (String) -> Unit,
     sheetState: ModalBottomSheetState,

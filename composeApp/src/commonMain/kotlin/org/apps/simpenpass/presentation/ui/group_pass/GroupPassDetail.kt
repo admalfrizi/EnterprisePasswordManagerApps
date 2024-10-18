@@ -223,7 +223,7 @@ fun ContentView(
                                 )
                             },
                             onClick = {
-                                indexTab = index;
+                                indexTab = index
                             },
                             selected = indexTab == index, selectedContentColor = secondaryColor
                         )
@@ -250,7 +250,7 @@ fun ListOptionHolder(icon: DrawableResource, title: String,isSelected : Boolean,
         modifier = Modifier.fillMaxWidth().clickable {
             onSelected()
         },
-        backgroundColor = if(isSelected) Color(0xFF78A1D7)  else Color.Transparent,
+        backgroundColor = if(isSelected) Color(0xFF78A1D7) else Color.Transparent,
         shape = RoundedCornerShape(9.dp),
         border = BorderStroke(width = 1.dp, color = Color(0xFF264A97))
     ) {

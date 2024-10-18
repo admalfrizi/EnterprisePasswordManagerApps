@@ -45,10 +45,10 @@ import resources.edit_anggota_ic
 import resources.edit_data_pass
 import resources.edit_ic
 import resources.email_ic
+import resources.join_group_ic
 import resources.pass_ic
 import resources.url_link
 import resources.user_ic
-import resources.your_data_ic
 
 @Composable
 fun RootBottomSheetContent(
@@ -86,7 +86,7 @@ fun AddGroupMethod(
 ) {
     val itemsData = listOf(
         MethodSelection(1, Res.drawable.edit_ic, " Buat Grup Baru"),
-        MethodSelection(2, Res.drawable.your_data_ic, "Gabung dengan Grup Yang Tersedia"),
+        MethodSelection(2, Res.drawable.join_group_ic, "Gabung dengan Grup Yang Tersedia"),
     )
 
     var selectedOption by remember { mutableStateOf(-1) }
