@@ -11,21 +11,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
 import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHolder
-import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.koin.compose.viewmodel.koinViewModel
@@ -34,10 +36,12 @@ import org.koin.compose.viewmodel.koinViewModel
 fun GroupScreen(
     navController: NavController,
     groupViewModel: GroupViewModel = koinViewModel(),
-    navigateToGrupDtl : (String) -> Unit
+    navigateToGrupDtl : (String) -> Unit,
+    sheetState: ModalBottomSheetState,
 ) {
 
     val groupState by groupViewModel.groupState.collectAsState()
+    val scope = rememberCoroutineScope()
 
     Scaffold(
       backgroundColor = Color(0xFFF1F1F1),
@@ -60,7 +64,10 @@ fun GroupScreen(
           ) {
               AddGroupHolder(
                   onClick = {
-                      navController.navigate(Screen.AddGroupPass.route)
+                      scope.launch {
+                          sheetState.show()
+                      }
+
                   }
               )
               Spacer(

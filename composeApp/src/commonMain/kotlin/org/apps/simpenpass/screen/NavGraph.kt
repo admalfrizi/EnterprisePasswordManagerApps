@@ -139,7 +139,7 @@ fun ContentNavGraph(
                         } }) {
                     GroupScreen(navController, navigateToGrupDtl = {
                         navController.navigate(Screen.GroupPass.groupId(it))
-                    })
+                    },sheetState = sheetState)
                 }
 
                 composable(route = Screen.Profile.route,

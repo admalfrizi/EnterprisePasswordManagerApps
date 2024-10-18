@@ -15,7 +15,7 @@ enum class ContentType {
 }
 
 @Composable
-fun BottomSheetContent(
+fun AddGroupBottomSheetContent(
     contentType: ContentType,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,

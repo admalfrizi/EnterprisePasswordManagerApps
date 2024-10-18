@@ -16,13 +16,14 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
@@ -79,9 +80,10 @@ import com.mohamedrejeb.calf.core.LocalPlatformContext
 import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.presentation.components.addGroupComponents.BottomSheetContent
+import org.apps.simpenpass.presentation.components.addGroupComponents.AddGroupBottomSheetContent
 import org.apps.simpenpass.presentation.components.addGroupComponents.ContentType
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
@@ -154,12 +156,14 @@ fun AddGroupScreen(
         }
     )
 
+    Napier.v("Group Name = $grupName")
+
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
             currentBottomSheet?.let {
-                BottomSheetContent(
+                AddGroupBottomSheetContent(
                     contentType = it,
                     scope = scope,
                     sheetState = sheetState,
@@ -169,7 +173,7 @@ fun AddGroupScreen(
                     interactionSource = interactionSource
                 )
             }
-        }
+        },
     ){
         Scaffold(
             backgroundColor = Color(0xFFF1F1F1),
@@ -220,7 +224,7 @@ fun AddGroupScreen(
             }
         ){
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
             ) {
                 Box(
                     modifier = Modifier.fillMaxWidth()
@@ -336,9 +340,11 @@ fun AddGroupScreen(
                 Spacer(
                     modifier = Modifier.height(14.dp)
                 )
-                LazyColumn {
-                    items(addGroupState.memberList!!){ memberItem ->
-                        Box(modifier = Modifier.fillMaxWidth().background(color = Color.White)){
+                Column(
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                ) {
+                    addGroupState.memberList?.forEach { memberItem ->
+                        Box(modifier = Modifier.fillMaxWidth().height(63.dp).background(color = Color.White)){
                             Row(
                                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -509,7 +515,7 @@ fun AddDescSection(
             onClick = {
                 scope.launch {
                     sheetState.hide()
-                    desc.value = ""
+                    keyboardController?.hide()
                 }
             },
             shape = RoundedCornerShape(20.dp),
