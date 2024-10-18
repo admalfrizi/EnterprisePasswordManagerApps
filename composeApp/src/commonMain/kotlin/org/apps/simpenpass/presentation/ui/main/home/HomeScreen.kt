@@ -16,15 +16,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -45,14 +41,11 @@ import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.homeComponents.GroupDataSection
 import org.apps.simpenpass.presentation.components.homeComponents.HeaderContainer
 import org.apps.simpenpass.presentation.components.homeComponents.UserPassDataSection
-import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.Screen
-import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
-import resources.add_option_ic
 import resources.menu_ic
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -77,42 +70,6 @@ fun HomeScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = secondaryColor,
-                title = {
-                    Text(
-                        BottomNavMenuData.Home.title,
-                        style = MaterialTheme.typography.h6,
-                        color = fontColor1
-                    )
-                },
-                elevation = 0.dp,
-                actions = {
-                    IconButton(
-                        onClick = { },
-                       content = {
-                          Icon(
-                              Icons.Outlined.Notifications,
-                              contentDescription = "",
-                              tint = Color.White
-                          )
-                       }
-                    )
-                    IconButton(
-                        onClick = {navController.navigate(Screen.FormPassData.route) },
-                        content = {
-                            Icon(
-                                painterResource(Res.drawable.add_option_ic),
-                                contentDescription = "",
-                                modifier = Modifier.padding(8.dp),
-                                tint = Color.White
-                            )
-                        }
-                    )
-                }
-            )
-        },
         content = {
             Box(
                 modifier = Modifier.padding(it).pullRefresh(pullRefreshState)

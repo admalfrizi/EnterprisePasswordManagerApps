@@ -10,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,7 +25,6 @@ import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.profileComponents.HeaderContainer
 import org.apps.simpenpass.presentation.components.profileComponents.SettingsListHolder
 import org.apps.simpenpass.screen.Screen
-import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -42,19 +40,6 @@ fun ProfileScreen(
     Scaffold(
         backgroundColor = Color(0xFFF1F1F1),
         modifier = Modifier.fillMaxWidth(),
-        topBar = {
-            TopAppBar(
-                backgroundColor = secondaryColor,
-                elevation = 0.dp,
-                title = {
-                    Text(
-                        "Data Profil",
-                        style = MaterialTheme.typography.h6,
-                        color = fontColor1
-                    )
-                }
-            )
-        },
         content = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState())

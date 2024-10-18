@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.presentation.components.rootComponents.RootBottomSheetContent
+import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigationMenu
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
 import org.apps.simpenpass.screen.Screen
@@ -75,6 +76,16 @@ fun RootScreen() {
         Scaffold(
             snackbarHost = {
                 SnackbarHost(snackBarHostState)
+            },
+            topBar = {
+                checkScreenNav?.let {
+                    TopBarNavigationMenu(
+                        it,
+                        navigateToFormPass = {
+                            navController.navigate(Screen.FormPassData.route)
+                        }
+                    )
+                }
             },
             modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
             bottomBar = {

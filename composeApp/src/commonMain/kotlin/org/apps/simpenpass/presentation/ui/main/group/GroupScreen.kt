@@ -14,7 +14,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,7 +26,6 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
 import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHolder
-import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -43,19 +41,6 @@ fun GroupScreen(
 
     Scaffold(
       backgroundColor = Color(0xFFF1F1F1),
-      topBar = {
-          TopAppBar(
-              backgroundColor = secondaryColor,
-              elevation = 0.dp,
-              title = {
-                  Text(
-                      "Grup Data Password",
-                      style = MaterialTheme.typography.h6,
-                      color = fontColor1
-                  )
-              }
-          )
-      },
       content = {
           Column(
               modifier = Modifier.fillMaxWidth()
