@@ -5,13 +5,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.platform.LocalContext
+import org.apps.simpenpass.utils.initializeAppContext
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-//            ChangeStatusBarColor(color = Color(0xFF003376))
+            val context = LocalContext.current
+            initializeAppContext(context)
             App(
             )
         }

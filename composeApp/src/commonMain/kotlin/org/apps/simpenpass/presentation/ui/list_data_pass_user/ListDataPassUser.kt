@@ -23,6 +23,8 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -69,10 +71,11 @@ fun ListDataPassUser(
     var isDropdownShow by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     ModalBottomSheetLayout(
         sheetContent = {
-            PassDataInfo(scope,sheetState,dataDetail)
+            PassDataInfo(scope,sheetState,dataDetail,snackbarHostState)
         },
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -80,6 +83,7 @@ fun ListDataPassUser(
     ){
         Scaffold(
             modifier = Modifier.fillMaxWidth(),
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
                     backgroundColor = secondaryColor,
@@ -182,7 +186,8 @@ fun ListDataPassUser(
 fun PassDataInfo(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    data: MutableState<PassResponseData?>
+    data: MutableState<PassResponseData?>,
+    snakbarHostState: SnackbarHostState,
 ) {
 
     Column(
@@ -217,31 +222,51 @@ fun PassDataInfo(
             modifier = Modifier.height(10.dp)
         )
         DataInfoHolder(
-            Res.drawable.jenis_data_pass_ic,data.value?.jenisData ?: ""
+            {
+                scope.launch {
+                    snakbarHostState.showSnackbar("Data Jenis Telah Disalin")
+                }
+            },Res.drawable.jenis_data_pass_ic,data.value?.jenisData ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.user_ic,data.value?.username ?: ""
+            {
+                scope.launch {
+                    snakbarHostState.showSnackbar("Data Usernama Telah Disalin")
+                }
+            },Res.drawable.user_ic,data.value?.username ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.email_ic,data.value?.email ?: ""
+            {
+                scope.launch {
+                    snakbarHostState.showSnackbar("Data Email Telah Disalin")
+                }
+            }, Res.drawable.email_ic,data.value?.email ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
+            {
+                scope.launch {
+                    snakbarHostState.showSnackbar("Data Password Telah Disalin")
+                }
+            },Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.url_link, data.value?.url ?: ""
+            {
+                scope.launch {
+                    snakbarHostState.showSnackbar("Data URL Telah Disalin")
+                }
+            },Res.drawable.url_link, data.value?.url ?: ""
         )
     }
 }

@@ -56,6 +56,7 @@ fun RootScreen() {
         sheetContent = {
             checkScreenNav?.let {
                 RootBottomSheetContent(
+                    snackBarHostState,
                     checkNavString = it,
                     scope,
                     sheetState,

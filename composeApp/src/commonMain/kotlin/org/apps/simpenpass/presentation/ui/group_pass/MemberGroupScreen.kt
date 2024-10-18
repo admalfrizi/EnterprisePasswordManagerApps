@@ -168,7 +168,7 @@ fun EditAnggotaBtnHolder(onClick: () -> Unit) {
                 modifier = Modifier.width(28.dp)
             )
             Text(
-                "Edit Anggota",
+                "Tambah Anggota Baru",
                 style = MaterialTheme.typography.h6,
                 fontSize = 13.sp,
                 color = secondaryColor

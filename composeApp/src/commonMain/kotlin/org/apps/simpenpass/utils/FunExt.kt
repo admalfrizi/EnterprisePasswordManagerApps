@@ -31,3 +31,5 @@ fun popUpLoading(isDismiss : MutableState<Boolean>){
 fun maskString(data: String): String {
     return "*".repeat(data.length)
 }
+
+expect fun setToast(message: String)

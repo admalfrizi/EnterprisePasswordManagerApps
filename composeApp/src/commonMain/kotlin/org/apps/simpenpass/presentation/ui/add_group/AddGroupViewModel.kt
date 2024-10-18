@@ -32,7 +32,17 @@ class AddGroupViewModel(
                     memberListAdd = currentList.memberListAdd!! + addItem
                 )
             }
+        }
+    }
 
+    fun addMemberToList(member: UserData){
+        viewModelScope.launch {
+            _addGroupState.update { currentList ->
+                currentList.copy(
+                    memberList = currentList.memberList!! + member,
+                    memberListAdd = currentList.memberListAdd!! + AddMember(member.id,false)
+                )
+            }
         }
     }
 

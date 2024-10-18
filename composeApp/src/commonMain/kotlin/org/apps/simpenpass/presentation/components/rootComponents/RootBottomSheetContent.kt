@@ -18,6 +18,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -52,6 +53,7 @@ import resources.user_ic
 
 @Composable
 fun RootBottomSheetContent(
+    snackbarHostState: SnackbarHostState,
     checkNavString: String,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
@@ -62,6 +64,7 @@ fun RootBottomSheetContent(
 ) {
     if(checkNavString in Screen.Home.route){
         DetailPassData(
+            snackbarHostState,
             scope,
             sheetState,
             data,
@@ -176,6 +179,7 @@ fun AddGroupMethod(
 
 @Composable
 fun DetailPassData(
+    snackbarHostState: SnackbarHostState,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     data: MutableState<PassResponseData?>,
@@ -214,19 +218,31 @@ fun DetailPassData(
             modifier = Modifier.height(10.dp)
         )
         DataInfoHolder(
-            Res.drawable.user_ic,data.value?.username ?: ""
+            {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Data Jenis Telah Disalin")
+                }
+            },Res.drawable.user_ic,data.value?.username ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.email_ic,data.value?.email ?: ""
+            {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Data Jenis Telah Disalin")
+                }
+            },Res.drawable.email_ic,data.value?.email ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
         DataInfoHolder(
-            Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
+            {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Data Jenis Telah Disalin")
+                }
+            },Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
         )
         Spacer(
             modifier = Modifier.height(16.dp)
