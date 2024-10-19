@@ -68,9 +68,7 @@ fun HomeScreen(
     passDataId.value = { passData ->
         navigateToFormEdit(passData.id.toString())
     }
-
-
-
+    
     Scaffold(
         content = {
             Box(
