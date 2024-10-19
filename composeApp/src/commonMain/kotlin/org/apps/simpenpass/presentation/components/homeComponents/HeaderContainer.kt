@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import resources.Res
@@ -30,7 +29,7 @@ import resources.pass_data_ic
 fun HeaderContainer(
     nameUser: String?,
     totalUserDataPass: Int,
-    navController: NavController
+    totalJoinedGroup: Int
 ) {
     Box(
         modifier = Modifier
@@ -76,7 +75,7 @@ fun HeaderContainer(
                 )
                 InfoContainer(
                     titleInfo = "Grup Yang Tergabung",
-                    vlData = 10,
+                    vlData = totalJoinedGroup,
                     bgColor = Color(0xFF192E49) ,
                     iconInfo = Res.drawable.group_ic
                 )

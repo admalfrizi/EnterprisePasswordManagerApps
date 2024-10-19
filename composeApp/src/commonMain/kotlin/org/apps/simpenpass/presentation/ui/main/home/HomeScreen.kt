@@ -77,7 +77,7 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
                 ) {
-                    HeaderContainer(homeState.name,homeState.passDataList.size,navController)
+                    HeaderContainer(homeState.name,homeState.passDataList.size,homeState.totalGroupJoined ?: 0)
                     Spacer(modifier = Modifier.height(16.dp))
                     HomeContentView(navController,sheetState,dataPass,homeViewModel)
                     Spacer(

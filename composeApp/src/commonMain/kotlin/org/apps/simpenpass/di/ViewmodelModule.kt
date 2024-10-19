@@ -26,7 +26,8 @@ val viewModelModule = module {
     viewModel {
         HomeViewModel(
             userRepo = get(),
-            passRepo = get()
+            passRepo = get(),
+            groupRepo = get()
         )
     }
 

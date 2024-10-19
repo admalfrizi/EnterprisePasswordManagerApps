@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.presentation.components.rootComponents.RootBottomSheetContent
 import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigationMenu
+import org.apps.simpenpass.presentation.ui.main.group.JoinGroupDialog
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
 import org.apps.simpenpass.screen.Screen
@@ -49,6 +51,13 @@ fun RootScreen() {
     val checkScreenNav = navController.currentBackStackEntryAsState().value?.destination?.route
     val isMainScreen = checkScreenNav in routeNav.map { it.route }
     val onClick = remember { mutableStateOf<(PassResponseData) -> Unit>({}) }
+    var isJoinDialogPopUp by remember { mutableStateOf(false) }
+
+    if(isJoinDialogPopUp){
+        JoinGroupDialog {
+            isJoinDialogPopUp = false
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -66,7 +75,7 @@ fun RootScreen() {
                         navController.navigate(Screen.AddGroupPass.route)
                     },
                     navigateToJoinGroup = {
-
+                        isJoinDialogPopUp = true
                     }
                 )
             }
