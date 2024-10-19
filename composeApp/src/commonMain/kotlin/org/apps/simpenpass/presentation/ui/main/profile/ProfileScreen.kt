@@ -58,8 +58,6 @@ fun ProfileScreen(
     )
 }
 
-
-
 @Composable
 fun SettingListView(navController: NavController, profileState: ProfileState, profileViewModel: ProfileViewModel) {
     var isLogoutWarningShow by remember { mutableStateOf(false) }
