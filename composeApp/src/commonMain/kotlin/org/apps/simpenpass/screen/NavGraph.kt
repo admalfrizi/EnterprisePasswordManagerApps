@@ -53,6 +53,7 @@ import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
 import org.apps.simpenpass.style.primaryColor
+import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.detectRoute
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -65,15 +66,17 @@ fun ContentNavGraph(
     snackbarHostState: SnackbarHostState,
     authViewModel : AuthViewModel = koinViewModel(),
     navigateToFormWithArgs : MutableState<(PassResponseData)->Unit>
-){
+) {
     var isLoggedIn by remember { mutableStateOf(false) }
     val stateAuth by authViewModel.authState.collectAsState()
     val density = LocalDensity.current
     val checkNav = navController.currentBackStackEntry?.destination?.parent?.route
     var bottomEdgeColor by remember { mutableStateOf(Color.White) }
 
-    if(checkNav == Screen.Auth.route || checkNav == Screen.Main.route || navController.currentBackStackEntry?.destination?.route == Screen.FormPassData.route){
+    if (checkNav == Screen.Main.route) {
         bottomEdgeColor = primaryColor
+    } else if(checkNav == Screen.Auth.route || navController.currentBackStackEntry?.destination?.route == Screen.FormPassData.route){
+        bottomEdgeColor = secondaryColor
     } else {
         bottomEdgeColor = Color(0xFFF1F1F1)
     }
