@@ -102,17 +102,17 @@ fun SettingListView(navController: NavController, profileState: ProfileState, pr
             SettingsListHolder("Ubah Password", {})
             SettingsListHolder("Keamanan Biometrik", {})
         }
-        Text(
-            "Informasi",
-            modifier = Modifier.padding(vertical = 11.dp, horizontal = 16.dp).fillMaxWidth(),
-            style = MaterialTheme.typography.body2,
-            color = secondaryColor
-        )
-        Column() {
-            SettingsListHolder("Riwayat Data Password", {})
-            SettingsListHolder("Export/Import Data Password", {})
-            SettingsListHolder("Informasi Aplikasi", {})
-        }
+//        Text(
+//            "Informasi",
+//            modifier = Modifier.padding(vertical = 11.dp, horizontal = 16.dp).fillMaxWidth(),
+//            style = MaterialTheme.typography.body2,
+//            color = secondaryColor
+//        )
+//        Column() {
+//            SettingsListHolder("Riwayat Data Password", {})
+//            SettingsListHolder("Export/Import Data Password", {})
+//            SettingsListHolder("Informasi Aplikasi", {})
+//        }
         Spacer(
             modifier = Modifier.height(24.dp)
         )
