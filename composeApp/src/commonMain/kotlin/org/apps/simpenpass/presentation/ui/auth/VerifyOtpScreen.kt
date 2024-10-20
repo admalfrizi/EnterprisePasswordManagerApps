@@ -119,7 +119,7 @@ fun VerifyOtpScreen(
                 singleLine = true,
                 cursorBrush = SolidColor(secondaryColor),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                decorationBox = { innerTextField ->
+                decorationBox = {
                     Row(
                         horizontalArrangement = Arrangement.Center
                     ) {
