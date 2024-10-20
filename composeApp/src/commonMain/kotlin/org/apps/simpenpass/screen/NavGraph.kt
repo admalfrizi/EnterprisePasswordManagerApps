@@ -43,6 +43,7 @@ import org.apps.simpenpass.presentation.ui.auth.AuthScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
 import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
+import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
 import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
@@ -305,6 +306,14 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         composable(route = Screen.RecoveryPass.route){
             RecoveryPassScreen(navController)
+        }
+
+        composable(route = Screen.VerifyOtp.route){
+            VerifyOtpScreen(
+                navBack = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }

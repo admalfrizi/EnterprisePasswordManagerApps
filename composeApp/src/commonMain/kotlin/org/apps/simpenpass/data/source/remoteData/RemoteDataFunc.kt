@@ -9,6 +9,7 @@ import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.response.UserResponseData
 
 interface UserDataFunc {
@@ -46,4 +47,10 @@ interface MemberGroupDataFunc {
     suspend fun addMemberToGroup(token: String, addData: AddMemberRequest, id: Int): BaseResponse<GrupPassData>
     suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
     suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
+}
+
+interface ResetPassFunc {
+    suspend fun sendOtp(email: String) : BaseResponse<SendOtpResponse>
+    suspend fun verifyOtp(otp: Int, email: String) : BaseResponse<String>
+    suspend fun resetPassword(password: String, email: String) : BaseResponse<String>
 }

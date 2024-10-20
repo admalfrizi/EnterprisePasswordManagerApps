@@ -1,5 +1,6 @@
 package org.apps.simpenpass.di
 
+import org.apps.simpenpass.data.repository.ForgotPassRepository
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.data.repository.PassRepository
@@ -32,6 +33,12 @@ val repoModule = module {
         MemberGroupRepository(
             remoteMemberDataSources = get(),
             localData = get()
+        )
+    }
+
+    factory<ForgotPassRepository> {
+        ForgotPassRepository(
+            remoteResetPassSources = get()
         )
     }
 }

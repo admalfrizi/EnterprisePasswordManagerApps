@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -104,7 +103,9 @@ fun RecoveryPassScreen(navHostController: NavHostController) {
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth().height(40.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
-                onClick = {  }){
+                onClick = {
+                    navHostController.navigate(Screen.VerifyOtp.route)
+                }){
                 Text(
                     text = "Kirim Kode",
                     color = fontColor1,
