@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -62,7 +63,7 @@ fun VerifyOtpScreen(
 
     Box(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize()
-            .background(authScreenBgColor)
+            .background(authScreenBgColor).imePadding()
     ) {
         IconButton(
             modifier = Modifier.align(Alignment.TopStart),
@@ -78,7 +79,7 @@ fun VerifyOtpScreen(
             }
         )
         Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            modifier = Modifier.verticalScroll(rememberScrollState()).align(Alignment.Center),
             verticalArrangement = Arrangement.Center
         ) {
             Text(

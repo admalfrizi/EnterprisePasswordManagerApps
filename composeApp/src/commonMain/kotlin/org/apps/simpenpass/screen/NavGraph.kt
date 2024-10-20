@@ -305,7 +305,14 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
         composable(route = Screen.RecoveryPass.route){
-            RecoveryPassScreen(navController)
+            RecoveryPassScreen(
+                navBack = {
+                    navController.navigateUp()
+                },
+                navToVerifyOtp = {
+                    navController.navigate(Screen.VerifyOtp.route)
+                }
+            )
         }
 
         composable(route = Screen.VerifyOtp.route){
