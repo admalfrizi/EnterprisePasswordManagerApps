@@ -4,9 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SendOtpResponse(
-    @SerialName("email")
-    val email: String,
-    @SerialName("user_id")
-    val userId: Int
+data class VerifyOtpResponse(
+    @SerialName("token_otp")
+    val tokenOtp: String
 )

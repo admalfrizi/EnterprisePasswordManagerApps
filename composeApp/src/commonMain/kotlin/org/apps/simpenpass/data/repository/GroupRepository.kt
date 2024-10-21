@@ -29,7 +29,6 @@ class GroupRepository(
         }
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
-        Napier.v("Error Group : ${it.message}")
     }
 
     fun detailGroup(groupId : Int) = flow {
@@ -48,7 +47,6 @@ class GroupRepository(
         }
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
-        Napier.v("Error Group : ${it.message}")
     }
 
 }

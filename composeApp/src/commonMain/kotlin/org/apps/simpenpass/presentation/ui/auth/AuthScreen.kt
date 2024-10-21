@@ -60,7 +60,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.email_ic
-import resources.user_password_login
+import resources.user_password_auth
 
 @Composable
 fun AuthScreen(
@@ -184,7 +184,7 @@ fun AuthScreen(
                     isFocus = passwordFocus,
                     leadingIcon = {
                         Image(
-                            painterResource(Res.drawable.user_password_login),
+                            painterResource(Res.drawable.user_password_auth),
                             contentDescription = "",
                         )
                     },
@@ -198,7 +198,7 @@ fun AuthScreen(
                 )
                 Text(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable {
-                        navHostController.navigate(Screen.RecoveryPass.route)
+                        navHostController.navigate(Screen.SendOtp.route)
                     },
                     text = "Lupa Password ?",
                     color = fontColor1,

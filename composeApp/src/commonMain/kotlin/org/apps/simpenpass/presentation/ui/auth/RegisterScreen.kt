@@ -66,7 +66,7 @@ import resources.Res
 import resources.email_ic
 import resources.pass_ic
 import resources.user_ic
-import resources.user_password_login
+import resources.user_password_auth
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -215,7 +215,7 @@ fun RegisterScreen(
                     value = password,
                     leadingIcon = {
                         Image(
-                            painterResource(Res.drawable.user_password_login),
+                            painterResource(Res.drawable.user_password_auth),
                             contentDescription = ""
                         )
                     },

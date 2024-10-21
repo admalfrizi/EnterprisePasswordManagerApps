@@ -43,6 +43,7 @@ import org.apps.simpenpass.presentation.ui.auth.AuthScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
 import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
+import org.apps.simpenpass.presentation.ui.auth.SendOtpScreen
 import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
@@ -304,21 +305,65 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             RegisterScreen(navController)
         }
 
-        composable(route = Screen.RecoveryPass.route){
-            RecoveryPassScreen(
+        composable(route = Screen.SendOtp.route){
+            SendOtpScreen(
                 navBack = {
                     navController.navigateUp()
                 },
-                navToVerifyOtp = {
-                    navController.navigate(Screen.VerifyOtp.route)
+                navToVerifyOtp = { userId ->
+                    navController.navigate(Screen.VerifyOtp.userId(userId))
                 }
             )
         }
 
-        composable(route = Screen.VerifyOtp.route){
+        composable(route = Screen.VerifyOtp.route,
+            arguments = listOf(
+                navArgument(Screen.VerifyOtp.ARG_USER_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
+        ){
+            val userId = it.arguments?.getString(Screen.VerifyOtp.ARG_USER_ID)
+
             VerifyOtpScreen(
                 navBack = {
                     navController.navigateUp()
+                },
+                navToResetPass = { token ->
+                    navController.navigate(Screen.RecoveryPass.token(token)){
+                        popUpTo(Screen.VerifyOtp.route){
+                            inclusive = true
+                        }
+                    }
+                },
+                userId = userId!!
+            )
+        }
+
+        composable(route = Screen.RecoveryPass.route,
+            arguments = listOf(
+                navArgument(Screen.RecoveryPass.ARG_TOKEN){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
+        ){
+            val token = it.arguments?.getString(Screen.RecoveryPass.ARG_TOKEN)
+
+            RecoveryPassScreen(
+                token = token!!,
+                navBack = {
+                    navController.navigateUp()
+                },
+                navToLogin = {
+                    navController.navigate(Screen.Login.route){
+                        popUpTo(Screen.RecoveryPass.route){
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

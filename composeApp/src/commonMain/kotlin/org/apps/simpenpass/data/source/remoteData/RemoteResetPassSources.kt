@@ -13,6 +13,7 @@ import org.apps.simpenpass.models.request.SendOtpRequest
 import org.apps.simpenpass.models.request.VerifyOtpRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.SendOtpResponse
+import org.apps.simpenpass.models.response.VerifyOtpResponse
 import org.apps.simpenpass.utils.Constants
 
 class RemoteResetPassSources(
@@ -32,13 +33,13 @@ class RemoteResetPassSources(
         }
     }
 
-    override suspend fun verifyOtp(otp: Int, email: String): BaseResponse<String> {
+    override suspend fun verifyOtp(otp: Int, userId: Int): BaseResponse<VerifyOtpResponse> {
         try {
-            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "verifyOtp"){
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "verifyOtp/$userId"){
                 contentType(ContentType.Application.Json)
-                setBody(VerifyOtpRequest(otp,email))
+                setBody(VerifyOtpRequest(otp))
             }
-            return response.body<BaseResponse<String>>()
+            return response.body<BaseResponse<VerifyOtpResponse>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
         } catch (e: Exception) {
@@ -46,11 +47,11 @@ class RemoteResetPassSources(
         }
     }
 
-    override suspend fun resetPassword(password: String, email: String): BaseResponse<String> {
+    override suspend fun resetPassword(password: String, token: String): BaseResponse<String> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "resetPass"){
                 contentType(ContentType.Application.Json)
-                setBody(ResetPassRequest(email,password))
+                setBody(ResetPassRequest(token,password))
             }
             return response.body<BaseResponse<String>>()
         } catch (e: UnresolvedAddressException) {

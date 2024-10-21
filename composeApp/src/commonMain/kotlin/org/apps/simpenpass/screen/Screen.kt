@@ -7,8 +7,17 @@ sealed class Screen(val route : String) {
 
     data object Login : Screen(route = "login")
     data object Register : Screen(route = "register")
-    data object RecoveryPass : Screen(route = "recovery_pass")
-    data object VerifyOtp : Screen(route = "verify_otp")
+    data object SendOtp : Screen(route = "sendOtp")
+    data object RecoveryPass : Screen(route = "recovery_pass/{token}"){
+        fun token(token : String) = "recovery_pass/$token"
+
+        const val ARG_TOKEN = "token"
+    }
+    data object VerifyOtp : Screen(route = "verify_otp/{userId}"){
+        fun userId(userId : String) = "verify_otp/$userId"
+
+        const val ARG_USER_ID = "userId"
+    }
 
     data object Main : Screen(route = "main")
     data object Home : Screen(route = "home")

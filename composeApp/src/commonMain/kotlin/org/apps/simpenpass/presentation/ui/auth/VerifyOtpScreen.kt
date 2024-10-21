@@ -32,6 +32,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,45 +48,66 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.style.authScreenBgColor
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.linkColor
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.popUpLoading
+import org.apps.simpenpass.utils.setToast
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun VerifyOtpScreen(
-    navBack: () -> Unit
+    navBack: () -> Unit,
+    navToResetPass: (String) -> Unit,
+    userId: String,
+    authViewModel: AuthViewModel = koinViewModel()
 ) {
     var otp by remember { mutableStateOf("") }
+    val authState by authViewModel.authState.collectAsState()
+    val isDismiss = remember { mutableStateOf(true) }
 
-    Napier.v("Data Otp : $otp")
+    if(authState.isVerify && !authState.isLoading && authState.resetPassTokens != null) {
+        navToResetPass(authState.resetPassTokens!!)
+    }
+
+    if(authState.isLoading) {
+        popUpLoading(isDismiss)
+    }
+
+    LaunchedEffect(authState.error){
+        if(authState.error?.isNotEmpty() == true){
+            setToast(authState.error ?: "Terjadi Kesalahan")
+        }
+    }
 
     Box(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize()
             .background(authScreenBgColor).imePadding()
     ) {
-        IconButton(
-            modifier = Modifier.align(Alignment.TopStart),
-            onClick = {
-                navBack()
-            },
-            content = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
-            }
-        )
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()).align(Alignment.Center),
+            modifier = Modifier.verticalScroll(rememberScrollState()).align(Alignment.TopCenter),
             verticalArrangement = Arrangement.Center
         ) {
+            IconButton(
+                onClick = {
+                    navBack()
+                },
+                content = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+            )
+            Spacer(
+                modifier = Modifier.height(37.dp)
+            )
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                    text = "Silahkan Masukan OTP",
+                text = "Silahkan Masukan OTP",
                 style = MaterialTheme.typography.h1,
                 fontSize = 32.sp
             )
@@ -158,8 +181,9 @@ fun VerifyOtpScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-
-                }){
+                    authViewModel.verifyOtp(otp, userId)
+                }
+            ){
                 Text(
                     text = "Verifikasi Kode",
                     color = fontColor1,
@@ -196,6 +220,5 @@ fun VerifyOtpScreen(
                 modifier = Modifier.height(20.dp)
             )
         }
-
     }
 }

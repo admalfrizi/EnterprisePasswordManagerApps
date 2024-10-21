@@ -11,6 +11,7 @@ import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.response.UserResponseData
+import org.apps.simpenpass.models.response.VerifyOtpResponse
 
 interface UserDataFunc {
     suspend fun login(data: LoginRequest): BaseResponse<UserResponseData>
@@ -51,6 +52,6 @@ interface MemberGroupDataFunc {
 
 interface ResetPassFunc {
     suspend fun sendOtp(email: String) : BaseResponse<SendOtpResponse>
-    suspend fun verifyOtp(otp: Int, email: String) : BaseResponse<String>
-    suspend fun resetPassword(password: String, email: String) : BaseResponse<String>
+    suspend fun verifyOtp(otp: Int, userId: Int) : BaseResponse<VerifyOtpResponse>
+    suspend fun resetPassword(password: String, token: String) : BaseResponse<String>
 }

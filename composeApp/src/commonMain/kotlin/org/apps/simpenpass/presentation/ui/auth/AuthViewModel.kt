@@ -9,9 +9,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.ForgotPassRepository
 import org.apps.simpenpass.data.repository.UserRepository
-import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.response.SendOtpResponse
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.utils.NetworkResult
 
 class AuthViewModel(
@@ -67,7 +68,8 @@ class AuthViewModel(
                         _authState.update {
                             it.copy(
                                 isLoading = false,
-                                userData = result.data
+                                userData = result.data,
+                                error = ""
                             )
                         }
                     }
@@ -133,6 +135,75 @@ class AuthViewModel(
                             it.copy(
                                 isLoading = false,
                                 isSendOtp = true,
+                                otpResponse = result.data.data
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun verifyOtp(otp: String, userId: String){
+        viewModelScope.launch {
+            forgotPassRepo.verifyOtp(otp.toInt(), userId).collect { result ->
+                when (result) {
+                    is NetworkResult.Error -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading ->  {
+                        _authState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                isVerify = true,
+                                resetPassTokens = result.data.data?.tokenOtp,
+                                error = ""
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun resetPassword(password: String, token: String){
+        viewModelScope.launch {
+            forgotPassRepo.resetPassword(password, token).collect { result ->
+                when (result) {
+                    is NetworkResult.Error -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.error
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Loading -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                message = result.data.message,
+                                isResetPass = true
                             )
                         }
                     }
@@ -147,8 +218,12 @@ data class AuthState (
     val isRegistered: Boolean = false,
     val isLoggedIn: Boolean = false,
     val isSendOtp: Boolean = false,
+    val isVerify: Boolean = false,
+    val isResetPass: Boolean = false,
     val userData: UserData? = null,
+    val otpResponse: SendOtpResponse? = null,
     val token: String? = null,
+    val resetPassTokens: String? = null,
     val error: String? = null,
     val message: String? = null
 )
