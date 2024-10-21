@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -13,6 +14,21 @@ class MemberGroupRepository(
     private val remoteMemberDataSources : RemoteMemberDataSources,
     private val localData : LocalStoreData
 ) {
+    fun addUsersToJoinGroup(
+        addMemberRequest: AddMemberRequest,
+        groupId: Int
+    ) = flow {
+        emit(NetworkResult.Loading())
+        localData.getToken.collect { token ->
+            val result = remoteMemberDataSources.addMemberToGroup(token, addMemberRequest, groupId)
+            if (result.success) {
+                emit(NetworkResult.Success(result))
+            }
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }
+
     fun getMemberGroup(groupId: Int) = flow {
         emit(NetworkResult.Loading())
         try {
@@ -32,5 +48,19 @@ class MemberGroupRepository(
 
     suspend fun getUserData(): LocalUserStore {
         return localData.getUserData()
+    }
+
+    fun findUsersToJoinedGroup(
+        query: String
+    ) = flow {
+        emit(NetworkResult.Loading())
+        localData.getToken.collect { token ->
+            val result = remoteMemberDataSources.findUsersToJoinedGroup(token, query)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            }
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
 }

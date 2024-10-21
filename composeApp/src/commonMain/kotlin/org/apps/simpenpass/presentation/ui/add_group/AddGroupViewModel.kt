@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.user_data.UserData
+import org.apps.simpenpass.utils.NetworkResult
 
 class AddGroupViewModel(
     private val repoMember: MemberGroupRepository,
@@ -46,9 +48,61 @@ class AddGroupViewModel(
         }
     }
 
+    fun addMemberToDb(
+        memberList: AddMemberRequest,
+        groupId: String,
+    ) {
+        viewModelScope.launch {
+            repoMember.addUsersToJoinGroup(memberList,groupId.toInt()).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> TODO()
+                    is NetworkResult.Loading -> TODO()
+                    is NetworkResult.Success -> TODO()
+                }
+            }
+        }
+    }
+
+    fun findMemberForAddToGroup(query: String){
+        viewModelScope.launch {
+            repoMember.findUsersToJoinedGroup(query).collect{ result ->
+                when(result){
+                    is NetworkResult.Error -> {
+                        _addGroupState.update { currentList ->
+                            currentList.copy(
+                                isLoading = false,
+                                isError = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _addGroupState.update { currentList ->
+                            currentList.copy(
+                                isLoading = true,
+                                isError = false
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _addGroupState.update { currentList ->
+                            currentList.copy(
+                                isLoading = false,
+                                isError = false,
+                                searchUserData = result.data.data!!
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 data class AddGroupState(
-    val memberListAdd: List<AddMember>? = emptyList(),
+    val memberListAdd: List<AddMember> = emptyList(),
     var memberList: List<UserData>? = emptyList(),
+    val searchUserData : List<UserData>? = emptyList(),
+    var isLoading: Boolean? = false,
+    var isError: Boolean? = false,
 )

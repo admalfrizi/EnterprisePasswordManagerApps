@@ -83,6 +83,7 @@ import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddGroupBottomSheetContent
 import org.apps.simpenpass.presentation.components.addGroupComponents.ContentType
 import org.apps.simpenpass.screen.Screen
@@ -183,6 +184,7 @@ fun AddGroupScreen(
                     onClick = {
                         isLoading.value = true
                         navController.navigateUp()
+//                        addGroupViewModel.addMemberToDb(AddMemberRequest(addGroupState.memberListAdd), 1.toString())
                     },
                     elevation = FloatingActionButtonDefaults.elevation(0.dp)
                 ){
@@ -599,6 +601,32 @@ fun AddMemberSection(
         )
         Spacer(
             modifier = Modifier.height(19.dp)
+        )
+        EmptyWarning(
+            modifier = Modifier.fillMaxWidth(),
+            warnTitle = "Silahkan Cari untuk Anggota Baru",
+            warnText = "Info Anggota akan Ditampilkan Disini",
+            isEnableBtn = false,
+            onSelect = {  }
+        )
+        Spacer(
+            modifier = Modifier.height(19.dp)
+        )
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+
+            },
+            shape = RoundedCornerShape(20.dp),
+            elevation = ButtonDefaults.elevation(0.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFF5E86BB)),
+            content = {
+                Text(
+                    "Cari Anggota",
+                    style = MaterialTheme.typography.h6,
+                    color = fontColor1
+                )
+            }
         )
         Button(
             modifier = Modifier.fillMaxWidth(),

@@ -6,8 +6,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,16 +49,6 @@ fun TopBarHome(
         },
         elevation = 0.dp,
         actions = {
-            IconButton(
-                onClick = { },
-                content = {
-                    Icon(
-                        Icons.Outlined.Notifications,
-                        contentDescription = "",
-                        tint = Color.White
-                    )
-                }
-            )
             IconButton(
                 onClick = { navigateToFormPass()},
                 content = {

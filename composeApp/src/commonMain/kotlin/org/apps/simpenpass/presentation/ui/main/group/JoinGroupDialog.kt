@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.secondaryColor
@@ -31,9 +32,11 @@ fun JoinGroupDialog(onDismissRequest: () -> Unit) {
     var groupName by remember { mutableStateOf("") }
 
     Dialog(
-        onDismissRequest = {onDismissRequest()}
+        onDismissRequest = {onDismissRequest()},
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ){
         Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(20.dp),
             elevation = 0.dp,
         ) {
@@ -69,7 +72,7 @@ fun JoinGroupDialog(onDismissRequest: () -> Unit) {
                 EmptyWarning(
                     modifier = Modifier.fillMaxWidth(),
                     warnTitle = "Silahkan Cari Nama Grup",
-                    warnText = "Info Grup anda Akan Ditampilkan Disini",
+                    warnText = "Info Grup akan Ditampilkan Disini",
                     isEnableBtn = false,
                     onSelect = {}
                 )

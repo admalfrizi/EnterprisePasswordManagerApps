@@ -57,8 +57,6 @@ class HomeViewModel(
                 }
             }
         }
-
-        getData()
     }
 
     fun getData() {

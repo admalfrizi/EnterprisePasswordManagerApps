@@ -15,10 +15,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
@@ -42,19 +38,17 @@ import org.apps.simpenpass.presentation.components.formComponents.HeaderContaine
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
+import org.apps.simpenpass.utils.setToast
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FormScreen(
     navController: NavController,
     formViewModel: FormViewModel = koinViewModel(),
-    snackBarHostState: SnackbarHostState,
     passId: String
 ) {
     val isDismiss = remember { mutableStateOf(false) }
     val formState by formViewModel.formState.collectAsState()
-    val scope = rememberCoroutineScope()
 
     var nmAccount by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
@@ -80,16 +74,12 @@ fun FormScreen(
 
     if(formState.isCreated){
         navController.navigateUp()
-        scope.launch {
-            snackBarHostState.showSnackbar("Data Berhasil Ditambahkan")
-        }
+        setToast("Data Berhasil Ditambahkan")
     }
 
     if(formState.isUpdated) {
         navController.navigateUp()
-        scope.launch {
-            snackBarHostState.showSnackbar("Data Berhasil Diperbarui")
-        }
+        setToast("Data Berhasil Diperbarui")
     }
 
     LaunchedEffect(Unit){
@@ -266,6 +256,7 @@ fun FormScreen(
                         FormTextField(
                             modifier = Modifier.fillMaxWidth(),
                             value = passData,
+                            isPassword = true,
                             labelHints = "Isi Data Password",
                             leadingIcon = null,
                             onValueChange = {

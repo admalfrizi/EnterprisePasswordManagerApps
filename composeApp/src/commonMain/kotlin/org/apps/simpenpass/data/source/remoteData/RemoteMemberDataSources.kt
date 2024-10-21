@@ -4,6 +4,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -11,17 +13,31 @@ import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.utils.Constants
 
 class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupDataFunc {
     override suspend fun addMemberToGroup(
         token: String,
         addData: AddMemberRequest,
-        id: Int
-    ): BaseResponse<GrupPassData> {
-        TODO("Not yet implemented")
+        groupId: Int
+    ): BaseResponse<List<AddMember>> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "addMemberGroup/$groupId"){
+                contentType(ContentType.Application.Json)
+                setBody(addData)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<List<AddMember>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
     }
 
     override suspend fun deleteOneMemberFromGroup(
@@ -42,6 +58,25 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
             }
 
             return response.body<BaseResponse<List<MemberGroupData>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun findUsersToJoinedGroup(
+        token: String,
+        query: String
+    ): BaseResponse<List<UserData>> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "searchUser"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("query", query)
+            }
+
+            return response.body<BaseResponse<List<UserData>>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

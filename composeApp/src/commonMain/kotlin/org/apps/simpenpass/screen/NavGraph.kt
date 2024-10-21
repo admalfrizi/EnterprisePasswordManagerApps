@@ -189,7 +189,7 @@ fun ContentNavGraph(
                 )
             ){
                 val passId = requireNotNull(it.arguments?.getString(Screen.FormPassData.ARG_PASS_ID))
-                FormScreen(navController, snackBarHostState =  snackbarHostState, passId = passId)
+                FormScreen(navController, passId = passId)
             }
             composable(route = Screen.ListPassDataUser.route, enterTransition = {fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                     slideInVertically(animationSpec = tween(durationMillis = 300)) {

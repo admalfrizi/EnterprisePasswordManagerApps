@@ -113,6 +113,10 @@ class FormViewModel(
             }
         }
     }
+
+    fun resetValue() {
+        _formState.value = FormState(isLoading = true)
+    }
 }
 
 data class FormState(

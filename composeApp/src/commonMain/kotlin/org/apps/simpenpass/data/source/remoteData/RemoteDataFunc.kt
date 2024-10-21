@@ -3,6 +3,7 @@ package org.apps.simpenpass.data.source.remoteData
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.LoginRequest
@@ -12,6 +13,7 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.response.UserResponseData
 import org.apps.simpenpass.models.response.VerifyOtpResponse
+import org.apps.simpenpass.models.user_data.UserData
 
 interface UserDataFunc {
     suspend fun login(data: LoginRequest): BaseResponse<UserResponseData>
@@ -29,7 +31,7 @@ interface PassDataFunc {
 interface GroupPassDataFunc {
     suspend fun createGroup(
         token: String,
-        formData: PassDataRequest,
+        formData: GrupPassData,
         id: Int
     ): BaseResponse<GrupPassData>
 
@@ -45,9 +47,10 @@ interface GroupPassDataFunc {
 }
 
 interface MemberGroupDataFunc {
-    suspend fun addMemberToGroup(token: String, addData: AddMemberRequest, id: Int): BaseResponse<GrupPassData>
+    suspend fun addMemberToGroup(token: String, addData: AddMemberRequest, groupId: Int): BaseResponse<List<AddMember>>
     suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
     suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
+    suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<List<UserData>>
 }
 
 interface ResetPassFunc {
