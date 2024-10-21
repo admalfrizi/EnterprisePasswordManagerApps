@@ -17,7 +17,7 @@ class HomeViewModel(
     private val passRepo: PassRepository,
     private val groupRepo: GroupRepository
 ) : ViewModel() {
-    private val _homeState = MutableStateFlow(HomeState())
+    private val _homeState = MutableStateFlow(HomeState(isLoading = true))
     val homeState = _homeState.asStateFlow()
 
     init {
