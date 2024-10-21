@@ -70,6 +70,7 @@ fun VerifyOtpScreen(
 
     if(authState.isVerify && !authState.isLoading && authState.resetPassTokens != null) {
         navToResetPass(authState.resetPassTokens!!)
+        setToast("OTP Anda Telah Terverifikasi")
     }
 
     if(authState.isLoading) {

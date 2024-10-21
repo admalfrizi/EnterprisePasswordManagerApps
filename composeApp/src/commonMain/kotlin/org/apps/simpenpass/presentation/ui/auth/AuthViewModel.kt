@@ -3,7 +3,7 @@ package org.apps.simpenpass.presentation.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ class AuthViewModel(
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow(AuthState())
-    val authState: StateFlow<AuthState> get() = _authState
+    val authState = _authState.asStateFlow()
 
     init {
         viewModelScope.launch {
