@@ -165,15 +165,6 @@ fun AddGroupScreen(
 
     Napier.v("Group Name = $grupName")
     Napier.v("Image Name = $nameImg")
-    Napier.v("Desc = ${desc.value}")
-    Napier.v("List Member Data = ${addGroupState.memberList}")
-    Napier.v("List Member Data = ${addGroupState.memberListAdd}")
-    Napier.v("isCreated = ${addGroupState.isCreated}")
-    Napier.v("Group Id = ${addGroupState.grupData?.id}")
-
-    if(addGroupState.isError == true){
-        Napier.v("Msg = ${addGroupState.msgAddMember}")
-    }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,

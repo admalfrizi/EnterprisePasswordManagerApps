@@ -31,7 +31,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    profileViewModel: ProfileViewModel = koinViewModel()
+    profileViewModel: ProfileViewModel = koinViewModel(),
+    navigateToLogout: () -> Unit
 ) {
     val profileState by profileViewModel.profileState.collectAsState()
 //    var name: String? by remember { mutableStateOf(null) }
@@ -52,14 +53,14 @@ fun ProfileScreen(
                     modifier= Modifier.height(11.dp)
                 )
 
-                SettingListView(navController, profileState,profileViewModel)
+                SettingListView(navigateToLogout, profileState,profileViewModel)
             }
         }
     )
 }
 
 @Composable
-fun SettingListView(navController: NavController, profileState: ProfileState, profileViewModel: ProfileViewModel) {
+fun SettingListView(navigateToLogout: () -> Unit, profileState: ProfileState, profileViewModel: ProfileViewModel) {
     var isLogoutWarningShow by remember { mutableStateOf(false) }
 
     if(isLogoutWarningShow){
@@ -74,11 +75,7 @@ fun SettingListView(navController: NavController, profileState: ProfileState, pr
     }
 
     if(profileState.isLogout){
-        navController.navigate(Screen.Auth.route){
-            popUpTo("root"){
-                inclusive = true
-            }
-        }
+        navigateToLogout()
     }
 
     if(profileState.isLoading){

@@ -43,7 +43,6 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                         )
                     )
                 }
-
                 setBody(insertData)
             }
 

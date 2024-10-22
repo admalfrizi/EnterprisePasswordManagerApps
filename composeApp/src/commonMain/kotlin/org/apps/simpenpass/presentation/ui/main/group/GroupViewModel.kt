@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
@@ -22,7 +23,7 @@ class GroupViewModel(
 
     init {
         viewModelScope.launch {
-            repoGroup.listJoinedGrup().collect { res ->
+            repoGroup.listJoinedGrup().distinctUntilChanged().collect { res ->
                 when(res) {
                     is NetworkResult.Error -> {
                         _groupState.update {
@@ -33,7 +34,6 @@ class GroupViewModel(
                         }
                     }
                     is NetworkResult.Loading -> {
-
                         _groupState.update {
                             it.copy(
                                 isLoading = true,

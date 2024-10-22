@@ -13,7 +13,6 @@ class GroupRepository(
     private val remoteGroupSources : RemoteGroupDataSources,
     private val localData : LocalStoreData
 ) {
-
     fun createGroup(
         insertData: AddGroupRequest,
         imgName: String?,
@@ -69,5 +68,9 @@ class GroupRepository(
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
+
+//    fun updateGroup(groupId : Int, insertData: AddGroupRequest) = flow {
+//
+//    }
 
 }

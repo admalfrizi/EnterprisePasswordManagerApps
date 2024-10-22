@@ -105,7 +105,7 @@ class AddGroupViewModel(
         }
     }
 
-    fun addMemberToDb(
+    private fun addMemberToDb(
         memberList: List<AddMember>,
         groupId: Int,
     ) {

@@ -61,6 +61,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
             implementation(libs.splitties.appcontext)
+            implementation(libs.core.splashscreen)
         }
         val commonMain by getting {
             dependencies {

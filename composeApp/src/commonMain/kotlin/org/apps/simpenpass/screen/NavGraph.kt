@@ -16,16 +16,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -36,11 +29,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import org.apps.simpenpass.PlatformColors
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
-import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
 import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
 import org.apps.simpenpass.presentation.ui.auth.SendOtpScreen
@@ -54,10 +45,7 @@ import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
-import org.apps.simpenpass.style.primaryColor
-import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.detectRoute
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ContentNavGraph(
@@ -65,38 +53,14 @@ fun ContentNavGraph(
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
     data: MutableState<PassResponseData?>,
-    snackbarHostState: SnackbarHostState,
-    authViewModel : AuthViewModel = koinViewModel(),
-    navigateToFormWithArgs : MutableState<(PassResponseData)->Unit>
+    navigateToFormWithArgs : MutableState<(PassResponseData)->Unit>,
+    navigateToLogout: () -> Unit
 ) {
-    var isLoggedIn by remember { mutableStateOf(false) }
-    val stateAuth by authViewModel.authState.collectAsState()
     val density = LocalDensity.current
-    val checkNav = navController.currentBackStackEntry?.destination?.parent?.route
-    var bottomEdgeColor by remember { mutableStateOf(Color.White) }
 
-    if (checkNav == Screen.Main.route) {
-        bottomEdgeColor = primaryColor
-    } else if(checkNav == Screen.Auth.route || navController.currentBackStackEntry?.destination?.route == Screen.FormPassData.route){
-        bottomEdgeColor = secondaryColor
-    } else {
-        bottomEdgeColor = Color(0xFFF1F1F1)
-    }
-
-    if(sheetState.isVisible){
-        bottomEdgeColor = Color.White
-    }
-
-    PlatformColors(Color(0xFF052E58),bottomEdgeColor)
-
-    if(stateAuth.isLoggedIn){
-        isLoggedIn = true
-    }
-
-    NavHost(navController,startDestination = if(isLoggedIn) Screen.Main.route else Screen.Auth.route , modifier = Modifier.fillMaxSize().padding(
+    NavHost(navController,startDestination = Screen.Main.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
-            authNavGraph(navController)
             navigation(
                 route = Screen.Main.route,startDestination = Screen.Home.route,
                 enterTransition = { EnterTransition.None },
@@ -172,7 +136,7 @@ fun ContentNavGraph(
                                 }
                             } }
                     ){
-                    ProfileScreen(navController)
+                    ProfileScreen(navController, navigateToLogout = navigateToLogout)
                 }
             }
             composable(route = Screen.FormPassData.route,enterTransition = { return@composable slideIntoContainer(
@@ -369,3 +333,4 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
     }
 }
+

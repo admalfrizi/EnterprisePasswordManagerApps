@@ -8,8 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +30,9 @@ import org.apps.simpenpass.screen.ContentNavGraph
 import org.apps.simpenpass.screen.Screen
 
 @Composable
-fun RootScreen() {
+fun RootScreen(
+    navigateToLogout: () -> Unit,
+) {
     val navController = rememberNavController()
     val routeNav = listOf(
         BottomNavMenuData.Home,
@@ -42,7 +42,6 @@ fun RootScreen() {
     val visible by remember {
         mutableStateOf(true)
     }
-    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
@@ -83,9 +82,6 @@ fun RootScreen() {
         sheetBackgroundColor = Color.White
     ){
         Scaffold(
-            snackbarHost = {
-                SnackbarHost(snackBarHostState)
-            },
             topBar = {
                 checkScreenNav?.let {
                     TopBarNavigationMenu(
@@ -106,7 +102,14 @@ fun RootScreen() {
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(navController, if(!isMainScreen) null else paddingValues,sheetState,dataDetail,snackBarHostState, navigateToFormWithArgs = onClick)
+            ContentNavGraph(
+                navController,
+                if(!isMainScreen) null else paddingValues,
+                sheetState,
+                dataDetail,
+                navigateToFormWithArgs = onClick,
+                navigateToLogout
+            )
         }
     }
 }

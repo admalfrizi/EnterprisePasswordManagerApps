@@ -37,6 +37,7 @@ splittiesAppContext = "3.0.0"
 atomicfu = "0.25.0"
 mockk = "1.13.13"
 kotest = "6.0.0.M1"
+core-splashscreen = "1.0.1"
 
 [libraries]
 calf-file-picker = { module = "com.mohamedrejeb.calf:calf-file-picker", version.ref = "calf" }
@@ -96,6 +97,7 @@ atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu"
 mockk-common = { module = "io.mockk:mockk-common", version.ref = "mockk" }
 mockk-native = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
