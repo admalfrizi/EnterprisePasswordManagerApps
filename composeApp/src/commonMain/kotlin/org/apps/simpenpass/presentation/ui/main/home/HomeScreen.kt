@@ -58,7 +58,8 @@ fun HomeScreen(
     dataPass: MutableState<PassResponseData?>,
     homeViewModel: HomeViewModel = koinViewModel(),
     passDataId: MutableState<(PassResponseData) -> Unit>,
-    navigateToFormEdit: (String) -> Unit
+    navigateToFormEdit: (String) -> Unit,
+    navigateToListUserPass : () -> Unit
 ) {
 
     val homeState by homeViewModel.homeState.collectAsStateWithLifecycle()
@@ -85,7 +86,7 @@ fun HomeScreen(
                 ) {
                     HeaderContainer(homeState.name,homeState.passDataList.size,homeState.totalGroupJoined ?: 0)
                     Spacer(modifier = Modifier.height(16.dp))
-                    HomeContentView(navController,sheetState,dataPass,homeViewModel)
+                    HomeContentView(navController,sheetState,dataPass,homeViewModel, navigateToListUserPass)
                     Spacer(
                         modifier = Modifier.height(11.dp)
                     )
@@ -107,7 +108,8 @@ fun HomeContentView(
     navController: NavController,
     sheetState: ModalBottomSheetState,
     dataPass: MutableState<PassResponseData?>,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    navigateToListUserPass: () -> Unit
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
 
@@ -133,7 +135,7 @@ fun HomeContentView(
             Spacer(
                 modifier = Modifier.height(16.dp)
             )
-            UserPassDataSection(homeState.passDataList,dataPass,sheetState,navController)
+            UserPassDataSection(homeState.passDataList,dataPass,sheetState,navigateToListUserPass)
         }
     }
 }

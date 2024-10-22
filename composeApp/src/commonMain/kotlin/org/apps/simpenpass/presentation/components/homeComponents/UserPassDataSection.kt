@@ -20,10 +20,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.ui.main.home.UserDataPassHolder
-import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 
 @Composable
@@ -31,7 +29,7 @@ fun UserPassDataSection(
     listData : List<PassResponseData?>,
     data: MutableState<PassResponseData?>,
     sheetState: ModalBottomSheetState,
-    navController: NavController
+    navigateToListUserPass: () -> Unit
 ) {
     val limitData = listData.take(3)
     Column(
@@ -64,7 +62,9 @@ fun UserPassDataSection(
                 elevation = ButtonDefaults.elevation(0.dp),
                 colors = ButtonDefaults.buttonColors(Color.White),
                 border = BorderStroke(color = Color(0xFF8CC4FB), width = 1.dp),
-                onClick = {navController.navigate(Screen.ListPassDataUser.route)},
+                onClick = {
+                    navigateToListUserPass()
+                },
                 content = {
                     Text(
                         "Lihat Lebih Banyak",

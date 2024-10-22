@@ -27,11 +27,15 @@ import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigati
 import org.apps.simpenpass.presentation.ui.main.group.JoinGroupDialog
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.ContentNavGraph
-import org.apps.simpenpass.screen.Screen
 
 @Composable
 fun RootScreen(
     navigateToLogout: () -> Unit,
+    navigateToAddGroup: () -> Unit,
+    navigateToGroupDtl: (String) -> Unit,
+    navigateToListUserPass : () -> Unit,
+    navigateToEditPass: (String) -> Unit,
+    navigateToFormPass: () -> Unit
 ) {
     val navController = rememberNavController()
     val routeNav = listOf(
@@ -71,7 +75,7 @@ fun RootScreen(
                     dataDetail,
                     onClick,
                     navigateToAddGroup = {
-                        navController.navigate(Screen.AddGroupPass.route)
+                        navigateToAddGroup()
                     },
                     navigateToJoinGroup = {
                         isJoinDialogPopUp = true
@@ -86,9 +90,7 @@ fun RootScreen(
                 checkScreenNav?.let {
                     TopBarNavigationMenu(
                         it,
-                        navigateToFormPass = {
-                            navController.navigate(Screen.FormPassData.route)
-                        }
+                        navigateToFormPass = navigateToFormPass
                     )
                 }
             },
@@ -108,7 +110,10 @@ fun RootScreen(
                 sheetState,
                 dataDetail,
                 navigateToFormWithArgs = onClick,
-                navigateToLogout
+                navigateToLogout,
+                navigateToGroupDtl,
+                navigateToListUserPass,
+                navigateToEditPass = navigateToEditPass
             )
         }
     }

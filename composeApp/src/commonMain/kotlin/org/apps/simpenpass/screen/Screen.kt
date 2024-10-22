@@ -1,9 +1,8 @@
 package org.apps.simpenpass.screen
 
 sealed class Screen(val route : String) {
-    data object NavScreen : Screen(route = "navScreen")
+    data object Root : Screen(route = "root")
     data object Auth : Screen(route = "auth")
-
 
     data object Login : Screen(route = "login")
     data object Register : Screen(route = "register")

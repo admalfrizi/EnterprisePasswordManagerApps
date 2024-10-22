@@ -1,6 +1,5 @@
 package org.apps.simpenpass.screen
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -9,9 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,18 +27,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import org.apps.simpenpass.models.response.PassResponseData
-import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
 import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
 import org.apps.simpenpass.presentation.ui.auth.SendOtpScreen
 import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
-import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
-import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
 import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
 import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
 import org.apps.simpenpass.presentation.ui.group_pass.retrieve_data_pass.RetrieveDataPass
-import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
@@ -54,133 +47,96 @@ fun ContentNavGraph(
     sheetState: ModalBottomSheetState,
     data: MutableState<PassResponseData?>,
     navigateToFormWithArgs : MutableState<(PassResponseData)->Unit>,
-    navigateToLogout: () -> Unit
+    navigateToLogout: () -> Unit,
+    navigateToGroupDtl: (String) -> Unit,
+    navigateToListUserPass : () -> Unit,
+    navigateToEditPass: (String) -> Unit
 ) {
     val density = LocalDensity.current
 
     NavHost(navController,startDestination = Screen.Main.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
-            navigation(
-                route = Screen.Main.route,startDestination = Screen.Home.route,
-                enterTransition = { EnterTransition.None },
-                exitTransition = { ExitTransition.None }
-            ){
-                composable(route = Screen.Home.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
-                        slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
-                            with(density) { -30.dp.roundToPx() }
-                        } },
-                    exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
-                            slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
-                                with(density) {
-                                    if(detectRoute(navController) == Screen.Group.route){
-                                        (-30).dp.roundToPx()
-                                    } else {
-                                        (-30).dp.roundToPx()
-                                    }
-                                }
-                            } }
-                ){
-                    HomeScreen(
-                        navController,
-                        sheetState,
-                        data,
-                        passDataId = navigateToFormWithArgs,
-                        navigateToFormEdit = {
-                            navController.navigate(Screen.FormPassData.passDataId(it))
-                        }
-                    )
-                }
-
-                composable(route =  Screen.Group.route,
-                    enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
-                            slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
-                                with(density) {
-                                    if(detectRoute(navController) == Screen.Home.route) {
-                                        (30).dp.roundToPx()
-                                    } else if(detectRoute(navController) == Screen.Profile.route){
-                                        -30.dp.roundToPx()
-                                    } else {
-                                        30.dp.roundToPx()
-                                    }
-                                }
-                            } },
-                    exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+        navigation(
+            route = Screen.Main.route,startDestination = Screen.Home.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ){
+            composable(route = Screen.Home.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+                    slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
+                        with(density) { -30.dp.roundToPx() }
+                    } },
+                exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
                         slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
                             with(density) {
-                                if (detectRoute(navController) == Screen.Home.route) {
+                                if(detectRoute(navController) == Screen.Group.route){
                                     (-30).dp.roundToPx()
-                                } else if(detectRoute(navController) == Screen.Profile.route){
-                                    (30).dp.roundToPx()
                                 } else {
                                     (-30).dp.roundToPx()
                                 }
                             }
-                        } }) {
-                    GroupScreen(navigateToGrupDtl = {
-                        navController.navigate(Screen.GroupPass.groupId(it))
-                    },sheetState = sheetState)
-                }
-
-                composable(route = Screen.Profile.route,
-                    enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
-                        slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
-                            with(density) { 30.dp.roundToPx() }
-                        } },
-
-
-                    exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
-                            slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
-                                with(density) {
-                                    (30).dp.roundToPx()
-                                }
-                            } }
-                    ){
-                    ProfileScreen(navController, navigateToLogout = navigateToLogout)
-                }
-            }
-            composable(route = Screen.FormPassData.route,enterTransition = { return@composable slideIntoContainer(
-                AnimatedContentTransitionScope.SlideDirection.Up,
-                tween(700)
-            ) },
-                exitTransition = {slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, tween(700))},
-                arguments = listOf(
-                    navArgument(Screen.FormPassData.ARG_PASS_ID){
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = ""
-                    }
-                )
+                        } }
             ){
-                val passId = requireNotNull(it.arguments?.getString(Screen.FormPassData.ARG_PASS_ID))
-                FormScreen(navController, passId = passId)
-            }
-            composable(route = Screen.ListPassDataUser.route, enterTransition = {fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
-                    slideInVertically(animationSpec = tween(durationMillis = 300)) {
-                        with(density) { 30.dp.roundToPx() }
-                    }}, exitTransition = {fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
-                    slideOutVertically(animationSpec = tween(durationMillis = 300)) {
-                        with(density) { (30).dp.roundToPx() }
-                    }}){
-                ListDataPassUser(
+                HomeScreen(
+                    navController,
+                    sheetState,
+                    data,
+                    passDataId = navigateToFormWithArgs,
                     navigateToFormEdit = {
-                        navController.navigate(Screen.FormPassData.passDataId(it))
+                       navigateToEditPass(it)
                     },
-                    navigateBack = {
-                        navController.navigateUp()
-                    }
+                    navigateToListUserPass = navigateToListUserPass
                 )
             }
 
-            groupPassDetail(navController,density)
-
-            composable(route = Screen.AddGroupPass.route){
-                AddGroupScreen(navController)
+            composable(route =  Screen.Group.route,
+                enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+                        slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
+                            with(density) {
+                                if(detectRoute(navController) == Screen.Home.route) {
+                                    (30).dp.roundToPx()
+                                } else if(detectRoute(navController) == Screen.Profile.route){
+                                    -30.dp.roundToPx()
+                                } else {
+                                    30.dp.roundToPx()
+                                }
+                            }
+                        } },
+                exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+                    slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
+                        with(density) {
+                            if (detectRoute(navController) == Screen.Home.route) {
+                                (-30).dp.roundToPx()
+                            } else if(detectRoute(navController) == Screen.Profile.route){
+                                (30).dp.roundToPx()
+                            } else {
+                                (-30).dp.roundToPx()
+                            }
+                        }
+                    } }) {
+                GroupScreen(
+                    navigateToGrupDtl = { navigateToGroupDtl(it) },
+                    sheetState = sheetState,
+                )
             }
 
-            composable(route = Screen.EditRole.route){
-                EditRoleScreen(navController)
+            composable(route = Screen.Profile.route,
+                enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+                    slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
+                        with(density) { 30.dp.roundToPx() }
+                    } },
+
+
+                exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+                        slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
+                            with(density) {
+                                (30).dp.roundToPx()
+                            }
+                        } }
+                ){
+                ProfileScreen(navController, navigateToLogout = navigateToLogout)
             }
+        }
     }
 }
 
@@ -260,7 +216,10 @@ fun NavGraphBuilder.groupPassDetail(
 }
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
-    navigation(route = Screen.Auth.route,startDestination = Screen.Login.route){
+    navigation(
+        route = Screen.Auth.route,
+        startDestination = Screen.Login.route
+    ){
         composable(route = Screen.Login.route){
             AuthScreen(navController)
         }
