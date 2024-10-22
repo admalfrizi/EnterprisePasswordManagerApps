@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
+import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupRepository(
@@ -13,9 +14,24 @@ class GroupRepository(
     private val localData : LocalStoreData
 ) {
 
-//    fun addGroup() = flow {
-//        emit(NetworkResult.Loading())
-//    }
+    fun createGroup(
+        insertData: AddGroupRequest,
+        imgName: String?,
+        imgFile: ByteArray?,
+    ) = flow {
+        emit(NetworkResult.Loading())
+        localData.getToken.collect { token ->
+            val result = remoteGroupSources.createGroup(token,insertData,imgName,imgFile)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            }
+            emit(NetworkResult.Error(result.message))
+            Napier.v("Data Add Group : $result")
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+        Napier.v("Error Add Group : ${it.message}")
+    }
 
     fun listJoinedGrup() = flow {
         emit(NetworkResult.Loading())

@@ -2,8 +2,11 @@ package org.apps.simpenpass.presentation.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
@@ -61,7 +64,7 @@ class HomeViewModel(
 
     fun getData() {
         viewModelScope.launch {
-            passRepo.listUserPassData().collect { result ->
+            passRepo.listUserPassData().flowOn(Dispatchers.IO).collect { result ->
                 when(result) {
                     is NetworkResult.Error -> {
                         _homeState.update {
@@ -86,8 +89,19 @@ class HomeViewModel(
                         }
                     }
                 }
-
             }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _homeState.update {
+            it.copy(
+                passDataList = emptyList(),
+                totalGroupJoined = null,
+                error = null,
+                isLoading = false
+            )
         }
     }
 }

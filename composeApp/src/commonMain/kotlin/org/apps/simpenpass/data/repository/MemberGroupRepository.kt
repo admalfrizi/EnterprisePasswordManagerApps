@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
-import org.apps.simpenpass.models.request.AddMemberRequest
+import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -15,7 +15,7 @@ class MemberGroupRepository(
     private val localData : LocalStoreData
 ) {
     fun addUsersToJoinGroup(
-        addMemberRequest: AddMemberRequest,
+        addMemberRequest: List<AddMember>,
         groupId: Int
     ) = flow {
         emit(NetworkResult.Loading())
@@ -24,9 +24,11 @@ class MemberGroupRepository(
             if (result.success) {
                 emit(NetworkResult.Success(result))
             }
+            Napier.v("Result Member : $result")
         }
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+        Napier.v("Error Member : ${error.message}")
     }
 
     fun getMemberGroup(groupId: Int) = flow {
@@ -43,7 +45,7 @@ class MemberGroupRepository(
         }
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
-        Napier.v("Error Member : ${error.message}")
+
     }
 
     suspend fun getUserData(): LocalUserStore {

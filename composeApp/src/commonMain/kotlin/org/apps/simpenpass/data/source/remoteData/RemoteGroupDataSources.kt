@@ -2,16 +2,21 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
+import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.utils.Constants
@@ -19,30 +24,28 @@ import org.apps.simpenpass.utils.Constants
 class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassDataFunc {
     override suspend fun createGroup(
         token: String,
-        formData: GrupPassData,
-        id: Int
+        insertData: AddGroupRequest,
+        imgName: String?,
+        imgFile: ByteArray?
     ): BaseResponse<GrupPassData> {
         try {
-            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addGroup"){
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addGroup") {
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
-                io.ktor.client.request.forms.formData {
-
+                if(imgFile?.isNotEmpty() == true){
+                    setBody(
+                        MultiPartFormDataContent(
+                            formData {
+                                append("img_group", imgFile, Headers.build {
+                                    append(HttpHeaders.ContentDisposition, "filename=\"${imgName}\"")
+                                })
+                            }
+                        )
+                    )
                 }
-            }
 
-//            httpClient.submitFormWithBinaryData(
-//                url = Constants.BASE_API_URL + "addGroup",
-//                io.ktor.client.request.forms.formData {
-//                    append(
-//                        "image",
-//                        formData.image.readBytes(),
-//                        headers = Headers.build {
-//                            append(HttpHeaders.ContentDisposition, "filename=${formData.image.name}")
-//                        }
-//                    )
-//                },
-//            )
+                setBody(insertData)
+            }
 
             return response.body<BaseResponse<GrupPassData>>()
         } catch (e: Exception){

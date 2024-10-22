@@ -15,13 +15,13 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
@@ -35,8 +35,7 @@ fun GroupScreen(
     navigateToGrupDtl : (String) -> Unit,
     sheetState: ModalBottomSheetState,
 ) {
-
-    val groupState by groupViewModel.groupState.collectAsState()
+    val groupState by groupViewModel.groupState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -94,8 +93,6 @@ fun GroupScreen(
                       }
                   }
               }
-//              ListGroupHolder(navController,"Nama Grup")
-//              ListGroupHolder(navController, "Nama Grup")
           }
       }
   )

@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AddMember(
-    @SerialName("user_id")
-    val user_id: Int,
-    @SerialName("isGroupAdmin")
-    val isGroupAdmin: Boolean? = false
+data class AddGroupRequest(
+    @SerialName("nm_group")
+    val nmGroup: String,
+    @SerialName("desc")
+    val desc: String? = null
 )

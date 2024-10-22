@@ -77,12 +77,15 @@ import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.navigator.internal.BackHandler
 import coil3.compose.AsyncImage
 import com.mohamedrejeb.calf.core.LocalPlatformContext
+import com.mohamedrejeb.calf.io.getName
 import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
+import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddGroupBottomSheetContent
 import org.apps.simpenpass.presentation.components.addGroupComponents.ContentType
@@ -91,6 +94,7 @@ import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.profileNameInitials
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -113,16 +117,11 @@ fun AddGroupScreen(
     val findMember = remember { mutableStateOf("") }
 
     val interactionSource = remember { MutableInteractionSource() }
-    val isLoading = remember { mutableStateOf(false) }
     val isDismiss = remember { mutableStateOf(true) }
     var isFocused by remember { mutableStateOf(false) }
-    var byteArray by remember { mutableStateOf(ByteArray(0)) }
+    var imgFile by remember { mutableStateOf(ByteArray(0)) }
     val addGroupState by addGroupViewModel.addGroupState.collectAsState()
-
-    if(isLoading.value){
-        popUpLoading(isDismiss)
-    }
-
+    var nameImg by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true,
@@ -135,14 +134,21 @@ fun AddGroupScreen(
     val context = LocalPlatformContext.current
     val launcher = rememberFilePickerLauncher(
         type = FilePickerFileType.Image,
+        selectionMode = FilePickerSelectionMode.Single,
         onResult = { files ->
             scope.launch {
                 files.firstOrNull()?.let {
-                    byteArray = it.readByteArray(context)
+                    imgFile = it.readByteArray(context)
+                    nameImg = it.getName(context)!!
+
                 }
             }
         }
     )
+
+    if(addGroupState.isLoading){
+        popUpLoading(isDismiss)
+    }
 
     if(sheetState.isVisible){
         focusManager.clearFocus()
@@ -158,6 +164,16 @@ fun AddGroupScreen(
     )
 
     Napier.v("Group Name = $grupName")
+    Napier.v("Image Name = $nameImg")
+    Napier.v("Desc = ${desc.value}")
+    Napier.v("List Member Data = ${addGroupState.memberList}")
+    Napier.v("List Member Data = ${addGroupState.memberListAdd}")
+    Napier.v("isCreated = ${addGroupState.isCreated}")
+    Napier.v("Group Id = ${addGroupState.grupData?.id}")
+
+    if(addGroupState.isError == true){
+        Napier.v("Msg = ${addGroupState.msgAddMember}")
+    }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -182,9 +198,13 @@ fun AddGroupScreen(
                 FloatingActionButton(
                     backgroundColor = Color(0xFF1E78EE),
                     onClick = {
-                        isLoading.value = true
-                        navController.navigateUp()
-//                        addGroupViewModel.addMemberToDb(AddMemberRequest(addGroupState.memberListAdd), 1.toString())
+                        if(!validateName(grupName)){
+                            setToast("Nama Grup Tidak Boleh Kosong !")
+                        } else {
+                            addGroupViewModel.addGroup(AddGroupRequest(grupName, desc.value),imgFile,nameImg)
+                            setToast("Grup Berhasil Dibuat !")
+                            navController.navigateUp()
+                        }
                     },
                     elevation = FloatingActionButtonDefaults.elevation(0.dp)
                 ){
@@ -245,9 +265,9 @@ fun AddGroupScreen(
                                 launcher.launch()
                             }.clip(CircleShape)
                         ) {
-                            if(byteArray.isNotEmpty()){
+                            if(imgFile.isNotEmpty()){
                                 AsyncImage(
-                                    model = byteArray,
+                                    model = imgFile,
                                     modifier = Modifier.size(100.dp),
                                     contentDescription = "Profile Picture",
                                     contentScale = ContentScale.Crop
@@ -388,6 +408,11 @@ fun AddGroupScreen(
         }
     }
 }
+
+fun validateName(name: String): Boolean {
+    return name.isNotEmpty()
+}
+
 
 @Composable
 fun BtnHolder(onClick: () -> Unit, titleAction: String, drawable: DrawableResource) {

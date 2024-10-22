@@ -3,8 +3,8 @@ package org.apps.simpenpass.data.source.remoteData
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMember
-import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
@@ -31,8 +31,9 @@ interface PassDataFunc {
 interface GroupPassDataFunc {
     suspend fun createGroup(
         token: String,
-        formData: GrupPassData,
-        id: Int
+        insertData: AddGroupRequest,
+        imgName: String?,
+        imgFile: ByteArray?
     ): BaseResponse<GrupPassData>
 
     suspend fun updateGroupData(data: RegisterRequest): BaseResponse<GrupPassData>
@@ -47,7 +48,7 @@ interface GroupPassDataFunc {
 }
 
 interface MemberGroupDataFunc {
-    suspend fun addMemberToGroup(token: String, addData: AddMemberRequest, groupId: Int): BaseResponse<List<AddMember>>
+    suspend fun addMemberToGroup(token: String, addData: List<AddMember>, groupId: Int): BaseResponse<List<AddMember>>
     suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
     suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
     suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<List<UserData>>

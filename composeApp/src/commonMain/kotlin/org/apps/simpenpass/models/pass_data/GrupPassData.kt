@@ -11,7 +11,7 @@ data class GrupPassData(
     val img_grup: String? = null,
     @SerialName("nm_grup")
     val nm_grup: String,
-    @SerialName("deskripsi_grup")
+    @SerialName("desc")
     val deskripsi: String? = null
 )
 
