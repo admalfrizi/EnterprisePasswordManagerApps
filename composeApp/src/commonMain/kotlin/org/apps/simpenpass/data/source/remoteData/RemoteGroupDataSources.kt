@@ -32,17 +32,19 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addGroup") {
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
-                if(imgFile?.isNotEmpty() == true){
-                    setBody(
-                        MultiPartFormDataContent(
-                            formData {
-                                append("img_group", imgFile, Headers.build {
-                                    append(HttpHeaders.ContentDisposition, "filename=\"${imgName}\"")
-                                })
-                            }
-                        )
+                setBody(
+                    MultiPartFormDataContent(
+                        formData {
+                            append(
+                                "img_group",
+                                imgFile ?: ByteArray(0),
+                                Headers.build {
+                                    append(HttpHeaders.ContentDisposition, "filename=${imgName}")
+                                }
+                            )
+                        }
                     )
-                }
+                )
                 setBody(insertData)
             }
 

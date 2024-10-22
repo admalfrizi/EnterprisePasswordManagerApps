@@ -28,7 +28,6 @@ class MemberGroupRepository(
         }
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
-        Napier.v("Error Member : ${error.message}")
     }
 
     fun getMemberGroup(groupId: Int) = flow {
