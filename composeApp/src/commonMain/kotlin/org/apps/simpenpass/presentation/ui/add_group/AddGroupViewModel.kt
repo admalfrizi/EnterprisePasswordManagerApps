@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.GrupPassData
@@ -64,16 +65,16 @@ class AddGroupViewModel(
                                 msg = null
                             )
                         }
-
-                        if(addGroupState.value.isCreated && addGroupState.value.grupData?.id != null) {
-                            launch {
-                                addMemberToDb(
-                                    addGroupState.value.memberListAdd,
-                                    addGroupState.value.grupData?.id!!
-                                )
-                            }
-                        }
                     }
+                }
+            }
+
+            if(addGroupState.value.isCreated && addGroupState.value.grupData?.id != null) {
+                launch {
+                    addMemberToDb(
+                        addGroupState.value.memberListAdd,
+                        addGroupState.value.grupData?.id!!
+                    )
                 }
             }
         }

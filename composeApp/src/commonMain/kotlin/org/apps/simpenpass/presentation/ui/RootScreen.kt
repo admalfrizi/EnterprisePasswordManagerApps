@@ -26,7 +26,7 @@ import org.apps.simpenpass.presentation.components.rootComponents.RootBottomShee
 import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigationMenu
 import org.apps.simpenpass.presentation.ui.main.group.JoinGroupDialog
 import org.apps.simpenpass.screen.BottomNavMenuData
-import org.apps.simpenpass.screen.ContentNavGraph
+import org.apps.simpenpass.screen.RootNavGraph
 
 @Composable
 fun RootScreen(
@@ -104,7 +104,7 @@ fun RootScreen(
                 }
             }
         ) { paddingValues ->
-            ContentNavGraph(
+            RootNavGraph(
                 navController,
                 if(!isMainScreen) null else paddingValues,
                 sheetState,

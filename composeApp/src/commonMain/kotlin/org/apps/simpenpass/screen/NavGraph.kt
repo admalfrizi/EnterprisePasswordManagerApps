@@ -41,7 +41,7 @@ import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
 import org.apps.simpenpass.utils.detectRoute
 
 @Composable
-fun ContentNavGraph(
+fun RootNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
