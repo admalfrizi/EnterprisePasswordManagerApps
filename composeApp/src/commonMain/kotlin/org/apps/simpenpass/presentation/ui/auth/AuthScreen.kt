@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -120,14 +121,14 @@ fun AuthScreen(
         Napier.d("Response: ${loginState.token}")
     }
 
-    if(loginState.error?.isNotEmpty() == true){
+    if(loginState.error?.isNotEmpty() == true && !loginState.isLoading){
         localCoroutineScope.launch {
             snackBarHostState.showSnackbar(loginState.error!!)
         }
     }
 
     Scaffold(
-        modifier = Modifier.imePadding(),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).imePadding(),
         snackbarHost = {
             SnackbarHost(snackBarHostState)
         }
