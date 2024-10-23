@@ -75,7 +75,6 @@ fun RegisterScreen(
     navHostController: NavHostController,
     authViewModel: AuthViewModel = koinViewModel()
 ) {
-
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val registerState by authViewModel.authState.collectAsState()

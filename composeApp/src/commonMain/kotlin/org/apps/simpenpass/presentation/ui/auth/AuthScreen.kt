@@ -82,7 +82,6 @@ fun AuthScreen(
 
     var emailFocus by remember { mutableStateOf(false) }
     var passwordFocus by remember { mutableStateOf(false) }
-
     val loginState by authViewModel.authState.collectAsState()
 
     bottomEdgeColor.value = secondaryColor
@@ -113,7 +112,7 @@ fun AuthScreen(
     }
 
     if(loginState.isLoggedIn){
-        navHostController.navigate("root"){
+        navHostController.navigate(Screen.Root.route){
             popUpTo(Screen.Auth.route){
                 inclusive = true
             }
