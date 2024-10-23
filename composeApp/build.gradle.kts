@@ -78,6 +78,7 @@ kotlin {
                 
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
+                implementation(libs.compose.shimmer)
                 implementation(libs.coil.compose)
                 implementation(libs.calf.file.picker)
                 implementation(libs.calf.file.picker.coil)

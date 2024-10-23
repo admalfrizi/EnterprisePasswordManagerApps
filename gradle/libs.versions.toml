@@ -16,6 +16,7 @@ calfFilePickerCoil = "0.5.1"
 coilCompose = "3.0.0-rc01"
 compose-plugin = "1.7.0"
 compose = "1.7.4"
+composeShimmer = "1.3.1"
 filekitCompose = "0.8.7"
 konnection = "1.4.3"
 material = "1.6.7"
@@ -44,6 +45,7 @@ core-splashscreen = "1.0.1"
 calf-file-picker = { module = "com.mohamedrejeb.calf:calf-file-picker", version.ref = "calf" }
 calf-file-picker-coil = { module = "com.mohamedrejeb.calf:calf-file-picker-coil", version.ref = "calfFilePickerCoil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekitCompose" }
 konnection = { module = "dev.tmapps:konnection", version.ref = "konnection" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

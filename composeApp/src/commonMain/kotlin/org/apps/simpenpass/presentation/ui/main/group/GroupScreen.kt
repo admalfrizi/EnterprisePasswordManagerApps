@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
@@ -25,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.ConnectionWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
+import org.apps.simpenpass.presentation.components.LoadingShimmer
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
 import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHolder
 import org.apps.simpenpass.style.secondaryColor
@@ -83,9 +83,13 @@ fun GroupScreen(
               if(groupState.isLoading){
                   Box(
                       modifier = Modifier.fillMaxSize(),
-                      contentAlignment = Alignment.Center,
+                      contentAlignment = Alignment.TopCenter,
                   ) {
-                      CircularProgressIndicator()
+                      Column {
+                          LoadingShimmer()
+                          LoadingShimmer()
+                          LoadingShimmer()
+                      }
                   }
               }
 
@@ -97,7 +101,7 @@ fun GroupScreen(
                       EmptyWarning(
                           modifier = Modifier.fillMaxWidth(),
                           warnTitle = "Anda belum bergabung dengan grup !",
-                          warnText = "Silahkan buat grup baru dengan mengklik tombol di atas",
+                          warnText = "Silahkan bergabung atau buat grup baru dengan mengklik tombol di atas",
                       )
                   }
               } else {
