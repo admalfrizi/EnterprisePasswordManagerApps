@@ -144,7 +144,11 @@ fun MainNavigation(
             )
         ){
             val passId = requireNotNull(it.arguments?.getString(Screen.FormPassData.ARG_PASS_ID))
-            FormScreen(navController, passId = passId)
+            FormScreen(
+                bottomEdgeColor,
+                navController,
+                passId = passId
+            )
         }
 
         composable(

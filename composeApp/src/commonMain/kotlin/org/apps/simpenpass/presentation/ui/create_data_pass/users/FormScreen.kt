@@ -23,6 +23,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FormScreen(
+    bottomEdgeColor: MutableState<Color>,
     navController: NavController,
     formViewModel: FormViewModel = koinViewModel(),
     passId: String
@@ -70,6 +72,8 @@ fun FormScreen(
         password = passData,
         url = urlPass,
     )
+
+    bottomEdgeColor.value = secondaryColor
 
     if(formState.isLoading){
         popUpLoading(isDismiss)
