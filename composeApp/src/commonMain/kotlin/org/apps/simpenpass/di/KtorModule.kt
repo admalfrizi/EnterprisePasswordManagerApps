@@ -3,6 +3,7 @@ package org.apps.simpenpass.di
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -24,16 +25,11 @@ val ktorModules = module {
                     }
                 )
             }
-//            install(Auth){
-//                bearer {
-//                    loadTokens {
-//                        BearerTokens(
-//                            accessToken = tokenData(tokenData = get()) ?: "",
-//                            refreshToken = "" // No need for refreshToken
-//                        )
-//                    }
-//                }
-//            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 20_000
+                connectTimeoutMillis = 20_000
+                socketTimeoutMillis = 20_000
+            }
         }.also { Napier.base(DebugAntilog()) }
     }
 }

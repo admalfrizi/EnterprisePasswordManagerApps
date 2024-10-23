@@ -48,9 +48,6 @@ import org.koin.compose.koinInject
 fun App() {
     val navController = rememberNavController()
     val splashViewModel : SplashViewModel = koinInject()
-
-    Napier.base(DebugAntilog())
-
     val checkNav = navController.currentBackStackEntry?.destination?.parent?.route
     var bottomEdgeColor by remember { mutableStateOf(Color.White) }
     val screenState by splashViewModel.currentScreen.collectAsState()
@@ -66,6 +63,8 @@ fun App() {
     PlatformColors(Color(0xFF052E58),bottomEdgeColor)
 
     val density = LocalDensity.current
+
+    Napier.base(DebugAntilog())
 
     AppTheme(
         content = {

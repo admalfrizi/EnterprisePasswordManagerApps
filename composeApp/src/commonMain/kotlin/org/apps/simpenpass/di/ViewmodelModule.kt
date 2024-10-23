@@ -29,7 +29,8 @@ val viewModelModule = module {
         HomeViewModel(
             userRepo = get(),
             passRepo = get(),
-            groupRepo = get()
+            groupRepo = get(),
+            konnection = get()
         )
     }
 
@@ -48,7 +49,8 @@ val viewModelModule = module {
     viewModel {
         GroupViewModel(
             repoGroup = get(),
-            repoMemberGroupRepository = get()
+            repoMemberGroupRepository = get(),
+            konnection = get()
         )
     }
 

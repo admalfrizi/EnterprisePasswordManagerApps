@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.presentation.components.ConnectionWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.homeComponents.GroupDataSection
 import org.apps.simpenpass.presentation.components.homeComponents.HeaderContainer
@@ -61,15 +62,17 @@ fun HomeScreen(
     navigateToFormEdit: (String) -> Unit,
     navigateToListUserPass : () -> Unit
 ) {
-
     val homeState by homeViewModel.homeState.collectAsStateWithLifecycle()
+    val isConnected by homeViewModel.isConnected.collectAsStateWithLifecycle()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = homeState.isLoading,
         onRefresh = homeViewModel::getData
     )
 
-    LaunchedEffect(Unit) {
-        homeViewModel.getData()
+    LaunchedEffect(isConnected) {
+        if(isConnected){
+            homeViewModel.getData()
+        }
     }
 
     passDataId.value = { passData ->
@@ -86,7 +89,7 @@ fun HomeScreen(
                 ) {
                     HeaderContainer(homeState.name,homeState.passDataList.size,homeState.totalGroupJoined ?: 0)
                     Spacer(modifier = Modifier.height(16.dp))
-                    HomeContentView(navController,sheetState,dataPass,homeViewModel, navigateToListUserPass)
+                    HomeContentView(isConnected,navController,sheetState,dataPass,homeViewModel, navigateToListUserPass)
                     Spacer(
                         modifier = Modifier.height(11.dp)
                     )
@@ -105,6 +108,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeContentView(
+    isConnected: Boolean,
     navController: NavController,
     sheetState: ModalBottomSheetState,
     dataPass: MutableState<PassResponseData?>,
@@ -113,7 +117,15 @@ fun HomeContentView(
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
 
-    if(homeState.passDataList.isEmpty() && !homeState.isLoading) {
+    if(!isConnected){
+        ConnectionWarning(
+            modifier = Modifier.fillMaxSize(),
+            warnTitle = "Internet Anda Telah Teputus !",
+            warnText = "Silahkan untuk memeriksa koneksi internet anda dan coba untuk refresh kembali halaman ini",
+        )
+    }
+
+    if(homeState.passDataList.isEmpty() && !homeState.isLoading && isConnected) {
         EmptyWarning(
             modifier = Modifier.fillMaxSize(),
             warnTitle = "Anda Belum Memiliki Data Password",
@@ -126,7 +138,7 @@ fun HomeContentView(
         )
     }
 
-    if(homeState.passDataList.isNotEmpty()){
+    if(homeState.passDataList.isNotEmpty() && isConnected){
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {

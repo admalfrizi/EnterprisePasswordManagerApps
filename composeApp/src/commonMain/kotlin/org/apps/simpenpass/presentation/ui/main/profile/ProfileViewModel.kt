@@ -11,9 +11,8 @@ import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
 
 class ProfileViewModel(
-    private val repo : UserRepository
+    private val repo : UserRepository,
 ) : ViewModel() {
-
     private val _profileState = MutableStateFlow(ProfileState())
     val profileState: StateFlow<ProfileState> get() = _profileState
 

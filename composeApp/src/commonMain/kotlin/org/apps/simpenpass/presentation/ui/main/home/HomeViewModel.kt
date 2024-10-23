@@ -2,6 +2,7 @@ package org.apps.simpenpass.presentation.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.tmapps.konnection.Konnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,9 +19,14 @@ import org.apps.simpenpass.utils.NetworkResult
 class HomeViewModel(
     private val userRepo : UserRepository,
     private val passRepo: PassRepository,
-    private val groupRepo: GroupRepository
+    private val groupRepo: GroupRepository,
+    private val konnection: Konnection,
 ) : ViewModel() {
-    private val _homeState = MutableStateFlow(HomeState(isLoading = true))
+
+    private val _isConnected = MutableStateFlow(false)
+    val isConnected = _isConnected.asStateFlow()
+
+    private val _homeState = MutableStateFlow(HomeState())
     val homeState = _homeState.asStateFlow()
 
     init {
@@ -60,32 +66,49 @@ class HomeViewModel(
                 }
             }
         }
+
+        observeConnection()
+    }
+
+    private fun observeConnection() {
+        viewModelScope.launch {
+            konnection.observeHasConnection().collect { hasConnect ->
+                _isConnected.value = hasConnect
+                _homeState.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            }
+        }
     }
 
     fun getData() {
         viewModelScope.launch {
-            passRepo.listUserPassData().flowOn(Dispatchers.IO).collect { result ->
-                when(result) {
-                    is NetworkResult.Error -> {
-                        _homeState.update {
-                            it.copy(
-                                error = result.error,
-                            )
+            if(isConnected.value){
+                passRepo.listUserPassData().flowOn(Dispatchers.IO).collect { result ->
+                    when(result) {
+                        is NetworkResult.Error -> {
+                            _homeState.update {
+                                it.copy(
+                                    error = result.error,
+                                )
+                            }
                         }
-                    }
-                    is NetworkResult.Loading -> {
-                        _homeState.update {
-                            it.copy(
-                                isLoading = true
-                            )
+                        is NetworkResult.Loading -> {
+                            _homeState.update {
+                                it.copy(
+                                    isLoading = true
+                                )
+                            }
                         }
-                    }
-                    is NetworkResult.Success -> {
-                        _homeState.update {
-                            it.copy(
-                                passDataList = result.data.data!!,
-                                isLoading = false
-                            )
+                        is NetworkResult.Success -> {
+                            _homeState.update {
+                                it.copy(
+                                    passDataList = result.data.data!!,
+                                    isLoading = false
+                                )
+                            }
                         }
                     }
                 }

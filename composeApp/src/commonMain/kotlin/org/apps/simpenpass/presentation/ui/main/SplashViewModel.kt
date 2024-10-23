@@ -29,7 +29,6 @@ class SplashViewModel(
                     _isLoading.value = false
                     _currentScreen.value = Screen.Auth
                 }
-
             }
         }
     }

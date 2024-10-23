@@ -17,6 +17,7 @@ coilCompose = "3.0.0-rc01"
 compose-plugin = "1.7.0"
 compose = "1.7.4"
 filekitCompose = "0.8.7"
+konnection = "1.4.3"
 material = "1.6.7"
 koin = "4.0.0"
 koinCompose = "4.0.0"
@@ -44,6 +45,7 @@ calf-file-picker = { module = "com.mohamedrejeb.calf:calf-file-picker", version.
 calf-file-picker-coil = { module = "com.mohamedrejeb.calf:calf-file-picker-coil", version.ref = "calfFilePickerCoil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekitCompose" }
+konnection = { module = "dev.tmapps:konnection", version.ref = "konnection" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

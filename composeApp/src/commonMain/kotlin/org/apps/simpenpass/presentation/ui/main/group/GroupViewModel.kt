@@ -2,6 +2,7 @@ package org.apps.simpenpass.presentation.ui.main.group
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.tmapps.konnection.Konnection
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,38 +17,59 @@ import org.apps.simpenpass.utils.NetworkResult
 
 class GroupViewModel(
     private val repoGroup: GroupRepository,
-    private val repoMemberGroupRepository: MemberGroupRepository
+    private val repoMemberGroupRepository: MemberGroupRepository,
+    private val konnection: Konnection,
 ): ViewModel() {
+    private val _isConnected = MutableStateFlow(false)
+    val isConnected = _isConnected.asStateFlow()
+
     private val _groupState = MutableStateFlow(GroupState())
     val groupState = _groupState.asStateFlow()
 
     init {
+        observeConnection()
+
+        if(isConnected.value){
+            viewModelScope.launch {
+                repoGroup.listJoinedGrup().distinctUntilChanged().collect { res ->
+                    when(res) {
+                        is NetworkResult.Error -> {
+                            _groupState.update {
+                                it.copy(
+                                    isError = true,
+                                    msg = res.error
+                                )
+                            }
+                        }
+                        is NetworkResult.Loading -> {
+                            _groupState.update {
+                                it.copy(
+                                    isLoading = true,
+                                )
+                            }
+                        }
+                        is NetworkResult.Success -> {
+                            _groupState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    groupData = res.data.data!!,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeConnection() {
         viewModelScope.launch {
-            repoGroup.listJoinedGrup().distinctUntilChanged().collect { res ->
-                when(res) {
-                    is NetworkResult.Error -> {
-                        _groupState.update {
-                            it.copy(
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                groupData = res.data.data!!,
-                            )
-                        }
-                    }
+            konnection.observeHasConnection().collect { hasConnect ->
+                _isConnected.value = hasConnect
+                _groupState.update {
+                    it.copy(
+                        isLoading = false
+                    )
                 }
             }
         }

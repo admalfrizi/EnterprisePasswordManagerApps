@@ -1,6 +1,6 @@
 package org.apps.simpenpass.di
 
-import io.ktor.client.engine.HttpClientEngine
+import dev.tmapps.konnection.Konnection
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -13,6 +13,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration? = null) = startKoin {
     appDeclaration?.invoke(this)
     modules(
         platformModule(),
+        konnectionModule,
         dataStoreModule,
         ktorModules,
         repoModule,
@@ -26,6 +27,12 @@ val dataStoreModule = module {
         LocalStoreData(
             dataStore = get()
         )
+    }
+}
+
+val konnectionModule = module {
+    single<Konnection> {
+        Konnection.instance
     }
 }
 

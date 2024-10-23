@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.presentation.components.ConnectionWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
 import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHolder
@@ -36,6 +37,7 @@ fun GroupScreen(
     sheetState: ModalBottomSheetState,
 ) {
     val groupState by groupViewModel.groupState.collectAsStateWithLifecycle()
+    val isConnected by groupViewModel.isConnected.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -64,6 +66,20 @@ fun GroupScreen(
               Spacer(
                   modifier = Modifier.height(9.dp)
               )
+
+              if(!isConnected){
+                  Box(
+                      modifier = Modifier.fillMaxSize(),
+                      contentAlignment = Alignment.Center,
+                  ) {
+                      ConnectionWarning(
+                          modifier = Modifier.fillMaxSize(),
+                          warnTitle = "Internet Anda Telah Teputus !",
+                          warnText = "Silahkan untuk memeriksa koneksi internet anda dan coba untuk refresh kembali halaman ini",
+                      )
+                  }
+              }
+
               if(groupState.isLoading){
                   Box(
                       modifier = Modifier.fillMaxSize(),

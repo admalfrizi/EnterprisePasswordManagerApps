@@ -1,6 +1,5 @@
 package org.apps.simpenpass.presentation.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -43,9 +42,6 @@ fun RootScreen(
         BottomNavMenuData.Group,
         BottomNavMenuData.Profile
     )
-    val visible by remember {
-        mutableStateOf(true)
-    }
     val scope = rememberCoroutineScope()
 
     val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
@@ -96,12 +92,7 @@ fun RootScreen(
             },
             modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
             bottomBar = {
-                if(isMainScreen){
-                    AnimatedVisibility(visible){
-                        BottomNavigationBar(navController, routeNav)
-                    }
-
-                }
+                BottomNavigationBar(navController, routeNav)
             }
         ) { paddingValues ->
             RootNavGraph(

@@ -94,6 +94,7 @@ kotlin {
                 implementation(libs.datastore.preferences)
                 implementation(libs.datastore)
                 implementation(libs.atomicfu)
+                implementation(libs.konnection)
             }
         }
 
