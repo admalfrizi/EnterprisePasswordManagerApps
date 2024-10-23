@@ -1,6 +1,8 @@
 package org.apps.simpenpass
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -9,7 +11,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,9 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
-import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.presentation.ui.RootScreen
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
@@ -92,12 +90,16 @@ fun MainNavigation(
         authNavGraph(
             navController = navController
         )
-        composable(route = Screen.Root.route){
+        composable(
+            route = Screen.Root.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ){
             RootScreen(
                 navigateToLogout = {
                     navController.navigate(Screen.Auth.route){
                         popUpTo(Screen.Root.route){
-                            inclusive = false
+                            inclusive = true
                         }
                     }
                 },
@@ -121,15 +123,20 @@ fun MainNavigation(
 
         groupPassDetail(navController, density)
 
-        composable(route = Screen.AddGroupPass.route){
+        composable(
+            route = Screen.AddGroupPass.route
+        ){
             AddGroupScreen(navController)
         }
 
-        composable(route = Screen.EditRole.route){
+        composable(
+            route = Screen.EditRole.route
+        ){
             EditRoleScreen(navController)
         }
 
-        composable(route = Screen.FormPassData.route,
+        composable(
+            route = Screen.FormPassData.route,
             enterTransition = { return@composable slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Up,
                 tween(700)
@@ -160,7 +167,8 @@ fun MainNavigation(
                         slideOutVertically(animationSpec = tween(durationMillis = 300)) {
                             with(density) { (30).dp.roundToPx() }
                         }
-            }){
+            }
+        ){
             ListDataPassUser(
                 navigateToFormEdit = {
                     navController.navigate(Screen.FormPassData.passDataId(it))
@@ -172,9 +180,3 @@ fun MainNavigation(
         }
     }
 }
-
-//fun isOnHome(navController: NavController): Boolean {
-//    val checkNav = navController.currentBackStackEntry?.destination?.parent?.route
-//
-//    return checkNav != Screen.Auth.route
-//}

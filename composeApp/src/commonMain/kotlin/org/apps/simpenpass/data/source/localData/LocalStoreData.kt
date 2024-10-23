@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.models.user_data.UserData
 

@@ -7,11 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.rememberNavController
 import org.apps.simpenpass.presentation.ui.main.SplashViewModel
 import org.apps.simpenpass.utils.initializeAppContext
 import org.koin.android.ext.android.inject
-import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
     private val splashViewModel : SplashViewModel by inject()

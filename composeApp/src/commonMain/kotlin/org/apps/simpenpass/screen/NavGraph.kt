@@ -1,7 +1,5 @@
 package org.apps.simpenpass.screen
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -58,9 +56,8 @@ fun RootNavGraph(
         paddingValues ?: PaddingValues()
     )){
         navigation(
-            route = Screen.Main.route,startDestination = Screen.Home.route,
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None }
+            route = Screen.Main.route,
+            startDestination = Screen.Home.route
         ){
             composable(route = Screen.Home.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                     slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
