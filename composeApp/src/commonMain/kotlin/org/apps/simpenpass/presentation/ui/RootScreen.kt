@@ -9,6 +9,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,9 +27,11 @@ import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigati
 import org.apps.simpenpass.presentation.ui.main.group.JoinGroupDialog
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.RootNavGraph
+import org.apps.simpenpass.style.primaryColor
 
 @Composable
 fun RootScreen(
+    bottomEdgeColor: MutableState<Color>,
     navigateToLogout: () -> Unit,
     navigateToAddGroup: () -> Unit,
     navigateToGroupDtl: (String) -> Unit,
@@ -43,14 +46,14 @@ fun RootScreen(
         BottomNavMenuData.Profile
     )
     val scope = rememberCoroutineScope()
-
     val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
-
     val checkScreenNav = navController.currentBackStackEntryAsState().value?.destination?.route
     val isMainScreen = checkScreenNav in routeNav.map { it.route }
     val onClick = remember { mutableStateOf<(PassResponseData) -> Unit>({}) }
     var isJoinDialogPopUp by remember { mutableStateOf(false) }
+
+    bottomEdgeColor.value = primaryColor
 
     if(isJoinDialogPopUp){
         JoinGroupDialog {

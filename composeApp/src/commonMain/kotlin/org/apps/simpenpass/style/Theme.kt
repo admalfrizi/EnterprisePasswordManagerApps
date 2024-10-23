@@ -10,6 +10,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import org.apps.simpenpass.PlatformColors
 import org.jetbrains.compose.resources.Font
 import resources.Res
 import resources.poppins_bold
@@ -92,8 +93,11 @@ fun setTypography(): Typography {
 
 @Composable
 fun AppTheme(
+    bottomEdgeColor: Color,
     content: @Composable () -> Unit,
 ){
+    PlatformColors(Color(0xFF052E58), bottomEdgeColor)
+
     MaterialTheme(
         typography = setTypography(),
         content = {

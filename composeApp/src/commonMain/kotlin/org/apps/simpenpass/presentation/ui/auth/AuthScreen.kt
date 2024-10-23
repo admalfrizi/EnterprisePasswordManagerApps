@@ -55,6 +55,7 @@ import org.apps.simpenpass.style.authScreenBgColor
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.linkColor
+import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.isValidEmail
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -65,7 +66,8 @@ import resources.user_password_auth
 @Composable
 fun AuthScreen(
     navHostController: NavHostController,
-    authViewModel: AuthViewModel = koinViewModel()
+    authViewModel: AuthViewModel = koinViewModel(),
+    bottomEdgeColor: MutableState<Color>
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isShowDialog = remember { mutableStateOf(false) }
@@ -81,6 +83,8 @@ fun AuthScreen(
     var passwordFocus by remember { mutableStateOf(false) }
 
     val loginState by authViewModel.authState.collectAsState()
+
+    bottomEdgeColor.value = secondaryColor
 
     fun validateForm(isShowDialog: MutableState<Boolean>,isValidated: MutableState<Boolean>){
         if(email.isEmpty() && password.isEmpty()){

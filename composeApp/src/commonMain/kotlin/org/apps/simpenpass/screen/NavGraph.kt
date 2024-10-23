@@ -14,6 +14,7 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -52,54 +53,50 @@ fun RootNavGraph(
 ) {
     val density = LocalDensity.current
 
-    NavHost(navController,startDestination = Screen.Main.route , modifier = Modifier.fillMaxSize().padding(
+    NavHost(navController,startDestination = Screen.Home.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
-        navigation(
-            route = Screen.Main.route,
-            startDestination = Screen.Home.route
+        composable(route = Screen.Home.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+                slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
+                    with(density) { -30.dp.roundToPx() }
+                } },
+            exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+                    slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
+                        with(density) {
+                            if(detectRoute(navController) == Screen.Group.route){
+                                (-30).dp.roundToPx()
+                            } else {
+                                (-30).dp.roundToPx()
+                            }
+                        }
+                    } }
         ){
-            composable(route = Screen.Home.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
-                    slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
-                        with(density) { -30.dp.roundToPx() }
-                    } },
-                exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
-                        slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
-                            with(density) {
-                                if(detectRoute(navController) == Screen.Group.route){
-                                    (-30).dp.roundToPx()
-                                } else {
-                                    (-30).dp.roundToPx()
-                                }
-                            }
-                        } }
-            ){
-                HomeScreen(
-                    navController,
-                    sheetState,
-                    data,
-                    passDataId = navigateToFormWithArgs,
-                    navigateToFormEdit = {
-                       navigateToEditPass(it)
-                    },
-                    navigateToListUserPass = navigateToListUserPass
-                )
-            }
+            HomeScreen(
+                navController,
+                sheetState,
+                data,
+                passDataId = navigateToFormWithArgs,
+                navigateToFormEdit = {
+                    navigateToEditPass(it)
+                },
+                navigateToListUserPass = navigateToListUserPass
+            )
+        }
 
-            composable(route =  Screen.Group.route,
-                enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
-                        slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
-                            with(density) {
-                                if(detectRoute(navController) == Screen.Home.route) {
-                                    (30).dp.roundToPx()
-                                } else if(detectRoute(navController) == Screen.Profile.route){
-                                    -30.dp.roundToPx()
-                                } else {
-                                    30.dp.roundToPx()
-                                }
+        composable(route =  Screen.Group.route,
+            enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+                    slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
+                        with(density) {
+                            if(detectRoute(navController) == Screen.Home.route) {
+                                (30).dp.roundToPx()
+                            } else if(detectRoute(navController) == Screen.Profile.route){
+                                -30.dp.roundToPx()
+                            } else {
+                                30.dp.roundToPx()
                             }
-                        } },
-                exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+                        }
+                    } },
+            exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
                     slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
                         with(density) {
                             if (detectRoute(navController) == Screen.Home.route) {
@@ -111,28 +108,27 @@ fun RootNavGraph(
                             }
                         }
                     } }) {
-                GroupScreen(
-                    navigateToGrupDtl = { navigateToGroupDtl(it) },
-                    sheetState = sheetState,
-                )
-            }
+            GroupScreen(
+                navigateToGrupDtl = { navigateToGroupDtl(it) },
+                sheetState = sheetState,
+            )
+        }
 
-            composable(route = Screen.Profile.route,
-                enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+        composable(route = Screen.Profile.route,
+            enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                     slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
                         with(density) { 30.dp.roundToPx() }
                     } },
 
 
-                exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
-                        slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
-                            with(density) {
-                                (30).dp.roundToPx()
-                            }
-                        } }
-                ){
-                ProfileScreen(navController, navigateToLogout = navigateToLogout)
-            }
+            exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+                    slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
+                        with(density) {
+                            (30).dp.roundToPx()
+                        }
+                    } }
+        ){
+            ProfileScreen(navController, navigateToLogout = navigateToLogout)
         }
     }
 }
@@ -212,13 +208,16 @@ fun NavGraphBuilder.groupPassDetail(
 
 }
 
-fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.authNavGraph(
+    bottomEdgeColor: MutableState<Color>,
+    navController: NavHostController
+) {
     navigation(
         route = Screen.Auth.route,
         startDestination = Screen.Login.route
     ){
         composable(route = Screen.Login.route){
-            AuthScreen(navController)
+            AuthScreen(navController,bottomEdgeColor = bottomEdgeColor)
         }
 
         composable(route = Screen.Register.route){

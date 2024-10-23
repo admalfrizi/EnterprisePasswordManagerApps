@@ -85,7 +85,6 @@ import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
 import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
@@ -111,6 +110,7 @@ import resources.edit_group_name_ic
 @OptIn(InternalVoyagerApi::class)
 @Composable
 fun AddGroupScreen(
+    bottomEdgeColor: MutableState<Color>,
     navController: NavController,
     addGroupViewModel: AddGroupViewModel = koinViewModel()
 ) {
@@ -149,6 +149,8 @@ fun AddGroupScreen(
         }
     )
 
+    bottomEdgeColor.value = Color.White
+
     if(addGroupState.isLoading){
         popUpLoading(isDismiss)
     }
@@ -165,9 +167,6 @@ fun AddGroupScreen(
             }
         }
     )
-
-    Napier.v("Group Name = $grupName")
-    Napier.v("Image Name = $nameImg")
 
     ModalBottomSheetLayout(
         sheetState = sheetState,

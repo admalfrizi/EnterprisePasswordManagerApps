@@ -11,11 +11,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -38,8 +38,6 @@ import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.screen.authNavGraph
 import org.apps.simpenpass.screen.groupPassDetail
 import org.apps.simpenpass.style.AppTheme
-import org.apps.simpenpass.style.primaryColor
-import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
@@ -48,28 +46,18 @@ import org.koin.compose.koinInject
 fun App() {
     val navController = rememberNavController()
     val splashViewModel : SplashViewModel = koinInject()
-    val checkNav = navController.currentBackStackEntry?.destination?.parent?.route
-    var bottomEdgeColor by remember { mutableStateOf(Color.White) }
     val screenState by splashViewModel.currentScreen.collectAsState()
-
-    if (checkNav == Screen.Root.route) {
-        bottomEdgeColor = primaryColor
-    } else if(checkNav == Screen.Auth.route || navController.currentBackStackEntry?.destination?.route == Screen.FormPassData.route){
-        bottomEdgeColor = secondaryColor
-    } else {
-        bottomEdgeColor = Color(0xFFF1F1F1)
-    }
-
-    PlatformColors(Color(0xFF052E58),bottomEdgeColor)
-
     val density = LocalDensity.current
+    val bottomEdgeColor = remember { mutableStateOf(Color.White) }
 
     Napier.base(DebugAntilog())
 
     AppTheme(
+        bottomEdgeColor.value,
         content = {
             if(screenState != null){
                 MainNavigation(
+                    bottomEdgeColor,
                     navController,
                     density,
                     screenState!!
@@ -81,12 +69,14 @@ fun App() {
 
 @Composable
 fun MainNavigation(
+    bottomEdgeColor: MutableState<Color>,
     navController: NavHostController,
     density: Density,
     screenState: Screen
 ){
     NavHost(navController = navController, startDestination = screenState.route) {
         authNavGraph(
+            bottomEdgeColor = bottomEdgeColor,
             navController = navController
         )
         composable(
@@ -95,6 +85,7 @@ fun MainNavigation(
             exitTransition = { ExitTransition.None }
         ){
             RootScreen(
+                bottomEdgeColor,
                 navigateToLogout = {
                     navController.navigate(Screen.Auth.route){
                         popUpTo(Screen.Root.route){
@@ -125,7 +116,10 @@ fun MainNavigation(
         composable(
             route = Screen.AddGroupPass.route
         ){
-            AddGroupScreen(navController)
+            AddGroupScreen(
+                bottomEdgeColor = bottomEdgeColor,
+                navController
+            )
         }
 
         composable(
