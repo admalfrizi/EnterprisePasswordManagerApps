@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -86,7 +87,7 @@ class HomeViewModel(
     fun getData() {
         viewModelScope.launch {
             if(isConnected.value){
-                passRepo.listUserPassData().flowOn(Dispatchers.IO).collect { result ->
+                passRepo.listUserPassData().flowOn(Dispatchers.IO).collectLatest { result ->
                     when(result) {
                         is NetworkResult.Error -> {
                             _homeState.update {

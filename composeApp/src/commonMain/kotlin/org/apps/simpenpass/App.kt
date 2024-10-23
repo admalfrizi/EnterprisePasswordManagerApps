@@ -1,6 +1,5 @@
 package org.apps.simpenpass
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -130,11 +129,23 @@ fun MainNavigation(
 
         composable(
             route = Screen.FormPassData.route,
-            enterTransition = { return@composable slideIntoContainer(
-                AnimatedContentTransitionScope.SlideDirection.Up,
-                tween(700)
-            ) },
-            exitTransition = {slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, tween(700))},
+            enterTransition = {
+                fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+                        slideInVertically(animationSpec = tween(durationMillis = 300)) {
+                            with(density) { 30.dp.roundToPx() }
+                        }
+            } ,
+            exitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+                        slideOutVertically(animationSpec = tween(durationMillis = 300)) {
+                            with(density) { (30).dp.roundToPx() }
+                        }
+            },
+//            enterTransition = { return@composable slideIntoContainer(
+//                AnimatedContentTransitionScope.SlideDirection.Up,
+//                tween(700)
+//            ) },
+//            exitTransition = {slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down, tween(700))},
             arguments = listOf(
                 navArgument(Screen.FormPassData.ARG_PASS_ID){
                     type = NavType.StringType

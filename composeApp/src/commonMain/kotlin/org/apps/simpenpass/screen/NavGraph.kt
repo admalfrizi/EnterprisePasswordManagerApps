@@ -56,7 +56,8 @@ fun RootNavGraph(
     NavHost(navController,startDestination = Screen.Home.route , modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
-        composable(route = Screen.Home.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+        composable(route = Screen.Home.route,
+            enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                 slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
                     with(density) { -30.dp.roundToPx() }
                 } },
