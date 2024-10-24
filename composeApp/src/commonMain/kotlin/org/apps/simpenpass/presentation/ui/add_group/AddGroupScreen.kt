@@ -91,7 +91,6 @@ import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddGroupBottomSheetContent
 import org.apps.simpenpass.presentation.components.addGroupComponents.ContentType
-import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
@@ -103,7 +102,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.add_description_ic
 import resources.add_pic_ic
-import resources.add_role_group_ic
 import resources.edit_anggota_ic
 import resources.edit_group_name_ic
 
@@ -343,7 +341,7 @@ fun AddGroupScreen(
                         sheetState.show()
                     }
                 },"Tambah Anggota Baru", Res.drawable.edit_anggota_ic)
-                BtnHolder({ navController.navigate(Screen.EditRole.route) },"Tambah Role Grup",Res.drawable.add_role_group_ic)
+//                BtnHolder({ navController.navigate(Screen.EditRole.route) },"Tambah Role Grup",Res.drawable.add_role_group_ic)
                 Spacer(
                     modifier = Modifier.height(14.dp)
                 )

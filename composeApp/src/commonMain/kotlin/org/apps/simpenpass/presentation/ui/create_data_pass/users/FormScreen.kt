@@ -105,8 +105,6 @@ fun FormScreen(
         urlPass = formState.passData?.url ?: ""
     }
 
-//    Napier.v("Data Pass = $formData")
-
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         bottomBar = {
