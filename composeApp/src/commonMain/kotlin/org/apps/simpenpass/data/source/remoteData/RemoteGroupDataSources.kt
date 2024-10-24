@@ -6,6 +6,7 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -86,6 +87,25 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             }
 
             return response.body<BaseResponse<DtlGrupPass>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun searchGroup(
+        token: String,
+        query: String
+    ): BaseResponse<GrupPassData> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "searchGroup"){
+                contentType(ContentType.Application.Json)
+                parameter("query", query)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<GrupPassData>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

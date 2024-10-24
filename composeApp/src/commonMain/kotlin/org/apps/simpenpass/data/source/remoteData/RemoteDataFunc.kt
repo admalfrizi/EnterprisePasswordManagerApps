@@ -45,6 +45,10 @@ interface GroupPassDataFunc {
         token: String,
         groupId: Int
     ): BaseResponse<DtlGrupPass>
+    suspend fun searchGroup(
+        token: String,
+        query: String
+    ): BaseResponse<GrupPassData>
 }
 
 interface MemberGroupDataFunc {

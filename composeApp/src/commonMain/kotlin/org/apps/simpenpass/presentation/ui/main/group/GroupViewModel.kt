@@ -140,13 +140,53 @@ class GroupViewModel(
             }
         }
     }
+
+    fun searchGroup(query: String) {
+        viewModelScope.launch {
+            repoGroup.searchGroup(query).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = true,
+                                isError = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = false,
+                                searchGroupResult = res.data.data,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun clearState() {
+        _groupState.value = GroupState()
+    }
 }
 
 data class GroupState(
-    val groupData: List<GrupPassData?> = emptyList(),
+    var groupData: List<GrupPassData?> = emptyList(),
     val dtlGroupData: DtlGrupPass? = null,
     val memberGroupData: List<MemberGroupData?> = emptyList(),
-    val msg: String = "",
-    val isError: Boolean = false,
-    val isLoading: Boolean = false
+    var searchGroupResult: GrupPassData? = null,
+    var msg: String = "",
+    var isError: Boolean = false,
+    var isLoading: Boolean = false
 )

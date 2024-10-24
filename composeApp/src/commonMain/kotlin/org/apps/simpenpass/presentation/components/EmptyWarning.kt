@@ -46,7 +46,8 @@ fun EmptyWarning(
         Text(
             warnTitle,
             style = MaterialTheme.typography.button,
-            color = secondaryColor
+            color = secondaryColor,
+            textAlign = TextAlign.Center
         )
         Spacer(
             modifier = Modifier.height(10.dp)

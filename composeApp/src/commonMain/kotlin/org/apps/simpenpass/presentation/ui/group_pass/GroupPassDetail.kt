@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
+import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
 import org.apps.simpenpass.presentation.ui.main.group.GroupState
@@ -121,40 +122,48 @@ fun ContentView(
                         modifier = Modifier.fillMaxWidth().background(secondaryColor)
                             .height(43.dp)
                     )
-                    Row(
-                        modifier = Modifier.padding(start = 16.dp, top = 22.dp).fillMaxWidth()
-                            .align(
-                                Alignment.BottomStart
-                            )
-                    ) {
-                        Box(
-                            modifier = Modifier.size(99.dp)
-                                .background(color = Color(0xFF78A1D7), shape = CircleShape)
-                        ){
-                            Text(
-                                text = profileNameInitials("fgrf"),
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 36.sp,
-                                color = Color.White,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(38.dp))
-                        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-                            Spacer(modifier = Modifier.height(14.dp))
-                            Text(
-                                groupState.dtlGroupData?.nm_grup ?: "",
-                                style = MaterialTheme.typography.button,
-                                color = secondaryColor
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                groupState.dtlGroupData?.desc ?: "",
-                                style = MaterialTheme.typography.subtitle1,
-                                color = secondaryColor
-                            )
+
+                    if(groupState.isLoading && groupState.dtlGroupData == null){
+                        GroupDtlLoadShimmer()
+                    }
+
+                    if(!groupState.isLoading && groupState.dtlGroupData != null){
+                        Row(
+                            modifier = Modifier.padding(start = 16.dp, top = 22.dp).fillMaxWidth()
+                                .align(
+                                    Alignment.BottomStart
+                                )
+                        ) {
+                            Box(
+                                modifier = Modifier.size(99.dp)
+                                    .background(color = Color(0xFF78A1D7), shape = CircleShape)
+                            ){
+                                Text(
+                                    text = profileNameInitials(groupState.dtlGroupData.nm_grup),
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 36.sp,
+                                    color = Color.White,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(38.dp))
+                            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Text(
+                                    groupState.dtlGroupData.nm_grup,
+                                    style = MaterialTheme.typography.button,
+                                    color = secondaryColor
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    groupState.dtlGroupData.desc ?: "",
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = secondaryColor
+                                )
+                            }
                         }
                     }
+
                 }
                 Spacer(
                     modifier = Modifier.height(14.dp)

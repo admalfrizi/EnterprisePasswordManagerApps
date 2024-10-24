@@ -78,6 +78,7 @@ fun MainNavigation(
             bottomEdgeColor = bottomEdgeColor,
             navController = navController
         )
+
         composable(
             route = Screen.Root.route,
             enterTransition = { EnterTransition.None },

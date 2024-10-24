@@ -73,4 +73,24 @@ class GroupRepository(
 //
 //    }
 
+    fun searchGroup(query: String) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.searchGroup(token,query)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                } else {
+                    emit(NetworkResult.Error(result.message))
+                }
+                Napier.v("Data Search Group : ${result.data}")
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+        Napier.v("Error Searcg Group : ${it.message}")
+    }
+
 }

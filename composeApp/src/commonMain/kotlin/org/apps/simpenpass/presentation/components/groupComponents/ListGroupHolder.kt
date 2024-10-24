@@ -66,7 +66,7 @@ fun ListGroupHolder(
                         modifier = Modifier.height(6.dp)
                     )
                     Text(
-                        item.deskripsi ?: "Isian Deskripsi",
+                        item.desc ?: "",
                         style = MaterialTheme.typography.subtitle1,
                         color = secondaryColor
                     )

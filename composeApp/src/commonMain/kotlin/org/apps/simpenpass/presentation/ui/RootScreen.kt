@@ -24,10 +24,12 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.presentation.components.rootComponents.RootBottomSheetContent
 import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigationMenu
+import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.presentation.ui.main.group.JoinGroupDialog
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.RootNavGraph
 import org.apps.simpenpass.style.primaryColor
+import org.koin.compose.koinInject
 
 @Composable
 fun RootScreen(
@@ -37,7 +39,8 @@ fun RootScreen(
     navigateToGroupDtl: (String) -> Unit,
     navigateToListUserPass : () -> Unit,
     navigateToEditPass: (String) -> Unit,
-    navigateToFormPass: () -> Unit
+    navigateToFormPass: () -> Unit,
+    groupViewModel: GroupViewModel = koinInject()
 ) {
     val navController = rememberNavController()
     val routeNav = listOf(
@@ -56,9 +59,16 @@ fun RootScreen(
     bottomEdgeColor.value = primaryColor
 
     if(isJoinDialogPopUp){
-        JoinGroupDialog {
-            isJoinDialogPopUp = false
-        }
+        JoinGroupDialog(
+            onDismissRequest = {
+                isJoinDialogPopUp = false
+            },
+            groupViewModel = groupViewModel
+        )
+    }
+
+    if(!isJoinDialogPopUp){
+        groupViewModel.clearState()
     }
 
     ModalBottomSheetLayout(

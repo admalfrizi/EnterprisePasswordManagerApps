@@ -92,6 +92,10 @@ fun AddGroupMethod(
 
     var selectedOption by remember { mutableStateOf(-1) }
 
+    if(!sheetState.isVisible){
+        selectedOption = -1
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
