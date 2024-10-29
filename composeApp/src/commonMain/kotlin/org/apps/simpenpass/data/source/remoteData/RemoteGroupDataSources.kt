@@ -9,6 +9,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
@@ -36,7 +37,7 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             {
                 contentType(ContentType.MultiPart.FormData)
                 header(HttpHeaders.Authorization, "Bearer $token")
-                body = MultiPartFormDataContent(
+                setBody(MultiPartFormDataContent(
                     formData {
                         if(imgFile != null){
                             append("img_group",imgFile, Headers.build {
@@ -46,7 +47,7 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                         append("nm_group" ,insertData.nmGroup)
                         append("desc", insertData.desc ?: "")
                     }
-                )
+                ))
 //                setBody(
 //                    MultiPartFormDataContent(
 //                        formData {

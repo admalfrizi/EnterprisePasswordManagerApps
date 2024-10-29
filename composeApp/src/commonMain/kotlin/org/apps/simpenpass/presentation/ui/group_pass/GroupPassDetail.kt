@@ -152,7 +152,7 @@ fun ContentView(
                             ){
                                 if(imagesName != null){
                                     AsyncImage(
-                                        model = ImageRequest.Builder(LocalPlatformContext.current).data(urlImages).build(),
+                                        model = urlImages,
                                         modifier = Modifier.size(99.dp),
                                         contentDescription = "Profile Picture",
                                         contentScale = ContentScale.Crop
