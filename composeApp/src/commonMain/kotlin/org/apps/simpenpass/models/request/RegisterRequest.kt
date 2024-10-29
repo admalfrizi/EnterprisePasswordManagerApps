@@ -11,4 +11,6 @@ data class RegisterRequest(
     val email : String,
     @SerialName("password")
     val password: String,
+    @SerialName("password_confirmation")
+    val cPassword: String,
 )

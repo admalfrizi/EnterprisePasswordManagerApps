@@ -35,7 +35,7 @@ class RemoteUserSources(private val httpClient: HttpClient) : UserDataFunc {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "register"){
                 contentType(ContentType.Application.Json)
-                setBody(RegisterRequest(data.name,data.email,data.password))
+                setBody(data)
             }
             return response.body<BaseResponse<UserResponseData>>()
         } catch (e: UnresolvedAddressException) {

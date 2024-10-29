@@ -113,7 +113,7 @@ fun RegisterScreen(
             msg = "Password anda tidak benar !"
         } else {
             isValidated.value = true
-            authViewModel.register(RegisterRequest(user, email, password))
+            authViewModel.register(RegisterRequest(user, email, password,cpassword))
         }
     }
 

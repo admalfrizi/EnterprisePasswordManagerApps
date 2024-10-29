@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.GrupPassData
@@ -66,7 +67,7 @@ class AddGroupViewModel(
                         }
 
                         if(addGroupState.value.isCreated && addGroupState.value.grupData?.id != null) {
-                            launch {
+                            withContext(Dispatchers.IO) {
                                 addMemberToDb(
                                     addGroupState.value.memberListAdd,
                                     addGroupState.value.grupData?.id!!
