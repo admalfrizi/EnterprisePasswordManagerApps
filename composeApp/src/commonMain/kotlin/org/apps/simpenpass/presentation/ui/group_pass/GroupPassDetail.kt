@@ -41,11 +41,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
@@ -53,6 +59,7 @@ import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
 import org.apps.simpenpass.presentation.ui.main.group.GroupState
 import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -93,7 +100,7 @@ fun GroupPassDetail(
         },
 
     ){
-        ContentView(navController,tabsName,sheetState,scope,groupState,groupId)
+        ContentView(navController,tabsName,sheetState,scope,groupState,groupViewModel,groupId)
     }
 }
 
@@ -105,15 +112,20 @@ fun ContentView(
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
     groupState: GroupState,
+    groupViewModel : GroupViewModel,
     groupId: String,
 ) {
     var indexTab by remember { mutableStateOf(0) }
+    val imagesName = groupState.dtlGroupData?.img_grup
+    val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
+
+    Napier.v("Img Prof Group : $urlImages")
 
     Scaffold(
         modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
         backgroundColor = Color(0xFFF1F1F1),
         topBar = {
-            TopBarDtl(navController)
+            TopBarDtl(navController, groupViewModel)
         },
         content = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -136,15 +148,25 @@ fun ContentView(
                         ) {
                             Box(
                                 modifier = Modifier.size(99.dp)
-                                    .background(color = Color(0xFF78A1D7), shape = CircleShape)
+                                    .background(color = Color(0xFF78A1D7), shape = CircleShape).clip(CircleShape)
                             ){
-                                Text(
-                                    text = profileNameInitials(groupState.dtlGroupData.nm_grup),
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 36.sp,
-                                    color = Color.White,
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
+                                if(imagesName != null){
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(LocalPlatformContext.current).data(urlImages).build(),
+                                        modifier = Modifier.size(99.dp),
+                                        contentDescription = "Profile Picture",
+                                        contentScale = ContentScale.Crop
+                                    )
+                                } else {
+                                    Text(
+                                        text = profileNameInitials(groupState.dtlGroupData.nm_grup),
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 36.sp,
+                                        color = Color.White,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+
                             }
                             Spacer(modifier = Modifier.width(38.dp))
                             Column(modifier = Modifier.align(Alignment.CenterVertically)) {

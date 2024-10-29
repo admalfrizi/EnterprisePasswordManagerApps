@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil3.compose.setSingletonImageLoaderFactory
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.ui.RootScreen
@@ -37,6 +38,7 @@ import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.screen.authNavGraph
 import org.apps.simpenpass.screen.groupPassDetail
 import org.apps.simpenpass.style.AppTheme
+import org.apps.simpenpass.utils.getAsyncImageLoader
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
@@ -54,6 +56,10 @@ fun App() {
     AppTheme(
         bottomEdgeColor.value,
         content = {
+            setSingletonImageLoaderFactory { context ->
+                getAsyncImageLoader(context)
+            }
+
             if(screenState != null){
                 MainNavigation(
                     bottomEdgeColor,
@@ -189,3 +195,4 @@ fun MainNavigation(
         }
     }
 }
+

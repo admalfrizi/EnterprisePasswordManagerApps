@@ -13,11 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -25,7 +25,8 @@ import resources.menu_ic
 
 @Composable
 fun TopBarDtl(
-    navController: NavController
+    navController: NavController,
+    groupState: GroupViewModel,
 ) {
     var isDropdownShow by remember { mutableStateOf(false) }
 
@@ -40,7 +41,8 @@ fun TopBarDtl(
         navigationIcon = {
             IconButton(
                 onClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
+                    groupState.clearState()
                 },
                 content = {
                     Image(

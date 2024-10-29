@@ -31,7 +31,6 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
                 setBody(addData)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
-
             return response.body<BaseResponse<List<AddMember>>>()
         } catch (e: Exception){
             throw Exception(e.message)

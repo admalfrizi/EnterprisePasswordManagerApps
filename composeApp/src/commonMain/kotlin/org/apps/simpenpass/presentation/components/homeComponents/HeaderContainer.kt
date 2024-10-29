@@ -29,7 +29,8 @@ import resources.pass_data_ic
 fun HeaderContainer(
     nameUser: String?,
     totalUserDataPass: Int,
-    totalJoinedGroup: Int
+    totalJoinedGroup: Int,
+    navToListPass: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -68,7 +69,10 @@ fun HeaderContainer(
                     titleInfo = "Jumlah Data Password Anda",
                     vlData = totalUserDataPass,
                     bgColor = Color(0xFF1E559C),
-                    iconInfo = Res.drawable.pass_data_ic
+                    iconInfo = Res.drawable.pass_data_ic,
+                    onClick = {
+                        navToListPass()
+                    }
                 )
                 Spacer(
                     modifier = Modifier.width(8.dp)
@@ -77,7 +81,10 @@ fun HeaderContainer(
                     titleInfo = "Grup Yang Tergabung",
                     vlData = totalJoinedGroup,
                     bgColor = Color(0xFF192E49) ,
-                    iconInfo = Res.drawable.group_ic
+                    iconInfo = Res.drawable.group_ic,
+                    onClick = {
+
+                    }
                 )
                 Spacer(
                     modifier = Modifier.width(8.dp)
@@ -86,7 +93,8 @@ fun HeaderContainer(
                     titleInfo = "Total Data Password Grup",
                     vlData = 5,
                     bgColor = Color(0xFF1A8B7E),
-                    iconInfo = Res.drawable.pass_data_ic
+                    iconInfo = Res.drawable.pass_data_ic,
+                    onClick = {}
                 )
                 Spacer(
                     modifier = Modifier.width(16.dp)

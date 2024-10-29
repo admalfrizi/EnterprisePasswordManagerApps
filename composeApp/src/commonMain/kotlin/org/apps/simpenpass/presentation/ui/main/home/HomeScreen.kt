@@ -44,7 +44,6 @@ import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.homeComponents.GroupDataSection
 import org.apps.simpenpass.presentation.components.homeComponents.HeaderContainer
 import org.apps.simpenpass.presentation.components.homeComponents.UserPassDataSection
-import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -60,6 +59,7 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = koinViewModel(),
     passDataId: MutableState<(PassResponseData) -> Unit>,
     navigateToFormEdit: (String) -> Unit,
+    navigateToForm: () -> Unit,
     navigateToListUserPass : () -> Unit
 ) {
     val homeState by homeViewModel.homeState.collectAsStateWithLifecycle()
@@ -87,9 +87,22 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
                 ) {
-                    HeaderContainer(homeState.name,homeState.passDataList.size,homeState.totalGroupJoined ?: 0)
+                    HeaderContainer(
+                        homeState.name,
+                        homeState.passDataList.size,
+                        homeState.totalGroupJoined ?: 0,
+                        navigateToListUserPass
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    HomeContentView(isConnected,navController,sheetState,dataPass,homeViewModel, navigateToListUserPass)
+                    HomeContentView(
+                        isConnected,
+                        navController,
+                        sheetState,
+                        dataPass,
+                        homeViewModel,
+                        navigateToListUserPass,
+                        navigateToForm
+                    )
                     Spacer(
                         modifier = Modifier.height(11.dp)
                     )
@@ -113,7 +126,8 @@ fun HomeContentView(
     sheetState: ModalBottomSheetState,
     dataPass: MutableState<PassResponseData?>,
     homeViewModel: HomeViewModel,
-    navigateToListUserPass: () -> Unit
+    navigateToListUserPass: () -> Unit,
+    navigateToFormPass: () -> Unit
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
 
@@ -133,7 +147,7 @@ fun HomeContentView(
             btnTxt = "Tambahkan Password",
             isEnableBtn = true,
             onSelect = {
-                navController.navigate(Screen.FormPassData.route)
+                navigateToFormPass()
             }
         )
     }

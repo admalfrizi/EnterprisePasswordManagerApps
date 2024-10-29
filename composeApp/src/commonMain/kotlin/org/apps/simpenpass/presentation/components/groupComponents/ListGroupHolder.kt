@@ -19,11 +19,17 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
 
 @Composable
@@ -31,6 +37,8 @@ fun ListGroupHolder(
     item: GrupPassData?,
     onClick: () -> Unit
 ) {
+    val urlImages = "${Constants.IMAGE_URL}groupProfile/${item?.img_grup}"
+
     Column {
         Card(
             modifier = Modifier.fillMaxWidth().clickable{
@@ -43,15 +51,25 @@ fun ListGroupHolder(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier.size(58.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
+                    modifier = Modifier.size(58.dp).background(color = Color(0xFF78A1D7),shape = CircleShape).clip(CircleShape)
                 ){
-                    Text(
-                        text = profileNameInitials(item?.nm_grup!!),
-                        style = MaterialTheme.typography.body1,
-                        fontSize = 24.sp,
-                        color = Color.White,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    if(urlImages.isNotEmpty()){
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalPlatformContext.current).data(urlImages).build(),
+                            modifier = Modifier.size(99.dp),
+                            contentDescription = "Profile Picture",
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Text(
+                            text = profileNameInitials(item?.nm_grup!!),
+                            style = MaterialTheme.typography.body1,
+                            fontSize = 24.sp,
+                            color = Color.White,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+
                 }
                 Spacer(
                     modifier = Modifier.width(47.dp)

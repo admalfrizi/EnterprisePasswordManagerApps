@@ -21,18 +21,19 @@ import androidx.compose.ui.unit.dp
 import org.apps.simpenpass.style.fontColor1
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import resources.Res
-import resources.pass_data_ic
 
 @Composable
 fun InfoContainer(
     titleInfo: String,
     vlData: Int,
     bgColor: Color,
-    iconInfo : DrawableResource
+    iconInfo : DrawableResource,
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.width(132.dp).height(93.dp),
+        modifier = Modifier.width(132.dp).height(93.dp).clickable {
+            onClick()
+        },
         backgroundColor = bgColor,
         shape = RoundedCornerShape(10.dp),
         elevation = 0.dp

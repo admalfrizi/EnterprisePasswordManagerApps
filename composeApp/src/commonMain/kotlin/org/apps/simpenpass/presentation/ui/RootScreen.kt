@@ -117,7 +117,8 @@ fun RootScreen(
                 navigateToLogout,
                 navigateToGroupDtl,
                 navigateToListUserPass,
-                navigateToEditPass = navigateToEditPass
+                navigateToEditPass = navigateToEditPass,
+                navigateToFormPass = navigateToFormPass,
             )
         }
     }

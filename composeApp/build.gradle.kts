@@ -58,6 +58,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 //            implementation(libs.androidx.material3)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.coil.network.okhttp)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
             implementation(libs.splitties.appcontext)
@@ -78,6 +79,7 @@ kotlin {
                 
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
+//                implementation(libs.coil.network.ktor)
                 implementation(libs.compose.shimmer)
                 implementation(libs.coil.compose)
                 implementation(libs.calf.file.picker)

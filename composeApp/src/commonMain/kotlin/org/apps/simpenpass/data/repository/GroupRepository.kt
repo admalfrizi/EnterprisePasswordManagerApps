@@ -20,7 +20,7 @@ class GroupRepository(
     ) = flow {
         emit(NetworkResult.Loading())
         localData.getToken.collect { token ->
-            val result = remoteGroupSources.createGroup(token,insertData,imgName,imgFile)
+            val result = remoteGroupSources.createGroup(token,insertData,imgName!!,imgFile)
             if(result.success){
                 emit(NetworkResult.Success(result))
             }
@@ -41,7 +41,6 @@ class GroupRepository(
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 }
-                Napier.v("Data Group : ${result.data}")
             }
 
         }catch (e: UnresolvedAddressException){

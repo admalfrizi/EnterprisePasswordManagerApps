@@ -49,7 +49,8 @@ fun RootNavGraph(
     navigateToLogout: () -> Unit,
     navigateToGroupDtl: (String) -> Unit,
     navigateToListUserPass : () -> Unit,
-    navigateToEditPass: (String) -> Unit
+    navigateToEditPass: (String) -> Unit,
+    navigateToFormPass: () -> Unit
 ) {
     val density = LocalDensity.current
 
@@ -80,7 +81,8 @@ fun RootNavGraph(
                 navigateToFormEdit = {
                     navigateToEditPass(it)
                 },
-                navigateToListUserPass = navigateToListUserPass
+                navigateToListUserPass = navigateToListUserPass,
+                navigateToForm = navigateToFormPass
             )
         }
 

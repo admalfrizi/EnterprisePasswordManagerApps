@@ -32,7 +32,7 @@ interface GroupPassDataFunc {
     suspend fun createGroup(
         token: String,
         insertData: AddGroupRequest,
-        imgName: String?,
+        imgName: String,
         imgFile: ByteArray?
     ): BaseResponse<GrupPassData>
 
