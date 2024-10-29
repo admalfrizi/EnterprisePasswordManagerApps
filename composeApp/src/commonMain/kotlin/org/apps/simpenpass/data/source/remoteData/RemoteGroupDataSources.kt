@@ -15,7 +15,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
-import io.ktor.util.InternalAPI
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
@@ -25,7 +24,6 @@ import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.utils.Constants
 
 class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassDataFunc {
-    @OptIn(InternalAPI::class)
     override suspend fun createGroup(
         token: String,
         insertData: AddGroupRequest,
@@ -48,61 +46,7 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                         append("desc", insertData.desc ?: "")
                     }
                 ))
-//                setBody(
-//                    MultiPartFormDataContent(
-//                        formData {
-//                            if(imgFile != null){
-//                                append("img_group",imgFile, Headers.build {
-//                                    append(HttpHeaders.ContentDisposition, "form-data; name=\"img_group\"; filename=\"$imgName\"")
-//                                })
-//                            }
-//                        }
-//                    )
-//                )
-//                setBody(insertData)
             }
-
-//            formData = formData {
-//
-//                if(imgFile != null && imgName != null){
-//                    append("img_group",imgFile, Headers.build {
-//                        append(HttpHeaders.ContentDisposition, "filename=\"$imgName\"")
-//                    })
-//                }
-//
-//                append("nm_group", insertData.nmGroup)
-//                append("desc",insertData.desc ?: "")
-//            }
-//                contentType(ContentType.Application.Json)
-//                header(HttpHeaders.Authorization, "Bearer $token")
-//                setBody(
-//                    MultiPartFormDataContent(
-//                        formData {
-//                            append(FormPart("img_grup", imgName as Any))
-//                            appendInput(
-//                                "img_grup",
-//                                headers = Headers.build {
-//                                    append(
-//                                        HttpHeaders.ContentDisposition,
-//                                        "filename=$imgName"
-//                                    )
-//                                }
-//                            ){
-//                                buildPacket {
-//                                    writeFully(imgFile)
-//                                }
-//                            }
-////                            append(
-////                                "img_group",
-////                                imgFile ?: ByteArray(0),
-////                                Headers.build {
-////                                    append(HttpHeaders.ContentDisposition, "filename=${imgName}")
-////                                }
-////                            )
-//                        }
-//                    )
-//                )
-//                setBody(insertData)
             Napier.v("Response Code : ${response.status.value}")
             Napier.v("Response : $response")
             return response.body<BaseResponse<GrupPassData>>()
@@ -112,7 +56,6 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             throw Exception(e.message)
         }
     }
-
 
 
     override suspend fun updateGroupData(data: RegisterRequest): BaseResponse<GrupPassData> {

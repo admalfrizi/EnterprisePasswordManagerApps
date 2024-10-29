@@ -49,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
@@ -97,8 +95,7 @@ fun GroupPassDetail(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
             OptionAddData(scope,sheetState,itemsData,navController)
-        },
-
+        }
     ){
         ContentView(navController,tabsName,sheetState,scope,groupState,groupViewModel,groupId)
     }
