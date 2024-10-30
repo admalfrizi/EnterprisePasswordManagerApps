@@ -47,10 +47,10 @@ fun OptionAddData(
     var selectedOption by remember { mutableStateOf(-1) }
 
     Column(
-        modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth()
+        modifier = Modifier.padding(top = 18.dp, bottom = 36.dp).fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -73,7 +73,7 @@ fun OptionAddData(
             modifier = Modifier.height(13.dp)
         )
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(13.dp),
         ) {
             items(itemMenu) { item ->
@@ -89,7 +89,7 @@ fun OptionAddData(
             modifier = Modifier.height(31.dp)
         )
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = selectedOption != -1,
             onClick = {
                 if(selectedOption == 1){
