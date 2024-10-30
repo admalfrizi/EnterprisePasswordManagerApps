@@ -25,8 +25,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.Constants

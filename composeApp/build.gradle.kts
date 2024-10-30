@@ -79,7 +79,7 @@ kotlin {
                 
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)
-//                implementation(libs.coil.network.ktor)
+                implementation(libs.coil.network.ktor)
                 implementation(libs.compose.shimmer)
                 implementation(libs.coil.compose.core)
                 implementation(libs.coil)
@@ -107,6 +107,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.koin.jvm)
+            implementation(libs.coil.network.okhttp)
             implementation(libs.ktor.client.okhttp)
         }
 

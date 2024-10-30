@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
@@ -115,8 +114,6 @@ fun ContentView(
     var indexTab by remember { mutableStateOf(0) }
     val imagesName = groupState.dtlGroupData?.img_grup
     val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
-
-    Napier.v("Img Prof Group : $urlImages")
 
     Scaffold(
         modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
