@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
+import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
-import org.apps.simpenpass.models.response.AddContentPassData
 import org.apps.simpenpass.utils.NetworkResult
 
 class PassRepository(
@@ -98,7 +98,7 @@ class PassRepository(
 
     fun addContentPassData(
         passId: Int,
-        addContentData: List<AddContentPassData>,
+        addContentData: List<InsertAddContentDataPass>,
     ) = flow {
         emit(NetworkResult.Loading())
         try {

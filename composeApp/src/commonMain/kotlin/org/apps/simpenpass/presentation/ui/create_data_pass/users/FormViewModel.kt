@@ -2,11 +2,17 @@ package org.apps.simpenpass.presentation.ui.create_data_pass.users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.apps.simpenpass.data.repository.PassRepository
+import org.apps.simpenpass.models.pass_data.AddContentPassData
+import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.NetworkResult
@@ -76,6 +82,12 @@ class FormViewModel(
                                 passData = result.data.data
                             )
                         }
+
+                        if(formState.value.passData?.id != null){
+                            withContext(Dispatchers.IO){
+                                listContentPassData(formState.value.passData?.id!!)
+                            }
+                        }
                     }
                 }
             }
@@ -104,8 +116,41 @@ class FormViewModel(
                         _formState.update {
                             it.copy(
                                 isLoading = false,
-                                isUpdated = true,
                                 msg = result.data.message
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun listContentPassData(
+        passId: Int
+    ){
+        viewModelScope.launch {
+            repo.listContentData(passId).collectLatest {  result ->
+                when(result){
+                    is NetworkResult.Error -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = false,
+                                listAddContentPassData = result.data.data!!,
                             )
                         }
                     }
@@ -122,6 +167,8 @@ class FormViewModel(
 data class FormState(
     val isLoading : Boolean = false,
     val passData: PassResponseData? = null,
+    val insertAddContentPassData: List<InsertAddContentDataPass> = emptyList(),
+    val listAddContentPassData: List<AddContentPassData> = emptyList(),
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
     val error : String? = null,
