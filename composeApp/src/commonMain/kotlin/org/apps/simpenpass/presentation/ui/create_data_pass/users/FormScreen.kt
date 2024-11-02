@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -51,6 +52,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
@@ -65,6 +68,7 @@ import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(InternalVoyagerApi::class)
 @Composable
 fun FormScreen(
     bottomEdgeColor: MutableState<Color>,
@@ -129,6 +133,8 @@ fun FormScreen(
         urlPass = formState.passData?.url ?: ""
     }
 
+    Napier.v("ID = $passId")
+
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,
@@ -154,7 +160,12 @@ fun FormScreen(
                             if(passId.isNotEmpty() && passId != "{passId}"){
                                 formViewModel.editUserPassData(passId = passId.toInt(), formData)
                             } else {
-                                formViewModel.createUserPassData(formData)
+                                validatorData(
+                                    nmAccount,
+                                    passData,
+                                    formViewModel,
+                                    formData
+                                )
                             }
                         },
                         {
@@ -179,7 +190,7 @@ fun FormScreen(
                 },
                 content = {
                     Box(
-                        modifier = Modifier.padding(it).fillMaxSize()
+                        modifier = Modifier.padding(it).fillMaxWidth().wrapContentHeight()
                     ) {
                         LazyColumn(
                             modifier = Modifier.align(Alignment.TopCenter),
@@ -383,8 +394,6 @@ fun FormScreen(
                                 Spacer(
                                     modifier = Modifier.height(9.dp)
                                 )
-
-
                                 LazyVerticalGrid(
                                     columns = GridCells.Fixed(2),
                                     horizontalArrangement = Arrangement.spacedBy(7.dp),
@@ -487,20 +496,6 @@ fun FormScreen(
             )
         }
     )
-}
-
-fun checkData(
-    formState: FormState,
-): Dp{
-    return if(formState.listAddContentPassData.isEmpty() && formState.insertAddContentPassData.isEmpty()) {
-        105.dp
-    } else if(formState.listAddContentPassData.isNotEmpty()) {
-        (formState.listAddContentPassData.size * 86).dp
-    } else if(formState.insertAddContentPassData.isNotEmpty()) {
-        (formState.insertAddContentPassData.size * 86).dp
-    } else {
-        0.dp
-    }
 }
 
 @Composable
@@ -611,5 +606,33 @@ fun AddContentDataForm(
         Spacer(
             modifier = Modifier.height(20.dp)
         )
+    }
+}
+
+fun checkData(
+    formState: FormState,
+): Dp {
+    val totalSize = (formState.listAddContentPassData.size + formState.insertAddContentPassData.size)
+    Napier.v("total size : $totalSize")
+
+    return if (formState.listAddContentPassData.isEmpty() && formState.insertAddContentPassData.isEmpty()) {
+        105.dp
+    } else if(totalSize.toString().isNotEmpty()) {
+        (totalSize * 105).dp
+    }  else {
+        0.dp
+    }
+}
+
+fun validatorData(
+    accountName: String,
+    pass: String,
+    formViewModel: FormViewModel,
+    formData: PassDataRequest
+) {
+    if(accountName.isEmpty() && pass.isEmpty()){
+        setToast("Nama Akun dan Password Tidak Boleh Kosong")
+    }  else {
+        formViewModel.createUserPassData(formData)
     }
 }

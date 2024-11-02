@@ -28,7 +28,7 @@ interface PassDataFunc {
     suspend fun editPassData(token: String, editData: PassDataRequest, passId: Int) : BaseResponse<PassResponseData>
     suspend fun listUserPassData(token: String, id: Int) : BaseResponse<List<PassResponseData>>
     suspend fun getUserPassDataById(token: String, passId: Int) : BaseResponse<PassResponseData>
-    suspend fun addContentDataPass(token: String, passId: Int,addContentPass: List<InsertAddContentDataPass>): BaseResponse<AddContentPassData>
+    suspend fun addContentDataPass(token: String, passId: Int,addContentPass: List<InsertAddContentDataPass>): BaseResponse<List<AddContentPassData>>
     suspend fun listContentData(token: String, passId: Int): BaseResponse<List<AddContentPassData>>
 }
 

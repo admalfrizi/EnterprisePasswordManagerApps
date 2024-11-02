@@ -7,6 +7,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ class FormViewModel(
 
     fun createUserPassData(formData: PassDataRequest){
         viewModelScope.launch {
-            repo.createUserPassData(formData).collect { result ->
+            repo.createUserPassData(formData).flowOn(Dispatchers.IO).collect { result ->
                 when(result) {
                     is NetworkResult.Error -> {
                         _formState.update {
@@ -48,8 +49,18 @@ class FormViewModel(
                             it.copy(
                                 isLoading = false,
                                 isCreated = true,
-                                msg = result.data.message
+                                msg = result.data.message,
+                                passData = result.data.data
                             )
+                        }
+
+                        if(formState.value.isCreated){
+                            withContext(Dispatchers.IO){
+                                addContentDataToDb(
+                                    formState.value.passData!!.id!!,
+                                    formState.value.insertAddContentPassData
+                                )
+                            }
                         }
                     }
                 }
@@ -85,7 +96,7 @@ class FormViewModel(
 
                         if(formState.value.passData?.id != null){
                             withContext(Dispatchers.IO){
-                                listContentPassData(formState.value.passData?.id!!)
+                                listContentPassData(passId)
                             }
                         }
                     }
@@ -96,7 +107,7 @@ class FormViewModel(
 
     fun editUserPassData(passId: Int, editData: PassDataRequest ) {
         viewModelScope.launch {
-            repo.editUserPassData(editData, passId).collect { result ->
+            repo.editUserPassData(editData, passId).flowOn(Dispatchers.IO).collect { result ->
                 when(result){
                     is NetworkResult.Error -> {
                         _formState.update {
@@ -116,7 +127,15 @@ class FormViewModel(
                         _formState.update {
                             it.copy(
                                 isLoading = false,
+                                isUpdated = true,
                                 msg = result.data.message
+                            )
+                        }
+
+                        withContext(Dispatchers.IO){
+                            addContentDataToDb(
+                                passId,
+                                formState.value.insertAddContentPassData
                             )
                         }
                     }
@@ -131,6 +150,41 @@ class FormViewModel(
                 currentList.copy(
                     insertAddContentPassData = currentList.insertAddContentPassData + member
                 )
+            }
+        }
+    }
+
+    fun addContentDataToDb(
+        passId: Int,
+        listAddContentPassData: List<InsertAddContentDataPass>
+    ){
+        viewModelScope.launch {
+            repo.addContentPassData(passId,listAddContentPassData).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = false,
+                                msgAddContentData = res.data.message,
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -182,5 +236,6 @@ data class FormState(
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
     val error : String? = null,
-    val msg : String? = null
+    val msg : String? = null,
+    val msgAddContentData: String? = null
 )

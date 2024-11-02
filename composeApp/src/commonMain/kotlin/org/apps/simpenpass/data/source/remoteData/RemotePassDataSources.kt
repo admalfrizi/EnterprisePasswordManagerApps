@@ -1,5 +1,6 @@
 package org.apps.simpenpass.data.source.remoteData
 
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -90,13 +91,16 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         token: String,
         passId: Int,
         addContentPass: List<InsertAddContentDataPass>
-    ): BaseResponse<AddContentPassData> {
+    ): BaseResponse<List<AddContentPassData>> {
         try {
-            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "addContentPassData/$passId"){
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addContentPassData/$passId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(addContentPass)
             }
-            return response.body<BaseResponse<AddContentPassData>>()
+
+            Napier.v("Response Code : ${response.status.value}")
+            return response.body<BaseResponse<List<AddContentPassData>>>()
 
         } catch (e: Exception){
             throw Exception(e.message)
