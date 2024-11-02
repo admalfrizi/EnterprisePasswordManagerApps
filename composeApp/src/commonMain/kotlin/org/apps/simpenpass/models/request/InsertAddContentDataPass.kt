@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class InsertAddContentDataPass(
-    @SerialName("pass_id")
-    val passId : Int,
     @SerialName("nm_data")
     val nmData: String,
     @SerialName("vl_data")

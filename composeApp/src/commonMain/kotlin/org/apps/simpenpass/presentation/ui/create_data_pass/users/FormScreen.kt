@@ -47,11 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
@@ -81,6 +83,7 @@ fun FormScreen(
     var urlPass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
     var nmData = remember { mutableStateOf("") }
+    var vlData = remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
 
@@ -134,8 +137,9 @@ fun FormScreen(
                 Modifier.fillMaxWidth(),
                 sheetState,
                 scope,
-                formState,
-                nmData
+                formViewModel,
+                nmData,
+                vlData
             )
         },
         sheetElevation = 0.dp,
@@ -367,6 +371,8 @@ fun FormScreen(
                                 }
                             }
 
+
+
                             item {
                                 Text(
                                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -377,11 +383,15 @@ fun FormScreen(
                                 Spacer(
                                     modifier = Modifier.height(9.dp)
                                 )
+
+
                                 LazyVerticalGrid(
                                     columns = GridCells.Fixed(2),
                                     horizontalArrangement = Arrangement.spacedBy(7.dp),
                                     verticalArrangement = Arrangement.spacedBy(7.dp),
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).heightIn(max = (formState.listAddContentPassData.size * 86).dp),
+                                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).heightIn(
+                                        max = checkData(formState)
+                                    ),
                                     userScrollEnabled = false
                                 ){
                                     items(formState.listAddContentPassData){ items ->
@@ -411,6 +421,35 @@ fun FormScreen(
                                             }
                                         }
                                     }
+
+                                    items(formState.insertAddContentPassData){ items ->
+                                        Card(
+                                            modifier = Modifier.width(168.dp),
+                                            backgroundColor = Color(0xFF4470A9),
+                                            shape = RoundedCornerShape(10.dp),
+                                            elevation = 0.dp
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.padding(14.dp),
+                                            ) {
+                                                Text(
+                                                    items.nmData,
+                                                    style = MaterialTheme.typography.body1,
+                                                    color = fontColor1
+                                                )
+                                                Spacer(
+                                                    modifier = Modifier.height(26.dp)
+                                                )
+                                                Text(
+                                                    items.vlData,
+                                                    style = MaterialTheme.typography.subtitle1,
+                                                    color = fontColor1,
+                                                    fontSize = 10.sp
+                                                )
+                                            }
+                                        }
+                                    }
+
                                     item {
                                         Card(
                                             modifier = Modifier.width(168.dp).clickable {
@@ -436,6 +475,8 @@ fun FormScreen(
                                         }
                                     }
                                 }
+
+
                                 Spacer(
                                     modifier = Modifier.height(14.dp)
                                 )
@@ -448,13 +489,28 @@ fun FormScreen(
     )
 }
 
+fun checkData(
+    formState: FormState,
+): Dp{
+    return if(formState.listAddContentPassData.isEmpty() && formState.insertAddContentPassData.isEmpty()) {
+        105.dp
+    } else if(formState.listAddContentPassData.isNotEmpty()) {
+        (formState.listAddContentPassData.size * 86).dp
+    } else if(formState.insertAddContentPassData.isNotEmpty()) {
+        (formState.insertAddContentPassData.size * 86).dp
+    } else {
+        0.dp
+    }
+}
+
 @Composable
 fun AddContentDataForm(
     modifier: Modifier = Modifier,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
-    formState: FormState,
+    formViewModel: FormViewModel,
     nmData: MutableState<String>,
+    vlData: MutableState<String>
 ) {
     Column(
         modifier = modifier,
@@ -522,11 +578,11 @@ fun AddContentDataForm(
         )
         FormTextField(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            value = nmData.value,
+            value = vlData.value,
             labelHints = "Isi Data Tambahan",
             leadingIcon = null,
             onValueChange = {
-                nmData.value = it
+                vlData.value = it
             }
         )
         Spacer(
@@ -535,6 +591,10 @@ fun AddContentDataForm(
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
+                scope.launch {
+                    formViewModel.addContentDataToList(InsertAddContentDataPass(nmData.value,vlData.value))
+                    sheetState.hide()
+                }
 
             },
             shape = RoundedCornerShape(20.dp),

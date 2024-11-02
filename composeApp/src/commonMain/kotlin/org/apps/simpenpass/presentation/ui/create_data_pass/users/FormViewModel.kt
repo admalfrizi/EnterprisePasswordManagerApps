@@ -125,6 +125,16 @@ class FormViewModel(
         }
     }
 
+    fun addContentDataToList(member: InsertAddContentDataPass){
+        viewModelScope.launch {
+            _formState.update { currentList ->
+                currentList.copy(
+                    insertAddContentPassData = currentList.insertAddContentPassData + member
+                )
+            }
+        }
+    }
+
     fun listContentPassData(
         passId: Int
     ){
