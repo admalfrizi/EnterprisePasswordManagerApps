@@ -8,6 +8,7 @@ import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.response.AddContentPassData
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.models.response.SendOtpResponse
@@ -26,6 +27,8 @@ interface PassDataFunc {
     suspend fun editPassData(token: String, editData: PassDataRequest, passId: Int) : BaseResponse<PassResponseData>
     suspend fun listUserPassData(token: String, id: Int) : BaseResponse<List<PassResponseData>>
     suspend fun getUserPassDataById(token: String, passId: Int) : BaseResponse<PassResponseData>
+    suspend fun addContentDataPass(token: String, passId: Int,addContentPass: List<AddContentPassData>): BaseResponse<AddContentPassData>
+    suspend fun listContentData(token: String, passId: Int): BaseResponse<List<AddContentPassData>>
 }
 
 interface GroupPassDataFunc {

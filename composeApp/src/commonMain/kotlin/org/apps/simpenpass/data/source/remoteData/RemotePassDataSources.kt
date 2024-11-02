@@ -13,6 +13,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.response.AddContentPassData
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
@@ -76,6 +77,40 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
             return response.body<BaseResponse<PassResponseData>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun addContentDataPass(
+        token: String,
+        passId: Int,
+        addContentPass: List<AddContentPassData>
+    ): BaseResponse<AddContentPassData> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "addContentPassData/$passId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            return response.body<BaseResponse<AddContentPassData>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun listContentData(token: String, passId: Int): BaseResponse<List<AddContentPassData>> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "listAddDataPass/$passId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            return response.body<BaseResponse<List<AddContentPassData>>>()
 
         } catch (e: Exception){
             throw Exception(e.message)

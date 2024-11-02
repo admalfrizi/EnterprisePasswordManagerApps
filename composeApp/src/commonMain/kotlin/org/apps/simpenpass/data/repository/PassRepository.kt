@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
 import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.response.AddContentPassData
 import org.apps.simpenpass.utils.NetworkResult
 
 class PassRepository(
@@ -84,6 +85,43 @@ class PassRepository(
         try {
             localData.getToken.collect { token ->
                 val result = remotePassSources.getUserPassDataById(token, passId)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }
+
+    fun addContentPassData(
+        passId: Int,
+        addContentData: List<AddContentPassData>,
+    ) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.addContentDataPass(token, passId, addContentData)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }
+
+    fun listContentData(
+        passId: Int,
+    ) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.listContentData(token, passId)
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 }
