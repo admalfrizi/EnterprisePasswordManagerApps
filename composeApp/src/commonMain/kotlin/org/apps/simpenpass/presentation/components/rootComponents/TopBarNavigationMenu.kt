@@ -50,7 +50,8 @@ fun TopBarHome(
         elevation = 0.dp,
         actions = {
             IconButton(
-                onClick = { navigateToFormPass()},
+                onClick = { navigateToFormPass()
+                          },
                 content = {
                     Icon(
                         painterResource(Res.drawable.add_option_ic),

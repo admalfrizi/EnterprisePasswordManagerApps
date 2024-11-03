@@ -173,7 +173,7 @@ fun FormScreen(
                                 passData = ""
                                 urlPass = ""
                             }
-
+                            formViewModel.resetValue()
                             navController.navigateUp()
                         },
                         Modifier
