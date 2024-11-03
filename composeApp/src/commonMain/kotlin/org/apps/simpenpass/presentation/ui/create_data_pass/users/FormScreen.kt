@@ -52,8 +52,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
@@ -68,7 +66,6 @@ import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(InternalVoyagerApi::class)
 @Composable
 fun FormScreen(
     bottomEdgeColor: MutableState<Color>,
@@ -132,8 +129,6 @@ fun FormScreen(
         passData = formState.passData?.password!!
         urlPass = formState.passData?.url ?: ""
     }
-
-    Napier.v("ID = $passId")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -613,7 +608,6 @@ fun checkData(
     formState: FormState,
 ): Dp {
     val totalSize = (formState.listAddContentPassData.size + formState.insertAddContentPassData.size)
-    Napier.v("total size : $totalSize")
 
     return if (formState.listAddContentPassData.isEmpty() && formState.insertAddContentPassData.isEmpty()) {
         105.dp
