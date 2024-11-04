@@ -17,6 +17,7 @@ import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
 
@@ -50,6 +51,25 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun latestUserPassData(
+        token: String,
+        id: Int
+    ): BaseResponse<LatestPassDataResponse> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "latestDataPass"){
+                contentType(ContentType.Application.Json)
+                parameter("userId", id)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            Napier.v("Response Code : ${response.status.value}")
+            return response.body<BaseResponse<LatestPassDataResponse>>()
+        } catch (e: UnresolvedAddressException) {
+            throw Exception(e.message)
+        } catch (e: Exception) {
             throw Exception(e.message)
         }
     }

@@ -20,23 +20,23 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.ui.main.home.UserDataPassHolder
 import org.apps.simpenpass.style.secondaryColor
 
 @Composable
 fun UserPassDataSection(
-    listData : List<PassResponseData?>,
-    data: MutableState<PassResponseData?>,
+    latestListData : List<DataPass>,
+    totalOriginDataSize: Int,
+    data: MutableState<DataPass?>,
     sheetState: ModalBottomSheetState,
     navigateToListUserPass: () -> Unit
 ) {
-    val limitData = listData.take(3)
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            "Data Anda",
+            "Data Terbaru Anda",
             style = MaterialTheme.typography.body2,
             color = secondaryColor,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
@@ -45,17 +45,17 @@ fun UserPassDataSection(
             modifier = Modifier.height(11.dp)
         )
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().heightIn(max = (limitData.size * 86).dp),
+            modifier = Modifier.fillMaxWidth().heightIn(max = (latestListData.size * 86).dp),
             userScrollEnabled = false
         ) {
-            items(limitData) { dataPass ->
-                UserDataPassHolder(dataPass!!, sheetState,data)
+            items(latestListData) { dataPass ->
+                UserDataPassHolder(dataPass, sheetState,data)
             }
         }
         Spacer(
             modifier = Modifier.height(7.dp)
         )
-        if(listData.size > 3) {
+        if(totalOriginDataSize > 3) {
             Button(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(10.dp),

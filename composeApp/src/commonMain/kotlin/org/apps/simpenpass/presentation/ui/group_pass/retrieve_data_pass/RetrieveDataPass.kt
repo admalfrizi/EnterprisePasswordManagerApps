@@ -219,7 +219,7 @@ fun DataPassCheckHolder(dataPass: DataPass, onLongSelect: () -> Unit, isSelected
                 )
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(
-                    dataPass.email,
+                    dataPass.email ?: "",
                     style = MaterialTheme.typography.subtitle1,
                     color = secondaryColor
                 )

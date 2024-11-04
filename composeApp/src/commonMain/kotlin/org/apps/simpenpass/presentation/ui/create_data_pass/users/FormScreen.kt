@@ -382,8 +382,6 @@ fun FormScreen(
                                 }
                             }
 
-
-
                             item {
                                 Text(
                                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

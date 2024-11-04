@@ -2,8 +2,12 @@ package org.apps.simpenpass.presentation.ui.list_data_pass_user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassRepository
@@ -19,7 +23,7 @@ class ListDataViewModel(
 
     init {
         viewModelScope.launch {
-            repo.listUserPassData().collect { result ->
+            repo.listUserPassData().flowOn(Dispatchers.IO).collectLatest { result ->
                 when(result) {
                     is NetworkResult.Error -> {
                         _listDataState.update {

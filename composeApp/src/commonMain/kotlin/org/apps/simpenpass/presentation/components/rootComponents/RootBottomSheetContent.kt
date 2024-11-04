@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.ui.group_pass.ListOptionHolder
 import org.apps.simpenpass.presentation.ui.group_pass.MethodSelection
 import org.apps.simpenpass.screen.Screen
@@ -56,8 +56,8 @@ fun RootBottomSheetContent(
     checkNavString: String,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    data: MutableState<PassResponseData?>,
-    navigateToToEditForm: MutableState<(PassResponseData)->Unit>,
+    data: MutableState<DataPass?>,
+    navigateToToEditForm: MutableState<(DataPass)->Unit>,
     navigateToAddGroup : () -> Unit,
     navigateToJoinGroup : () -> Unit
 ) {
@@ -183,8 +183,8 @@ fun AddGroupMethod(
 fun DetailPassData(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    data: MutableState<PassResponseData?>,
-    navigateToToEditForm : MutableState<(PassResponseData)->Unit>
+    data: MutableState<DataPass?>,
+    navigateToToEditForm : MutableState<(DataPass)->Unit>
 ) {
 
     Column(

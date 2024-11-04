@@ -25,7 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.ui.auth.AuthScreen
 import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
@@ -44,8 +44,8 @@ fun RootNavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
-    data: MutableState<PassResponseData?>,
-    navigateToFormWithArgs : MutableState<(PassResponseData)->Unit>,
+    data: MutableState<DataPass?>,
+    navigateToFormWithArgs : MutableState<(DataPass)->Unit>,
     navigateToLogout: () -> Unit,
     navigateToGroupDtl: (String) -> Unit,
     navigateToListUserPass : () -> Unit,

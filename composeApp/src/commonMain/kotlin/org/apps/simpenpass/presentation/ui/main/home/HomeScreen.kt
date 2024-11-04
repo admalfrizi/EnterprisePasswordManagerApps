@@ -37,8 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.ConnectionWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.homeComponents.GroupDataSection
@@ -55,9 +56,9 @@ import resources.menu_ic
 fun HomeScreen(
     navController: NavHostController,
     sheetState: ModalBottomSheetState,
-    dataPass: MutableState<PassResponseData?>,
+    dataPass: MutableState<DataPass?>,
     homeViewModel: HomeViewModel = koinViewModel(),
-    passDataId: MutableState<(PassResponseData) -> Unit>,
+    passDataId: MutableState<(DataPass) -> Unit>,
     navigateToFormEdit: (String) -> Unit,
     navigateToForm: () -> Unit,
     navigateToListUserPass : () -> Unit
@@ -78,6 +79,8 @@ fun HomeScreen(
     passDataId.value = { passData ->
         navigateToFormEdit(passData.id.toString())
     }
+
+    Napier.v("Latest Data : ${homeState.passDataList}")
     
     Scaffold(
         content = {
@@ -89,7 +92,7 @@ fun HomeScreen(
                 ) {
                     HeaderContainer(
                         homeState.name,
-                        homeState.passDataList.size,
+                        homeState.totalDataPass ?: 0,
                         homeState.totalGroupJoined ?: 0,
                         navigateToListUserPass
                     )
@@ -124,7 +127,7 @@ fun HomeContentView(
     isConnected: Boolean,
     navController: NavController,
     sheetState: ModalBottomSheetState,
-    dataPass: MutableState<PassResponseData?>,
+    dataPass: MutableState<DataPass?>,
     homeViewModel: HomeViewModel,
     navigateToListUserPass: () -> Unit,
     navigateToFormPass: () -> Unit
@@ -161,13 +164,13 @@ fun HomeContentView(
             Spacer(
                 modifier = Modifier.height(16.dp)
             )
-            UserPassDataSection(homeState.passDataList,dataPass,sheetState,navigateToListUserPass)
+            UserPassDataSection(homeState.passDataList,homeState.totalDataPass!!,dataPass,sheetState,navigateToListUserPass)
         }
     }
 }
 
 @Composable
-fun UserDataPassHolder(dataPass: PassResponseData, sheetState: ModalBottomSheetState, dataParse: MutableState<PassResponseData?>) {
+fun UserDataPassHolder(dataPass: DataPass, sheetState: ModalBottomSheetState, dataParse: MutableState<DataPass?>) {
     val scope = rememberCoroutineScope()
     Card(
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
@@ -201,15 +204,13 @@ fun UserDataPassHolder(dataPass: PassResponseData, sheetState: ModalBottomSheetS
                 },
                 onClick = {
                     scope.launch {
-                        dataParse.value = PassResponseData(
+                        dataParse.value = DataPass(
                             accountName = dataPass.accountName,
-                            desc = dataPass.desc,
                             email = dataPass.email,
                             id = dataPass.id,
                             jenisData = dataPass.jenisData,
                             password = dataPass.password,
                             url = dataPass.url,
-                            userId = dataPass.userId,
                             username = dataPass.username
                         )
                         sheetState.show()

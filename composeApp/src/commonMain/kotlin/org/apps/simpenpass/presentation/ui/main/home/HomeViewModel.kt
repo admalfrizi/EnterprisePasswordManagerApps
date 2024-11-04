@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.data.repository.UserRepository
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.utils.NetworkResult
 
 class HomeViewModel(
@@ -87,11 +87,12 @@ class HomeViewModel(
     fun getData() {
         viewModelScope.launch {
             if(isConnected.value){
-                passRepo.listUserPassData().flowOn(Dispatchers.IO).collectLatest { result ->
+                passRepo.latestListDataPass().flowOn(Dispatchers.IO).collectLatest { result ->
                     when(result) {
                         is NetworkResult.Error -> {
                             _homeState.update {
                                 it.copy(
+                                    isLoading = false,
                                     error = result.error,
                                 )
                             }
@@ -106,7 +107,8 @@ class HomeViewModel(
                         is NetworkResult.Success -> {
                             _homeState.update {
                                 it.copy(
-                                    passDataList = result.data.data!!,
+                                    passDataList = result.data.data?.latest!!,
+                                    totalDataPass = result.data.data.totalDataOriginSize,
                                     isLoading = false
                                 )
                             }
@@ -132,8 +134,9 @@ class HomeViewModel(
 
 data class HomeState(
     val name: String? = null,
-    val passDataList : List<PassResponseData> = emptyList(),
+    val passDataList : List<DataPass> = emptyList(),
     val totalGroupJoined: Int? = null,
+    val totalDataPass: Int? = null,
     val error: String? = null,
     val isLoading: Boolean = false
 )

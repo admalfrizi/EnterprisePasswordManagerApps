@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.presentation.components.rootComponents.RootBottomSheetContent
 import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigationMenu
@@ -49,11 +49,11 @@ fun RootScreen(
         BottomNavMenuData.Profile
     )
     val scope = rememberCoroutineScope()
-    val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
+    val dataDetail = remember { mutableStateOf<DataPass?>(null) }
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val checkScreenNav = navController.currentBackStackEntryAsState().value?.destination?.route
     val isMainScreen = checkScreenNav in routeNav.map { it.route }
-    val onClick = remember { mutableStateOf<(PassResponseData) -> Unit>({}) }
+    val onClick = remember { mutableStateOf<(DataPass) -> Unit>({}) }
     var isJoinDialogPopUp by remember { mutableStateOf(false) }
 
     bottomEdgeColor.value = primaryColor
