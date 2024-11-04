@@ -37,12 +37,18 @@ class PassRepository(
          Napier.d("Error Data ${error.message}")
     }
 
-    fun editUserPassData(editData: PassDataRequest, passId: Int) = flow {
+    fun editUserPassData(
+        editData: PassDataRequest,
+        passId: Int,
+        listAddContentPassData: List<InsertAddContentDataPass>
+    ) = flow {
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
                 val result = remotePassSources.editPassData(token, editData, passId)
-                if(result.success){
+                val updateAddContentData = remotePassSources.addContentDataPass(token,passId,listAddContentPassData)
+
+                if(result.success && updateAddContentData.success){
                     emit(NetworkResult.Success(result))
                 }
             }

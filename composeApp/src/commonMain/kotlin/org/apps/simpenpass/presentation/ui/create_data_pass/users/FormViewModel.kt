@@ -25,9 +25,9 @@ class FormViewModel(
     private val _formState = MutableStateFlow(FormState())
     val formState = _formState.asStateFlow()
 
-    fun createUserPassData(formData: PassDataRequest, insertAddContentPassData: List<InsertAddContentDataPass>){
+    fun createUserPassData(formData: PassDataRequest){
         viewModelScope.launch {
-            repo.createUserPassData(formData,insertAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
+            repo.createUserPassData(formData,formState.value.insertAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
                 when(result) {
                     is NetworkResult.Error -> {
                         _formState.update {
@@ -105,9 +105,9 @@ class FormViewModel(
         }
     }
 
-    fun editUserPassData(passId: Int, editData: PassDataRequest ) {
+    fun editUserPassData(passId: Int, editData: PassDataRequest) {
         viewModelScope.launch {
-            repo.editUserPassData(editData, passId).flowOn(Dispatchers.IO).collect { result ->
+            repo.editUserPassData(editData, passId,formState.value.insertAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
                 when(result){
                     is NetworkResult.Error -> {
                         _formState.update {
@@ -224,7 +224,7 @@ class FormViewModel(
     }
 
     fun resetValue() {
-        _formState.value = FormState(isLoading = true)
+        _formState.value = FormState()
     }
 }
 

@@ -1,5 +1,6 @@
 package org.apps.simpenpass.presentation.ui.create_data_pass.users
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -64,7 +66,10 @@ import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import resources.Res
+import resources.add_option_ic
 
 @Composable
 fun FormScreen(
@@ -159,8 +164,7 @@ fun FormScreen(
                                     nmAccount,
                                     passData,
                                     formViewModel,
-                                    formData,
-                                    formState
+                                    formData
                                 )
                             }
                         },
@@ -467,7 +471,8 @@ fun FormScreen(
                                             elevation = 0.dp
                                         ) {
                                             Column(
-                                                modifier = Modifier.padding(14.dp),
+                                                modifier = Modifier.padding(18.dp).fillMaxWidth(),
+                                                horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
                                                 Text(
                                                     "Buat Data Tambahan",
@@ -475,6 +480,20 @@ fun FormScreen(
                                                     color = fontColor1,
                                                     modifier = Modifier.fillMaxWidth(),
                                                     textAlign = TextAlign.Center
+                                                )
+                                                Spacer(
+                                                    modifier = Modifier.height(8.dp)
+                                                )
+                                                Card(
+                                                    modifier = Modifier.size(40.dp),
+                                                    shape = RoundedCornerShape(10.dp),
+                                                    backgroundColor = Color(0xFF6C8BB4),
+                                                    elevation = 0.dp,
+                                                    content = {
+                                                        Image(
+                                                            painterResource(Res.drawable.add_option_ic),""
+                                                        )
+                                                    }
                                                 )
                                             }
                                         }
@@ -624,11 +643,10 @@ fun validatorData(
     pass: String,
     formViewModel: FormViewModel,
     formData: PassDataRequest,
-    formState: FormState
 ) {
     if(accountName.isEmpty() && pass.isEmpty()){
         setToast("Nama Akun dan Password Tidak Boleh Kosong")
     }  else {
-        formViewModel.createUserPassData(formData,formState.insertAddContentPassData)
+        formViewModel.createUserPassData(formData)
     }
 }
