@@ -14,14 +14,19 @@ class PassRepository(
     private val remotePassSources: RemotePassDataSources,
     private val localData : LocalStoreData
 ) {
-     fun createUserPassData(formData: PassDataRequest) = flow {
+     fun createUserPassData(
+         formData: PassDataRequest,
+         insertAddContentDataPass: List<InsertAddContentDataPass>
+     ) = flow {
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
                 val userId = localData.getUserData().id
-                val result = remotePassSources.createUserPass(token,formData,userId!!)
-                if(result.success){
-                    emit(NetworkResult.Success(result))
+                val createUserPass = remotePassSources.createUserPass(token,formData,userId!!)
+
+                if(createUserPass.success && createUserPass.data?.id != null){
+                    remotePassSources.addContentDataPass(token,createUserPass.data.id, insertAddContentDataPass)
+                    emit(NetworkResult.Success(createUserPass))
                 }
             }
         } catch (e: UnresolvedAddressException) {

@@ -159,7 +159,8 @@ fun FormScreen(
                                     nmAccount,
                                     passData,
                                     formViewModel,
-                                    formData
+                                    formData,
+                                    formState
                                 )
                             }
                         },
@@ -622,11 +623,12 @@ fun validatorData(
     accountName: String,
     pass: String,
     formViewModel: FormViewModel,
-    formData: PassDataRequest
+    formData: PassDataRequest,
+    formState: FormState
 ) {
     if(accountName.isEmpty() && pass.isEmpty()){
         setToast("Nama Akun dan Password Tidak Boleh Kosong")
     }  else {
-        formViewModel.createUserPassData(formData)
+        formViewModel.createUserPassData(formData,formState.insertAddContentPassData)
     }
 }

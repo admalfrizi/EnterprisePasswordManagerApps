@@ -25,9 +25,9 @@ class FormViewModel(
     private val _formState = MutableStateFlow(FormState())
     val formState = _formState.asStateFlow()
 
-    fun createUserPassData(formData: PassDataRequest){
+    fun createUserPassData(formData: PassDataRequest, insertAddContentPassData: List<InsertAddContentDataPass>){
         viewModelScope.launch {
-            repo.createUserPassData(formData).flowOn(Dispatchers.IO).collect { result ->
+            repo.createUserPassData(formData,insertAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
                 when(result) {
                     is NetworkResult.Error -> {
                         _formState.update {
@@ -54,14 +54,14 @@ class FormViewModel(
                             )
                         }
 
-                        if(formState.value.isCreated){
-                            withContext(Dispatchers.IO){
-                                addContentDataToDb(
-                                    formState.value.passData!!.id!!,
-                                    formState.value.insertAddContentPassData
-                                )
-                            }
-                        }
+//                        if(formState.value.isCreated){
+//                            withContext(Dispatchers.IO){
+//                                addContentDataToDb(
+//                                    formState.value.passData!!.id!!,
+//                                    formState.value.insertAddContentPassData
+//                                )
+//                            }
+//                        }
                     }
                 }
             }
@@ -132,12 +132,12 @@ class FormViewModel(
                             )
                         }
 
-                        withContext(Dispatchers.IO){
-                            addContentDataToDb(
-                                passId,
-                                formState.value.insertAddContentPassData
-                            )
-                        }
+//                        withContext(Dispatchers.IO){
+//                            addContentDataToDb(
+//                                passId,
+//                                formState.value.insertAddContentPassData
+//                            )
+//                        }
                     }
                 }
             }
@@ -154,42 +154,42 @@ class FormViewModel(
         }
     }
 
-    fun addContentDataToDb(
-        passId: Int,
-        listAddContentPassData: List<InsertAddContentDataPass>
-    ){
-        viewModelScope.launch {
-            repo.addContentPassData(passId,listAddContentPassData).collect { res ->
-                when(res){
-                    is NetworkResult.Error -> {
-                        _formState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = res.error,
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _formState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _formState.update {
-                            it.copy(
-                                isLoading = false,
-                                msgAddContentData = res.data.message,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    fun addContentDataToDb(
+//        passId: Int,
+//        listAddContentPassData: List<InsertAddContentDataPass>
+//    ){
+//        viewModelScope.launch {
+//            repo.addContentPassData(passId,listAddContentPassData).collect { res ->
+//                when(res){
+//                    is NetworkResult.Error -> {
+//                        _formState.update {
+//                            it.copy(
+//                                isLoading = false,
+//                                error = res.error,
+//                            )
+//                        }
+//                    }
+//                    is NetworkResult.Loading -> {
+//                        _formState.update {
+//                            it.copy(
+//                                isLoading = true,
+//                            )
+//                        }
+//                    }
+//                    is NetworkResult.Success -> {
+//                        _formState.update {
+//                            it.copy(
+//                                isLoading = false,
+//                                msgAddContentData = res.data.message,
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    fun listContentPassData(
+    private fun listContentPassData(
         passId: Int
     ){
         viewModelScope.launch {
