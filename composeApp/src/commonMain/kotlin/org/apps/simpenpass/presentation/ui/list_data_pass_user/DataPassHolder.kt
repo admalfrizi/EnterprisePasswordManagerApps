@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -29,15 +29,15 @@ import resources.edit_pass_ic
 
 @Composable
 fun DataPassHolder(
-    item : PassResponseData,
-    dataParse: MutableState<PassResponseData?>,
+    item : DataPassWithAddContent,
+    dataParse: MutableState<DataPassWithAddContent?>,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
     navigateToFormEdit: (String) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxWidth().clickable {
         scope.launch {
-            dataParse.value = PassResponseData(
+            dataParse.value = DataPassWithAddContent(
                 accountName = item.accountName,
                 desc = item.desc,
                 email = item.email,
@@ -45,8 +45,8 @@ fun DataPassHolder(
                 jenisData = item.jenisData,
                 password = item.password,
                 url = item.url,
-                userId = item.userId,
-                username = item.username
+                username = item.username,
+                addContentPass = item.addContentPass
             )
 
             sheetState.show()

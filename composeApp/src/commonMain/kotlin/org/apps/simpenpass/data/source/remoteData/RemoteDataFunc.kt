@@ -11,6 +11,7 @@ import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.models.response.SendOtpResponse
@@ -28,7 +29,7 @@ interface PassDataFunc {
     suspend fun createUserPass(token: String, formData: PassDataRequest, id: Int): BaseResponse<PassResponseData>
     suspend fun editPassData(token: String, editData: PassDataRequest, passId: Int) : BaseResponse<PassResponseData>
     suspend fun latestUserPassData(token: String, id: Int) : BaseResponse<LatestPassDataResponse>
-    suspend fun listUserPassData(token: String, id: Int) : BaseResponse<List<PassResponseData>>
+    suspend fun listUserPassData(token: String, id: Int) : BaseResponse<List<DataPassWithAddContent>>
     suspend fun getUserPassDataById(token: String, passId: Int) : BaseResponse<PassResponseData>
     suspend fun addContentDataPass(token: String, passId: Int,addContentPass: List<InsertAddContentDataPass>): BaseResponse<List<AddContentPassData>>
     suspend fun listContentData(token: String, passId: Int): BaseResponse<List<AddContentPassData>>

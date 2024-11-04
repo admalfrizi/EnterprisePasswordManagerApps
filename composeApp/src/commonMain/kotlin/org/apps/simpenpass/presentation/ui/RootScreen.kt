@@ -75,6 +75,7 @@ fun RootScreen(
         sheetState = sheetState,
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        sheetGesturesEnabled = false,
         sheetContent = {
             checkScreenNav?.let {
                 RootBottomSheetContent(

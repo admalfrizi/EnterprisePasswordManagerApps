@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.rootComponents.DataInfoHolder
 import org.apps.simpenpass.style.secondaryColor
@@ -72,16 +74,20 @@ fun ListDataPassUser(
     listDataViewModel: ListDataViewModel = koinViewModel()
 ) {
     val state by listDataViewModel.listDataState.collectAsState()
-    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+    val sheetState = rememberModalBottomSheetState(
+        ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
     var isDropdownShow by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val dataDetail = remember { mutableStateOf<PassResponseData?>(null) }
+    val dataDetail = remember { mutableStateOf<DataPassWithAddContent?>(null) }
 
     ModalBottomSheetLayout(
         sheetContent = {
             PassDataInfo(scope,sheetState,dataDetail)
         },
         sheetElevation = 0.dp,
+        sheetGesturesEnabled = false,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetState = sheetState,
     ){
@@ -189,157 +195,168 @@ fun ListDataPassUser(
 fun PassDataInfo(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    data: MutableState<PassResponseData?>
+    data: MutableState<DataPassWithAddContent?>
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp),
     ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    data.value?.accountName ?: "",
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    style = MaterialTheme.typography.h6,
-                    color = secondaryColor
-                )
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                        }
-                    },
-                    content = {
-                        Icon(
-                            Icons.Filled.Clear,
-                            ""
-                        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                data.value?.accountName ?: "",
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                style = MaterialTheme.typography.h6,
+                color = secondaryColor
+            )
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
                     }
-                )
-            }
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-            DataInfoHolder(
-                {
-                    setToast("Data Jenis telah Disalin")
-                },Res.drawable.jenis_data_pass_ic,data.value?.jenisData ?: ""
-            )
-            Spacer(
-                modifier = Modifier.height(17.dp)
-            )
-            DataInfoHolder(
-                {
-                    setToast("Data Username telah Disalin")
-                },Res.drawable.user_ic,data.value?.username ?: ""
-            )
-            Spacer(
-                modifier = Modifier.height(17.dp)
-            )
-            DataInfoHolder(
-                {
-                    setToast("Data Email telah Disalin")
-                }, Res.drawable.email_ic,data.value?.email ?: ""
-            )
-            Spacer(
-                modifier = Modifier.height(17.dp)
-            )
-            DataInfoHolder(
-                {
-                    setToast("Data Password telah Disalin")
-                },Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
-            )
-            Spacer(
-                modifier = Modifier.height(17.dp)
-            )
-            DataInfoHolder(
-                {
-                    setToast("Data URL telah Disalin")
-                },Res.drawable.url_link, data.value?.url ?: ""
-            )
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
-            Text(
-                "Deskripsi",
-                modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.h6.copy(
-                    fontSize = 12.sp,
-                    color = secondaryColor
-                )
-            )
-            Spacer(
-                modifier = Modifier.height(11.dp)
-            )
-            Text(
-                data.value?.desc ?: "Tidak Ada Deskripsi",
-                modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.subtitle1.copy(
-                    fontSize = 12.sp,
-                    color = secondaryColor
-                )
-            )
-            Spacer(
-                modifier = Modifier.height(17.dp)
+                },
+                content = {
+                    Icon(
+                        Icons.Filled.Clear,
+                        ""
+                    )
+                }
             )
         }
-
-        item {
-            Text(
-                "Tambahan Data",
-                modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.h6.copy(
-                    fontSize = 12.sp,
-                    color = secondaryColor
-                )
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        DataInfoHolder(
+            {
+                setToast("Data Jenis telah Disalin")
+            },Res.drawable.jenis_data_pass_ic,data.value?.jenisData ?: ""
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
+        )
+        DataInfoHolder(
+            {
+                setToast("Data Username telah Disalin")
+            },Res.drawable.user_ic,data.value?.username ?: ""
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
+        )
+        DataInfoHolder(
+            {
+                setToast("Data Email telah Disalin")
+            }, Res.drawable.email_ic,data.value?.email ?: ""
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
+        )
+        DataInfoHolder(
+            {
+                setToast("Data Password telah Disalin")
+            },Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
+        )
+        DataInfoHolder(
+            {
+                setToast("Data URL telah Disalin")
+            },Res.drawable.url_link, data.value?.url ?: ""
+        )
+        Spacer(
+            modifier = Modifier.height(24.dp)
+        )
+        Text(
+            "Deskripsi",
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.h6.copy(
+                fontSize = 14.sp,
+                color = secondaryColor
             )
-            Spacer(
-                modifier = Modifier.height(11.dp)
+        )
+        Spacer(
+            modifier = Modifier.height(11.dp)
+        )
+        Text(
+            data.value?.desc ?: "Tidak Ada Deskripsi",
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.subtitle1.copy(
+                fontSize = 12.sp,
+                color = secondaryColor
             )
-//            items(){
-//
-//            }
-            Card(
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                backgroundColor = Color(0xFFB7D8F8),
-                shape = RoundedCornerShape(10.dp),
-                elevation = 0.dp
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            "Nama Data Tambaham",
-                            style = MaterialTheme.typography.body1,
-                            color = secondaryColor
-                        )
-                        Spacer(
-                            modifier = Modifier.height(4.dp)
-                        )
-                        Text(
-                            "Isi Data Tambahan",
-                            style = MaterialTheme.typography.subtitle1,
-                            color = secondaryColor
-                        )
-                    }
-                    IconButton(
-                        content = {
-                            Image( painterResource(Res.drawable.copy_paste), "")
-                        },
-                        onClick = {
+        )
+        Spacer(
+            modifier = Modifier.height(17.dp)
+        )
 
+
+
+        Text(
+            "Tambahan Data",
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.h6.copy(
+                fontSize = 14.sp,
+                color = secondaryColor
+            )
+        )
+        Spacer(
+            modifier = Modifier.height(11.dp)
+        )
+
+
+        if(data.value?.addContentPass != null){
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight().heightIn(
+                    max = (3 * 86).dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(11.dp)
+            ){
+                items(data.value?.addContentPass!!){ item ->
+                    Card(
+                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                        backgroundColor = Color(0xFFB7D8F8),
+                        shape = RoundedCornerShape(10.dp),
+                        elevation = 0.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    item.nmData,
+                                    style = MaterialTheme.typography.body1,
+                                    color = secondaryColor
+                                )
+                                Spacer(
+                                    modifier = Modifier.height(4.dp)
+                                )
+                                Text(
+                                    item.vlData,
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = secondaryColor
+                                )
+                            }
+                            IconButton(
+                                content = {
+                                    Image( painterResource(Res.drawable.copy_paste), "")
+                                },
+                                onClick = {
+
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
 
         }
+
+
 
 
 

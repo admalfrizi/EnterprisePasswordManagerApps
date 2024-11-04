@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassRepository
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.utils.NetworkResult
 
 class ListDataViewModel(
@@ -57,6 +57,6 @@ class ListDataViewModel(
 
 data class ListDataState(
     val isLoading : Boolean = false,
-    val data : List<PassResponseData> = emptyList(),
+    val data : List<DataPassWithAddContent> = emptyList(),
     val error : String? = null
 )

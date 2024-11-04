@@ -17,6 +17,7 @@ import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
@@ -74,14 +75,14 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         }
     }
 
-    override suspend fun listUserPassData(token: String, id: Int): BaseResponse<List<PassResponseData>> {
+    override suspend fun listUserPassData(token: String, id: Int): BaseResponse<List<DataPassWithAddContent>> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "userDataPass"){
                 contentType(ContentType.Application.Json)
                 parameter("userId", id)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
-            return response.body<BaseResponse<List<PassResponseData>>>()
+            return response.body<BaseResponse<List<DataPassWithAddContent>>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
         } catch (e: Exception) {

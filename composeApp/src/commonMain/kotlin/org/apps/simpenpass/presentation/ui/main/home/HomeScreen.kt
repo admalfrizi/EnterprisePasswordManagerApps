@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.ConnectionWarning
@@ -79,8 +78,6 @@ fun HomeScreen(
     passDataId.value = { passData ->
         navigateToFormEdit(passData.id.toString())
     }
-
-    Napier.v("Latest Data : ${homeState.passDataList}")
     
     Scaffold(
         content = {
