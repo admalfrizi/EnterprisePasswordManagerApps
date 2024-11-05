@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,8 +23,13 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -34,6 +40,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
@@ -54,6 +61,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,6 +77,7 @@ import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddD
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
 import org.apps.simpenpass.presentation.ui.main.group.GroupState
 import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
+import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
@@ -353,6 +364,7 @@ data class MethodSelection(
     val title: String
 )
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EditGroupDialog(
     onDismissRequest: () -> Unit,
@@ -362,9 +374,13 @@ fun EditGroupDialog(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     var grupName by remember { mutableStateOf("") }
+    var desc by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     if(groupState.dtlGroupData != null){
         grupName = groupState.dtlGroupData.nm_grup
+        desc = groupState.dtlGroupData.desc ?: ""
     }
 
     Dialog(
@@ -449,7 +465,10 @@ fun EditGroupDialog(
                             isFocused = focusState.isFocused
                         },
                         decorationBox = { innerTextField ->
-                            Column {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 // Draw the actual text field content
                                 Box(
                                     modifier = Modifier.fillMaxWidth(),
@@ -478,6 +497,89 @@ fun EditGroupDialog(
                         singleLine = false,
                     )
                 }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                BasicTextField(
+                    value = desc,
+                    onValueChange = {
+                        if(groupState.dtlGroupData != null) {
+                            groupState.dtlGroupData.desc = it
+                        }
+                        desc = it
+                    },
+                    textStyle = MaterialTheme.typography.caption.copy(color = secondaryColor),
+                    singleLine = false,
+                    modifier = Modifier.fillMaxWidth().height(269.dp),
+                    cursorBrush = SolidColor(secondaryColor),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                        }
+                    )
+                ){
+                    TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                        border = {
+                            TextFieldDefaults.BorderBox(
+                                enabled = true,
+                                interactionSource = interactionSource,
+                                colors = TextFieldDefaults.textFieldColors(
+                                    unfocusedIndicatorColor = Color.Black,
+                                ),
+                                shape = RoundedCornerShape(9.dp),
+                                isError = false,
+                                unfocusedBorderThickness = 1.dp,
+                            )
+                        },
+                        value = desc,
+                        innerTextField = it,
+                        enabled = true,
+                        singleLine = false,
+                        interactionSource = interactionSource,
+                        visualTransformation = VisualTransformation.None,
+                        placeholder = {
+                            Text(
+                                "Silahkan Tulis Deskripsi Disini....",
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB)),
+                            )
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = Color.White,
+                            backgroundColor = Color.White,
+                            unfocusedIndicatorColor = Color.Black
+                        ),
+                        contentPadding = TextFieldDefaults.textFieldWithoutLabelPadding(
+                            start = 16.dp
+                        )
+                    )
+                }
+
+                Spacer(
+                    modifier = Modifier.height(22.dp)
+                )
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+//                        scope.launch {
+//                            sheetState.hide()
+//                            keyboardController?.hide()
+//                        }
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+                    content = {
+                        Text(
+                            "Update Grup",
+                            style = MaterialTheme.typography.h6,
+                            color = fontColor1
+                        )
+                    }
+                )
             }
         }
     }

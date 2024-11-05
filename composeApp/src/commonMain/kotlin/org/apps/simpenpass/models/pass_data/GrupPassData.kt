@@ -24,5 +24,5 @@ data class DtlGrupPass(
     @SerialName("nm_grup")
     var nm_grup: String,
     @SerialName("desc")
-    val desc: String? = null
+    var desc: String? = null
 )
