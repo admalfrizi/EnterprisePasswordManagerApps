@@ -58,6 +58,10 @@ fun RootScreen(
 
     bottomEdgeColor.value = primaryColor
 
+    if(sheetState.isVisible){
+        bottomEdgeColor.value = Color.White
+    }
+
     if(isJoinDialogPopUp){
         JoinGroupDialog(
             onDismissRequest = {

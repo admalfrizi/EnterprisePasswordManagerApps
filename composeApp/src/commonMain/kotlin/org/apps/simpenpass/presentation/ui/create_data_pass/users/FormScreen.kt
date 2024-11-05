@@ -88,8 +88,8 @@ fun FormScreen(
     var passData by remember { mutableStateOf("") }
     var urlPass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
-    var nmData = remember { mutableStateOf("") }
-    var vlData = remember { mutableStateOf("") }
+    val nmData = remember { mutableStateOf("") }
+    val vlData = remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
 
@@ -104,6 +104,10 @@ fun FormScreen(
     )
 
     bottomEdgeColor.value = secondaryColor
+
+    if(sheetState.isVisible){
+        bottomEdgeColor.value = Color.White
+    }
 
     if(formState.isLoading){
         popUpLoading(isDismiss)

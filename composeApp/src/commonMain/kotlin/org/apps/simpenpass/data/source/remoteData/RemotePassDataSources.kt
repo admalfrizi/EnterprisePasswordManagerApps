@@ -1,6 +1,5 @@
 package org.apps.simpenpass.data.source.remoteData
 
-import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -13,9 +12,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
-import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
+import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.LatestPassDataResponse
@@ -66,7 +65,6 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
                 parameter("userId", id)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
-            Napier.v("Response Code : ${response.status.value}")
             return response.body<BaseResponse<LatestPassDataResponse>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
@@ -120,7 +118,6 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
                 setBody(addContentPass)
             }
 
-            Napier.v("Response Code : ${response.status.value}")
             return response.body<BaseResponse<List<AddContentPassData>>>()
 
         } catch (e: Exception){
