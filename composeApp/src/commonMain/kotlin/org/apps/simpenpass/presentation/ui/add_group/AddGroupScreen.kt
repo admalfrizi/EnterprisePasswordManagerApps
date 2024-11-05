@@ -548,6 +548,9 @@ fun AddDescSection(
                 )
             }
         )
+        Spacer(
+            modifier = Modifier.height(20.dp)
+        )
     }
 }
 
