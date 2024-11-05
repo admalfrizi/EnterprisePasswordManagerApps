@@ -27,6 +27,7 @@ import resources.menu_ic
 fun TopBarDtl(
     navController: NavController,
     groupState: GroupViewModel,
+    popUpEditGroup: () -> Unit
 ) {
     var isDropdownShow by remember { mutableStateOf(false) }
 
@@ -75,6 +76,8 @@ fun TopBarDtl(
                         Text(text = "Edit Data Grup")
                     },
                     onClick = {
+                        popUpEditGroup()
+                        isDropdownShow = false
                     }
                 )
                 DropdownMenuItem(
@@ -88,3 +91,4 @@ fun TopBarDtl(
         }
     )
 }
+

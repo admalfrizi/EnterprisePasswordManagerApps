@@ -22,7 +22,7 @@ data class DtlGrupPass(
     @SerialName("img_grup")
     val img_grup: String? = null,
     @SerialName("nm_grup")
-    val nm_grup: String,
+    var nm_grup: String,
     @SerialName("desc")
     val desc: String? = null
 )

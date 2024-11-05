@@ -58,7 +58,6 @@ class GroupRepository(
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 }
-                Napier.v("Data Dtl Group : ${result.data}")
             }
 
         }catch (e: UnresolvedAddressException){
