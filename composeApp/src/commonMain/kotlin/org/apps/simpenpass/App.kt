@@ -185,6 +185,7 @@ fun MainNavigation(
             }
         ){
             ListDataPassUser(
+                bottomEdgeColor ,
                 navigateToFormEdit = {
                     navController.navigate(Screen.FormPassData.passDataId(it))
                 },

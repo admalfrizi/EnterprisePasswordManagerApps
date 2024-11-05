@@ -69,6 +69,7 @@ import resources.user_ic
 
 @Composable
 fun ListDataPassUser(
+    bottomEdgeColor: MutableState<Color>,
     navigateToFormEdit: (String) -> Unit,
     navigateBack: () -> Unit,
     listDataViewModel: ListDataViewModel = koinViewModel()
@@ -81,6 +82,8 @@ fun ListDataPassUser(
     var isDropdownShow by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val dataDetail = remember { mutableStateOf<DataPassWithAddContent?>(null) }
+
+    bottomEdgeColor.value = Color.White
 
     ModalBottomSheetLayout(
         sheetContent = {
