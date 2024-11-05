@@ -473,7 +473,7 @@ fun FormScreen(
                                                 horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
                                                 Text(
-                                                    "Buat Data Tambahan",
+                                                    "Buat Data Baru",
                                                     style = MaterialTheme.typography.body1,
                                                     color = fontColor1,
                                                     modifier = Modifier.fillMaxWidth(),
