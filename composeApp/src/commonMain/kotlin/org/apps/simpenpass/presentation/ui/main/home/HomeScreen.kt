@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.DataPass
@@ -43,6 +42,7 @@ import org.apps.simpenpass.presentation.components.ConnectionWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.homeComponents.GroupDataSection
 import org.apps.simpenpass.presentation.components.homeComponents.HeaderContainer
+import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
 import org.apps.simpenpass.presentation.components.homeComponents.UserPassDataSection
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
@@ -96,7 +96,6 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     HomeContentView(
                         isConnected,
-                        navController,
                         sheetState,
                         dataPass,
                         homeViewModel,
@@ -122,7 +121,6 @@ fun HomeScreen(
 @Composable
 fun HomeContentView(
     isConnected: Boolean,
-    navController: NavController,
     sheetState: ModalBottomSheetState,
     dataPass: MutableState<DataPass?>,
     homeViewModel: HomeViewModel,
@@ -131,37 +129,49 @@ fun HomeContentView(
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
 
-    if(!isConnected){
-        ConnectionWarning(
-            modifier = Modifier.fillMaxSize(),
-            warnTitle = "Internet Anda Telah Teputus !",
-            warnText = "Silahkan untuk memeriksa koneksi internet anda dan coba untuk refresh kembali halaman ini",
-        )
-    }
-
-    if(homeState.passDataList.isEmpty() && !homeState.isLoading && isConnected) {
-        EmptyWarning(
-            modifier = Modifier.fillMaxSize(),
-            warnTitle = "Anda Belum Memiliki Data Password",
-            warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
-            btnTxt = "Tambahkan Password",
-            isEnableBtn = true,
-            onSelect = {
-                navigateToFormPass()
+    when(homeState.isLoading) {
+        true -> {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                HomeLoadingShimmer()
+                HomeLoadingShimmer()
+                HomeLoadingShimmer()
             }
-        )
-    }
+        }
+        false -> {
+            if(!isConnected)
+                ConnectionWarning(
+                    modifier = Modifier.fillMaxSize(),
+                    warnTitle = "Internet Anda Telah Teputus !",
+                    warnText = "Silahkan untuk memeriksa koneksi internet anda dan coba untuk refresh kembali halaman ini",
+                )
 
-    if(homeState.passDataList.isNotEmpty() && isConnected){
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+
+            if(homeState.passDataList.isEmpty() && !homeState.isLoading && isConnected)
+                EmptyWarning(
+                    modifier = Modifier.fillMaxSize(),
+                    warnTitle = "Anda Belum Memiliki Data Password",
+                    warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
+                    btnTxt = "Tambahkan Password",
+                    isEnableBtn = true,
+                    onSelect = {
+                        navigateToFormPass()
+                    }
+                )
+
+
+            if(homeState.passDataList.isNotEmpty() && isConnected && !homeState.isLoading)
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
 //                MostUsedSection(sheetState)
-            GroupDataSection()
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
-            UserPassDataSection(homeState.passDataList,homeState.totalDataPass!!,dataPass,sheetState,navigateToListUserPass)
+                    GroupDataSection()
+                    Spacer(
+                        modifier = Modifier.height(16.dp)
+                    )
+                    UserPassDataSection(homeState.passDataList,homeState.totalDataPass!!,dataPass,sheetState,navigateToListUserPass)
+                }
         }
     }
 }

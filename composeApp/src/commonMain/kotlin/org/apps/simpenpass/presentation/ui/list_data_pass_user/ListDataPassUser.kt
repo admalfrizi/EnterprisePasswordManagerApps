@@ -294,9 +294,6 @@ fun PassDataInfo(
         Spacer(
             modifier = Modifier.height(17.dp)
         )
-
-
-
         Text(
             "Tambahan Data",
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -308,8 +305,6 @@ fun PassDataInfo(
         Spacer(
             modifier = Modifier.height(11.dp)
         )
-
-
         if(data.value?.addContentPass != null){
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().wrapContentHeight().heightIn(
@@ -356,12 +351,6 @@ fun PassDataInfo(
                     }
                 }
             }
-
         }
-
-
-
-
-
     }
 }

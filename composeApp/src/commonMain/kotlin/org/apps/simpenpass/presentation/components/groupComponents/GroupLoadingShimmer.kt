@@ -1,4 +1,4 @@
-package org.apps.simpenpass.presentation.components
+package org.apps.simpenpass.presentation.components.groupComponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-fun LoadingShimmer() {
+fun GroupLoadingShimmer() {
     Row(
         modifier = Modifier
             .shimmer()

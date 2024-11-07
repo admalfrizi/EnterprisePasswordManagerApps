@@ -24,8 +24,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.ConnectionWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
-import org.apps.simpenpass.presentation.components.LoadingShimmer
 import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolder
+import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
 import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHolder
 import org.apps.simpenpass.style.secondaryColor
 import org.koin.compose.viewmodel.koinViewModel
@@ -86,9 +86,9 @@ fun GroupScreen(
                       contentAlignment = Alignment.TopCenter,
                   ) {
                       Column {
-                          LoadingShimmer()
-                          LoadingShimmer()
-                          LoadingShimmer()
+                          GroupLoadingShimmer()
+                          GroupLoadingShimmer()
+                          GroupLoadingShimmer()
                       }
                   }
               }
