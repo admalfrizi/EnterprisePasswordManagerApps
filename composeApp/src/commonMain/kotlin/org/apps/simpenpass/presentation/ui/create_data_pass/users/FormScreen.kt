@@ -123,7 +123,7 @@ fun FormScreen(
         setToast("Data Berhasil Diperbarui")
     }
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(passId){
         if(passId.isNotEmpty() && passId != "{passId}"){
             formViewModel.loadDataPassById(passId.toInt())
         }
