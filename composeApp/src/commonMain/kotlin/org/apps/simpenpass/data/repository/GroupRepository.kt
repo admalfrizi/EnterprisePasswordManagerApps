@@ -105,7 +105,7 @@ class GroupRepository(
         }
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
-        Napier.v("Error Searcg Group : ${it.message}")
+        Napier.v("Error Search Group : ${it.message}")
     }
 
 }

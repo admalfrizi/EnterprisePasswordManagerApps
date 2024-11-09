@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -20,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -73,6 +76,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -90,7 +94,9 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddGroupBottomSheetContent
+import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.components.addGroupComponents.ContentType
+import org.apps.simpenpass.presentation.components.addGroupComponents.ResultSearchMemberView
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
@@ -149,8 +155,12 @@ fun AddGroupScreen(
 
     bottomEdgeColor.value = Color.White
 
-    if(addGroupState.isLoading){
+    if(addGroupState.isLoading && !sheetState.isVisible){
         popUpLoading(isDismiss)
+    }
+
+    if(addGroupState.isError){
+        setToast(addGroupState.msg!!)
     }
 
     if(sheetState.isVisible){
@@ -173,6 +183,8 @@ fun AddGroupScreen(
             currentBottomSheet?.let {
                 AddGroupBottomSheetContent(
                     contentType = it,
+                    addGroupState,
+                    addGroupViewModel,
                     scope = scope,
                     sheetState = sheetState,
                     keyboardController = keyboardController!!,
@@ -559,115 +571,203 @@ fun AddMemberSection(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     findMember: MutableState<String>,
-    keyboardController: SoftwareKeyboardController?
+    keyboardController: SoftwareKeyboardController?,
+    addGroupState: AddGroupState,
+    addGroupViewModel: AddGroupViewModel
 ){
-    Column(
-        modifier = Modifier.padding(vertical = 20.dp, horizontal = 16.dp).fillMaxWidth().imePadding()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Silahkan Tambahkan Anggota Baru",
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                style = MaterialTheme.typography.h6,
-                color = secondaryColor
-            )
-            IconButton(
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        keyboardController?.hide()
-                    }
-                },
-                content = {
-                    Icon(
-                        Icons.Filled.Clear,
-                        ""
+    if(!sheetState.isVisible){
+        addGroupViewModel.clearSearchData()
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth().wrapContentSize().padding(vertical = 20.dp).imePadding(),
+    ){
+        item {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Silahkan Tambahkan Anggota Baru",
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        style = MaterialTheme.typography.h6,
+                        color = secondaryColor
+                    )
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                                keyboardController?.hide()
+                            }
+                            addGroupViewModel.clearSearchData()
+                        },
+                        content = {
+                            Icon(
+                                Icons.Filled.Clear,
+                                ""
+                            )
+                        }
                     )
                 }
+                Spacer(
+                    modifier = Modifier.height(19.dp)
+                )
+
+                OutlinedTextField(
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    value = findMember.value,
+                    textStyle = MaterialTheme.typography.subtitle1,
+                    onValueChange = {
+                        findMember.value = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Cari Anggota Baru Disini...",
+                            color = Color(0xFF9E9E9E),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.White,
+                        focusedIndicatorColor = secondaryColor,
+                        unfocusedIndicatorColor = Color.Black,
+                        cursorColor = Color(0xFF384A92),
+                        textColor = Color(0xFF384A92)
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    leadingIcon = null,
+                )
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+            }
+        }
+
+        item{
+            when(addGroupState.isLoading){
+                true -> {
+                    AddMemberLoading()
+                    AddMemberLoading()
+                }
+                false -> {
+                    if(addGroupState.searchUserData?.isNotEmpty() == true) {
+                        ResultSearchMemberView(
+                            Modifier.fillMaxWidth().background(color = Color(0xFFF1F1F1)).padding(horizontal = 16.dp, vertical = 9.dp).wrapContentHeight().heightIn(
+                                max = (addGroupState.searchUserData.size * 86).dp
+                            ),
+                            addGroupState.searchUserData
+                        )
+                        AddMemberToList()
+                    }
+
+                    if(addGroupState.searchUserData?.isEmpty() == true && !addGroupState.isLoading){
+                        EmptyWarning(
+                            modifier = Modifier.fillMaxWidth(),
+                            warnTitle = "Silahkan Cari untuk Anggota Baru",
+                            warnText = "Info Anggota akan Ditampilkan Disini",
+                            isEnableBtn = false,
+                            onSelect = {  }
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        addGroupViewModel.findMemberForAddToGroup(findMember.value)
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF5E86BB)),
+                    content = {
+                        Text(
+                            "Cari Anggota",
+                            style = MaterialTheme.typography.h6,
+                            color = fontColor1
+                        )
+                    }
+                )
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+                    content = {
+                        Text(
+                            "Tambahkan Anggota",
+                            style = MaterialTheme.typography.h6,
+                            color = fontColor1
+                        )
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AddMemberToList() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+    ){
+        Column(
+            modifier = Modifier.width(48.dp)
+        ) {
+            Box(
+                modifier = Modifier.size(44.dp)
+                    .background(color = Color(0xFF78A1D7), shape = CircleShape)
+            ){
+                Text(
+                    text = profileNameInitials("Nama Orang"),
+                    style = MaterialTheme.typography.body1,
+                    fontSize = 18.sp,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+                Box(
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .background(color = Color(0xFF195389), shape = CircleShape)
+                        .size(16.dp)
+                ){
+                    Image(
+                        Icons.Default.Clear,
+                        "",
+                        modifier = Modifier.align(Alignment.Center),
+                        colorFilter = ColorFilter.tint(Color.White)
+                    )
+                }
+            }
+            Spacer(
+                modifier = Modifier.height(5.dp)
+            )
+            Text(
+                "Nama Orang",
+                style = MaterialTheme.typography.subtitle2.copy(
+                    color = secondaryColor
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
-        Spacer(
-            modifier = Modifier.height(19.dp)
-        )
-
-        OutlinedTextField(
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            value = findMember.value ,
-            textStyle = MaterialTheme.typography.subtitle1,
-            onValueChange = {
-                findMember.value = it
-            },
-            placeholder = {
-                Text(
-                    text = "Cari Anggota Baru Disini..." ,
-                    color = Color(0xFF9E9E9E),
-                    style = MaterialTheme.typography.subtitle1
-                )
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = secondaryColor,
-                unfocusedIndicatorColor = Color.Black,
-                cursorColor = Color(0xFF384A92),
-                textColor = Color(0xFF384A92)
-            ),
-            shape = RoundedCornerShape(10.dp),
-            leadingIcon = null,
-        )
-        Spacer(
-            modifier = Modifier.height(19.dp)
-        )
-        EmptyWarning(
-            modifier = Modifier.fillMaxWidth(),
-            warnTitle = "Silahkan Cari untuk Anggota Baru",
-            warnText = "Info Anggota akan Ditampilkan Disini",
-            isEnableBtn = false,
-            onSelect = {  }
-        )
-        Spacer(
-            modifier = Modifier.height(19.dp)
-        )
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-
-            },
-            shape = RoundedCornerShape(20.dp),
-            elevation = ButtonDefaults.elevation(0.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFF5E86BB)),
-            content = {
-                Text(
-                    "Cari Anggota",
-                    style = MaterialTheme.typography.h6,
-                    color = fontColor1
-                )
-            }
-        )
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                scope.launch {
-                    sheetState.hide()
-                }
-            },
-            shape = RoundedCornerShape(20.dp),
-            elevation = ButtonDefaults.elevation(0.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
-            content = {
-                Text(
-                    "Tambahkan Anggota",
-                    style = MaterialTheme.typography.h6,
-                    color = fontColor1
-                )
-            }
-        )
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
     }
 }

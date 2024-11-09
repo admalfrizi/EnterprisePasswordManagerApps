@@ -1,23 +1,23 @@
 package org.apps.simpenpass.data.source.remoteData
 
+import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMember
-import org.apps.simpenpass.models.request.PassDataRequest
-import org.apps.simpenpass.models.request.LoginRequest
-import org.apps.simpenpass.models.request.RegisterRequest
-import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
+import org.apps.simpenpass.models.request.LoginRequest
+import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.response.UserResponseData
 import org.apps.simpenpass.models.response.VerifyOtpResponse
-import org.apps.simpenpass.models.user_data.UserData
 
 interface UserDataFunc {
     suspend fun login(data: LoginRequest): BaseResponse<UserResponseData>
@@ -68,7 +68,7 @@ interface MemberGroupDataFunc {
     suspend fun addMemberToGroup(token: String, addData: List<AddMember>, groupId: Int): BaseResponse<List<AddMember>>
     suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
     suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
-    suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<List<UserData>>
+    suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<SearchResultResponse>
 }
 
 interface ResetPassFunc {

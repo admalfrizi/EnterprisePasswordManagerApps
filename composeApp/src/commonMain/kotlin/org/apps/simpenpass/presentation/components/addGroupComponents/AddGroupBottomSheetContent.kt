@@ -7,6 +7,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import kotlinx.coroutines.CoroutineScope
 import org.apps.simpenpass.presentation.ui.add_group.AddDescSection
+import org.apps.simpenpass.presentation.ui.add_group.AddGroupState
+import org.apps.simpenpass.presentation.ui.add_group.AddGroupViewModel
 import org.apps.simpenpass.presentation.ui.add_group.AddMemberSection
 
 enum class ContentType {
@@ -17,6 +19,8 @@ enum class ContentType {
 @Composable
 fun AddGroupBottomSheetContent(
     contentType: ContentType,
+    addGroupState: AddGroupState,
+    addGroupViewModel: AddGroupViewModel,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     keyboardController: SoftwareKeyboardController,
@@ -26,6 +30,6 @@ fun AddGroupBottomSheetContent(
 ){
     when(contentType){
         ContentType.ADD_DESC -> AddDescSection(scope,sheetState,keyboardController,desc,interactionSource)
-        ContentType.ADD_MEMBER -> AddMemberSection(scope,sheetState, findMember,keyboardController)
+        ContentType.ADD_MEMBER -> AddMemberSection(scope,sheetState, findMember,keyboardController, addGroupState,addGroupViewModel)
     }
 }

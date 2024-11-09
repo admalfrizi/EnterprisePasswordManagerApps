@@ -59,9 +59,12 @@ class MemberGroupRepository(
             val result = remoteMemberDataSources.findUsersToJoinedGroup(token, query)
             if(result.success){
                 emit(NetworkResult.Success(result))
+            } else {
+                emit(NetworkResult.Error(result.message))
             }
         }
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+        Napier.v("Error Result : ${it.message}")
     }
 }

@@ -16,7 +16,7 @@ import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.models.response.BaseResponse
-import org.apps.simpenpass.models.user_data.UserData
+import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.utils.Constants
 
 class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupDataFunc {
@@ -67,7 +67,7 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
     override suspend fun findUsersToJoinedGroup(
         token: String,
         query: String
-    ): BaseResponse<List<UserData>> {
+    ): BaseResponse<SearchResultResponse> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "searchUser"){
                 contentType(ContentType.Application.Json)
@@ -75,7 +75,7 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
                 parameter("query", query)
             }
 
-            return response.body<BaseResponse<List<UserData>>>()
+            return response.body<BaseResponse<SearchResultResponse>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

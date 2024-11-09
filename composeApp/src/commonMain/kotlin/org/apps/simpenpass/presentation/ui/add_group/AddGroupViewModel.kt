@@ -156,7 +156,7 @@ class AddGroupViewModel(
                             currentList.copy(
                                 isLoading = false,
                                 isError = true,
-
+                                msg = result.error
                             )
                         }
                     }
@@ -173,11 +173,21 @@ class AddGroupViewModel(
                             currentList.copy(
                                 isLoading = false,
                                 isError = false,
-                                searchUserData = result.data.data!!
+                                searchUserData = result.data.data?.data,
                             )
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun clearSearchData(){
+        viewModelScope.launch {
+            _addGroupState.update {
+                it.copy(
+                    searchUserData = emptyList()
+                )
             }
         }
     }
@@ -194,5 +204,5 @@ data class AddGroupState(
     val msg: String? = null,
     val msgAddMember: String? = null,
     val isLoading: Boolean = false,
-    var isError: Boolean? = false,
+    var isError: Boolean = false,
 )
