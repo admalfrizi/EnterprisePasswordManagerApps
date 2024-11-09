@@ -67,9 +67,26 @@ class GroupRepository(
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
 
-//    fun updateGroup(groupId : Int, insertData: AddGroupRequest) = flow {
-//
-//    }
+    fun updateGroup(
+        groupId : Int,
+        editGroupData: AddGroupRequest,
+        imgName: String?,
+        imgFile: ByteArray?,
+    ) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.updateGroupData(token,groupId,editGroupData,imgName!!,imgFile)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        }catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
 
     fun searchGroup(query: String) = flow {
         emit(NetworkResult.Loading())

@@ -37,13 +37,17 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -64,14 +68,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.mohamedrejeb.calf.core.LocalPlatformContext
+import com.mohamedrejeb.calf.io.getName
+import com.mohamedrejeb.calf.io.readByteArray
+import com.mohamedrejeb.calf.picker.FilePickerFileType
+import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
+import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
@@ -80,12 +91,14 @@ import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.Constants
+import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.edit_ic
+import resources.group_ic
 import resources.your_data_ic
 
 @Composable
@@ -107,6 +120,7 @@ fun GroupPassDetail(
         MethodSelection(2, Res.drawable.your_data_ic, "Ambil Dari Data Anda"),
     )
     var isPopUp = remember { mutableStateOf(false) }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(groupId) {
         groupViewModel.getMemberDataGroup(groupId)
@@ -122,6 +136,7 @@ fun GroupPassDetail(
     ){
         ContentView(
             navController,
+            snackBarHostState,
             tabsName,
             sheetState,
             scope,
@@ -137,6 +152,7 @@ fun GroupPassDetail(
 @Composable
 fun ContentView(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     tabsName: List<String>,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
@@ -158,7 +174,11 @@ fun ContentView(
                     groupViewModel.getDetailGroup(groupId)
                 }
             },
+            isPopUp,
+            snackbarHostState,
+            scope,
             urlImages,
+            groupViewModel,
             imagesName,
             groupState,
         )
@@ -176,6 +196,7 @@ fun ContentView(
                 }
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         content = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Box {
@@ -184,7 +205,7 @@ fun ContentView(
                             .height(43.dp)
                     )
 
-                    if(groupState.isLoading && groupState.dtlGroupData == null){
+                    if(groupState.isLoading){
                         GroupDtlLoadShimmer()
                     }
 
@@ -368,10 +389,15 @@ data class MethodSelection(
 @Composable
 fun EditGroupDialog(
     onDismissRequest: () -> Unit,
+    isPopUp: MutableState<Boolean>,
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
     urlImages: String,
+    groupViewModel: GroupViewModel,
     imagesName: String?,
     groupState: GroupState
 ) {
+    val isDismiss = remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
     var grupName by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
@@ -381,6 +407,34 @@ fun EditGroupDialog(
     if(groupState.dtlGroupData != null){
         grupName = groupState.dtlGroupData.nm_grup
         desc = groupState.dtlGroupData.desc ?: ""
+    }
+
+    val context = LocalPlatformContext.current
+    var imgFile by remember { mutableStateOf(ByteArray(0)) }
+    var nameImg by remember { mutableStateOf("") }
+    val launcher = rememberFilePickerLauncher(
+        type = FilePickerFileType.Image,
+        selectionMode = FilePickerSelectionMode.Single,
+        onResult = { files ->
+            scope.launch {
+                files.firstOrNull()?.let {
+                    imgFile = it.readByteArray(context)
+                    nameImg = it.getName(context)!!
+
+                }
+            }
+        }
+    )
+
+    if(groupState.isUpdated && !groupState.isLoading){
+        isPopUp.value = false
+        scope.launch {
+            snackbarHostState.showSnackbar("d")
+        }
+    }
+
+    if(groupState.isLoading){
+        popUpLoading(isDismiss)
     }
 
     Dialog(
@@ -425,23 +479,52 @@ fun EditGroupDialog(
                 )
                 Box(
                     modifier = Modifier.size(99.dp)
-                        .background(color = Color(0xFF78A1D7), shape = CircleShape)
-                        .clip(CircleShape),
+                        .background(color = Color(0xFF78A1D7), shape = CircleShape).clickable(
+                            interactionSource = interactionSource,
+                            indication = ripple(bounded = false)
+                        ) {
+                            launcher.launch()
+                        },
                 ){
-                    if(imagesName != null){
+                    if(imagesName != null && imgFile.isEmpty()){
                         AsyncImage(
                             model = urlImages,
-                            modifier = Modifier.size(99.dp),
+                            modifier = Modifier.size(99.dp).clip(CircleShape),
                             contentDescription = "Profile Picture",
                             contentScale = ContentScale.Crop
                         )
                     } else {
-                        Text(
-                            text = profileNameInitials(groupState.dtlGroupData?.nm_grup!!),
-                            style = MaterialTheme.typography.body1,
-                            fontSize = 36.sp,
-                            color = Color.White,
-                            modifier = Modifier.align(Alignment.Center)
+                        when(imgFile.isNotEmpty()){
+                            true -> {
+                                AsyncImage(
+                                    model = imgFile,
+                                    modifier = Modifier.size(99.dp).clip(CircleShape),
+                                    contentDescription = "Profile Picture",
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            false -> {
+                                Text(
+                                    text = profileNameInitials(groupState.dtlGroupData?.nm_grup!!),
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 36.sp,
+                                    color = Color.White,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                    Box(
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .background(color = Color(0xFF195389), shape = CircleShape)
+                            .size(24.dp)
+                    ){
+                        Image(
+                            Icons.Default.Edit,
+                            "",
+                            modifier = Modifier.size(8.57.dp).align(Alignment.Center),
+                            colorFilter = ColorFilter.tint(Color.White)
                         )
                     }
 
@@ -465,23 +548,26 @@ fun EditGroupDialog(
                             isFocused = focusState.isFocused
                         },
                         decorationBox = { innerTextField ->
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                // Draw the actual text field content
-                                Box(
+                            Column {
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    if (grupName.isEmpty()) {
-                                        Text(
-                                            text = "Isi Nama Grup Ini",
-                                            style =  MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
-                                        )
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Box {
+                                        if (grupName.isEmpty()) {
+                                            Text(
+                                                text = "Isi Nama Grup Ini",
+                                                style =  MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
+                                            )
+                                        }
+                                        innerTextField()
                                     }
-                                    innerTextField()
+                                    Image(
+                                        painterResource(Res.drawable.group_ic),"", colorFilter = ColorFilter.tint(secondaryColor)
+                                    )
                                 }
+
                                 Divider(
                                     color = secondaryColor,
                                     thickness = 2.dp,
@@ -491,8 +577,7 @@ fun EditGroupDialog(
                         },
                         cursorBrush = SolidColor(secondaryColor),
                         textStyle = MaterialTheme.typography.button.copy(
-                            color = secondaryColor,
-                            textAlign = TextAlign.Center
+                            color = secondaryColor
                         ),
                         singleLine = false,
                     )
@@ -564,10 +649,10 @@ fun EditGroupDialog(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-//                        scope.launch {
-//                            sheetState.hide()
-//                            keyboardController?.hide()
-//                        }
+                        scope.launch {
+                            keyboardController?.hide()
+                        }
+                        groupViewModel.updateGroupData(groupState.dtlGroupData?.id.toString(), AddGroupRequest(grupName,desc),imgFile,nameImg)
                     },
                     shape = RoundedCornerShape(20.dp),
                     elevation = ButtonDefaults.elevation(0.dp),

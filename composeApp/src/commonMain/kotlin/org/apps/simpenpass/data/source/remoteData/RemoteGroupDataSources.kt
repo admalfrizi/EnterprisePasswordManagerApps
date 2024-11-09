@@ -19,7 +19,6 @@ import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.request.AddGroupRequest
-import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.utils.Constants
 
@@ -47,8 +46,6 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                     }
                 ))
             }
-            Napier.v("Response Code : ${response.status.value}")
-            Napier.v("Response : $response")
             return response.body<BaseResponse<GrupPassData>>()
         } catch (e: Exception){
             throw Exception(e.message)
@@ -58,8 +55,38 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
     }
 
 
-    override suspend fun updateGroupData(data: RegisterRequest): BaseResponse<GrupPassData> {
-        TODO("Not yet implemented")
+    override suspend fun updateGroupData(
+        token: String,
+        groupId: Int,
+        data: AddGroupRequest,
+        imgName: String,
+        imgFile: ByteArray?
+    ): BaseResponse<GrupPassData> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateGroup/$groupId")
+            {
+                contentType(ContentType.MultiPart.FormData)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(MultiPartFormDataContent(
+                    formData {
+                        if(imgFile != null){
+                            append("img_group",imgFile, Headers.build {
+                                append(HttpHeaders.ContentDisposition, "form-data; name=\"img_group\"; filename=\"$imgName\"")
+                            })
+                        }
+                        append("nm_group" ,data.nmGroup)
+                        append("desc", data.desc ?: "")
+                    }
+                ))
+            }
+            Napier.v("Response Code : ${response.status.value}")
+            Napier.v("Response : $response")
+            return response.body<BaseResponse<GrupPassData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
     }
 
     override suspend fun listJoinedGroupBasedOnUser(

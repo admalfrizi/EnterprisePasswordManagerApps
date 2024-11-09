@@ -43,7 +43,13 @@ interface GroupPassDataFunc {
         imgFile: ByteArray?
     ): BaseResponse<GrupPassData>
 
-    suspend fun updateGroupData(data: RegisterRequest): BaseResponse<GrupPassData>
+    suspend fun updateGroupData(
+        token: String,
+        groupId: Int,
+        data: AddGroupRequest,
+        imgName: String,
+        imgFile: ByteArray?
+    ): BaseResponse<GrupPassData>
     suspend fun listJoinedGroupBasedOnUser(
         token: String,
         userId: Int

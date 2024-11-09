@@ -3,9 +3,12 @@ package org.apps.simpenpass.presentation.ui.main.group
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.tmapps.konnection.Konnection
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
@@ -13,6 +16,7 @@ import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupViewModel(
@@ -70,6 +74,46 @@ class GroupViewModel(
                     it.copy(
                         isLoading = false
                     )
+                }
+            }
+        }
+    }
+
+    fun updateGroupData(
+        groupId: String,
+        updateGroupRequest: AddGroupRequest,
+        imgFile: ByteArray?,
+        imgName : String?
+    ) {
+        viewModelScope.launch {
+            repoGroup.updateGroup(groupId.toInt(),updateGroupRequest,imgName,imgFile).flowOn(Dispatchers.IO).collect{ res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = false,
+                                isUpdated = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -188,5 +232,6 @@ data class GroupState(
     var searchGroupResult: GrupPassData? = null,
     var msg: String = "",
     var isError: Boolean = false,
-    var isLoading: Boolean = false
+    var isLoading: Boolean = false,
+    var isUpdated: Boolean = false,
 )
