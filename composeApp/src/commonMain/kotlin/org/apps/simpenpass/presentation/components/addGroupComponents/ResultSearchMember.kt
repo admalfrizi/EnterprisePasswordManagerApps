@@ -1,6 +1,7 @@
 package org.apps.simpenpass.presentation.components.addGroupComponents
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,14 +29,19 @@ import org.apps.simpenpass.utils.profileNameInitials
 @Composable
 fun ResultSearchMemberView(
     modifier: Modifier,
-    resultSearchData: List<UserData>
+    resultSearchData: List<UserData>,
+    listAdd: MutableList<UserData>
 ) {
     LazyColumn(
         modifier = modifier,
     ){
        items(resultSearchData){ item ->
            Row(
-               modifier = Modifier.fillMaxWidth(),
+               modifier = Modifier.fillMaxWidth().clickable{
+                   if(!listAdd.contains(item)){
+                       listAdd.add(item)
+                   }
+               },
                horizontalArrangement = Arrangement.spacedBy(18.dp)
            ) {
                Box(

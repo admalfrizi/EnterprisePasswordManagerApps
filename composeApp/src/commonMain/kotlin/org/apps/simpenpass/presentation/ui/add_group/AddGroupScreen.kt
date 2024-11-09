@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,6 +60,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -92,6 +95,7 @@ import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddGroupBottomSheetContent
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
@@ -134,6 +138,7 @@ fun AddGroupScreen(
         skipHalfExpanded = true,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val underlineColor = if (isFocused) Color.White else Color.Transparent
     val focusManager = LocalFocusManager.current
@@ -575,8 +580,12 @@ fun AddMemberSection(
     addGroupState: AddGroupState,
     addGroupViewModel: AddGroupViewModel
 ){
+    val listAdd = remember { mutableStateListOf<UserData>() }
+
     if(!sheetState.isVisible){
         addGroupViewModel.clearSearchData()
+        listAdd.clear()
+        findMember.value = ""
     }
 
     LazyColumn(
@@ -660,9 +669,16 @@ fun AddMemberSection(
                             Modifier.fillMaxWidth().background(color = Color(0xFFF1F1F1)).padding(horizontal = 16.dp, vertical = 9.dp).wrapContentHeight().heightIn(
                                 max = (addGroupState.searchUserData.size * 86).dp
                             ),
-                            addGroupState.searchUserData
+                            addGroupState.searchUserData,
+                            listAdd
                         )
-                        AddMemberToList()
+                        Spacer(
+                            modifier = Modifier.height(12.dp)
+                        )
+                    }
+
+                    if(listAdd.isNotEmpty()){
+                        AddMemberToList(listAdd)
                     }
 
                     if(addGroupState.searchUserData?.isEmpty() == true && !addGroupState.isLoading){
@@ -703,6 +719,7 @@ fun AddMemberSection(
                     onClick = {
                         scope.launch {
                             sheetState.hide()
+                            listAdd.clear()
                         }
                     },
                     shape = RoundedCornerShape(20.dp),
@@ -725,49 +742,58 @@ fun AddMemberSection(
 }
 
 @Composable
-fun AddMemberToList() {
-    Row(
+fun AddMemberToList(
+    listAdd: MutableList<UserData>
+) {
+    LazyRow(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
     ){
-        Column(
-            modifier = Modifier.width(48.dp)
-        ) {
-            Box(
-                modifier = Modifier.size(44.dp)
-                    .background(color = Color(0xFF78A1D7), shape = CircleShape)
-            ){
-                Text(
-                    text = profileNameInitials("Nama Orang"),
-                    style = MaterialTheme.typography.body1,
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                Box(
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .background(color = Color(0xFF195389), shape = CircleShape)
-                        .size(16.dp)
-                ){
-                    Image(
-                        Icons.Default.Clear,
-                        "",
-                        modifier = Modifier.align(Alignment.Center),
-                        colorFilter = ColorFilter.tint(Color.White)
-                    )
+        items(listAdd){ item ->
+            Column(
+                modifier = Modifier.width(48.dp).clickable {
+                    if(listAdd.contains(item)){
+                        listAdd.remove(item)
+                    }
                 }
+            ) {
+                Box(
+                    modifier = Modifier.size(44.dp)
+                        .background(color = Color(0xFF78A1D7), shape = CircleShape)
+                ){
+                    Text(
+                        text = profileNameInitials("Nama Orang"),
+                        style = MaterialTheme.typography.body1,
+                        fontSize = 18.sp,
+                        color = Color.White,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    Box(
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .background(color = Color(0xFF195389), shape = CircleShape)
+                            .size(16.dp)
+                    ){
+                        Image(
+                            Icons.Default.Clear,
+                            "",
+                            modifier = Modifier.align(Alignment.Center),
+                            colorFilter = ColorFilter.tint(Color.White)
+                        )
+                    }
+                }
+                Spacer(
+                    modifier = Modifier.height(5.dp)
+                )
+                Text(
+                    item.name,
+                    style = MaterialTheme.typography.subtitle2.copy(
+                        color = secondaryColor
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
-            Spacer(
-                modifier = Modifier.height(5.dp)
-            )
-            Text(
-                "Nama Orang",
-                style = MaterialTheme.typography.subtitle2.copy(
-                    color = secondaryColor
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
         }
+
     }
 }
