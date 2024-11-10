@@ -138,7 +138,8 @@ fun RootNavGraph(
 
 fun NavGraphBuilder.groupPassDetail(
     navController: NavHostController,
-    density: Density
+    density: Density,
+    bottomEdgeColor: MutableState<Color>
 ){
     navigation(
         startDestination = Screen.GroupPassDtl.route,
@@ -167,7 +168,8 @@ fun NavGraphBuilder.groupPassDetail(
 
             GroupPassDetail(
                 navController,
-                groupId = groupId
+                groupId = groupId,
+                bottomEdgeColor = bottomEdgeColor
             )
         }
 

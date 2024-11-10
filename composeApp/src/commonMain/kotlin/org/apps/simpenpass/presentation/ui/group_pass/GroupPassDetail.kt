@@ -105,7 +105,8 @@ import resources.your_data_ic
 fun GroupPassDetail(
     navController: NavController,
     groupViewModel: GroupViewModel = koinViewModel(),
-    groupId: String
+    groupId: String,
+    bottomEdgeColor: MutableState<Color>
 ) {
     val tabsName = listOf("Password", "Anggota")
     val groupState by groupViewModel.groupState.collectAsState()
@@ -126,6 +127,8 @@ fun GroupPassDetail(
         groupViewModel.getMemberDataGroup(groupId)
         groupViewModel.getDetailGroup(groupId)
     }
+
+    bottomEdgeColor.value = Color(0xFFF1F1F1)
 
     ModalBottomSheetLayout(
         sheetState = sheetState,

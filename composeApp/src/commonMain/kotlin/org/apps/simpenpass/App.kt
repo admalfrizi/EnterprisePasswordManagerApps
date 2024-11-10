@@ -117,7 +117,7 @@ fun MainNavigation(
             )
         }
 
-        groupPassDetail(navController, density)
+        groupPassDetail(navController, density,bottomEdgeColor)
 
         composable(
             route = Screen.AddGroupPass.route
