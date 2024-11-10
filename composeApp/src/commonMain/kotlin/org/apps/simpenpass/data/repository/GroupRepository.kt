@@ -29,8 +29,7 @@ class GroupRepository(
                 val result = remoteGroupSources.createGroup(token,insertData,imgName!!,imgFile)
 
                 if(result.success && result.data?.id != null){
-                    val response = remoteMemberDataSources.addMemberToGroup(token,memberList,result.data.id)
-                    Napier.v("Response data : $response")
+                    remoteMemberDataSources.addMemberToGroup(token,memberList,result.data.id)
                     emit(NetworkResult.Success(result))
                 }
 
