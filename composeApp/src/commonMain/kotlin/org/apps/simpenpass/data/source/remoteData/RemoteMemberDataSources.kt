@@ -32,7 +32,8 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
                 setBody(addData)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
-            Napier.v("Response Code: ${response.status.value}")
+
+            Napier.v("Data Add Group ID : $groupId")
             return response.body<BaseResponse<List<AddMember>>>()
         } catch (e: Exception){
             throw Exception(e.message)
