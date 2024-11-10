@@ -18,7 +18,6 @@ sealed class Screen(val route : String) {
         const val ARG_USER_ID = "userId"
     }
 
-    data object Main : Screen(route = "main")
     data object Home : Screen(route = "home")
     data object Profile : Screen(route = "profile")
     data object Group : Screen(route = "group")
@@ -46,4 +45,6 @@ sealed class Screen(val route : String) {
     data object RetrieveDataPass : Screen(route = "groupPass/dtl/retrieveData")
     data object AddGroupPass : Screen(route = "addGroup")
     data object EditRole : Screen(route = "editRole")
+
+    data object FormPassGroup: Screen(route = "formGroupPass")
 }

@@ -93,7 +93,7 @@ fun OptionAddData(
             enabled = selectedOption != -1,
             onClick = {
                 if(selectedOption == 1){
-                    navController.navigate(Screen.FormPassData.route)
+                    navController.navigate(Screen.FormPassGroup.route)
                     scope.launch {
                         sheetState.hide()
                     }

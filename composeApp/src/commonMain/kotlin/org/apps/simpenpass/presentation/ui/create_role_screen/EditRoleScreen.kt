@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -51,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -61,11 +63,15 @@ import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.delete_ic
 
 @Composable
-fun EditRoleScreen(navController: NavController) {
+fun EditRoleScreen(
+    navController: NavController,
+    editRoleViewModel: EditRoleViewModel = koinViewModel()
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -74,6 +80,7 @@ fun EditRoleScreen(navController: NavController) {
     val roleList = listOf(
         RoleGroupData(1, "Dosen",10)
     )
+    val editRoleState by editRoleViewModel.editRoleState.collectAsStateWithLifecycle()
     //val roleList by remember { mutableStateOf(emptyList<RoleGroupData>()) }
 
     val scope = rememberCoroutineScope()
@@ -86,7 +93,14 @@ fun EditRoleScreen(navController: NavController) {
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetState = sheetState
     ){
-        OverlayContent(navController,interactionSource, scope,sheetState,roleList)
+        OverlayContent(
+            navController,
+            interactionSource,
+            scope,
+            sheetState,
+            roleList,
+            editRoleState,
+        )
     }
 }
 
@@ -96,7 +110,8 @@ fun OverlayContent(
     interactionSource: MutableInteractionSource,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    roleList: List<RoleGroupData>
+    roleList: List<RoleGroupData>,
+    editRoleState: EditRoleState
 ) {
     var roleName by remember { mutableStateOf("") }
     var roleFocus by remember { mutableStateOf(false) }
@@ -130,51 +145,115 @@ fun OverlayContent(
             )
         },
         content = {
-            Column(
+            Box(
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    "Isi Data Posisi",
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
-                    style = MaterialTheme.typography.subtitle2,
-                    color = secondaryColor
-                )
-                if(roleList.isEmpty()){
-                    Box(
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        EmptyWarning(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                            warnTitle = "Belum ada posisi yang dibuat !",
-                            warnText = "Silahkan buat posisi untuk setiap anggota baru dibawah ini.",
-                            isEnableBtn = false,
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        items(roleList) { item ->
-                            Box(
-                                modifier = Modifier.background(color = Color.White).clickable {
-                                    scope.launch {
-                                        sheetState.show()
+            ){
+                Column(
+                    modifier = Modifier.fillMaxSize().align(Alignment.TopCenter)
+                ) {
+                    Text(
+                        "Isi Data Posisi",
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
+                        style = MaterialTheme.typography.subtitle2,
+                        color = secondaryColor
+                    )
+                    if (roleList.isEmpty()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            EmptyWarning(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                warnTitle = "Belum ada posisi yang dibuat !",
+                                warnText = "Silahkan buat posisi untuk setiap anggota baru dibawah ini.",
+                                isEnableBtn = false,
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(roleList) { item ->
+                                Box(
+                                    modifier = Modifier.background(color = Color.White).clickable {
+                                        scope.launch {
+                                            sheetState.show()
+                                        }
+                                    }
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth()
+                                            .padding(vertical = 15.dp, horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            item.roleNm,
+                                            style = MaterialTheme.typography.h6.copy(fontSize = 12.sp),
+                                            color = secondaryColor
+                                        )
+                                        Text(
+                                            "${item.jmlhAnggota} Anggota",
+                                            style = MaterialTheme.typography.subtitle2,
+                                            color = secondaryColor
+                                        )
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier.align(Alignment.Center)
+                ){
+                    item{
+                        Text(
+                            "Anggota Grup",
+                            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
+                            style = MaterialTheme.typography.subtitle2,
+                            color = secondaryColor
+                        )
+                    }
+
+                    items(editRoleState.listMember!!){ item ->
+                        Box(
+                            modifier = Modifier.fillMaxWidth().background(color = Color.White)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth()
-                                        .padding(vertical = 15.dp, horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                Box(
+                                    modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
                                 ) {
                                     Text(
-                                        item.roleNm,
-                                        style = MaterialTheme.typography.h6.copy(fontSize = 12.sp),
+                                        text = profileNameInitials("Nama Orang"),
+                                        style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                                Spacer(
+                                    modifier = Modifier.width(27.dp)
+                                )
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        "Nama Orang",
+                                        style = MaterialTheme.typography.h6,
                                         color = secondaryColor
                                     )
                                     Text(
-                                        "${item.jmlhAnggota} Anggota",
-                                        style = MaterialTheme.typography.subtitle2,
+                                        "Email",
+                                        style = MaterialTheme.typography.subtitle1,
+                                        color = secondaryColor
+                                    )
+                                    Spacer(
+                                        modifier = Modifier.height(9.dp)
+                                    )
+                                    Text(
+                                        "Tidak Ada Posisi",
+                                        style = MaterialTheme.typography.subtitle1,
                                         color = secondaryColor
                                     )
                                 }
@@ -183,38 +262,51 @@ fun OverlayContent(
                     }
                 }
 
-                Spacer(
-                    modifier = Modifier.height(13.dp)
-                )
-                CustomTextField(
-                    interactionSource = interactionSource,
-                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().onFocusChanged { focusState -> roleFocus = focusState.isFocused },
-                    labelHints = "Nama Posisi",
-                    value = roleName,
-                    leadingIcon = null,
-                    onValueChange = { roleName = it},
-                    isFocus = roleFocus,
-                    focusColor = secondaryColor
-                )
-                Spacer(
-                    modifier = Modifier.height(18.dp)
-                )
-                Button(
-                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                    onClick = {
+                Column(
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                ) {
+                    Text(
+                        "Form Tambah Data Posisi",
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
+                        style = MaterialTheme.typography.subtitle2,
+                        color = secondaryColor
+                    )
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+                    CustomTextField(
+                        interactionSource = interactionSource,
+                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().onFocusChanged { focusState -> roleFocus = focusState.isFocused },
+                        labelHints = "Nama Posisi",
+                        value = roleName,
+                        leadingIcon = null,
+                        onValueChange = { roleName = it},
+                        isFocus = roleFocus,
+                        focusColor = secondaryColor
+                    )
+                    Spacer(
+                        modifier = Modifier.height(18.dp)
+                    )
+                    Button(
+                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                        onClick = {
 
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = ButtonDefaults.elevation(0.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
-                    content = {
-                        Text(
-                            "Tambahkan",
-                            style = MaterialTheme.typography.h6,
-                            color = fontColor1
-                        )
-                    }
-                )
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = ButtonDefaults.elevation(0.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+                        content = {
+                            Text(
+                                "Tambahkan",
+                                style = MaterialTheme.typography.h6,
+                                color = fontColor1
+                            )
+                        }
+                    )
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
+                }
             }
         }
     )
@@ -292,6 +384,7 @@ fun BottomSheetContent(
                         style = MaterialTheme.typography.subtitle1,
                         color = secondaryColor
                     )
+
                 }
                 IconButton(
                     onClick = {
@@ -321,6 +414,9 @@ fun BottomSheetContent(
                     color = fontColor1
                 )
             }
+        )
+        Spacer(
+            modifier = Modifier.height(20.dp)
         )
     }
 }

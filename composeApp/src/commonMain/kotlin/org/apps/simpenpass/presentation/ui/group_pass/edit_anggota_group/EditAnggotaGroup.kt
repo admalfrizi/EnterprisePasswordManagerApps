@@ -64,7 +64,8 @@ import resources.role_change
 fun EditAnggotaGroup(
     navController: NavController,
     groupViewModel: GroupViewModel = koinViewModel(),
-    groupId: String
+    groupId: String,
+    navToEditRole: () -> Unit
 ) {
     val groupState by groupViewModel.groupState.collectAsState()
     val itemsData = groupState.memberGroupData
@@ -83,7 +84,11 @@ fun EditAnggotaGroup(
         sheetState = sheetState,
         sheetBackgroundColor = Color(0xFFF1F1F1),
         sheetContent = {
-            OptionMenu(sheetState,scope)
+            OptionMenu(
+                navToEditRole = navToEditRole,
+                sheetState,
+                scope
+            )
         },
         content = {
             ScaffoldContent(
@@ -98,7 +103,11 @@ fun EditAnggotaGroup(
 }
 
 @Composable
-fun OptionMenu(sheetState: ModalBottomSheetState, scope: CoroutineScope) {
+fun OptionMenu(
+    navToEditRole: () -> Unit,
+    sheetState: ModalBottomSheetState,
+    scope: CoroutineScope
+) {
     Column {
         Spacer(
             modifier = Modifier.height(32.dp)
@@ -128,7 +137,10 @@ fun OptionMenu(sheetState: ModalBottomSheetState, scope: CoroutineScope) {
         }
         Box(
             modifier = Modifier.fillMaxWidth().clickable {
-
+                navToEditRole()
+                scope.launch {
+                    sheetState.hide()
+                }
             }
         ) {
             Row(

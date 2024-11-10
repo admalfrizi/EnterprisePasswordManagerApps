@@ -6,7 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,6 +33,7 @@ import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
 import org.apps.simpenpass.presentation.ui.auth.SendOtpScreen
 import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
+import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupScreen
 import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
 import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
 import org.apps.simpenpass.presentation.ui.group_pass.retrieve_data_pass.RetrieveDataPass
@@ -194,7 +197,8 @@ fun NavGraphBuilder.groupPassDetail(
         ) {
             val groupId = it.arguments?.getString(Screen.EditAnggota.ARG_GROUP_ID)
 
-            EditAnggotaGroup(navController,groupId = groupId!!)
+            EditAnggotaGroup(navController,groupId = groupId!!, navToEditRole = {navController.navigate(
+                Screen.EditRole.route)})
         }
 
         composable(route = Screen.RetrieveDataPass.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
@@ -208,7 +212,25 @@ fun NavGraphBuilder.groupPassDetail(
             RetrieveDataPass(navController)
         }
 
-
+        composable(
+            route = Screen.FormPassGroup.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
+                        slideInVertically(animationSpec = tween(durationMillis = 300)) {
+                            with(density) { 30.dp.roundToPx() }
+                        }
+            } ,
+            exitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
+                        slideOutVertically(animationSpec = tween(durationMillis = 300)) {
+                            with(density) { (30).dp.roundToPx() }
+                        }
+            }
+        ){
+            FormPassGroupScreen(
+                navController
+            )
+        }
     }
 
 }
