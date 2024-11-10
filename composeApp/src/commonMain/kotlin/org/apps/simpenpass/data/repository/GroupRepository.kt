@@ -25,6 +25,7 @@ class GroupRepository(
         emit(NetworkResult.Loading())
 
         try {
+            Napier.v("Data Member Add Group : $memberList")
             localData.getToken.collect { token ->
                 val result = remoteGroupSources.createGroup(token,insertData,imgName!!,imgFile)
 
@@ -34,15 +35,14 @@ class GroupRepository(
                 }
 
                 Napier.v("Data Add Group : $result")
-
             }
+
         }catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
 
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
-        Napier.v("Error Add Group : ${it.message}")
     }
 
     fun listJoinedGrup() = flow {

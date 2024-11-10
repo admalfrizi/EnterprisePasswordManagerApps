@@ -64,15 +64,6 @@ class AddGroupViewModel(
                                 msg = null
                             )
                         }
-
-//                        if(addGroupState.value.isCreated && addGroupState.value.grupData?.id != null) {
-//                            withContext(Dispatchers.IO) {
-//                                addMemberToDb(
-//                                    addGroupState.value.memberListAdd,
-//                                    addGroupState.value.grupData?.id!!
-//                                )
-//                            }
-//                        }
                     }
                 }
             }
@@ -99,7 +90,7 @@ class AddGroupViewModel(
             _addGroupState.update { currentList ->
                 val toAddMemberList = mutableListOf<AddMember>()
                 member.forEach {
-                   toAddMemberList.add(AddMember(it.id,false))
+                   toAddMemberList.add(AddMember(it.id,isGroupAdmin = false))
                 }
 
                 currentList.copy(

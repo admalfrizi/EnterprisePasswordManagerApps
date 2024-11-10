@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AddMember(
     @SerialName("user_id")
-    val user_id: Int,
-    @SerialName("isGroupAdmin")
-    val isGroupAdmin: Boolean? = false
+    val userId: Int,
+    @SerialName("is_group_admin")
+    val isGroupAdmin: Boolean
 )
