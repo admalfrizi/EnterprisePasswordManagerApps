@@ -671,7 +671,8 @@ fun AddMemberSection(
                             ),
                             addGroupState.searchUserData,
                             addGroupState.memberList!!,
-                            listAdd
+                            listAdd,
+                            sheetState,
                         )
                         Spacer(
                             modifier = Modifier.height(12.dp)
