@@ -6,27 +6,39 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
+import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.models.request.AddGroupRequest
+import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupRepository(
     private val remoteGroupSources : RemoteGroupDataSources,
+    private val remoteMemberDataSources: RemoteMemberDataSources,
     private val localData : LocalStoreData
 ) {
     fun createGroup(
         insertData: AddGroupRequest,
         imgName: String?,
         imgFile: ByteArray?,
+        memberList: List<AddMember>
     ) = flow {
         emit(NetworkResult.Loading())
-        localData.getToken.collect { token ->
-            val result = remoteGroupSources.createGroup(token,insertData,imgName!!,imgFile)
-            if(result.success){
-                emit(NetworkResult.Success(result))
+
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.createGroup(token,insertData,imgName!!,imgFile)
+
+                if(result.success && result.data?.id != null){
+                    remoteMemberDataSources.addMemberToGroup(token,memberList,result.data.id)
+                    emit(NetworkResult.Success(result))
+                }
+
+                Napier.v("Data Add Group : $result")
             }
-            emit(NetworkResult.Error(result.message))
-            Napier.v("Data Add Group : $result")
+        }catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
+
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
         Napier.v("Error Add Group : ${it.message}")

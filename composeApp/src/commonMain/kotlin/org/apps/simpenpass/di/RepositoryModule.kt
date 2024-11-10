@@ -25,6 +25,7 @@ val repoModule = module {
     factory<GroupRepository> {
         GroupRepository(
             remoteGroupSources = get(),
+            remoteMemberDataSources = get(),
             localData = get()
         )
     }

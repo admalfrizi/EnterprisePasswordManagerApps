@@ -666,19 +666,16 @@ fun AddMemberSection(
                 false -> {
                     if(addGroupState.searchUserData?.isNotEmpty() == true) {
                         ResultSearchMemberView(
-                            Modifier.fillMaxWidth().background(color = Color(0xFFF1F1F1)).padding(horizontal = 16.dp, vertical = 9.dp).wrapContentHeight().heightIn(
+                            Modifier.fillMaxWidth().padding(vertical = 9.dp).wrapContentHeight().heightIn(
                                 max = (addGroupState.searchUserData.size * 86).dp
                             ),
                             addGroupState.searchUserData,
+                            addGroupState.memberList!!,
                             listAdd
                         )
                         Spacer(
                             modifier = Modifier.height(12.dp)
                         )
-                    }
-
-                    if(listAdd.isNotEmpty()){
-                        AddMemberToList(listAdd)
                     }
 
                     if(addGroupState.searchUserData?.isEmpty() == true && !addGroupState.isLoading){
@@ -691,6 +688,9 @@ fun AddMemberSection(
                         )
                     }
                 }
+            }
+            if(listAdd.isNotEmpty()){
+                AddMemberToList(listAdd)
             }
         }
 
@@ -721,6 +721,7 @@ fun AddMemberSection(
                             sheetState.hide()
                             listAdd.clear()
                         }
+                        addGroupViewModel.addMemberToList(listAdd)
                     },
                     shape = RoundedCornerShape(20.dp),
                     elevation = ButtonDefaults.elevation(0.dp),
@@ -746,7 +747,8 @@ fun AddMemberToList(
     listAdd: MutableList<UserData>
 ) {
     LazyRow(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ){
         items(listAdd){ item ->
             Column(

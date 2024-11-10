@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.GrupPassData
@@ -35,7 +34,7 @@ class AddGroupViewModel(
         imgName : String?
     ){
         viewModelScope.launch {
-            groupRepo.createGroup(insertData,imgName,imgFile).flowOn(Dispatchers.IO).collect{ result ->
+            groupRepo.createGroup(insertData,imgName,imgFile,addGroupState.value.memberListAdd).flowOn(Dispatchers.IO).collect{ result ->
                 when(result){
                     is NetworkResult.Error -> {
                         _addGroupState.update {
@@ -66,19 +65,17 @@ class AddGroupViewModel(
                             )
                         }
 
-                        if(addGroupState.value.isCreated && addGroupState.value.grupData?.id != null) {
-                            withContext(Dispatchers.IO) {
-                                addMemberToDb(
-                                    addGroupState.value.memberListAdd,
-                                    addGroupState.value.grupData?.id!!
-                                )
-                            }
-                        }
+//                        if(addGroupState.value.isCreated && addGroupState.value.grupData?.id != null) {
+//                            withContext(Dispatchers.IO) {
+//                                addMemberToDb(
+//                                    addGroupState.value.memberListAdd,
+//                                    addGroupState.value.grupData?.id!!
+//                                )
+//                            }
+//                        }
                     }
                 }
             }
-
-
         }
     }
 
@@ -100,57 +97,57 @@ class AddGroupViewModel(
     fun addMemberToList(member: List<UserData>){
         viewModelScope.launch {
             _addGroupState.update { currentList ->
+                val toAddMemberList = mutableListOf<AddMember>()
                 member.forEach {
-                    currentList.copy(
-                        memberListAdd = currentList.memberListAdd + AddMember(it.id,false)
-                    )
+                   toAddMemberList.add(AddMember(it.id,false))
                 }
 
                 currentList.copy(
-                    memberList = currentList.memberList!! + member
+                    memberList = currentList.memberList!! + member,
+                    memberListAdd = currentList.memberListAdd + toAddMemberList,
                 )
             }
         }
     }
 
-    private fun addMemberToDb(
-        memberList: List<AddMember>,
-        groupId: Int,
-    ) {
-        viewModelScope.launch {
-            repoMember.addUsersToJoinGroup(memberList,groupId).flowOn(Dispatchers.IO).collect { res ->
-                when(res){
-                    is NetworkResult.Error -> {
-                        _addGroupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msgAddMember = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _addGroupState.update {
-                            it.copy(
-                                isLoading = true,
-                                isError = false,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _addGroupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = false,
-                                isAdded = true,
-                                msgAddMember = res.data.message
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    private fun addMemberToDb(
+//        memberList: List<AddMember>,
+//        groupId: Int,
+//    ) {
+//        viewModelScope.launch {
+//            repoMember.addUsersToJoinGroup(memberList,groupId).flowOn(Dispatchers.IO).collect { res ->
+//                when(res){
+//                    is NetworkResult.Error -> {
+//                        _addGroupState.update {
+//                            it.copy(
+//                                isLoading = false,
+//                                isError = true,
+//                                msgAddMember = res.error
+//                            )
+//                        }
+//                    }
+//                    is NetworkResult.Loading -> {
+//                        _addGroupState.update {
+//                            it.copy(
+//                                isLoading = true,
+//                                isError = false,
+//                            )
+//                        }
+//                    }
+//                    is NetworkResult.Success -> {
+//                        _addGroupState.update {
+//                            it.copy(
+//                                isLoading = false,
+//                                isError = false,
+//                                isAdded = true,
+//                                msgAddMember = res.data.message
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     fun findMemberForAddToGroup(query: String){
         viewModelScope.launch {
