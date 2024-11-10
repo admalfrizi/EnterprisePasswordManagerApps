@@ -51,7 +51,7 @@ fun ListGroupHolder(
                 Box(
                     modifier = Modifier.size(58.dp).background(color = Color(0xFF78A1D7),shape = CircleShape).clip(CircleShape)
                 ){
-                    if(urlImages.isNotEmpty()){
+                    if(item?.img_grup != null){
                         AsyncImage(
                             model = urlImages,
                             modifier = Modifier.size(99.dp),

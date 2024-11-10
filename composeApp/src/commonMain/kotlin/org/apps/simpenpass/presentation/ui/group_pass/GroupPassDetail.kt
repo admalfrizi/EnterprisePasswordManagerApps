@@ -211,7 +211,7 @@ fun ContentView(
 
                     if(!groupState.isLoading && groupState.dtlGroupData != null){
                         Row(
-                            modifier = Modifier.padding(start = 16.dp, top = 22.dp).fillMaxWidth()
+                            modifier = Modifier.padding(start = 16.dp, end= 16.dp, top = 22.dp).fillMaxWidth()
                                 .align(
                                     Alignment.BottomStart
                                 )
@@ -429,7 +429,7 @@ fun EditGroupDialog(
     if(groupState.isUpdated && !groupState.isLoading){
         isPopUp.value = false
         scope.launch {
-            snackbarHostState.showSnackbar("d")
+            snackbarHostState.showSnackbar("Data Grup telah Diperbaharui")
         }
     }
 
