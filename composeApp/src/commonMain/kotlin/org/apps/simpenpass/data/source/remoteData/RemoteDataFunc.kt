@@ -4,6 +4,7 @@ import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
@@ -75,4 +76,18 @@ interface ResetPassFunc {
     suspend fun sendOtp(email: String) : BaseResponse<SendOtpResponse>
     suspend fun verifyOtp(otp: Int, userId: Int) : BaseResponse<VerifyOtpResponse>
     suspend fun resetPassword(password: String, token: String) : BaseResponse<String>
+}
+
+interface RolePositionFunc {
+    suspend fun addRolePositionInGroup(
+        token: String,
+        insertData: AddGroupRequest,
+        imgName: String,
+        imgFile: ByteArray?
+    ): BaseResponse<RoleGroupData>
+
+    suspend fun listRolePositionInGroup(
+        token: String,
+        groupId: Int
+    ): BaseResponse<List<RoleGroupData>>
 }

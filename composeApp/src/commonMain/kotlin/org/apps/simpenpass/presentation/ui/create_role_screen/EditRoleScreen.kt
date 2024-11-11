@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,12 +56,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.EmptyWarning
+import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
@@ -79,13 +81,15 @@ fun EditRoleScreen(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
-    val roleList = listOf(
-        RoleGroupData(1, "Dosen",10)
-    )
     val editRoleState by editRoleViewModel.editRoleState.collectAsStateWithLifecycle()
-    //val roleList by remember { mutableStateOf(emptyList<RoleGroupData>()) }
 
     val scope = rememberCoroutineScope()
+    LaunchedEffect(groupId){
+        if(groupId.isNotEmpty() && groupId != "{groupId}") {
+            editRoleViewModel.getMemberDataGroup(groupId)
+            editRoleViewModel.getListRolePositionData(groupId)
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetBackgroundColor = Color(0xFFF1F1F1),
@@ -100,12 +104,10 @@ fun EditRoleScreen(
             interactionSource,
             scope,
             sheetState,
-            roleList,
+            editRoleState.listRoleMember!!,
             editRoleState,
         )
     }
-
-    Napier.v("group id : $groupId")
 }
 
 @Composable
@@ -150,7 +152,7 @@ fun OverlayContent(
         },
         content = {
             Box(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().imePadding()
             ){
                 Column(
                     modifier = Modifier.fillMaxSize().align(Alignment.TopCenter)
@@ -161,7 +163,17 @@ fun OverlayContent(
                         style = MaterialTheme.typography.subtitle2,
                         color = secondaryColor
                     )
-                    if (roleList.isEmpty()) {
+
+                    if(editRoleState.isLoading){
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    if (roleList.isEmpty() && !editRoleState.isLoading) {
                         Box(
                             contentAlignment = Alignment.Center,
                         ) {
@@ -190,7 +202,7 @@ fun OverlayContent(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            item.roleNm,
+                                            item.nmPosisi,
                                             style = MaterialTheme.typography.h6.copy(fontSize = 12.sp),
                                             color = secondaryColor
                                         )
@@ -206,69 +218,84 @@ fun OverlayContent(
                     }
                 }
 
-                LazyColumn(
-                    modifier = Modifier.align(Alignment.Center)
-                ){
-                    item{
-                        Text(
-                            "Anggota Grup",
-                            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
-                            style = MaterialTheme.typography.subtitle2,
-                            color = secondaryColor
-                        )
-                    }
-
-                    items(editRoleState.listMember!!){ item ->
-                        Box(
-                            modifier = Modifier.fillMaxWidth().background(color = Color.White)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Box(
-                                    modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
-                                ) {
-                                    Text(
-                                        text = profileNameInitials("Nama Orang"),
-                                        style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                                Spacer(
-                                    modifier = Modifier.width(27.dp)
-                                )
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    horizontalAlignment = Alignment.Start
-                                ) {
-                                    Text(
-                                        "Nama Orang",
-                                        style = MaterialTheme.typography.h6,
-                                        color = secondaryColor
-                                    )
-                                    Text(
-                                        "Email",
-                                        style = MaterialTheme.typography.subtitle1,
-                                        color = secondaryColor
-                                    )
-                                    Spacer(
-                                        modifier = Modifier.height(9.dp)
-                                    )
-                                    Text(
-                                        "Tidak Ada Posisi",
-                                        style = MaterialTheme.typography.subtitle1,
-                                        color = secondaryColor
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
                 Column(
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                    ){
+                        item{
+                            Text(
+                                "Anggota Grup",
+                                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
+                                style = MaterialTheme.typography.subtitle2,
+                                color = secondaryColor
+                            )
+                        }
+
+                        when(editRoleState.isLoading){
+                            true -> {
+                                item{
+                                    GroupLoadingShimmer()
+                                    GroupLoadingShimmer()
+                                    GroupLoadingShimmer()
+                                }
+                            }
+                            false -> {
+                                items(editRoleState.listMember!!){ item ->
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth().background(color = Color.White)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Box(
+                                                modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
+                                            ) {
+                                                Text(
+                                                    text = profileNameInitials(item.nama_anggota),
+                                                    style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
+                                                    modifier = Modifier.align(Alignment.Center)
+                                                )
+                                            }
+                                            Spacer(
+                                                modifier = Modifier.width(27.dp)
+                                            )
+                                            Column(
+                                                modifier = Modifier.weight(1f),
+                                                horizontalAlignment = Alignment.Start
+                                            ) {
+                                                Text(
+                                                    item.nama_anggota,
+                                                    style = MaterialTheme.typography.h6,
+                                                    color = secondaryColor
+                                                )
+                                                Text(
+                                                    item.email_anggota,
+                                                    style = MaterialTheme.typography.subtitle1,
+                                                    color = secondaryColor
+                                                )
+                                                Spacer(
+                                                    modifier = Modifier.height(9.dp)
+                                                )
+                                                Text(
+                                                    "Tidak Ada Posisi",
+                                                    style = MaterialTheme.typography.subtitle1,
+                                                    color = secondaryColor
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                    }
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
                     Text(
                         "Form Tambah Data Posisi",
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),

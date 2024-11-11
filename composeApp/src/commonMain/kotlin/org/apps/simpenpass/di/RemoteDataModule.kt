@@ -4,6 +4,7 @@ import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteResetPassSources
+import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.data.source.remoteData.RemoteUserSources
 import org.koin.dsl.module
 
@@ -34,6 +35,12 @@ val remoteDataModule = module {
 
     single {
         RemoteResetPassSources(
+            httpClient = get()
+        )
+    }
+
+    single {
+        RemoteRolePositionGroup(
             httpClient = get()
         )
     }

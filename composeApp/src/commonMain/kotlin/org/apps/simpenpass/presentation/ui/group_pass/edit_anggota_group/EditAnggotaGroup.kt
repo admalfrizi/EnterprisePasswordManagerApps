@@ -65,7 +65,7 @@ fun EditAnggotaGroup(
     navController: NavController,
     groupViewModel: GroupViewModel = koinViewModel(),
     groupId: String,
-    navToEditRole: () -> Unit
+    navToEditRole: (String) -> Unit
 ) {
     val groupState by groupViewModel.groupState.collectAsState()
     val itemsData = groupState.memberGroupData
@@ -86,6 +86,7 @@ fun EditAnggotaGroup(
         sheetContent = {
             OptionMenu(
                 navToEditRole = navToEditRole,
+                groupId = groupId,
                 sheetState,
                 scope
             )
@@ -104,7 +105,8 @@ fun EditAnggotaGroup(
 
 @Composable
 fun OptionMenu(
-    navToEditRole: () -> Unit,
+    navToEditRole: (String) -> Unit,
+    groupId: String,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope
 ) {
@@ -137,7 +139,7 @@ fun OptionMenu(
         }
         Box(
             modifier = Modifier.fillMaxWidth().clickable {
-                navToEditRole()
+                navToEditRole(groupId)
                 scope.launch {
                     sheetState.hide()
                 }

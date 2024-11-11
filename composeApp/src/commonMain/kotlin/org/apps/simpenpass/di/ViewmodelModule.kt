@@ -64,7 +64,8 @@ val viewModelModule = module {
 
     viewModel {
         EditRoleViewModel(
-            repoMemberGroup = get()
+            repoMemberGroup = get(),
+            repoGroup = get()
         )
     }
 

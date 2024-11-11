@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
+import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMember
 import org.apps.simpenpass.utils.NetworkResult
@@ -14,6 +15,7 @@ import org.apps.simpenpass.utils.NetworkResult
 class GroupRepository(
     private val remoteGroupSources : RemoteGroupDataSources,
     private val remoteMemberDataSources: RemoteMemberDataSources,
+    private val remoteRolePositionGroup: RemoteRolePositionGroup,
     private val localData : LocalStoreData
 ) {
     fun createGroup(
@@ -119,6 +121,29 @@ class GroupRepository(
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
         Napier.v("Error Search Group : ${it.message}")
+    }
+
+    fun listRoleGroup(groupId: Int) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteRolePositionGroup.listRolePositionInGroup(token,groupId)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+                Napier.v("Data Role Group : ${result.data}")
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
 
 }

@@ -26,6 +26,7 @@ val repoModule = module {
         GroupRepository(
             remoteGroupSources = get(),
             remoteMemberDataSources = get(),
+            remoteRolePositionGroup = get(),
             localData = get()
         )
     }

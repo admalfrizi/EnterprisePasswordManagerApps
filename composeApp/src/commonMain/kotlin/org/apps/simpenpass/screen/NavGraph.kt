@@ -202,7 +202,7 @@ fun NavGraphBuilder.groupPassDetail(
                 navController,
                 groupId = groupId!!,
                 navToEditRole = {
-                    navController.navigate(Screen.EditRole.route)
+                    navController.navigate(Screen.EditRole.groupId(groupId))
                 }
             )
         }
