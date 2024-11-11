@@ -14,6 +14,7 @@ import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.RoleGroupData
+import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class EditRoleViewModel(
@@ -89,6 +90,41 @@ class EditRoleViewModel(
             }
         }
     }
+
+    fun addRoleGroup(role: AddRoleRequest,groupId: String){
+        viewModelScope.launch {
+            repoGroup.addRoleGroup(role,groupId.toInt()).flowOn(Dispatchers.IO).collectLatest { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _editRole.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _editRole.update {
+                            it.copy(
+                                isLoading = true,
+                                isError = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _editRole.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class EditRoleState(
@@ -97,4 +133,5 @@ data class EditRoleState(
     val msg: String? = null,
     val isLoading: Boolean = false,
     val isError: Boolean = false,
+    val isSuccess: Boolean = false,
 )

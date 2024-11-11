@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -59,16 +58,19 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
+import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.delete_ic
+import resources.edit_group_name_ic
 
 @Composable
 fun EditRoleScreen(
@@ -91,6 +93,10 @@ fun EditRoleScreen(
         }
     }
 
+    if(editRoleState.isSuccess){
+        setToast(editRoleState.msg!!)
+    }
+
     ModalBottomSheetLayout(
         sheetBackgroundColor = Color(0xFFF1F1F1),
         sheetContent = {
@@ -101,11 +107,13 @@ fun EditRoleScreen(
     ){
         OverlayContent(
             navController,
+            groupId,
             interactionSource,
             scope,
             sheetState,
             editRoleState.listRoleMember!!,
             editRoleState,
+            editRoleViewModel
         )
     }
 }
@@ -113,11 +121,13 @@ fun EditRoleScreen(
 @Composable
 fun OverlayContent(
     navController: NavController,
+    groupId: String,
     interactionSource: MutableInteractionSource,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     roleList: List<RoleGroupData>,
-    editRoleState: EditRoleState
+    editRoleState: EditRoleState,
+    editRoleViewModel: EditRoleViewModel
 ) {
     var roleName by remember { mutableStateOf("") }
     var roleFocus by remember { mutableStateOf(false) }
@@ -216,46 +226,58 @@ fun OverlayContent(
                             }
                         }
                     }
-                }
-
-                Column(
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth()
-                    ){
-                        item{
+                    ) {
+                        item {
                             Text(
                                 "Anggota Grup",
-                                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
+                                modifier = Modifier.padding(
+                                    start = 16.dp,
+                                    bottom = 8.dp,
+                                    top = 13.dp
+                                ),
                                 style = MaterialTheme.typography.subtitle2,
                                 color = secondaryColor
                             )
                         }
 
-                        when(editRoleState.isLoading){
+                        when (editRoleState.isLoading) {
                             true -> {
-                                item{
+                                item {
                                     GroupLoadingShimmer()
                                     GroupLoadingShimmer()
                                     GroupLoadingShimmer()
                                 }
                             }
                             false -> {
-                                items(editRoleState.listMember!!){ item ->
+                                items(editRoleState.listMember!!) { item ->
                                     Box(
-                                        modifier = Modifier.fillMaxWidth().background(color = Color.White)
+                                        modifier = Modifier.fillMaxWidth()
+                                            .background(color = Color.White)
                                     ) {
                                         Row(
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                            modifier = Modifier.padding(
+                                                horizontal = 16.dp,
+                                                vertical = 8.dp
+                                            ).fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Box(
-                                                modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
+                                                modifier = Modifier.background(
+                                                    Color(0xFF78A1D7),
+                                                    CircleShape
+                                                ).size(65.dp)
                                             ) {
                                                 Text(
                                                     text = profileNameInitials(item.nama_anggota),
-                                                    style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
+                                                    style = MaterialTheme.typography.h5.copy(
+                                                        fontSize = 20.sp
+                                                    ),
                                                     modifier = Modifier.align(Alignment.Center)
                                                 )
                                             }
@@ -285,17 +307,29 @@ fun OverlayContent(
                                                     color = secondaryColor
                                                 )
                                             }
+                                            IconButton(
+                                                onClick = {
+
+                                                },
+                                                content = {
+                                                    Image(
+                                                        painterResource(Res.drawable.edit_group_name_ic),
+                                                        "",
+                                                        colorFilter = ColorFilter.tint(secondaryColor)
+                                                    )
+                                                }
+                                            )
                                         }
                                     }
                                 }
                             }
                         }
-
-
                     }
-                    Spacer(
-                        modifier = Modifier.height(8.dp)
-                    )
+                }
+
+                Column(
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                ) {
                     Text(
                         "Form Tambah Data Posisi",
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 13.dp),
@@ -321,7 +355,7 @@ fun OverlayContent(
                     Button(
                         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                         onClick = {
-
+                            editRoleViewModel.addRoleGroup(AddRoleRequest(roleName),groupId)
                         },
                         shape = RoundedCornerShape(20.dp),
                         elevation = ButtonDefaults.elevation(0.dp),
@@ -343,7 +377,7 @@ fun OverlayContent(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun BottomSheetContent(
     sheetState: ModalBottomSheetState,

@@ -10,6 +10,7 @@ import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupRepository(
@@ -128,6 +129,29 @@ class GroupRepository(
         try {
             localData.getToken.collect { token ->
                 val result = remoteRolePositionGroup.listRolePositionInGroup(token,groupId)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+                Napier.v("Data Role Group : ${result.data}")
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun addRoleGroup(role: AddRoleRequest,groupId: Int) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteRolePositionGroup.addRolePositionInGroup(token,role,groupId)
 
                 when(result.success) {
                     true -> {

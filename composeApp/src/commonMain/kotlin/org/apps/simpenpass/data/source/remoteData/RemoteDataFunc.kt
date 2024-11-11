@@ -7,10 +7,12 @@ import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.LatestPassDataResponse
@@ -81,10 +83,9 @@ interface ResetPassFunc {
 interface RolePositionFunc {
     suspend fun addRolePositionInGroup(
         token: String,
-        insertData: AddGroupRequest,
-        imgName: String,
-        imgFile: ByteArray?
-    ): BaseResponse<RoleGroupData>
+        role: AddRoleRequest,
+        groupId: Int
+    ): BaseResponse<AddRoleReponse>
 
     suspend fun listRolePositionInGroup(
         token: String,
