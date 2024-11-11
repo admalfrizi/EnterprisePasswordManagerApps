@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -70,7 +71,8 @@ import resources.delete_ic
 @Composable
 fun EditRoleScreen(
     navController: NavController,
-    editRoleViewModel: EditRoleViewModel = koinViewModel()
+    editRoleViewModel: EditRoleViewModel = koinViewModel(),
+    groupId: String
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val sheetState = rememberModalBottomSheetState(
@@ -102,6 +104,8 @@ fun EditRoleScreen(
             editRoleState,
         )
     }
+
+    Napier.v("group id : $groupId")
 }
 
 @Composable

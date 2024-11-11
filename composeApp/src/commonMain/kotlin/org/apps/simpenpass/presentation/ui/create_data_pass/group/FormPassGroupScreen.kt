@@ -44,7 +44,7 @@ import org.apps.simpenpass.style.secondaryColor
 
 @Composable
 fun FormPassGroupScreen(
-    navController: NavController
+    navController: NavController,
 ) {
     var nmAccount by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }

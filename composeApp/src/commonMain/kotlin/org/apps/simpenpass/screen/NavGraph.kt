@@ -34,6 +34,7 @@ import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
 import org.apps.simpenpass.presentation.ui.auth.SendOtpScreen
 import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupScreen
+import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
 import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
 import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
 import org.apps.simpenpass.presentation.ui.group_pass.retrieve_data_pass.RetrieveDataPass
@@ -197,8 +198,13 @@ fun NavGraphBuilder.groupPassDetail(
         ) {
             val groupId = it.arguments?.getString(Screen.EditAnggota.ARG_GROUP_ID)
 
-            EditAnggotaGroup(navController,groupId = groupId!!, navToEditRole = {navController.navigate(
-                Screen.EditRole.route)})
+            EditAnggotaGroup(
+                navController,
+                groupId = groupId!!,
+                navToEditRole = {
+                    navController.navigate(Screen.EditRole.route)
+                }
+            )
         }
 
         composable(route = Screen.RetrieveDataPass.route,enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
@@ -229,6 +235,24 @@ fun NavGraphBuilder.groupPassDetail(
         ){
             FormPassGroupScreen(
                 navController
+            )
+        }
+
+        composable(
+            route = Screen.EditRole.route,
+            arguments = listOf(
+                navArgument(Screen.EditRole.ARG_GROUP_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
+        ){
+            val groupId = it.arguments?.getString(Screen.EditRole.ARG_GROUP_ID)
+
+            EditRoleScreen(
+                navController,
+                groupId = groupId!!
             )
         }
     }

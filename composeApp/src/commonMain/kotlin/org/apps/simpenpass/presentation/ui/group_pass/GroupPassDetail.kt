@@ -130,6 +130,10 @@ fun GroupPassDetail(
 
     bottomEdgeColor.value = Color(0xFFF1F1F1)
 
+    if(sheetState.isVisible){
+        bottomEdgeColor.value = Color.White
+    }
+
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),

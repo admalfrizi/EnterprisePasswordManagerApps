@@ -31,7 +31,6 @@ import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.ui.RootScreen
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
-import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
 import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.SplashViewModel
 import org.apps.simpenpass.screen.Screen
@@ -126,12 +125,6 @@ fun MainNavigation(
                 bottomEdgeColor = bottomEdgeColor,
                 navController
             )
-        }
-
-        composable(
-            route = Screen.EditRole.route
-        ){
-            EditRoleScreen(navController)
         }
 
         composable(
