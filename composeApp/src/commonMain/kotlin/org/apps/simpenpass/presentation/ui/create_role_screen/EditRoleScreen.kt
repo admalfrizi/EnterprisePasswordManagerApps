@@ -45,6 +45,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -139,7 +140,8 @@ fun OverlayContent(
     var roleName by remember { mutableStateOf("") }
     var roleFocus by remember { mutableStateOf(false) }
     var isEditPopUp by remember { mutableStateOf(false) }
-    var posisiId by remember { mutableStateOf(-1) }
+    var posisiId = remember { mutableStateOf(-1) }
+    var memberId by remember { mutableStateOf(0) }
 
     if(isEditPopUp){
         EditRoleMemberPopUp(
@@ -147,7 +149,8 @@ fun OverlayContent(
                 isEditPopUp = false
             },
             editRoleState = editRoleState,
-            posisiId
+            posisiId,
+            memberId
         )
     }
 
@@ -321,7 +324,7 @@ fun OverlayContent(
                                                     modifier = Modifier.height(9.dp)
                                                 )
                                                 Text(
-                                                    "Tidak Ada Posisi",
+                                                    item.nmPosisi ?: "Tidak Ada Posisi",
                                                     style = MaterialTheme.typography.subtitle1,
                                                     color = secondaryColor
                                                 )
@@ -329,7 +332,8 @@ fun OverlayContent(
                                             IconButton(
                                                 onClick = {
                                                     isEditPopUp = true
-                                                    posisiId = item.posisiId ?: 0
+                                                    posisiId.value = item.posisiId ?: -1
+                                                    memberId = item.id
                                                 },
                                                 content = {
                                                     Image(
@@ -510,10 +514,9 @@ fun BottomSheetContent(
 fun EditRoleMemberPopUp(
     onDismissRequest: () -> Unit,
     editRoleState: EditRoleState,
-    posisiId: Int?
+    posisiId: MutableState<Int>,
+    memberId: Int,
 ) {
-    var selectedOption by remember { mutableStateOf(-1) }
-
     Dialog(
         onDismissRequest = onDismissRequest,
         content = {
@@ -542,9 +545,9 @@ fun EditRoleMemberPopUp(
                         items(editRoleState.listRoleMember!!){ item ->
                             Box(
                                 modifier = Modifier.fillMaxWidth().selectable(
-                                    selected = if(posisiId == null) selectedOption == -1 else selectedOption == posisiId,
+                                    selected = posisiId.value == item.id,
                                     onClick = {
-                                        selectedOption = item.id
+                                        posisiId.value = item.id
                                     },
                                     role = Role.RadioButton
                                 )
@@ -560,7 +563,7 @@ fun EditRoleMemberPopUp(
                                         color = secondaryColor
                                     )
                                     RadioButton(
-                                        selected = if(posisiId == null) selectedOption == selectedOption else selectedOption == posisiId,
+                                        selected = posisiId.value == item.id,
                                         onClick = null,
                                         colors = RadioButtonDefaults.colors(
                                             selectedColor = secondaryColor
