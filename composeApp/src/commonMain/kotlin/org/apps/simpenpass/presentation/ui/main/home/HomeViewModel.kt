@@ -85,7 +85,7 @@ class HomeViewModel(
     }
 
     fun getData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             if(isConnected.value){
                 passRepo.latestListDataPass().flowOn(Dispatchers.IO).collectLatest { result ->
                     when(result) {

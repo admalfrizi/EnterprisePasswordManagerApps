@@ -100,7 +100,7 @@ fun AnggotaDataHolder(item: MemberGroupData) {
                             color = secondaryColor
                         )
                         Text(
-                            "Posisi",
+                            item.nmPosisi ?: "Tidak ada Posisi",
                             style = MaterialTheme.typography.subtitle1,
                             color = secondaryColor
                         )

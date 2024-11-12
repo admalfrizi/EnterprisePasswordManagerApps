@@ -21,10 +21,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -32,6 +34,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -51,8 +55,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
@@ -131,9 +138,21 @@ fun OverlayContent(
 ) {
     var roleName by remember { mutableStateOf("") }
     var roleFocus by remember { mutableStateOf(false) }
+    var isEditPopUp by remember { mutableStateOf(false) }
+    var posisiId by remember { mutableStateOf(-1) }
+
+    if(isEditPopUp){
+        EditRoleMemberPopUp(
+            onDismissRequest = {
+                isEditPopUp = false
+            },
+            editRoleState = editRoleState,
+            posisiId
+        )
+    }
 
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).imePadding(),
         backgroundColor = Color(0xFFF1F1F1),
         topBar = {
             TopAppBar(
@@ -162,7 +181,7 @@ fun OverlayContent(
         },
         content = {
             Box(
-                modifier = Modifier.fillMaxWidth().imePadding()
+                modifier = Modifier.fillMaxWidth()
             ){
                 Column(
                     modifier = Modifier.fillMaxSize().align(Alignment.TopCenter)
@@ -309,7 +328,8 @@ fun OverlayContent(
                                             }
                                             IconButton(
                                                 onClick = {
-
+                                                    isEditPopUp = true
+                                                    posisiId = item.posisiId ?: 0
                                                 },
                                                 content = {
                                                     Image(
@@ -328,7 +348,7 @@ fun OverlayContent(
                 }
 
                 Column(
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter).background(Color.White)
                 ) {
                     Text(
                         "Form Tambah Data Posisi",
@@ -484,4 +504,75 @@ fun BottomSheetContent(
             modifier = Modifier.height(20.dp)
         )
     }
+}
+
+@Composable
+fun EditRoleMemberPopUp(
+    onDismissRequest: () -> Unit,
+    editRoleState: EditRoleState,
+    posisiId: Int?
+) {
+    var selectedOption by remember { mutableStateOf(-1) }
+
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        content = {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                elevation = 0.dp,
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Ubah Posisi Anggota",
+                        style = MaterialTheme.typography.h6.copy(color = secondaryColor),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Start
+                    )
+                    Spacer(
+                        modifier = Modifier.height(16.dp)
+                    )
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ){
+                        items(editRoleState.listRoleMember!!){ item ->
+                            Box(
+                                modifier = Modifier.fillMaxWidth().selectable(
+                                    selected = if(posisiId == null) selectedOption == -1 else selectedOption == posisiId,
+                                    onClick = {
+                                        selectedOption = item.id
+                                    },
+                                    role = Role.RadioButton
+                                )
+                            ){
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Text(
+                                        item.nmPosisi,
+                                        style = MaterialTheme.typography.caption,
+                                        color = secondaryColor
+                                    )
+                                    RadioButton(
+                                        selected = if(posisiId == null) selectedOption == selectedOption else selectedOption == posisiId,
+                                        onClick = null,
+                                        colors = RadioButtonDefaults.colors(
+                                            selectedColor = secondaryColor
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    )
 }
