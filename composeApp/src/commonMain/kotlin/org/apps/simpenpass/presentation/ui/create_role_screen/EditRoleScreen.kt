@@ -103,6 +103,7 @@ fun EditRoleScreen(
 
     if(editRoleState.isSuccess){
         setToast(editRoleState.msg!!)
+        editRoleViewModel.getListRolePositionData(groupId)
     }
 
     ModalBottomSheetLayout(
@@ -573,7 +574,6 @@ fun EditRoleMemberPopUp(
                             }
                         }
                     }
-
                 }
             }
         }
