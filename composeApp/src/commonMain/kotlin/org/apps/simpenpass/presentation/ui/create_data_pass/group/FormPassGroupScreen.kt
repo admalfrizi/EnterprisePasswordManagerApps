@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import org.apps.simpenpass.style.secondaryColor
 @Composable
 fun FormPassGroupScreen(
     navController: NavController,
+    bottomEdgeColor: MutableState<Color>,
 ) {
     var nmAccount by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
@@ -57,6 +59,8 @@ fun FormPassGroupScreen(
     val vlData = remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
+
+    bottomEdgeColor.value = secondaryColor
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),

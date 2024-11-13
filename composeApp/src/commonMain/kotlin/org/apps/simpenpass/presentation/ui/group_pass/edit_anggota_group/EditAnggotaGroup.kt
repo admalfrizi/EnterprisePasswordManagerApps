@@ -35,6 +35,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,6 +66,7 @@ fun EditAnggotaGroup(
     navController: NavController,
     groupViewModel: GroupViewModel = koinViewModel(),
     groupId: String,
+    bottomEdgeColor: MutableState<Color>,
     navToEditRole: (String) -> Unit
 ) {
     val groupState by groupViewModel.groupState.collectAsState()
@@ -78,6 +80,8 @@ fun EditAnggotaGroup(
     LaunchedEffect(groupId){
         groupViewModel.getMemberDataGroup(groupId)
     }
+
+    bottomEdgeColor.value = Color.White
 
     ModalBottomSheetLayout(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),

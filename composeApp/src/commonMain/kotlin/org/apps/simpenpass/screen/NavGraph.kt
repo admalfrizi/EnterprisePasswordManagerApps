@@ -201,6 +201,7 @@ fun NavGraphBuilder.groupPassDetail(
             EditAnggotaGroup(
                 navController,
                 groupId = groupId!!,
+                bottomEdgeColor = bottomEdgeColor,
                 navToEditRole = {
                     navController.navigate(Screen.EditRole.groupId(groupId))
                 }
@@ -234,7 +235,8 @@ fun NavGraphBuilder.groupPassDetail(
             }
         ){
             FormPassGroupScreen(
-                navController
+                navController,
+                bottomEdgeColor
             )
         }
 
