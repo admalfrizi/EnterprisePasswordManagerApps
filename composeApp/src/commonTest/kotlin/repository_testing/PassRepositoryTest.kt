@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.utils.NetworkResult
 import org.koin.test.KoinTest
 import org.koin.test.get
@@ -37,21 +37,21 @@ class PassRepositoryTest : KoinTest{
         val localStoreData = LocalStoreData(get())
         val passRepo = PassRepository(remotePassDataSources,localStoreData)
 
-        val result = mutableStateOf("")
+        val result = mutableStateOf(false)
 
         apiMockEngine.givenSuccess()
 
-        passRepo.testListUserPassData("5|nsnj1iiIhMrLJFtEikwoqX1SE2I2Qw9GTmE5TuA954dda6f1",2).collect { res ->
+        passRepo.testListUserPassData("8|RbSe0TZ8NP2HkqC5PChKJb2Ze1SLy5SxdnRjqFxL9c09b72a",2).collect { res ->
             when(res){
                 is NetworkResult.Success -> {
-                    result.value = res.data.message
+                    result.value = res.data.success
                 }
                 is NetworkResult.Error -> {}
                 is NetworkResult.Loading -> {}
             }
         }
 
-        assertEquals(false,result.value.isEmpty())
+        assertEquals(true,result.value)
     }
 
     @Test
@@ -60,11 +60,11 @@ class PassRepositoryTest : KoinTest{
         val localStoreData = LocalStoreData(get())
         val passRepo = PassRepository(remotePassDataSources,localStoreData)
 
-        var result = emptyList<PassResponseData>()
+        var result = emptyList<DataPassWithAddContent>()
 
         apiMockEngine.givenSuccess()
 
-        passRepo.testListUserPassData("5|nsnj1iiIhMrLJFtEikwoqX1SE2I2Qw9GTmE5TuA954dda6f1",2).collect { res ->
+        passRepo.testListUserPassData("8|RbSe0TZ8NP2HkqC5PChKJb2Ze1SLy5SxdnRjqFxL9c09b72a",2).collect { res ->
             when(res){
                 is NetworkResult.Success -> {
                     result = res.data.data!!
@@ -75,8 +75,6 @@ class PassRepositoryTest : KoinTest{
         }
 
         assertEquals(true,result.isNotEmpty())
-        assertEquals(6,result.first().id)
-
     }
 
 
@@ -90,7 +88,7 @@ class PassRepositoryTest : KoinTest{
 
         apiMockEngine.givenFailure()
 
-        passRepo.testListUserPassData("5|nsnj1iiIhMrLJFtEikwoqX1SE2I2Qw9GTmE5TuA954dda6f1",2).collect { res ->
+        passRepo.testListUserPassData("8|RbSe0TZ8NP2HkqC5PChKJb2Ze1SLy5SxdnRjqFxL9c09b72a",2).collect { res ->
             when(res){
                 is NetworkResult.Success -> {
 

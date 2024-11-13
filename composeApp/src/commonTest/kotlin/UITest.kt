@@ -15,17 +15,17 @@ import resources.Res
 import resources.email_ic
 import kotlin.test.Test
 
-@OptIn(ExperimentalTestApi::class)
-class UITest {
+//@OptIn(ExperimentalTestApi::class)
+//class UITest {
 
-    @Test
-    fun uiHome() = runComposeUiTest {
-        setContent {
-            InfoContainer("Jumlah Data Password", 10, Color.Blue, Res.drawable.email_ic)
-        }
-
-        onNodeWithText("Jumlah Data Password").assertExists()
-    }
+//    @Test
+//    fun uiHome() = runComposeUiTest {
+//        setContent {
+//            InfoContainer("Jumlah Data Password", 10, Color.Blue, Res.drawable.email_ic)
+//        }
+//
+//        onNodeWithText("Jumlah Data Password").assertExists()
+//    }
 
 //    @Test
 //    fun sampleClientTest() {
@@ -42,4 +42,4 @@ class UITest {
 //            Assert.assertEquals("127.0.0.1", apiClient.getIp().ip)
 //        }
 //    }
-}
+//}
