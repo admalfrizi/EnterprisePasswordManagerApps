@@ -138,7 +138,6 @@ class GroupRepository(
                         emit(NetworkResult.Error(result.message))
                     }
                 }
-                Napier.v("Data Role Group : ${result.data}")
             }
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
@@ -161,7 +160,6 @@ class GroupRepository(
                         emit(NetworkResult.Error(result.message))
                     }
                 }
-                Napier.v("Data Role Group : ${result.data}")
             }
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))

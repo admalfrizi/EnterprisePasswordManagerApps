@@ -12,6 +12,7 @@ import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
@@ -19,6 +20,7 @@ import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.models.response.SendOtpResponse
+import org.apps.simpenpass.models.response.UpdateRoleMemberResponse
 import org.apps.simpenpass.models.response.UserResponseData
 import org.apps.simpenpass.models.response.VerifyOtpResponse
 
@@ -91,4 +93,10 @@ interface RolePositionFunc {
         token: String,
         groupId: Int
     ): BaseResponse<List<RoleGroupData>>
+
+    suspend fun updateRoleMemberGroup(
+        token: String,
+        groupId: Int,
+        updateRoleMember: UpdateRoleMemberGroupRequest
+    ): BaseResponse<UpdateRoleMemberResponse>
 }

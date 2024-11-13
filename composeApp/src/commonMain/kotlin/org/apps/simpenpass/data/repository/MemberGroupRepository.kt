@@ -6,12 +6,15 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
+import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
 
 class MemberGroupRepository(
     private val remoteMemberDataSources : RemoteMemberDataSources,
+    private val remoteRolePositionGroup: RemoteRolePositionGroup,
     private val localData : LocalStoreData
 ) {
     fun addUsersToJoinGroup(
@@ -65,6 +68,19 @@ class MemberGroupRepository(
         }
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
-        Napier.v("Error Result : ${it.message}")
+    }
+
+    fun updateRoleMemberGroup(groupId: Int, updateRole : UpdateRoleMemberGroupRequest) = flow {
+        emit(NetworkResult.Loading())
+        localData.getToken.collect { token ->
+            val result = remoteRolePositionGroup.updateRoleMemberGroup(token, groupId,updateRole)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            } else {
+                emit(NetworkResult.Error(result.message))
+            }
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
 }

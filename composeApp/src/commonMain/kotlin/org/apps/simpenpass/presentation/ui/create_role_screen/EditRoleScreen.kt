@@ -67,6 +67,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddRoleRequest
+import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
@@ -92,8 +93,11 @@ fun EditRoleScreen(
         skipHalfExpanded = true
     )
     val editRoleState by editRoleViewModel.editRoleState.collectAsStateWithLifecycle()
-
+    val updateRoleMemberState by editRoleViewModel.editRoleMemberState.collectAsStateWithLifecycle()
+    val listRoleState by editRoleViewModel.roleState.collectAsStateWithLifecycle()
+    val listMemberState by editRoleViewModel.memberState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+
     LaunchedEffect(groupId){
         if(groupId.isNotEmpty() && groupId != "{groupId}") {
             editRoleViewModel.getMemberDataGroup(groupId)
@@ -101,8 +105,13 @@ fun EditRoleScreen(
         }
     }
 
+    if(updateRoleMemberState.isSuccess){
+        setToast(updateRoleMemberState.msg!!)
+        editRoleViewModel.getMemberDataGroup(groupId)
+        editRoleViewModel.getListRolePositionData(groupId)
+    }
+
     if(editRoleState.isSuccess){
-        setToast(editRoleState.msg!!)
         editRoleViewModel.getListRolePositionData(groupId)
     }
 
@@ -120,8 +129,10 @@ fun EditRoleScreen(
             interactionSource,
             scope,
             sheetState,
-            editRoleState.listRoleMember!!,
-            editRoleState,
+            listRoleState.listRoleMember!!,
+            listRoleState,
+            updateRoleMemberState,
+            listMemberState,
             editRoleViewModel
         )
     }
@@ -135,7 +146,9 @@ fun OverlayContent(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     roleList: List<RoleGroupData>,
-    editRoleState: EditRoleState,
+    roleState: ListRoleState,
+    updateRoleMemberState: UpdateRoleMemberState,
+    memberState: ListMemberState,
     editRoleViewModel: EditRoleViewModel
 ) {
     var roleName by remember { mutableStateOf("") }
@@ -149,7 +162,10 @@ fun OverlayContent(
             onDismissRequest = {
                 isEditPopUp = false
             },
-            editRoleState = editRoleState,
+            roleState,
+            updateRoleMemberState,
+            editRoleViewModel,
+            groupId,
             posisiId,
             memberId
         )
@@ -197,7 +213,7 @@ fun OverlayContent(
                         color = secondaryColor
                     )
 
-                    if(editRoleState.isLoading){
+                    if(roleState.isLoading){
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center,
@@ -206,7 +222,7 @@ fun OverlayContent(
                         }
                     }
 
-                    if (roleList.isEmpty() && !editRoleState.isLoading) {
+                    if (roleList.isEmpty() && !roleState.isLoading) {
                         Box(
                             contentAlignment = Alignment.Center,
                         ) {
@@ -217,7 +233,9 @@ fun OverlayContent(
                                 isEnableBtn = false,
                             )
                         }
-                    } else {
+                    }
+
+                    if(roleList.isNotEmpty() && !roleState.isLoading){
                         LazyColumn(
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -268,7 +286,7 @@ fun OverlayContent(
                             )
                         }
 
-                        when (editRoleState.isLoading) {
+                        when (memberState.isLoading) {
                             true -> {
                                 item {
                                     GroupLoadingShimmer()
@@ -277,7 +295,7 @@ fun OverlayContent(
                                 }
                             }
                             false -> {
-                                items(editRoleState.listMember!!) { item ->
+                                items(memberState.listMember!!) { item ->
                                     Box(
                                         modifier = Modifier.fillMaxWidth()
                                             .background(color = Color.White)
@@ -489,24 +507,27 @@ fun BottomSheetContent(
 
             }
         }
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
         Button(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
 
             },
             shape = RoundedCornerShape(20.dp),
             elevation = ButtonDefaults.elevation(0.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+            colors = ButtonDefaults.buttonColors(Color.Red),
             content = {
                 Text(
-                    "Tambahkan",
+                    "Hapus Role Ini",
                     style = MaterialTheme.typography.h6,
                     color = fontColor1
                 )
             }
         )
         Spacer(
-            modifier = Modifier.height(20.dp)
+            modifier = Modifier.height(30.dp)
         )
     }
 }
@@ -514,7 +535,10 @@ fun BottomSheetContent(
 @Composable
 fun EditRoleMemberPopUp(
     onDismissRequest: () -> Unit,
-    editRoleState: EditRoleState,
+    roleState: ListRoleState,
+    updateRoleMemberState: UpdateRoleMemberState,
+    editRoleViewModel: EditRoleViewModel,
+    groupId: String,
     posisiId: MutableState<Int>,
     memberId: Int,
 ) {
@@ -543,7 +567,7 @@ fun EditRoleMemberPopUp(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ){
-                        items(editRoleState.listRoleMember!!){ item ->
+                        items(roleState.listRoleMember!!){ item ->
                             Box(
                                 modifier = Modifier.fillMaxWidth().selectable(
                                     selected = posisiId.value == item.id,
@@ -574,6 +598,45 @@ fun EditRoleMemberPopUp(
                             }
                         }
                     }
+                    Spacer(
+                        modifier = Modifier.height(12.dp)
+                    )
+
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = posisiId.value != -1,
+                        onClick = {
+                            editRoleViewModel.updateRoleMemberGroup(
+                                groupId,
+                                UpdateRoleMemberGroupRequest(
+                                    memberId,
+                                    posisiId.value
+                                )
+                            )
+                            if(!updateRoleMemberState.isLoading) {
+                                onDismissRequest()
+                            }
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = ButtonDefaults.elevation(0.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+                        content = {
+                            if(updateRoleMemberState.isLoading){
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            } else {
+                                Text(
+                                    "Ubah",
+                                    style = MaterialTheme.typography.h6,
+                                    color = fontColor1
+                                )
+                            }
+
+                        }
+                    )
                 }
             }
         }

@@ -15,21 +15,31 @@ import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddRoleRequest
+import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class EditRoleViewModel(
     private val repoMemberGroup: MemberGroupRepository,
     private val repoGroup: GroupRepository,
 ) : ViewModel() {
-    private val _editRole = MutableStateFlow(EditRoleState())
-    val editRoleState = _editRole.asStateFlow()
+    private val _editRoleState = MutableStateFlow(EditRoleState())
+    val editRoleState = _editRoleState.asStateFlow()
+
+    private val _editRoleMemberState = MutableStateFlow(UpdateRoleMemberState())
+    val editRoleMemberState = _editRoleMemberState.asStateFlow()
+
+    private val _roleState = MutableStateFlow(ListRoleState())
+    val roleState = _roleState.asStateFlow()
+
+    private val _memberState = MutableStateFlow(ListMemberState())
+    val memberState = _memberState.asStateFlow()
 
     fun getMemberDataGroup(groupId: String) {
         viewModelScope.launch {
             repoMemberGroup.getMemberGroup(groupId.toInt()).collect { res ->
                 when(res) {
                     is NetworkResult.Error -> {
-                        _editRole.update {
+                        _memberState.update {
                             it.copy(
                                 isLoading = false,
                                 isError = true,
@@ -38,14 +48,14 @@ class EditRoleViewModel(
                         }
                     }
                     is NetworkResult.Loading -> {
-                        _editRole.update {
+                        _memberState.update {
                             it.copy(
                                 isLoading = true,
                             )
                         }
                     }
                     is NetworkResult.Success -> {
-                        _editRole.update {
+                        _memberState.update {
                             it.copy(
                                 isLoading = false,
                                 listMember = res.data.data!!,
@@ -62,7 +72,7 @@ class EditRoleViewModel(
             repoGroup.listRoleGroup(groupId.toInt()).flowOn(Dispatchers.IO).collectLatest { res ->
                 when(res){
                     is NetworkResult.Error -> {
-                        _editRole.update {
+                        _roleState.update {
                             it.copy(
                                 isLoading = false,
                                 isError = true,
@@ -71,7 +81,7 @@ class EditRoleViewModel(
                         }
                     }
                     is NetworkResult.Loading -> {
-                        _editRole.update {
+                        _roleState.update {
                             it.copy(
                                 isLoading = true,
                                 isError = false,
@@ -79,7 +89,7 @@ class EditRoleViewModel(
                         }
                     }
                     is NetworkResult.Success -> {
-                        _editRole.update {
+                        _roleState.update {
                             it.copy(
                                 isLoading = false,
                                 listRoleMember = res.data.data
@@ -96,7 +106,7 @@ class EditRoleViewModel(
             repoGroup.addRoleGroup(role,groupId.toInt()).flowOn(Dispatchers.IO).collectLatest { res ->
                 when(res){
                     is NetworkResult.Error -> {
-                        _editRole.update {
+                        _editRoleState.update {
                             it.copy(
                                 isLoading = false,
                                 isError = true,
@@ -105,7 +115,7 @@ class EditRoleViewModel(
                         }
                     }
                     is NetworkResult.Loading -> {
-                        _editRole.update {
+                        _editRoleState.update {
                             it.copy(
                                 isLoading = true,
                                 isError = false,
@@ -113,7 +123,43 @@ class EditRoleViewModel(
                         }
                     }
                     is NetworkResult.Success -> {
-                        _editRole.update {
+                        _editRoleState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+//
+    fun updateRoleMemberGroup(groupId: String, updateRoleMember: UpdateRoleMemberGroupRequest) {
+        viewModelScope.launch {
+            repoMemberGroup.updateRoleMemberGroup(groupId.toInt(),updateRoleMember).flowOn(
+                Dispatchers.IO).collectLatest { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _editRoleMemberState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _editRoleMemberState.update {
+                            it.copy(
+                                isLoading = true,
+                                isError = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _editRoleMemberState.update {
                             it.copy(
                                 isLoading = false,
                                 isSuccess = true,
@@ -127,9 +173,30 @@ class EditRoleViewModel(
     }
 }
 
-data class EditRoleState(
-    val listMember: List<MemberGroupData>? = emptyList(),
+data class ListRoleState(
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val msg: String? = null,
+    val isError: Boolean = false,
     val listRoleMember: List<RoleGroupData>? = emptyList(),
+)
+
+data class ListMemberState(
+    val listMember: List<MemberGroupData>? = emptyList(),
+    val msg: String? = null,
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+    val isSuccess: Boolean = false,
+)
+
+data class EditRoleState(
+    val msg: String? = null,
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+    val isSuccess: Boolean = false,
+)
+
+data class UpdateRoleMemberState(
     val msg: String? = null,
     val isLoading: Boolean = false,
     val isError: Boolean = false,

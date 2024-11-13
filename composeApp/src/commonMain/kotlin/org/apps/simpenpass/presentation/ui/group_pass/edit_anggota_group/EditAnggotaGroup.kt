@@ -266,7 +266,7 @@ fun ScaffoldContent(
                                 modifier = Modifier.height(9.dp)
                             )
                             Text(
-                                "",
+                                item.nmPosisi ?: "Tidak Ada Posisi",
                                 style = MaterialTheme.typography.subtitle1,
                                 color = secondaryColor
                             )

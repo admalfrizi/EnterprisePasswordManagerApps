@@ -34,6 +34,7 @@ val repoModule = module {
     factory<MemberGroupRepository> {
         MemberGroupRepository(
             remoteMemberDataSources = get(),
+            remoteRolePositionGroup = get(),
             localData = get()
         )
     }
