@@ -126,25 +126,6 @@ class PassRepository(
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
     }
 
-    fun addContentPassData(
-        passId: Int,
-        addContentData: List<InsertAddContentDataPass>,
-    ) = flow {
-        emit(NetworkResult.Loading())
-        try {
-            localData.getToken.collect { token ->
-                val result = remotePassSources.addContentDataPass(token, passId, addContentData)
-                if(result.success){
-                    emit(NetworkResult.Success(result))
-                }
-            }
-        } catch (e: UnresolvedAddressException) {
-            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
-        }
-    }.catch { error ->
-        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
-    }
-
     fun listContentData(
         passId: Int,
     ) = flow {
