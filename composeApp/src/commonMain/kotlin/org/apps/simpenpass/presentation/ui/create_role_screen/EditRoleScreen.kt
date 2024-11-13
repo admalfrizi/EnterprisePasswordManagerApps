@@ -563,6 +563,16 @@ fun EditRoleMemberPopUp(
                     Spacer(
                         modifier = Modifier.height(16.dp)
                     )
+
+                    if(roleState.listRoleMember?.isEmpty() == true){
+                        EmptyWarning(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            warnTitle = "Data Posisi Grup ini Kosong !",
+                            warnText = "Silahkan buat posisi untuk setiap anggota baru dibawah ini.",
+                            isEnableBtn = false,
+                        )
+                    }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
