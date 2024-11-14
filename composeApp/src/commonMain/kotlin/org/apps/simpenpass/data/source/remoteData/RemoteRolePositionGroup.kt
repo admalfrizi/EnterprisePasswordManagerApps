@@ -18,6 +18,7 @@ import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.DetailRoleGroupResponse
 import org.apps.simpenpass.models.response.UpdateRoleMemberResponse
 import org.apps.simpenpass.utils.Constants
 
@@ -73,6 +74,24 @@ class RemoteRolePositionGroup(private val httpClient: HttpClient) : RolePosition
             }
 
             return response.body<BaseResponse<UpdateRoleMemberResponse>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun detailRoleData(
+        token: String,
+        roleId: Int
+    ): BaseResponse<DetailRoleGroupResponse> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "detailsRole/$roleId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<DetailRoleGroupResponse>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

@@ -196,4 +196,26 @@ class GroupRepository(
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
 
+    fun detailsRoleGroup(roleId: Int) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteRolePositionGroup.detailRoleData(token,roleId)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
 }

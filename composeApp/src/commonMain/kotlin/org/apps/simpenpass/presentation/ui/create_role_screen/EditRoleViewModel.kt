@@ -16,6 +16,7 @@ import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
+import org.apps.simpenpass.models.response.DetailRoleGroupResponse
 import org.apps.simpenpass.utils.NetworkResult
 
 class EditRoleViewModel(
@@ -24,6 +25,9 @@ class EditRoleViewModel(
 ) : ViewModel() {
     private val _editRoleState = MutableStateFlow(EditRoleState())
     val editRoleState = _editRoleState.asStateFlow()
+
+    private val _detailRoleState = MutableStateFlow(DetailRoleState())
+    val detailRoleState = _detailRoleState.asStateFlow()
 
     private val _deleteRoleState = MutableStateFlow(DeleteRoleState())
     val deleteRoleState = _deleteRoleState.asStateFlow()
@@ -96,6 +100,40 @@ class EditRoleViewModel(
                             it.copy(
                                 isLoading = false,
                                 listRoleMember = res.data.data
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getDetailRoleGroup(roleId: Int) {
+        viewModelScope.launch {
+            repoGroup.detailsRoleGroup(roleId).flowOn(Dispatchers.IO).collectLatest { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _detailRoleState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _detailRoleState.update {
+                            it.copy(
+                                isLoading = true,
+                                isError = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _detailRoleState.update {
+                            it.copy(
+                                isLoading = false,
+                                roleData = res.data.data
                             )
                         }
                     }
@@ -209,6 +247,14 @@ class EditRoleViewModel(
             }
         }
     }
+
+    fun clearDetailRoleGroup(){
+        _detailRoleState.update {
+            it.copy(
+                roleData = null,
+            )
+        }
+    }
 }
 
 data class ListRoleState(
@@ -217,6 +263,14 @@ data class ListRoleState(
     val msg: String? = null,
     val isError: Boolean = false,
     val listRoleMember: List<RoleGroupData>? = emptyList(),
+)
+
+data class DetailRoleState(
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val msg: String? = null,
+    val isError: Boolean = false,
+    val roleData: DetailRoleGroupResponse? = null,
 )
 
 data class ListMemberState(

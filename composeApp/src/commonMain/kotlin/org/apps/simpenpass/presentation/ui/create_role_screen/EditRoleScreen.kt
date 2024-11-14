@@ -133,7 +133,7 @@ fun EditRoleScreen(
                 editRoleViewModel,
                 scope,
                 groupId,
-                roleId.value,
+                roleId,
                 nameRole.value
             )
         },
@@ -451,12 +451,23 @@ fun BottomSheetContent(
     editRoleViewModel: EditRoleViewModel,
     scope: CoroutineScope,
     groupId: String,
-    roleId: Int,
+    roleId: MutableState<Int>,
     nameRole: String,
 ) {
-
-    Napier.v("roleId : $roleId")
+    val detailRoleState by editRoleViewModel.detailRoleState.collectAsStateWithLifecycle()
     Napier.v("groupId : $groupId")
+
+    LaunchedEffect(sheetState.isVisible){
+        if(roleId.value != 0){
+            editRoleViewModel.getDetailRoleGroup(roleId.value)
+        }
+
+    }
+
+    if(!sheetState.isVisible){
+        roleId.value = 0
+        editRoleViewModel.clearDetailRoleGroup()
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth().imePadding()
@@ -469,7 +480,10 @@ fun BottomSheetContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(nameRole, modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6.copy(fontSize = 16.sp), color = secondaryColor)
+            if(detailRoleState.roleData != null){
+                Text(detailRoleState.roleData?.nmPosisi!!, modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6.copy(fontSize = 16.sp), color = secondaryColor)
+            }
+
             IconButton(
                 onClick = {
                     scope.launch {
@@ -487,65 +501,86 @@ fun BottomSheetContent(
         Spacer(
             modifier = Modifier.height(16.dp)
         )
-        Box(
-            modifier = Modifier.fillMaxWidth().background(color = Color.White)
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp).fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(44.dp)
-                ) {
-                    Text(
-                        text = profileNameInitials("Nama Orang"),
-                        style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                Spacer(
-                    modifier = Modifier.width(18.dp)
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        "Nama Orang",
-                        style = MaterialTheme.typography.h6,
-                        color = secondaryColor
-                    )
-                    Spacer(
-                        modifier = Modifier.height(5.dp)
-                    )
-                    Text(
-                        "Email",
-                        style = MaterialTheme.typography.subtitle1,
-                        color = secondaryColor
-                    )
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ){
+            if(detailRoleState.roleData != null && sheetState.isVisible){
+                items(detailRoleState.roleData?.anggotaGrup!!){ item ->
+                    Box(
+                        modifier = Modifier.fillMaxWidth().background(color = Color.White)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(44.dp)
+                            ) {
+                                Text(
+                                    text = profileNameInitials(item.name),
+                                    style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                            Spacer(
+                                modifier = Modifier.width(18.dp)
+                            )
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    item.name,
+                                    style = MaterialTheme.typography.h6,
+                                    color = secondaryColor
+                                )
+                                Spacer(
+                                    modifier = Modifier.height(5.dp)
+                                )
+                                Text(
+                                    item.email,
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = secondaryColor
+                                )
 
-                }
-                IconButton(
-                    onClick = {
+                            }
+                            IconButton(
+                                onClick = {
 
-                    },
-                    content = {
-                        Image(
-                            painterResource(Res.drawable.delete_ic),""
-                        )
+                                },
+                                content = {
+                                    Image(
+                                        painterResource(Res.drawable.delete_ic),""
+                                    )
+                                }
+                            )
+
+                        }
                     }
-                )
+                }
+            }
 
+            if(detailRoleState.roleData?.anggotaGrup?.isEmpty() == true){
+                item{
+                    EmptyWarning(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        warnTitle = "Tidak Ada Anggota pada Posisi Ini",
+                        warnText = "Silahkan tambah anggota untuk posisi ini.",
+                        isEnableBtn = false,
+                    )
+                }
             }
         }
+
+
         Spacer(
             modifier = Modifier.height(16.dp)
         )
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
-                editRoleViewModel.deleteRoleGroup(roleId,groupId)
+                editRoleViewModel.deleteRoleGroup(roleId.value,groupId)
                 scope.launch {
                     sheetState.hide()
                 }
