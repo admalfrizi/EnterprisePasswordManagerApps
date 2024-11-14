@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.valentinilk.shimmer.shimmer
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -71,6 +72,7 @@ import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.EmptyWarning
+import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
@@ -455,6 +457,7 @@ fun BottomSheetContent(
     nameRole: String,
 ) {
     val detailRoleState by editRoleViewModel.detailRoleState.collectAsStateWithLifecycle()
+
     Napier.v("groupId : $groupId")
 
     LaunchedEffect(sheetState.isVisible){
@@ -484,6 +487,15 @@ fun BottomSheetContent(
                 Text(detailRoleState.roleData?.nmPosisi!!, modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6.copy(fontSize = 16.sp), color = secondaryColor)
             }
 
+            if(detailRoleState.isLoading){
+                Box(
+                    modifier = Modifier
+                        .width(58.dp).height(24.dp)
+                        .shimmer()
+                        .background(Color.LightGray, RoundedCornerShape(4.dp)),
+                )
+            }
+
             IconButton(
                 onClick = {
                     scope.launch {
@@ -504,6 +516,15 @@ fun BottomSheetContent(
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ){
+            if(detailRoleState.isLoading){
+                item{
+                    AddMemberLoading()
+                    AddMemberLoading()
+                    AddMemberLoading()
+                }
+            }
+
+
             if(detailRoleState.roleData != null && sheetState.isVisible){
                 items(detailRoleState.roleData?.anggotaGrup!!){ item ->
                     Box(
@@ -561,7 +582,7 @@ fun BottomSheetContent(
                 }
             }
 
-            if(detailRoleState.roleData?.anggotaGrup?.isEmpty() == true){
+            if(detailRoleState.roleData?.anggotaGrup?.isEmpty() == true && !detailRoleState.isLoading){
                 item{
                     EmptyWarning(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

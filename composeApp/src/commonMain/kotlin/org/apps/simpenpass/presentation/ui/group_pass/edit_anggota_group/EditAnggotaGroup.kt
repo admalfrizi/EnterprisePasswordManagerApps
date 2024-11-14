@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -49,9 +47,11 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.ui.main.group.GroupState
 import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.getScreenHeight
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -71,6 +71,7 @@ fun EditAnggotaGroup(
 ) {
     val groupState by groupViewModel.groupState.collectAsState()
     val itemsData = groupState.memberGroupData
+    val height = getScreenHeight().value.toInt()
 
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -101,7 +102,8 @@ fun EditAnggotaGroup(
                 itemsData,
                 scope,
                 sheetState,
-                groupState
+                groupState,
+                height
             )
         }
     )
@@ -179,7 +181,8 @@ fun ScaffoldContent(
     itemsData: List<MemberGroupData?>,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    groupState: GroupState
+    groupState: GroupState,
+    height : Int
 ) {
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -222,72 +225,74 @@ fun ScaffoldContent(
             )
         }
     ){
-        if(groupState.isLoading){
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
-        }
 
         LazyColumn {
-            items(groupState.memberGroupData){ item ->
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+            if(groupState.isLoading){
+                item{
+                    repeat(height / 82) {
+                        AddMemberLoading()
+                    }
+                }
+            }
+
+            if(groupState.memberGroupData.isNotEmpty() && !groupState.isLoading){
+                items(groupState.memberGroupData){ item ->
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Box(
-                            modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = profileNameInitials(item?.nama_anggota!!),
-                                style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                        Spacer(
-                            modifier = Modifier.width(27.dp)
-                        )
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                item?.nama_anggota!!,
-                                style = MaterialTheme.typography.h6,
-                                color = secondaryColor
-                            )
-                            Text(
-                                item.email_anggota,
-                                style = MaterialTheme.typography.subtitle1,
-                                color = secondaryColor
-                            )
+                            Box(
+                                modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
+                            ) {
+                                Text(
+                                    text = profileNameInitials(item?.nama_anggota!!),
+                                    style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
                             Spacer(
-                                modifier = Modifier.height(9.dp)
+                                modifier = Modifier.width(27.dp)
                             )
-                            Text(
-                                item.nmPosisi ?: "Tidak Ada Posisi",
-                                style = MaterialTheme.typography.subtitle1,
-                                color = secondaryColor
-                            )
-                        }
-                        if(itemsData.size != 1){
-                            IconButton(
-                                onClick = {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    item?.nama_anggota!!,
+                                    style = MaterialTheme.typography.h6,
+                                    color = secondaryColor
+                                )
+                                Text(
+                                    item.email_anggota,
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = secondaryColor
+                                )
+                                Spacer(
+                                    modifier = Modifier.height(9.dp)
+                                )
+                                Text(
+                                    item.nmPosisi ?: "Tidak Ada Posisi",
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = secondaryColor
+                                )
+                            }
+                            if(itemsData.size != 1){
+                                IconButton(
+                                    onClick = {
 
-                                },
-                                content = {
-                                    Image(
-                                        painterResource(Res.drawable.delete_ic),""
-                                    )
-                                }
-                            )
-                        }
+                                    },
+                                    content = {
+                                        Image(
+                                            painterResource(Res.drawable.delete_ic),""
+                                        )
+                                    }
+                                )
+                            }
 
+                        }
                     }
                 }
             }

@@ -2,6 +2,7 @@ package org.apps.simpenpass.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -43,6 +44,9 @@ fun maskString(data: String): String {
 expect fun setToast(message: String)
 expect fun copyText(text: String)
 
+@Composable
+expect fun getScreenHeight(): Dp
+
 fun getAsyncImageLoader(context: PlatformContext) =
     ImageLoader.Builder(context).memoryCachePolicy(CachePolicy.ENABLED).memoryCache {
         MemoryCache.Builder().maxSizePercent(context, 0.3).strongReferencesEnabled(true).build()
@@ -55,3 +59,4 @@ fun newDiskCache(): DiskCache {
         .maxSizeBytes(1024L * 1024 * 1024) // 512MB
         .build()
 }
+
