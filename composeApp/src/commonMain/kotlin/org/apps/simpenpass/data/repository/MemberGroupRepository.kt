@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
-import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
@@ -18,7 +18,7 @@ class MemberGroupRepository(
     private val localData : LocalStoreData
 ) {
     fun addUsersToJoinGroup(
-        addMemberRequest: List<AddMember>,
+        addMemberRequest: List<AddMemberRequest>,
         groupId: Int
     ) = flow {
         emit(NetworkResult.Loading())

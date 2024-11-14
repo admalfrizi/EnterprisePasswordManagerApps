@@ -6,7 +6,7 @@ import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
-import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.LoginRequest
@@ -47,7 +47,6 @@ interface GroupPassDataFunc {
         imgName: String,
         imgFile: ByteArray?
     ): BaseResponse<GrupPassData>
-
     suspend fun updateGroupData(
         token: String,
         groupId: Int,
@@ -70,7 +69,7 @@ interface GroupPassDataFunc {
 }
 
 interface MemberGroupDataFunc {
-    suspend fun addMemberToGroup(token: String, addData: List<AddMember>, groupId: Int): BaseResponse<List<AddMember>>
+    suspend fun addMemberToGroup(token: String, addData: List<AddMemberRequest>, groupId: Int): BaseResponse<List<AddMemberRequest>>
     suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
     suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
     suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<SearchResultResponse>
@@ -99,4 +98,16 @@ interface RolePositionFunc {
         groupId: Int,
         updateRoleMember: UpdateRoleMemberGroupRequest
     ): BaseResponse<UpdateRoleMemberResponse>
+
+    suspend fun deleteRolePosition(
+        token: String,
+        groupId: Int,
+        roleId: Int
+    ): BaseResponse<AddRoleReponse>
+}
+
+interface PassDataGroupFunc {
+    suspend fun listGroupPassword()
+    suspend fun addPassGroup()
+    suspend fun updatePassGroup()
 }

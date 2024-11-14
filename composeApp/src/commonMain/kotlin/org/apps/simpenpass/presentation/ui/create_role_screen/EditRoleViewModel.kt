@@ -25,6 +25,9 @@ class EditRoleViewModel(
     private val _editRoleState = MutableStateFlow(EditRoleState())
     val editRoleState = _editRoleState.asStateFlow()
 
+    private val _deleteRoleState = MutableStateFlow(DeleteRoleState())
+    val deleteRoleState = _deleteRoleState.asStateFlow()
+
     private val _editRoleMemberState = MutableStateFlow(UpdateRoleMemberState())
     val editRoleMemberState = _editRoleMemberState.asStateFlow()
 
@@ -135,7 +138,7 @@ class EditRoleViewModel(
             }
         }
     }
-//
+
     fun updateRoleMemberGroup(groupId: String, updateRoleMember: UpdateRoleMemberGroupRequest) {
         viewModelScope.launch {
             repoMemberGroup.updateRoleMemberGroup(groupId.toInt(),updateRoleMember).flowOn(
@@ -171,6 +174,41 @@ class EditRoleViewModel(
             }
         }
     }
+
+    fun deleteRoleGroup(roleId: Int, groupId: String) {
+        viewModelScope.launch {
+            repoGroup.deleteRoleGroup(roleId,groupId.toInt()).flowOn(Dispatchers.IO).collectLatest { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _deleteRoleState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _deleteRoleState.update {
+                            it.copy(
+                                isLoading = true,
+                                isError = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _deleteRoleState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class ListRoleState(
@@ -190,6 +228,13 @@ data class ListMemberState(
 )
 
 data class EditRoleState(
+    val msg: String? = null,
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+    val isSuccess: Boolean = false,
+)
+
+data class DeleteRoleState(
     val msg: String? = null,
     val isLoading: Boolean = false,
     val isError: Boolean = false,

@@ -2,8 +2,10 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -71,6 +73,26 @@ class RemoteRolePositionGroup(private val httpClient: HttpClient) : RolePosition
             }
 
             return response.body<BaseResponse<UpdateRoleMemberResponse>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun deleteRolePosition(
+        token: String,
+        groupId: Int,
+        roleId : Int
+    ): BaseResponse<AddRoleReponse> {
+        try {
+            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "deleteRoleGroup/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("roleId",roleId)
+            }
+
+            return response.body<BaseResponse<AddRoleReponse>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

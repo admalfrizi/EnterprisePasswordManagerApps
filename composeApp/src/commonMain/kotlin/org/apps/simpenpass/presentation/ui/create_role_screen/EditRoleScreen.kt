@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -96,6 +97,10 @@ fun EditRoleScreen(
     val updateRoleMemberState by editRoleViewModel.editRoleMemberState.collectAsStateWithLifecycle()
     val listRoleState by editRoleViewModel.roleState.collectAsStateWithLifecycle()
     val listMemberState by editRoleViewModel.memberState.collectAsStateWithLifecycle()
+    val deleteRoleState by editRoleViewModel.deleteRoleState.collectAsStateWithLifecycle()
+
+    var nameRole = remember { mutableStateOf("") }
+    var roleId = remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(groupId){
@@ -115,10 +120,22 @@ fun EditRoleScreen(
         editRoleViewModel.getListRolePositionData(groupId)
     }
 
+    if(deleteRoleState.isSuccess){
+        editRoleViewModel.getListRolePositionData(groupId)
+        editRoleViewModel.getMemberDataGroup(groupId)
+    }
+
     ModalBottomSheetLayout(
         sheetBackgroundColor = Color(0xFFF1F1F1),
         sheetContent = {
-            BottomSheetContent(sheetState,scope)
+            BottomSheetContent(
+                sheetState,
+                editRoleViewModel,
+                scope,
+                groupId,
+                roleId.value,
+                nameRole.value
+            )
         },
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetState = sheetState
@@ -127,6 +144,8 @@ fun EditRoleScreen(
             navController,
             groupId,
             interactionSource,
+            nameRole,
+            roleId,
             scope,
             sheetState,
             listRoleState.listRoleMember!!,
@@ -143,6 +162,8 @@ fun OverlayContent(
     navController: NavController,
     groupId: String,
     interactionSource: MutableInteractionSource,
+    nameRole: MutableState<String>,
+    roleId: MutableState<Int>,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     roleList: List<RoleGroupData>,
@@ -151,7 +172,7 @@ fun OverlayContent(
     memberState: ListMemberState,
     editRoleViewModel: EditRoleViewModel
 ) {
-    var roleName by remember { mutableStateOf("") }
+    var roleNameEdt by remember { mutableStateOf("") }
     var roleFocus by remember { mutableStateOf(false) }
     var isEditPopUp by remember { mutableStateOf(false) }
     var posisiId = remember { mutableStateOf(-1) }
@@ -245,6 +266,8 @@ fun OverlayContent(
                                         scope.launch {
                                             sheetState.show()
                                         }
+                                        nameRole.value = item.nmPosisi
+                                        roleId.value = item.id
                                     }
                                 ) {
                                     Row(
@@ -386,9 +409,9 @@ fun OverlayContent(
                         interactionSource = interactionSource,
                         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().onFocusChanged { focusState -> roleFocus = focusState.isFocused },
                         labelHints = "Nama Posisi",
-                        value = roleName,
+                        value = roleNameEdt,
                         leadingIcon = null,
-                        onValueChange = { roleName = it},
+                        onValueChange = { roleNameEdt = it},
                         isFocus = roleFocus,
                         focusColor = secondaryColor
                     )
@@ -398,7 +421,8 @@ fun OverlayContent(
                     Button(
                         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                         onClick = {
-                            editRoleViewModel.addRoleGroup(AddRoleRequest(roleName),groupId)
+                            editRoleViewModel.addRoleGroup(AddRoleRequest(roleNameEdt),groupId)
+                            roleNameEdt = ""
                         },
                         shape = RoundedCornerShape(20.dp),
                         elevation = ButtonDefaults.elevation(0.dp),
@@ -424,8 +448,16 @@ fun OverlayContent(
 @Composable
 fun BottomSheetContent(
     sheetState: ModalBottomSheetState,
+    editRoleViewModel: EditRoleViewModel,
     scope: CoroutineScope,
+    groupId: String,
+    roleId: Int,
+    nameRole: String,
 ) {
+
+    Napier.v("roleId : $roleId")
+    Napier.v("groupId : $groupId")
+
     Column(
         modifier = Modifier.fillMaxWidth().imePadding()
     ) {
@@ -437,7 +469,7 @@ fun BottomSheetContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Dosen", modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6.copy(fontSize = 16.sp), color = secondaryColor)
+            Text(nameRole, modifier = Modifier.weight(1f).fillMaxWidth(), style = MaterialTheme.typography.h6.copy(fontSize = 16.sp), color = secondaryColor)
             IconButton(
                 onClick = {
                     scope.launch {
@@ -513,7 +545,10 @@ fun BottomSheetContent(
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
-
+                editRoleViewModel.deleteRoleGroup(roleId,groupId)
+                scope.launch {
+                    sheetState.hide()
+                }
             },
             shape = RoundedCornerShape(20.dp),
             elevation = ButtonDefaults.elevation(0.dp),
@@ -568,7 +603,7 @@ fun EditRoleMemberPopUp(
                         EmptyWarning(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                             warnTitle = "Data Posisi Grup ini Kosong !",
-                            warnText = "Silahkan buat posisi untuk setiap anggota baru dibawah ini.",
+                            warnText = "Silahkan buat posisi untuk setiap anggota grup.",
                             isEnableBtn = false,
                         )
                     }

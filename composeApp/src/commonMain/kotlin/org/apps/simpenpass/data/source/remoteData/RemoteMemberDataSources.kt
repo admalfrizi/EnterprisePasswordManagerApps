@@ -15,7 +15,7 @@ import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
-import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.utils.Constants
@@ -23,9 +23,9 @@ import org.apps.simpenpass.utils.Constants
 class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupDataFunc {
     override suspend fun addMemberToGroup(
         token: String,
-        addData: List<AddMember>,
+        addData: List<AddMemberRequest>,
         groupId: Int
-    ): BaseResponse<List<AddMember>> {
+    ): BaseResponse<List<AddMemberRequest>> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addMemberGroup/$groupId"){
                 contentType(ContentType.Application.Json)
@@ -34,7 +34,7 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
             }
 
             Napier.v("Data Add Group ID : $groupId")
-            return response.body<BaseResponse<List<AddMember>>>()
+            return response.body<BaseResponse<List<AddMemberRequest>>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

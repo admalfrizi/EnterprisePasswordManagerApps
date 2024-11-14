@@ -13,7 +13,7 @@ import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.request.AddGroupRequest
-import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -73,7 +73,7 @@ class AddGroupViewModel(
      private fun addCurrentUserToMemberGroup(){
         viewModelScope.launch {
             val itemData = repoMember.getUserData()
-            val addItem = AddMember(itemData.id!!,true)
+            val addItem = AddMemberRequest(itemData.id!!,true)
             val addMember = UserData(itemData.id, itemData.name!!, itemData.email!!)
 
             _addGroupState.update { currentList ->
@@ -88,14 +88,14 @@ class AddGroupViewModel(
     fun addMemberToList(member: List<UserData>){
         viewModelScope.launch {
             _addGroupState.update { currentList ->
-                val toAddMemberList = mutableListOf<AddMember>()
+                val toAddMemberRequestList = mutableListOf<AddMemberRequest>()
                 member.forEach {
-                   toAddMemberList.add(AddMember(it.id,isGroupAdmin = false))
+                   toAddMemberRequestList.add(AddMemberRequest(it.id,isGroupAdmin = false))
                 }
 
                 currentList.copy(
                     memberList = currentList.memberList!! + member,
-                    memberListAdd = currentList.memberListAdd + toAddMemberList,
+                    memberListAdd = currentList.memberListAdd + toAddMemberRequestList,
                 )
             }
         }
@@ -188,7 +188,7 @@ class AddGroupViewModel(
 }
 
 data class AddGroupState(
-    val memberListAdd: List<AddMember> = emptyList(),
+    val memberListAdd: List<AddMemberRequest> = emptyList(),
     var memberList: List<UserData>? = emptyList(),
     val isCreated: Boolean = false,
     val isAdded: Boolean = false,

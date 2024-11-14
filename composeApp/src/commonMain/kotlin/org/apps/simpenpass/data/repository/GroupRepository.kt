@@ -2,14 +2,16 @@ package org.apps.simpenpass.data.repository
 
 import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddGroupRequest
-import org.apps.simpenpass.models.request.AddMember
+import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -23,7 +25,7 @@ class GroupRepository(
         insertData: AddGroupRequest,
         imgName: String?,
         imgFile: ByteArray?,
-        memberList: List<AddMember>
+        memberList: List<AddMemberRequest>
     ) = flow {
         emit(NetworkResult.Loading())
         try {
@@ -32,8 +34,12 @@ class GroupRepository(
 
                 when(result.success){
                     true -> {
-                        remoteMemberDataSources.addMemberToGroup(token,memberList,result.data?.id!!)
-                        emit(NetworkResult.Success(result))
+                        withContext(NonCancellable){
+                            val addMember = remoteMemberDataSources.addMemberToGroup(token,memberList,result.data?.id!!)
+                            if(addMember.success){
+                                emit(NetworkResult.Success(result))
+                            }
+                        }
                     }
                     false -> {
                         emit(NetworkResult.Error(result.message))
@@ -151,6 +157,28 @@ class GroupRepository(
         try {
             localData.getToken.collect { token ->
                 val result = remoteRolePositionGroup.addRolePositionInGroup(token,role,groupId)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun deleteRoleGroup(roleId: Int,groupId: Int) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteRolePositionGroup.deleteRolePosition(token,groupId,roleId)
 
                 when(result.success) {
                     true -> {
