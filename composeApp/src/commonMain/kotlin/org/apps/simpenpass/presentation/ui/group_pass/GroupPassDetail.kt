@@ -104,6 +104,7 @@ import resources.your_data_ic
 @Composable
 fun GroupPassDetail(
     navController: NavController,
+    navToBack: () -> Unit,
     groupViewModel: GroupViewModel = koinViewModel(),
     groupId: String,
     bottomEdgeColor: MutableState<Color>
@@ -143,6 +144,7 @@ fun GroupPassDetail(
     ){
         ContentView(
             navController,
+            navToBack,
             snackBarHostState,
             tabsName,
             sheetState,
@@ -159,6 +161,7 @@ fun GroupPassDetail(
 @Composable
 fun ContentView(
     navController: NavController,
+    navToBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
     tabsName: List<String>,
     sheetState: ModalBottomSheetState,
@@ -196,7 +199,7 @@ fun ContentView(
         backgroundColor = Color(0xFFF1F1F1),
         topBar = {
             TopBarDtl(
-                navController,
+                navToBack,
                 groupViewModel,
                 popUpEditGroup = {
                     isPopUp.value = true

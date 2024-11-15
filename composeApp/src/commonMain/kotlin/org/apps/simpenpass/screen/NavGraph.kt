@@ -172,6 +172,9 @@ fun NavGraphBuilder.groupPassDetail(
 
             GroupPassDetail(
                 navController,
+                navToBack = {
+                    navController.navigateUp()
+                },
                 groupId = groupId,
                 bottomEdgeColor = bottomEdgeColor
             )

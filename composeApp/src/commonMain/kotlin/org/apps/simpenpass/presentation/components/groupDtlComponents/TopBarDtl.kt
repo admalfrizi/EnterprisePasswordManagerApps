@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
@@ -25,7 +24,7 @@ import resources.menu_ic
 
 @Composable
 fun TopBarDtl(
-    navController: NavController,
+    navBack: () -> Unit,
     groupState: GroupViewModel,
     popUpEditGroup: () -> Unit
 ) {
@@ -42,7 +41,7 @@ fun TopBarDtl(
         navigationIcon = {
             IconButton(
                 onClick = {
-                    navController.navigateUp()
+                    navBack()
                     groupState.clearState()
                 },
                 content = {
