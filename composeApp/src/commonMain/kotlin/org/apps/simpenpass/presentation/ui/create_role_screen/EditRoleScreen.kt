@@ -64,7 +64,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -457,8 +456,6 @@ fun BottomSheetContent(
     nameRole: String,
 ) {
     val detailRoleState by editRoleViewModel.detailRoleState.collectAsStateWithLifecycle()
-
-    Napier.v("groupId : $groupId")
 
     LaunchedEffect(sheetState.isVisible){
         if(roleId.value != 0){

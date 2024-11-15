@@ -1,5 +1,10 @@
 package org.apps.simpenpass.utils
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import platform.UIKit.UIApplication
 import platform.UIKit.UIViewController
 import platform.UIKit.UIAlertController
@@ -33,3 +38,9 @@ actual fun setToast(message: String) {
 actual fun copyText(text: String) {
     UIPasteboard.generalPasteboard().string = text
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+actual fun getScreenHeight(): Dp = LocalWindowInfo.current.containerSize.height.pxToPoint().dp
+
+fun Int.pxToPoint() : Double = this.toDouble()
