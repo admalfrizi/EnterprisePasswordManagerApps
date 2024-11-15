@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,38 +31,6 @@ class GroupViewModel(
 
     init {
         observeConnection()
-
-        if(isConnected.value){
-            viewModelScope.launch {
-                repoGroup.listJoinedGrup().distinctUntilChanged().collect { res ->
-                    when(res) {
-                        is NetworkResult.Error -> {
-                            _groupState.update {
-                                it.copy(
-                                    isError = true,
-                                    msg = res.error
-                                )
-                            }
-                        }
-                        is NetworkResult.Loading -> {
-                            _groupState.update {
-                                it.copy(
-                                    isLoading = true,
-                                )
-                            }
-                        }
-                        is NetworkResult.Success -> {
-                            _groupState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    groupData = res.data.data!!,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun observeConnection() {
@@ -78,6 +45,39 @@ class GroupViewModel(
             }
         }
     }
+
+    fun getJoinedGroup(){
+        viewModelScope.launch {
+            repoGroup.listJoinedGrup().flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupState.update {
+                            it.copy(
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                groupData = res.data.data!!,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     fun updateGroupData(
         groupId: String,

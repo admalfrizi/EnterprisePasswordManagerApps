@@ -1,6 +1,5 @@
 package org.apps.simpenpass.data.source.remoteData
 
-import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -79,8 +78,6 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                     }
                 ))
             }
-            Napier.v("Response Code : ${response.status.value}")
-            Napier.v("Response : $response")
             return response.body<BaseResponse<GrupPassData>>()
         } catch (e: Exception){
             throw Exception(e.message)

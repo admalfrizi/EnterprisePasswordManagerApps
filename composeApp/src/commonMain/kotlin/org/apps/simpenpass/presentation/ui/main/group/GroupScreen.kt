@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -28,6 +31,7 @@ import org.apps.simpenpass.presentation.components.groupComponents.AddGroupHolde
 import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
 import org.apps.simpenpass.presentation.components.groupComponents.ListGroupHolder
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.getScreenHeight
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -39,6 +43,19 @@ fun GroupScreen(
     val groupState by groupViewModel.groupState.collectAsStateWithLifecycle()
     val isConnected by groupViewModel.isConnected.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    var heightWidget = getScreenHeight().value.toInt()
+
+
+    DisposableEffect(Unit){
+        if(isConnected || groupState.groupData.isEmpty()){
+            groupViewModel.getJoinedGroup()
+        }
+
+        onDispose {
+            groupViewModel.clearState()
+        }
+    }
+
 
     Scaffold(
       backgroundColor = Color(0xFFF1F1F1),
@@ -67,52 +84,79 @@ fun GroupScreen(
                   modifier = Modifier.height(9.dp)
               )
 
-              if(!isConnected){
-                  Box(
-                      modifier = Modifier.fillMaxSize(),
-                      contentAlignment = Alignment.Center,
-                  ) {
+              Box(
+                  modifier = Modifier.fillMaxSize(),
+                  contentAlignment = if(!isConnected || groupState.groupData.isEmpty() && !groupState.isLoading) Alignment.Center else Alignment.TopCenter,
+              ) {
+
+                  if(!isConnected){
                       ConnectionWarning(
                           modifier = Modifier.fillMaxSize(),
                           warnTitle = "Internet Anda Telah Teputus !",
                           warnText = "Silahkan untuk memeriksa koneksi internet anda dan coba untuk refresh kembali halaman ini",
                       )
                   }
-              }
 
-              if(groupState.isLoading){
-                  Box(
-                      modifier = Modifier.fillMaxSize(),
-                      contentAlignment = Alignment.TopCenter,
-                  ) {
-                      Column {
-                          GroupLoadingShimmer()
-                          GroupLoadingShimmer()
-                          GroupLoadingShimmer()
+                  if(groupState.isLoading){
+                      Column(
+                          modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                      ){
+                          repeat(heightWidget / 82){
+                              GroupLoadingShimmer()
+                          }
                       }
                   }
-              }
 
-              if(groupState.groupData.isEmpty()){
-                  Box(
-                      modifier = Modifier.fillMaxSize(),
-                      contentAlignment = Alignment.Center,
-                  ) {
+                  if(groupState.groupData.isEmpty() && !groupState.isLoading && isConnected){
                       EmptyWarning(
                           modifier = Modifier.fillMaxWidth(),
                           warnTitle = "Anda belum bergabung dengan grup !",
                           warnText = "Silahkan bergabung atau buat grup baru dengan mengklik tombol di atas",
                       )
                   }
-              } else {
-                  LazyColumn(
-                      modifier = Modifier.fillMaxWidth(),
-                  ) {
-                      items(groupState.groupData) { item ->
-                          ListGroupHolder(item, { navigateToGrupDtl(item?.id.toString()) })
+
+                  if(groupState.groupData.isNotEmpty() && isConnected){
+                      LazyColumn(
+                          modifier = Modifier.fillMaxWidth(),
+                      ) {
+                          items(groupState.groupData) { item ->
+                              ListGroupHolder(item, { navigateToGrupDtl(item?.id.toString()) })
+                          }
                       }
                   }
               }
+
+//              if(groupState.isLoading){
+//                  Box(
+//                      modifier = Modifier.fillMaxSize().onGloballyPositioned { data ->
+//                          heightWidget.value = data.size.height.toFloat()
+//                      },
+//                      contentAlignment = Alignment.TopCenter,
+//                  ) {
+//
+//                  }
+//              }
+//
+//              if(groupState.groupData.isEmpty()){
+//                  Box(
+//                      modifier = Modifier.fillMaxSize(),
+//                      contentAlignment = Alignment.Center,
+//                  ) {
+//                      EmptyWarning(
+//                          modifier = Modifier.fillMaxWidth(),
+//                          warnTitle = "Anda belum bergabung dengan grup !",
+//                          warnText = "Silahkan bergabung atau buat grup baru dengan mengklik tombol di atas",
+//                      )
+//                  }
+//              } else {
+//                  LazyColumn(
+//                      modifier = Modifier.fillMaxWidth(),
+//                  ) {
+//                      items(groupState.groupData) { item ->
+//                          ListGroupHolder(item, { navigateToGrupDtl(item?.id.toString()) })
+//                      }
+//                  }
+//              }
           }
       }
   )
