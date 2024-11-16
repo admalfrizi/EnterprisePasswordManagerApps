@@ -40,7 +40,6 @@ class ApiMocking{
                 baseErrorResponse(HttpStatusCode.InternalServerError.value)
             }
 
-
             respond(
                 content = ByteReadChannel(responseContent),
                 status = statusCode,

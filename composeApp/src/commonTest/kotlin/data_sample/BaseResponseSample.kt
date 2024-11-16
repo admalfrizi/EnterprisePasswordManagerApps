@@ -4,7 +4,7 @@ fun baseReponseSample(dataResponse: String) : String {
     val jsonContent = """{
         "success": true,
         "code": 200,
-        "message": "Berikut Data untuk Pengguna",
+        "message": "Message Response",
         "data": $dataResponse
     }
     """.trimIndent()
