@@ -11,4 +11,20 @@ class GroupDetailsSample {
             "updated_at": "2024-11-15T10:14:03.000000Z"
         }
     """.trimIndent()
+
+    val listPassDataGroup = """
+        [
+            {
+                "id": 1,
+                "klmpk_role": "Ekonomi",
+                "nama_grup": "Huliya Go",
+                "account_name": "xtesr",
+                "username": "fzfszsf",
+                "email": "cfcgcesr",
+                "password": "vyftrsrwawfzf",
+                "url": "fcgdsfwaewr",
+                "desc": "butfyrdtrdtesr"
+            }
+        ]
+    """.trimIndent()
 }

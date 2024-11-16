@@ -127,6 +127,7 @@ fun GroupPassDetail(
     LaunchedEffect(groupId) {
         groupViewModel.getMemberDataGroup(groupId)
         groupViewModel.getDetailGroup(groupId)
+        groupViewModel.getRoleGroupList(groupId)
     }
 
     bottomEdgeColor.value = Color(0xFFF1F1F1)
@@ -345,7 +346,7 @@ fun ContentView(
                 }
                 when (indexTab) {
                     0 -> {
-                        PassDataScreen(navController,sheetState,scope)
+                        PassDataScreen(navController,sheetState,scope,groupState)
                     }
 
                     1 -> {

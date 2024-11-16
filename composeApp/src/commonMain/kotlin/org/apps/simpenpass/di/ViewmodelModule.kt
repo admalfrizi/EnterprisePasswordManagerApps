@@ -50,6 +50,7 @@ val viewModelModule = module {
     viewModel {
         GroupViewModel(
             repoGroup = get(),
+            repoPassDataGroup = get(),
             repoMemberGroupRepository = get(),
             konnection = get()
         )

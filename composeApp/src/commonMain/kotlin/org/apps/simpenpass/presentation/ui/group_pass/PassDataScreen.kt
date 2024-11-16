@@ -4,26 +4,22 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
@@ -40,19 +36,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.models.pass_data.DataPass
+import org.apps.simpenpass.presentation.ui.main.group.GroupState
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.empty_pass_ic
-import resources.menu_ic
 import resources.pass_data_ic
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PassDataScreen(navController: NavController,isShowBottomSheet: ModalBottomSheetState,scope: CoroutineScope) {
-
-    val filterList = listOf("Semua","Developer","Dosen")
+fun PassDataScreen(
+    navController: NavController,
+    isShowBottomSheet: ModalBottomSheetState,
+    scope: CoroutineScope,
+    groupState: GroupState
+) {
 //    val dataList = listOf(
 //        DataPass(1,"Nama Ini", "adam@gmail.com"),
 //        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
@@ -67,7 +65,7 @@ fun PassDataScreen(navController: NavController,isShowBottomSheet: ModalBottomSh
         modifier = Modifier.fillMaxWidth()
     ) {
         AddPassDataBtnHolder(isShowBottomSheet,scope)
-        FilterRow(filterList)
+        FilterRow(groupState)
 //        if(dataList.isEmpty()){
 //            Box(
 //                modifier = Modifier.fillMaxSize(),
@@ -118,37 +116,68 @@ fun PassDataScreen(navController: NavController,isShowBottomSheet: ModalBottomSh
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FilterRow(
-    filterItems : List<String>,
+    groupState: GroupState,
 ) {
-    var chipSelected by remember { mutableStateOf(filterItems[0]) }
+    val listRole = groupState.listRoleGroup
+    var chipSelected by remember { mutableStateOf(-1) }
+    var isAllData by remember { mutableStateOf(true) }
 
-    Row(modifier = Modifier.fillMaxWidth().padding(start = 16.dp).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        filterItems.forEach { itemFilter ->
+    if(listRole.isNotEmpty()){
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(listRole){ item ->
+                val isSelected = chipSelected == item?.id && isAllData == false
+                Box(modifier = Modifier.fillMaxWidth()){
+                    FilterChip(
+                        onClick = {
+                            if(isAllData == true){
+                                isAllData = false
+                            } else {
+                                isAllData = true
+                            }
 
-            val isSelected = chipSelected == itemFilter
-
-            Box(modifier = Modifier.fillMaxWidth()){
-                FilterChip(
-                    onClick = {
-                       chipSelected = itemFilter
-                    },
-                    selected = isSelected,
-                    colors = ChipDefaults.filterChipColors(backgroundColor = Color.White, selectedBackgroundColor = secondaryColor),
-                    shape = RoundedCornerShape(7.dp),
-                    border = BorderStroke(color = if(isSelected) Color.Transparent else Color(0xFF78A1D7), width = 1.dp)
-                ){
-                    Text(
-                        itemFilter,
-                        style = MaterialTheme.typography.subtitle2,
-                        color = if(isSelected) Color.White else Color(0xFF78A1D7),
-                    )
+                        },
+                        selected = isAllData == true,
+                        colors = ChipDefaults.filterChipColors(backgroundColor = Color.White, selectedBackgroundColor = secondaryColor),
+                        shape = RoundedCornerShape(7.dp),
+                        border = BorderStroke(color = if(isAllData == true) Color.Transparent else Color(0xFF78A1D7), width = 1.dp)
+                    ){
+                        Text(
+                            "Semua",
+                            style = MaterialTheme.typography.subtitle2,
+                            color = if(isAllData == true) Color.White else Color(0xFF78A1D7),
+                        )
+                    }
+                }
+                Spacer(
+                    modifier = Modifier.width(8.dp)
+                )
+                Box(modifier = Modifier.fillMaxWidth()){
+                    FilterChip(
+                        onClick = {
+                            chipSelected = item?.id!!
+                            isAllData = false
+                        },
+                        selected = isSelected,
+                        colors = ChipDefaults.filterChipColors(backgroundColor = Color.White, selectedBackgroundColor = secondaryColor),
+                        shape = RoundedCornerShape(7.dp),
+                        border = BorderStroke(color = if(isSelected) Color.Transparent else Color(0xFF78A1D7), width = 1.dp)
+                    ){
+                        Text(
+                            item?.nmPosisi!!,
+                            style = MaterialTheme.typography.subtitle2,
+                            color = if(isSelected) Color.White else Color(0xFF78A1D7),
+                        )
+                    }
                 }
             }
+
         }
     }
-
-
-
 }
 
 @OptIn(ExperimentalMaterialApi::class)

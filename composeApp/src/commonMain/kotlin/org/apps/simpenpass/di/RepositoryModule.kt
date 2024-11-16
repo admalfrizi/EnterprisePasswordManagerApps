@@ -3,6 +3,7 @@ package org.apps.simpenpass.di
 import org.apps.simpenpass.data.repository.ForgotPassRepository
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
+import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.data.repository.UserRepository
 import org.koin.dsl.module
@@ -42,6 +43,13 @@ val repoModule = module {
     factory<ForgotPassRepository> {
         ForgotPassRepository(
             remoteResetPassSources = get()
+        )
+    }
+
+    factory<PassDataGroupRepository> {
+        PassDataGroupRepository(
+            remotePassDataGroupSources = get(),
+            localData = get()
         )
     }
 }

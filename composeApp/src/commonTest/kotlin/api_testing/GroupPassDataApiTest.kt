@@ -55,4 +55,22 @@ class GroupPassDataApiTest {
 
         assertEquals(baseReponseSample(groupDetailsSample.detailGroupData), response.bodyAsText())
     }
+
+    @Test
+    fun `get pass data group from api`() = runBlocking {
+        val apiClient = apiMockEngine.setupApiMocking(groupDetailsSample.listPassDataGroup)
+        apiMockEngine.givenSuccess()
+
+        val token = "2|DKWA4gE7hi09GKIDWqJFjAL3MlZdEtOJgAAJiQ6Je0d3addc"
+        val groupId = 2
+
+        val response = apiClient.get(Constants.BASE_API_URL+"allPassGroupData/$groupId"){
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }
+
+        println(response.bodyAsText())
+
+        assertEquals(baseReponseSample(groupDetailsSample.listPassDataGroup), response.bodyAsText())
+    }
 }

@@ -2,6 +2,7 @@ package org.apps.simpenpass.di
 
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
+import org.apps.simpenpass.data.source.remoteData.RemotePassDataGroupSources
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteResetPassSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
@@ -41,6 +42,12 @@ val remoteDataModule = module {
 
     single {
         RemoteRolePositionGroup(
+            httpClient = get()
+        )
+    }
+
+    single {
+        RemotePassDataGroupSources(
             httpClient = get()
         )
     }

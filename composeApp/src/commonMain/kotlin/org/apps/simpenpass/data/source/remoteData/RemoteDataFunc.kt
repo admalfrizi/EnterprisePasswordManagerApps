@@ -4,6 +4,7 @@ import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.pass_data.PassDataGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMemberRequest
@@ -113,7 +114,8 @@ interface RolePositionFunc {
 }
 
 interface PassDataGroupFunc {
-    suspend fun listGroupPassword()
-    suspend fun addPassGroup()
+    suspend fun listGroupPassword(token: String,groupId: Int) : BaseResponse<List<PassDataGroup>>
+    suspend fun listGroupPasswordFiltered(token: String,groupId: Int,roleId: Int) : BaseResponse<List<PassDataGroup>>
+    suspend fun addPassGroup(token: String,groupId: Int,roleId: Int,addDataPass: PassDataRequest)
     suspend fun updatePassGroup()
 }
