@@ -346,7 +346,7 @@ fun ContentView(
                 }
                 when (indexTab) {
                     0 -> {
-                        PassDataScreen(navController,sheetState,scope,groupState)
+                        PassDataScreen(navController,sheetState,scope,groupState,groupId,groupViewModel)
                     }
 
                     1 -> {

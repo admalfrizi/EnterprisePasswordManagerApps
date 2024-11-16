@@ -9,21 +9,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,11 +40,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
 import org.apps.simpenpass.presentation.ui.main.group.GroupState
+import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.empty_pass_ic
+import resources.menu_ic
 import resources.pass_data_ic
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,15 +56,15 @@ fun PassDataScreen(
     navController: NavController,
     isShowBottomSheet: ModalBottomSheetState,
     scope: CoroutineScope,
-    groupState: GroupState
+    groupState: GroupState,
+    groupId: String,
+    groupViewModel: GroupViewModel
 ) {
-//    val dataList = listOf(
-//        DataPass(1,"Nama Ini", "adam@gmail.com"),
-//        DataPass(2,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-//        DataPass(3, "In4t4t4i Juga", "whdkw@gmail.554tcom"),
-//        DataPass(4,"Ihthtrhni Juga", "whdkgrgw@gmail.com"),
-//        DataPass(5,"Ini fewfJuga", "whdkw4t4t@gmail.com"),
-//    )
+    LaunchedEffect(groupState.listRoleGroup){
+        if(groupState.listRoleGroup.isNotEmpty()){
+            groupViewModel.getPassDataGroup(groupId)
+        }
+    }
 
 //    val dataList by remember { mutableStateOf(emptyList<DataPass>()) }
 
@@ -66,50 +73,56 @@ fun PassDataScreen(
     ) {
         AddPassDataBtnHolder(isShowBottomSheet,scope)
         FilterRow(groupState)
-//        if(dataList.isEmpty()){
-//            Box(
-//                modifier = Modifier.fillMaxSize(),
-//                contentAlignment = Alignment.Center,
-//            ) {
-//                EmptyDataPassWarning(
-//                    modifier = Modifier.fillMaxWidth(),)
-//            }
-//        } else {
-//            LazyColumn(
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                items(dataList){ data ->
-//                    Box(
-//                        modifier = Modifier.fillMaxWidth().background(Color.White)
-//                    ) {
-//                        Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-//                            Column {
-//                                Text(
-//                                    data.accountName,
-//                                    style = MaterialTheme.typography.body1,
-//                                    color = secondaryColor
-//                                )
-//                                Spacer(modifier = Modifier.height(7.dp))
-//                                Text(
-//                                    data.email,
-//                                    style = MaterialTheme.typography.subtitle1,
-//                                    color = secondaryColor
-//                                )
-//                            }
-//                            IconButton(
-//                                onClick = {}
-//                            ){
-//                                Image(
-//                                    painterResource(Res.drawable.menu_ic),""
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        if(groupState.passDataGroup.isEmpty() && !groupState.isLoading){
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                EmptyDataPassWarning(
+                    modifier = Modifier.fillMaxWidth(),)
+            }
+        }
 
+        if(groupState.isLoading){
+            HomeLoadingShimmer()
+            HomeLoadingShimmer()
+            HomeLoadingShimmer()
+        }
 
+        if(groupState.passDataGroup.isNotEmpty() && !groupState.isLoading){
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(groupState.passDataGroup){ data ->
+                    Box(
+                        modifier = Modifier.fillMaxWidth().background(Color.White)
+                    ) {
+                        Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Column {
+                                Text(
+                                    data?.accountName!!,
+                                    style = MaterialTheme.typography.body1,
+                                    color = secondaryColor
+                                )
+                                Spacer(modifier = Modifier.height(7.dp))
+                                Text(
+                                    data.email,
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = secondaryColor
+                                )
+                            }
+                            IconButton(
+                                onClick = {}
+                            ){
+                                Image(
+                                    painterResource(Res.drawable.menu_ic),""
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

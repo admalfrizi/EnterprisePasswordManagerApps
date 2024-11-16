@@ -2,9 +2,9 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
-import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -18,7 +18,7 @@ import org.apps.simpenpass.utils.Constants
 class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataGroupFunc {
     override suspend fun listGroupPassword(token: String,groupId: Int): BaseResponse<List<PassDataGroup>> {
         try {
-            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "allPassGroupData/$groupId")
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "allPassGroupData/$groupId")
             {
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
@@ -37,7 +37,7 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
         roleId: Int
     ): BaseResponse<List<PassDataGroup>> {
         try {
-            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "filteredRoleBasedPassDataGroup/$groupId")
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "filteredRoleBasedPassDataGroup/$groupId")
             {
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
