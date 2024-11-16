@@ -1,5 +1,7 @@
 package api_testing
 
+import data_sample.ListUserDataPassSample
+import data_sample.baseReponseSample
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -12,9 +14,10 @@ import org.apps.simpenpass.utils.Constants
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ResultTesting {
+class UserDataPassApiTesting {
+    private val listUserDataPassSample = ListUserDataPassSample()
     private val apiMockEngine = ApiMocking()
-    private val apiClient = apiMockEngine.client
+    private val apiClient = apiMockEngine.setupApiMocking(listUserDataPassSample.listUserPassData)
 
 //    @Test
 //    fun logoutApiData() = runTest {
@@ -34,13 +37,15 @@ class ResultTesting {
     fun `get user pass data from api`() = runBlocking {
         apiMockEngine.givenSuccess()
 
-        val token = "5|nsnj1iiIhMrLJFtEikwoqX1SE2I2Qw9GTmE5TuA954dda6f1"
+        val token = "2|DKWA4gE7hi09GKIDWqJFjAL3MlZdEtOJgAAJiQ6Je0d3addc"
         val response = apiClient.get(Constants.BASE_API_URL+"userDataPass"){
             contentType(ContentType.Application.Json)
             parameter("userId", 2)
             header(HttpHeaders.Authorization, "Bearer $token")
         }
 
-        assertEquals(apiMockEngine.jsonContent, response.bodyAsText())
+        println(response.bodyAsText())
+
+        assertEquals(baseReponseSample(listUserDataPassSample.listUserPassData), response.bodyAsText())
     }
 }
