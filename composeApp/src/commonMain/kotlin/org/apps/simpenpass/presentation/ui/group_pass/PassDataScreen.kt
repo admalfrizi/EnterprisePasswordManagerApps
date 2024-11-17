@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
@@ -51,7 +50,6 @@ import resources.empty_pass_ic
 import resources.menu_ic
 import resources.pass_data_ic
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PassDataScreen(
     navController: NavController,
@@ -136,13 +134,11 @@ fun FilterRow(
     val listRole = groupState.listRoleGroup
     var chipSelected by remember { mutableStateOf(-1) }
 
-    LaunchedEffect(chipSelected != -1 && isAllData.value == false){
-        if(chipSelected != -1 && isAllData.value == false){
+    LaunchedEffect(chipSelected != -1 && !isAllData.value){
+        if(chipSelected != -1 && !isAllData.value){
             groupDtlViewModel.getPassDataGroupRoleFilter(groupState.groupId!!,chipSelected)
         }
     }
-
-    Napier.v("isAllData: ${isAllData.value}")
 
     if(groupState.isLoading && listRole.isEmpty()){
         Row(

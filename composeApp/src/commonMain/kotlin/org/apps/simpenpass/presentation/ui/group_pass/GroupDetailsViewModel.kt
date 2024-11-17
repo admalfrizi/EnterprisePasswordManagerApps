@@ -188,9 +188,9 @@ class GroupDetailsViewModel(
         }
     }
 
-    fun getAllPassDataGroup(groupId: String){
+    fun getAllPassDataGroup(groupId: String?){
         viewModelScope.launch {
-            repoPassDataGroup.listPassDataGroup(groupId.toInt()).flowOn(Dispatchers.IO).collect { res ->
+            repoPassDataGroup.listPassDataGroup(groupId?.toInt()!!).flowOn(Dispatchers.IO).collect { res ->
                 when(res) {
                     is NetworkResult.Error -> {
                         _groupDtlState.update {
