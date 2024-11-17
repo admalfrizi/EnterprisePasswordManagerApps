@@ -168,7 +168,7 @@ fun FilterRow(
         }
     }
 
-    if(listRole.isNotEmpty() && !groupState.isLoading){
+    if(listRole.isNotEmpty()){
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()

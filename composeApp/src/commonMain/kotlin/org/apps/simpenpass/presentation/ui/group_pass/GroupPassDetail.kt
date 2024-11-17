@@ -169,19 +169,21 @@ fun ContentView(
         EditGroupDialog(
             onDismissRequest = {
                 isPopUp.value = false
-
-                if(!isPopUp.value){
-                    groupViewModel.getDetailGroup(groupState.groupId!!)
-                }
             },
             isPopUp,
-            snackbarHostState,
             scope,
             urlImages,
             groupViewModel,
             imagesName,
             groupState,
         )
+    }
+
+    if(groupState.isUpdated){
+        scope.launch {
+            snackbarHostState.showSnackbar("Data Grup telah Diperbaharui")
+        }
+        groupViewModel.groupDtlState.value.isUpdated = false
     }
 
     Scaffold(
@@ -205,11 +207,11 @@ fun ContentView(
                             .height(43.dp)
                     )
 
-                    if(groupState.isLoading){
+                    if(groupState.isLoading  && groupState.dtlGroupData == null){
                         GroupDtlLoadShimmer()
                     }
 
-                    if(!groupState.isLoading && groupState.dtlGroupData != null){
+                    if(groupState.dtlGroupData != null){
                         Row(
                             modifier = Modifier.padding(start = 16.dp, end= 16.dp, top = 22.dp).fillMaxWidth()
                                 .align(
@@ -390,7 +392,6 @@ data class MethodSelection(
 fun EditGroupDialog(
     onDismissRequest: () -> Unit,
     isPopUp: MutableState<Boolean>,
-    snackbarHostState: SnackbarHostState,
     scope: CoroutineScope,
     urlImages: String,
     groupViewModel: GroupDetailsViewModel,
@@ -428,9 +429,9 @@ fun EditGroupDialog(
 
     if(groupState.isUpdated && !groupState.isLoading){
         isPopUp.value = false
-        scope.launch {
-            snackbarHostState.showSnackbar("Data Grup telah Diperbaharui")
-        }
+        grupName = ""
+        desc = ""
+        groupViewModel.getDetailGroup(groupState.groupId!!)
     }
 
     if(groupState.isLoading){
