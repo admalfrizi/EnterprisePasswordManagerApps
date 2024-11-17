@@ -54,6 +54,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -160,7 +161,7 @@ fun ContentView(
     groupViewModel : GroupDetailsViewModel,
     isPopUp : MutableState<Boolean>
 ) {
-    var indexTab by remember { mutableStateOf(0) }
+    var indexTab by rememberSaveable { mutableStateOf(0) }
     val imagesName = groupState.dtlGroupData?.img_grup
     val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
 
