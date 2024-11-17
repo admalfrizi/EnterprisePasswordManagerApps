@@ -108,8 +108,6 @@ class GroupViewModel(
         }
     }
 
-
-
     fun clearState() {
         _groupState.value = GroupState()
     }

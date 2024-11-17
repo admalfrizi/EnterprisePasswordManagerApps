@@ -35,7 +35,7 @@ class GroupDetailsViewModel(
     val groupDtlState = _groupDtlState.onStart {
         getDetailGroup(groupId!!)
         getRoleGroupList(groupId)
-        getPassDataGroup(groupId)
+        getAllPassDataGroup(groupId)
         getMemberDataGroup(groupId)
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),_groupDtlState.value)
 
@@ -188,7 +188,7 @@ class GroupDetailsViewModel(
         }
     }
 
-    fun getPassDataGroup(groupId: String){
+    fun getAllPassDataGroup(groupId: String){
         viewModelScope.launch {
             repoPassDataGroup.listPassDataGroup(groupId.toInt()).flowOn(Dispatchers.IO).collect { res ->
                 when(res) {
@@ -222,6 +222,42 @@ class GroupDetailsViewModel(
             }
         }
     }
+
+    fun getPassDataGroupRoleFilter(groupId: String,roleId: Int){
+        viewModelScope.launch(Dispatchers.Default){
+            repoPassDataGroup.listPassDataGroupRoleFiltered(groupId.toInt(),roleId).flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = true,
+                                isError = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = false,
+                                passDataGroup = res.data.data!!,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun clearState() {
         _groupDtlState.value = GroupDetailsState()
     }

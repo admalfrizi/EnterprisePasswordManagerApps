@@ -28,6 +28,7 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.valentinilk.shimmer.shimmer
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
@@ -55,11 +58,13 @@ fun PassDataScreen(
     isShowBottomSheet: ModalBottomSheetState,
     scope: CoroutineScope,
     groupState: GroupDetailsState,
-    groupViewModel: GroupDetailsViewModel
+    groupDtlViewModel: GroupDetailsViewModel
 ) {
-    LaunchedEffect(groupState.listRoleGroup){
-        if(groupState.listRoleGroup.isNotEmpty() && groupState.groupId != null){
-            groupViewModel.getPassDataGroup(groupState.groupId)
+    var isAllData = remember { mutableStateOf(true) }
+    val isLoading = groupState.listRoleGroup.isNotEmpty() && groupState.groupId != null && groupState.passDataGroup.isEmpty()
+    LaunchedEffect(isLoading && isAllData.value) {
+        if(isLoading){
+            groupDtlViewModel.getAllPassDataGroup(groupState.groupId)
         }
     }
 
@@ -67,7 +72,7 @@ fun PassDataScreen(
         modifier = Modifier.fillMaxWidth()
     ) {
         AddPassDataBtnHolder(isShowBottomSheet,scope)
-        FilterRow(groupState)
+        FilterRow(groupState,groupDtlViewModel,isAllData)
         if(groupState.passDataGroup.isEmpty() && !groupState.isLoading){
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -125,12 +130,49 @@ fun PassDataScreen(
 @Composable
 fun FilterRow(
     groupState: GroupDetailsState,
+    groupDtlViewModel: GroupDetailsViewModel,
+    isAllData: MutableState<Boolean>
 ) {
     val listRole = groupState.listRoleGroup
     var chipSelected by remember { mutableStateOf(-1) }
-    var isAllData by remember { mutableStateOf(true) }
 
-    if(listRole.isNotEmpty()){
+    LaunchedEffect(chipSelected != -1 && isAllData.value == false){
+        if(chipSelected != -1 && isAllData.value == false){
+            groupDtlViewModel.getPassDataGroupRoleFilter(groupState.groupId!!,chipSelected)
+        }
+    }
+
+    Napier.v("isAllData: ${isAllData.value}")
+
+    if(groupState.isLoading && listRole.isEmpty()){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp,32.dp)
+                    .shimmer()
+                    .background(Color.LightGray, shape = RoundedCornerShape(7.dp)),
+            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp,32.dp)
+                    .shimmer()
+                    .background(Color.LightGray, shape = RoundedCornerShape(7.dp)),
+            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp,32.dp)
+                    .shimmer()
+                    .background(Color.LightGray, shape = RoundedCornerShape(7.dp)),
+            )
+        }
+    }
+
+    if(listRole.isNotEmpty() && !groupState.isLoading){
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -138,26 +180,25 @@ fun FilterRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(listRole){ item ->
-                val isSelected = chipSelected == item?.id && isAllData == false
+                val isSelected = chipSelected == item?.id && isAllData.value == false
                 Box(modifier = Modifier.fillMaxWidth()){
                     FilterChip(
                         onClick = {
-                            if(isAllData == true){
-                                isAllData = false
-                            } else {
-                                isAllData = true
+                            if(isAllData.value == false) {
+                                isAllData.value = true
+                                groupDtlViewModel.getAllPassDataGroup(groupState.groupId!!)
                             }
 
                         },
-                        selected = isAllData == true,
+                        selected = isAllData.value == true,
                         colors = ChipDefaults.filterChipColors(backgroundColor = Color.White, selectedBackgroundColor = secondaryColor),
                         shape = RoundedCornerShape(7.dp),
-                        border = BorderStroke(color = if(isAllData == true) Color.Transparent else Color(0xFF78A1D7), width = 1.dp)
+                        border = BorderStroke(color = if(isAllData.value == true) Color.Transparent else Color(0xFF78A1D7), width = 1.dp)
                     ){
                         Text(
                             "Semua",
                             style = MaterialTheme.typography.subtitle2,
-                            color = if(isAllData == true) Color.White else Color(0xFF78A1D7),
+                            color = if(isAllData.value == true) Color.White else Color(0xFF78A1D7),
                         )
                     }
                 }
@@ -168,7 +209,7 @@ fun FilterRow(
                     FilterChip(
                         onClick = {
                             chipSelected = item?.id!!
-                            isAllData = false
+                            isAllData.value = false
                         },
                         selected = isSelected,
                         colors = ChipDefaults.filterChipColors(backgroundColor = Color.White, selectedBackgroundColor = secondaryColor),

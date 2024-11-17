@@ -31,7 +31,7 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
         }
     }
 
-    override suspend fun listGroupPasswordFiltered(
+    override suspend fun listGroupPasswordRoleFiltered(
         token: String,
         groupId: Int,
         roleId: Int
