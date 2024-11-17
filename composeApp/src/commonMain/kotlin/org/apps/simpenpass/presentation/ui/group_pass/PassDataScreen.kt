@@ -104,7 +104,7 @@ fun PassDataScreen(
                                 )
                                 Spacer(modifier = Modifier.height(7.dp))
                                 Text(
-                                    data.email,
+                                    data.email ?: "",
                                     style = MaterialTheme.typography.subtitle1,
                                     color = secondaryColor
                                 )

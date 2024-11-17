@@ -8,19 +8,19 @@ data class PassDataGroup(
     @SerialName("id")
     val id: Int,
     @SerialName("klmpk_role")
-    val klmpkRole: String,
+    val klmpkRole: String?,
     @SerialName("nama_grup")
     val namaGrup: String,
     @SerialName("account_name")
     val accountName: String,
     @SerialName("username")
-    val username: String,
+    val username: String?,
     @SerialName("email")
-    val email: String,
+    val email: String?,
     @SerialName("password")
-    val password: String,
+    val password: String?,
     @SerialName("url")
-    val url: String,
+    val url: String?,
     @SerialName("desc")
-    val desc: String
+    val desc: String?
 )
