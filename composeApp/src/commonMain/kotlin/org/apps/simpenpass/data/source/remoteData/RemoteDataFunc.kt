@@ -116,6 +116,6 @@ interface RolePositionFunc {
 interface PassDataGroupFunc {
     suspend fun listGroupPassword(token: String,groupId: Int) : BaseResponse<List<PassDataGroup>>
     suspend fun listGroupPasswordRoleFiltered(token: String, groupId: Int, roleId: Int) : BaseResponse<List<PassDataGroup>>
-    suspend fun addPassGroup(token: String,groupId: Int,roleId: Int,addDataPass: PassDataRequest)
+    suspend fun addPassGroup(token: String,groupId: Int,roleId: Int,addDataPass: PassDataRequest) : BaseResponse<PassResponseData>
     suspend fun updatePassGroup()
 }

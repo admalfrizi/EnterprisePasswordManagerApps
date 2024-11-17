@@ -28,7 +28,6 @@ class GroupDetailsViewModel(
     private val repoMemberGroup: MemberGroupRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
     private val groupId = savedStateHandle.get<String>("groupId")
 
     private val _groupDtlState = MutableStateFlow(GroupDetailsState())
