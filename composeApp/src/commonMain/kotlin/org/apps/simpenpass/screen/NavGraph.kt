@@ -168,14 +168,11 @@ fun NavGraphBuilder.groupPassDetail(
                     }
             }
         ) {
-            val groupId = requireNotNull(it.arguments?.getString(Screen.GroupPass.ARG_GROUP_ID))
-
             GroupPassDetail(
                 navController,
                 navToBack = {
                     navController.navigateUp()
                 },
-                groupId = groupId,
                 bottomEdgeColor = bottomEdgeColor
             )
         }

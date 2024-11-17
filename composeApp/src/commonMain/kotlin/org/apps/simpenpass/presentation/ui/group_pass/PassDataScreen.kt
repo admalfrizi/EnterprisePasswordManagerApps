@@ -41,8 +41,6 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
-import org.apps.simpenpass.presentation.ui.main.group.GroupState
-import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -56,17 +54,14 @@ fun PassDataScreen(
     navController: NavController,
     isShowBottomSheet: ModalBottomSheetState,
     scope: CoroutineScope,
-    groupState: GroupState,
-    groupId: String,
-    groupViewModel: GroupViewModel
+    groupState: GroupDetailsState,
+    groupViewModel: GroupDetailsViewModel
 ) {
     LaunchedEffect(groupState.listRoleGroup){
-        if(groupState.listRoleGroup.isNotEmpty()){
-            groupViewModel.getPassDataGroup(groupId)
+        if(groupState.listRoleGroup.isNotEmpty() && groupState.groupId != null){
+            groupViewModel.getPassDataGroup(groupState.groupId)
         }
     }
-
-//    val dataList by remember { mutableStateOf(emptyList<DataPass>()) }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -129,7 +124,7 @@ fun PassDataScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FilterRow(
-    groupState: GroupState,
+    groupState: GroupDetailsState,
 ) {
     val listRole = groupState.listRoleGroup
     var chipSelected by remember { mutableStateOf(-1) }

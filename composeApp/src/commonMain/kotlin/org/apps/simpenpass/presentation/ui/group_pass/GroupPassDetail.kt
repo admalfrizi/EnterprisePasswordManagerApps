@@ -49,9 +49,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.mohamedrejeb.calf.core.LocalPlatformContext
@@ -86,8 +85,6 @@ import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
-import org.apps.simpenpass.presentation.ui.main.group.GroupState
-import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.Constants
@@ -105,12 +102,11 @@ import resources.your_data_ic
 fun GroupPassDetail(
     navController: NavController,
     navToBack: () -> Unit,
-    groupViewModel: GroupViewModel = koinViewModel(),
-    groupId: String,
+    groupViewModel: GroupDetailsViewModel = koinViewModel(),
     bottomEdgeColor: MutableState<Color>
 ) {
     val tabsName = listOf("Password", "Anggota")
-    val groupState by groupViewModel.groupState.collectAsState()
+    val groupState by groupViewModel.groupDtlState.collectAsStateWithLifecycle()
 
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -123,12 +119,6 @@ fun GroupPassDetail(
     )
     var isPopUp = remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(groupId) {
-        groupViewModel.getMemberDataGroup(groupId)
-        groupViewModel.getDetailGroup(groupId)
-        groupViewModel.getRoleGroupList(groupId)
-    }
 
     bottomEdgeColor.value = Color(0xFFF1F1F1)
 
@@ -152,7 +142,6 @@ fun GroupPassDetail(
             scope,
             groupState,
             groupViewModel,
-            groupId,
             isPopUp
         )
     }
@@ -167,9 +156,8 @@ fun ContentView(
     tabsName: List<String>,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
-    groupState: GroupState,
-    groupViewModel : GroupViewModel,
-    groupId: String,
+    groupState: GroupDetailsState,
+    groupViewModel : GroupDetailsViewModel,
     isPopUp : MutableState<Boolean>
 ) {
     var indexTab by remember { mutableStateOf(0) }
@@ -182,7 +170,7 @@ fun ContentView(
                 isPopUp.value = false
 
                 if(!isPopUp.value){
-                    groupViewModel.getDetailGroup(groupId)
+                    groupViewModel.getDetailGroup(groupState.groupId!!)
                 }
             },
             isPopUp,
@@ -346,11 +334,11 @@ fun ContentView(
                 }
                 when (indexTab) {
                     0 -> {
-                        PassDataScreen(navController,sheetState,scope,groupState,groupId,groupViewModel)
+                        PassDataScreen(navController,sheetState,scope,groupState,groupViewModel)
                     }
 
                     1 -> {
-                        MemberGroupScreen(navController,groupState,groupId)
+                        MemberGroupScreen(navController,groupState)
                     }
                 }
             }
@@ -404,9 +392,9 @@ fun EditGroupDialog(
     snackbarHostState: SnackbarHostState,
     scope: CoroutineScope,
     urlImages: String,
-    groupViewModel: GroupViewModel,
+    groupViewModel: GroupDetailsViewModel,
     imagesName: String?,
-    groupState: GroupState
+    groupState: GroupDetailsState
 ) {
     val isDismiss = remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }

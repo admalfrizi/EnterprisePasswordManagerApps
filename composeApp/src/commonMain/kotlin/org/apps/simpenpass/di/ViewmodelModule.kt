@@ -4,6 +4,7 @@ import org.apps.simpenpass.presentation.ui.add_group.AddGroupViewModel
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormViewModel
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleViewModel
+import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataViewModel
 import org.apps.simpenpass.presentation.ui.main.SplashViewModel
 import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
@@ -50,8 +51,6 @@ val viewModelModule = module {
     viewModel {
         GroupViewModel(
             repoGroup = get(),
-            repoPassDataGroup = get(),
-            repoMemberGroupRepository = get(),
             konnection = get()
         )
     }
@@ -65,6 +64,15 @@ val viewModelModule = module {
 
     viewModel {
         EditRoleViewModel(
+            repoMemberGroup = get(),
+            repoGroup = get()
+        )
+    }
+
+    viewModel {
+        GroupDetailsViewModel(
+            savedStateHandle = get(),
+            repoPassDataGroup = get(),
             repoMemberGroup = get(),
             repoGroup = get()
         )

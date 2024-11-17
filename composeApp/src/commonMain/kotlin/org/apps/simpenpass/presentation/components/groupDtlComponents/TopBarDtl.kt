@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
-import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
+import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -25,7 +25,7 @@ import resources.menu_ic
 @Composable
 fun TopBarDtl(
     navBack: () -> Unit,
-    groupState: GroupViewModel,
+    groupState: GroupDetailsViewModel,
     popUpEditGroup: () -> Unit
 ) {
     var isDropdownShow by remember { mutableStateOf(false) }

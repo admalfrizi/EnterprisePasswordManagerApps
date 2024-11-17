@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.MemberGroupLoadShimmer
-import org.apps.simpenpass.presentation.ui.main.group.GroupState
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
@@ -42,14 +41,13 @@ import resources.whatsapp_ic
 @Composable
 fun MemberGroupScreen(
     navController: NavController,
-    groupState: GroupState,
-    groupId: String,
+    groupState: GroupDetailsState
 ) {
     val memberData = groupState.memberGroupData
 
     Column {
         EditAnggotaBtnHolder {
-            navController.navigate(Screen.EditAnggota.groupId(groupId))
+            navController.navigate(Screen.EditAnggota.groupId(groupState.groupId!!))
         }
         Spacer(
             modifier = Modifier.height(16.dp)

@@ -11,20 +11,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
-import org.apps.simpenpass.data.repository.MemberGroupRepository
-import org.apps.simpenpass.data.repository.PassDataGroupRepository
-import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GrupPassData
-import org.apps.simpenpass.models.pass_data.MemberGroupData
-import org.apps.simpenpass.models.pass_data.PassDataGroup
-import org.apps.simpenpass.models.pass_data.RoleGroupData
-import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupViewModel(
     private val repoGroup: GroupRepository,
-    private val repoPassDataGroup: PassDataGroupRepository,
-    private val repoMemberGroupRepository: MemberGroupRepository,
     private val konnection: Konnection,
 ): ViewModel() {
     private val _isConnected = MutableStateFlow(false)
@@ -82,113 +73,6 @@ class GroupViewModel(
         }
     }
 
-
-    fun updateGroupData(
-        groupId: String,
-        updateGroupRequest: AddGroupRequest,
-        imgFile: ByteArray?,
-        imgName : String?
-    ) {
-        viewModelScope.launch {
-            repoGroup.updateGroup(groupId.toInt(),updateGroupRequest,imgName,imgFile).flowOn(Dispatchers.IO).collect{ res ->
-                when(res){
-                    is NetworkResult.Error -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = false,
-                                isUpdated = true,
-                                msg = res.data.message
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fun getMemberDataGroup(groupId: String) {
-        viewModelScope.launch {
-            repoMemberGroupRepository.getMemberGroup(groupId.toInt()).collect { res ->
-                when(res) {
-                    is NetworkResult.Error -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                memberGroupData = res.data.data!!,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fun getDetailGroup(groupId: String) {
-        viewModelScope.launch {
-            repoGroup.detailGroup(groupId.toInt()).collect { res ->
-                when(res) {
-                    is NetworkResult.Error -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                dtlGroupData = res.data.data!!,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     fun searchGroup(query: String) {
         viewModelScope.launch {
             repoGroup.searchGroup(query).collect { res ->
@@ -224,75 +108,7 @@ class GroupViewModel(
         }
     }
 
-    fun getRoleGroupList(groupId: String){
-        viewModelScope.launch {
-            repoGroup.listRoleGroup(groupId.toInt()).flowOn(Dispatchers.IO).collect { res ->
-                when(res) {
-                    is NetworkResult.Error -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = true,
-                                isError = false,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = false,
-                                listRoleGroup = res.data.data!!,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
 
-    fun getPassDataGroup(groupId: String){
-        viewModelScope.launch {
-            repoPassDataGroup.listPassDataGroup(groupId.toInt()).flowOn(Dispatchers.IO).collect { res ->
-                when(res) {
-                    is NetworkResult.Error -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = true,
-                                isError = false,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = false,
-                                passDataGroup = res.data.data!!,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     fun clearState() {
         _groupState.value = GroupState()
@@ -301,13 +117,8 @@ class GroupViewModel(
 
 data class GroupState(
     var groupData: List<GrupPassData?> = emptyList(),
-    var passDataGroup: List<PassDataGroup?> = emptyList(),
-    val listRoleGroup: List<RoleGroupData?> = emptyList(),
-    val dtlGroupData: DtlGrupPass? = null,
-    val memberGroupData: List<MemberGroupData?> = emptyList(),
     var searchGroupResult: GrupPassData? = null,
     var msg: String = "",
     var isError: Boolean = false,
     var isLoading: Boolean = false,
-    var isUpdated: Boolean = false,
 )

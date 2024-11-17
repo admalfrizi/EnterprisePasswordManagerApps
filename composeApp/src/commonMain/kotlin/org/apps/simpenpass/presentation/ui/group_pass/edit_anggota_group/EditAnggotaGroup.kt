@@ -48,8 +48,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
-import org.apps.simpenpass.presentation.ui.main.group.GroupState
-import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
+import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsState
+import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.getScreenHeight
 import org.apps.simpenpass.utils.profileNameInitials
@@ -64,12 +64,12 @@ import resources.role_change
 @Composable
 fun EditAnggotaGroup(
     navController: NavController,
-    groupViewModel: GroupViewModel = koinViewModel(),
+    groupViewModel: GroupDetailsViewModel = koinViewModel(),
     groupId: String,
     bottomEdgeColor: MutableState<Color>,
     navToEditRole: (String) -> Unit
 ) {
-    val groupState by groupViewModel.groupState.collectAsState()
+    val groupState by groupViewModel.groupDtlState.collectAsState()
     val itemsData = groupState.memberGroupData
     val height = getScreenHeight().value.toInt()
 
@@ -181,7 +181,7 @@ fun ScaffoldContent(
     itemsData: List<MemberGroupData?>,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    groupState: GroupState,
+    groupState: GroupDetailsState,
     height : Int
 ) {
     Scaffold(
