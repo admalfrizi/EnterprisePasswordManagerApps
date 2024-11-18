@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
@@ -157,11 +158,8 @@ fun FilterRow(
     val listRole = groupState.listRoleGroup
     var chipSelected by remember { mutableStateOf(-1) }
 
-    LaunchedEffect(chipSelected != -1 && !isAllData.value){
-        if(chipSelected != -1 && !isAllData.value){
-            groupDtlViewModel.getPassDataGroupRoleFilter(groupState.groupId!!,chipSelected)
-        }
-    }
+    Napier.v("chipSelected : $chipSelected")
+    Napier.v("isAllData : ${isAllData.value}")
 
     if(groupState.isLoading && listRole.isEmpty()){
         Row(
@@ -229,6 +227,7 @@ fun FilterRow(
                         onClick = {
                             chipSelected = item?.id!!
                             isAllData.value = false
+                            groupDtlViewModel.getPassDataGroupRoleFilter(groupState.groupId!!,chipSelected)
                         },
                         selected = isSelected,
                         colors = ChipDefaults.filterChipColors(backgroundColor = Color.White, selectedBackgroundColor = secondaryColor),

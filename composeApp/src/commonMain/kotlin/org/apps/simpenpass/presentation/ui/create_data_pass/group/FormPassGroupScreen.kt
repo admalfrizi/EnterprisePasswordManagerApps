@@ -70,7 +70,6 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
-import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
@@ -83,6 +82,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.add_option_ic
 import resources.menu_ic
+import kotlin.String
 
 @Composable
 fun FormPassGroupScreen(
@@ -97,13 +97,13 @@ fun FormPassGroupScreen(
     var isDropdownShow by remember { mutableStateOf(false) }
     var isDialogPopup by remember { mutableStateOf(false) }
 
-    var nmAccount by remember { mutableStateOf("") }
-    var userName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var jnsPass by remember { mutableStateOf("") }
-    var passData by remember { mutableStateOf("") }
-    var urlPass by remember { mutableStateOf("") }
-    var desc by remember { mutableStateOf("") }
+    var nmAccount = remember { mutableStateOf("") }
+    var userName = remember { mutableStateOf("") }
+    var email = remember { mutableStateOf("") }
+    var jnsPass = remember { mutableStateOf("") }
+    var passData = remember { mutableStateOf("") }
+    var urlPass = remember { mutableStateOf("") }
+    var desc = remember { mutableStateOf("") }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
     var roleId = remember { mutableStateOf(0) }
@@ -120,13 +120,13 @@ fun FormPassGroupScreen(
     }
 
     val formData = PassDataGroupRequest(
-        accountName = nmAccount,
-        username = userName,
-        desc = desc,
-        email = email,
-        jenisData = jnsPass,
-        password = passData,
-        url = urlPass,
+        accountName = nmAccount.value,
+        username = userName.value,
+        desc = desc.value,
+        email = email.value,
+        jenisData = jnsPass.value,
+        password = passData.value,
+        url = urlPass.value,
         posisiId = roleId.value,
         addPassContent = formPassGroupState.insertAddContentPassData
     )
@@ -150,13 +150,13 @@ fun FormPassGroupScreen(
     }
 
     if(formPassGroupState.passData != null){
-        userName = formPassGroupState.passData?.username!!
-        nmAccount = formPassGroupState.passData?.accountName!!
-        desc = formPassGroupState.passData?.desc!!
-        email = formPassGroupState.passData?.email ?: ""
-        jnsPass = formPassGroupState.passData?.jenisData ?: ""
-        passData = formPassGroupState.passData?.password!!
-        urlPass = formPassGroupState.passData?.url ?: ""
+        userName.value = formPassGroupState.passData?.username!!
+        nmAccount.value = formPassGroupState.passData?.accountName!!
+        desc.value = formPassGroupState.passData?.desc!!
+        email.value = formPassGroupState.passData?.email ?: ""
+        jnsPass.value = formPassGroupState.passData?.jenisData ?: ""
+        passData.value = formPassGroupState.passData?.password!!
+        urlPass.value = formPassGroupState.passData?.url ?: ""
         roleId.value = formPassGroupState.passData?.posisiId?.toInt() ?: 0
     }
 
@@ -249,8 +249,8 @@ fun FormPassGroupScreen(
 //                                formViewModel.editUserPassData(passId = passId.toInt(), formData)
                             } else {
                                 validatorPassData(
-                                    nmAccount,
-                                    passData,
+                                    nmAccount.value,
+                                    passData.value,
                                     formPassGroupViewModel,
                                     formData,
                                     formPassGroupState.passDataGroupId!!
@@ -259,13 +259,13 @@ fun FormPassGroupScreen(
                         },
                         {
                             if(formPassGroupState.passData != null){
-                                nmAccount = ""
-                                userName = ""
-                                desc = ""
-                                email = ""
-                                jnsPass = ""
-                                passData = ""
-                                urlPass = ""
+                                nmAccount.value = ""
+                                userName.value = ""
+                                desc.value = ""
+                                email.value = ""
+                                jnsPass.value = ""
+                                passData.value = ""
+                                urlPass.value = ""
                             }
 //                            formPassGroupViewModel.resetValue()
                             navController.navigateUp()
@@ -283,15 +283,13 @@ fun FormPassGroupScreen(
                        it,
                        scope,
                        sheetState,
-                       PassDataRequest(
-                           nmAccount,
-                           desc,
-                           email,
-                           jnsPass,
-                           passData,
-                           urlPass,
-                           userName
-                       )
+                       nmAccount ,
+                        desc ,
+                        email ,
+                        jnsPass ,
+                        passData ,
+                        urlPass ,
+                        userName
                    )
                 }
             )
@@ -305,7 +303,13 @@ fun FormContentView(
     paddingValues: PaddingValues,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    passDataRequest: PassDataRequest
+    nmAccount : MutableState<String>,
+    desc : MutableState<String>,
+    email : MutableState<String>,
+    jnsPass : MutableState<String>,
+    passData : MutableState<String>,
+    urlPass : MutableState<String>,
+    userName : MutableState<String>
 ) {
     Box(
         modifier = Modifier.padding(paddingValues).fillMaxWidth().wrapContentHeight()
@@ -332,7 +336,7 @@ fun FormContentView(
                     )
                     FormTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passDataRequest.accountName ?: "",
+                        value = nmAccount.value,
                         labelHints = "Isi Nama Akun",
                         leadingIcon = null,
                         onValueChange = {
@@ -340,7 +344,7 @@ fun FormContentView(
                                 formState.passData.accountName = it
                             }
 
-                            passDataRequest.accountName = it
+                            nmAccount.value = it
                         }
                     )
                     Spacer(
@@ -357,14 +361,14 @@ fun FormContentView(
                     )
                     FormTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passDataRequest.username ?: "",
+                        value = userName.value,
                         labelHints = "Isi Username",
                         leadingIcon = null,
                         onValueChange = {
                             if (formState.passData != null) {
                                 formState.passData.username = it
                             }
-                            passDataRequest.username = it
+                           userName.value = it
                         }
                     )
                     Spacer(
@@ -381,7 +385,7 @@ fun FormContentView(
                     )
                     FormTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passDataRequest.jenisData ?: "",
+                        value = jnsPass.value,
                         labelHints = "Isi Jenis Password",
                         leadingIcon = null,
                         onValueChange = {
@@ -389,7 +393,7 @@ fun FormContentView(
                                 formState.passData.jenisData = it
                             }
 
-                            passDataRequest.jenisData = it
+                            jnsPass.value = it
                         }
                     )
                     Spacer(
@@ -406,7 +410,7 @@ fun FormContentView(
                     )
                     FormTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passDataRequest.email ?: "",
+                        value = email.value,
                         labelHints = "Isi Email",
                         leadingIcon = null,
                         onValueChange = {
@@ -414,7 +418,7 @@ fun FormContentView(
                                 formState.passData.email = it
                             }
 
-                            passDataRequest.email = it
+                            email.value = it
                         }
                     )
                     Spacer(
@@ -431,7 +435,7 @@ fun FormContentView(
                     )
                     FormTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passDataRequest.password ?: "",
+                        value = passData.value,
                         isPassword = true,
                         labelHints = "Isi Data Password",
                         leadingIcon = null,
@@ -440,7 +444,7 @@ fun FormContentView(
                                 formState.passData.password = it
                             }
 
-                            passDataRequest.password = it
+                            passData.value = it
                         }
                     )
                     Spacer(
@@ -457,7 +461,7 @@ fun FormContentView(
                     )
                     FormTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passDataRequest.url ?: "",
+                        value = urlPass.value,
                         labelHints = "Isi Data URL",
                         leadingIcon = null,
                         onValueChange = {
@@ -465,7 +469,7 @@ fun FormContentView(
                                 formState.passData.url = it
                             }
 
-                            passDataRequest.url = it
+                            urlPass.value = it
                         }
                     )
                     Spacer(
@@ -482,7 +486,7 @@ fun FormContentView(
                     )
                     FormTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = passDataRequest.desc ?: "",
+                        value = desc.value,
                         labelHints = "Isi Catatan Berikut Ini",
                         leadingIcon = null,
                         onValueChange = {
@@ -490,7 +494,7 @@ fun FormContentView(
                                 formState.passData.desc = it
                             }
 
-                            passDataRequest.desc = it
+                            desc.value = it
                         }
                     )
                     Spacer(
@@ -847,7 +851,7 @@ fun validatorPassData(
 ) {
     if(accountName.isEmpty() && pass.isEmpty()){
         setToast("Nama Akun dan Password Tidak Boleh Kosong")
-    }  else {
+    } else {
         formViewModel.createPassData(formData,groupId)
     }
 }
