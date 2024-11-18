@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
+import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
@@ -36,7 +37,7 @@ class FormPassGroupViewModel(
             )
         }
 
-        if(_formPassGroupDataState.value.passDataGroupId?.isNotEmpty() == true && _formPassGroupDataState.value.passDataGroupId != "{passDataGroupId}"){
+        if(_formPassGroupDataState.value.passDataGroupId?.isNotEmpty() == true && _formPassGroupDataState.value.passDataGroupId != "{passDataGroupId}" && _formPassGroupDataState.value.passDataGroupId != "-1"){
             loadDataPassById(_formPassGroupDataState.value.passDataGroupId?.toInt(),_formPassGroupDataState.value.groupId!!)
         }
     }
@@ -75,6 +76,38 @@ class FormPassGroupViewModel(
                         }
                     }
                 }
+        }
+    }
+
+    fun getListRoleData(groupId: String){
+        viewModelScope.launch {
+            repoPassDataGroup.getListRoleData(groupId.toInt()).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                listRoleData = res.data.data!!
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -132,6 +165,7 @@ data class FormPassGroupState(
     val passDataGroupId: String? = null,
     val insertAddContentPassData: List<InsertAddContentDataPass> = emptyList(),
     val listAddContentPassData: List<AddContentPassDataGroup> = emptyList(),
+    val listRoleData: List<RoleGroupData> = emptyList(),
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
     val groupId: String? = null,

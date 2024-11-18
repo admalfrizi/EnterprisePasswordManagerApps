@@ -80,6 +80,7 @@ import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
 import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
@@ -103,6 +104,7 @@ import resources.your_data_ic
 fun GroupPassDetail(
     navController: NavController,
     navToBack: () -> Unit,
+    navToFormGroupPass: (String) -> Unit,
     groupViewModel: GroupDetailsViewModel = koinViewModel(),
     bottomEdgeColor: MutableState<Color>
 ) {
@@ -127,11 +129,22 @@ fun GroupPassDetail(
         bottomEdgeColor.value = Color.White
     }
 
+    Napier.v("groupId: ${groupState.groupId}")
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetContent = {
-            OptionAddData(scope,sheetState,itemsData,navController)
+            if(groupState.groupId != null){
+                OptionAddData(
+                    scope,
+                    sheetState,
+                    itemsData,
+                    navController,
+                    navToFormGroupPass = {
+                        navToFormGroupPass(groupState.groupId!!)
+                    }
+                )
+            }
         }
     ){
         ContentView(

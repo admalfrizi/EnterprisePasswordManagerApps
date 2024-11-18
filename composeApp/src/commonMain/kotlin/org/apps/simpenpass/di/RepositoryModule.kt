@@ -49,6 +49,7 @@ val repoModule = module {
     factory<PassDataGroupRepository> {
         PassDataGroupRepository(
             remotePassDataGroupSources = get(),
+            remoteRolePositionGroup = get(),
             localData = get()
         )
     }

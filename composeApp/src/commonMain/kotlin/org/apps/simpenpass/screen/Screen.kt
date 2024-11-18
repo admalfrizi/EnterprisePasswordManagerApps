@@ -52,7 +52,7 @@ sealed class Screen(val route : String) {
 
     data object FormPassGroup: Screen(route = "groupPass/dtl/formGroupPass/{passDataGroupId}/{groupId}"){
         fun passData(
-            passDataGroupId : String,
+            passDataGroupId : String? = "-1",
             groupId: String
         ) = "groupPass/dtl/formGroupPass/$passDataGroupId/$groupId"
 

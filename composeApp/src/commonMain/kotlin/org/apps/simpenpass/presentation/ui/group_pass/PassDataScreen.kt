@@ -198,8 +198,7 @@ fun FilterRow(
                 .padding(start = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(listRole){ item ->
-                val isSelected = chipSelected == item?.id && isAllData.value == false
+            item {
                 Box(modifier = Modifier.fillMaxWidth()){
                     FilterChip(
                         onClick = {
@@ -221,9 +220,10 @@ fun FilterRow(
                         )
                     }
                 }
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
+            }
+
+            items(listRole){ item ->
+                val isSelected = chipSelected == item?.id && isAllData.value == false
                 Box(modifier = Modifier.fillMaxWidth()){
                     FilterChip(
                         onClick = {

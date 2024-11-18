@@ -42,7 +42,8 @@ fun OptionAddData(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     itemMenu: List<MethodSelection>,
-    navController: NavController
+    navController: NavController,
+    navToFormGroupPass: () -> Unit,
 ) {
     var selectedOption by remember { mutableStateOf(-1) }
 
@@ -93,7 +94,7 @@ fun OptionAddData(
             enabled = selectedOption != -1,
             onClick = {
                 if(selectedOption == 1){
-                    navController.navigate(Screen.FormPassGroup.route)
+                    navToFormGroupPass()
                     scope.launch {
                         sheetState.hide()
                     }

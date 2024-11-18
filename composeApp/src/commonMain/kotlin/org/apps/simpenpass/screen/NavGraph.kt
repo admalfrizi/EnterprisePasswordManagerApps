@@ -173,6 +173,9 @@ fun NavGraphBuilder.groupPassDetail(
         ) {
             GroupPassDetail(
                 navController,
+                navToFormGroupPass = {
+                    navController.navigate(Screen.FormPassGroup.passData(groupId = it))
+                },
                 navToBack = {
                     navController.navigateUp()
                 },

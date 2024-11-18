@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -46,6 +47,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,8 +65,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.request.PassDataRequest
@@ -138,9 +142,11 @@ fun FormPassGroupScreen(
     }
 
     if(isDialogPopup){
-        DialogEditRoleInPassData({
+        DialogEditRoleInPassData(
+            formPassGroupState.listRoleData
+        ) {
             isDialogPopup = false
-        })
+        }
     }
 
     if(formPassGroupState.passData != null){
@@ -152,6 +158,14 @@ fun FormPassGroupScreen(
         passData = formPassGroupState.passData?.password!!
         urlPass = formPassGroupState.passData?.url ?: ""
     }
+
+    LaunchedEffect(formPassGroupState.groupId != "{groupId}"){
+        if(formPassGroupState.groupId != null && formPassGroupState.groupId != "{groupId}"){
+            formPassGroupViewModel.getListRoleData(formPassGroupState.groupId!!)
+        }
+    }
+
+    Napier.v("groupId : ${formPassGroupState.groupId}")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -734,6 +748,7 @@ fun AddContentPassView(
 
 @Composable
 fun DialogEditRoleInPassData(
+    listRoleData: List<RoleGroupData>,
     onDismissDialog: () -> Unit,
 ) {
     Dialog(
@@ -774,29 +789,35 @@ fun DialogEditRoleInPassData(
                         }
                     )
                 }
-                Box(
-                    modifier = Modifier.fillMaxWidth().background(Color.Transparent)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Role Name",
-                            style = MaterialTheme.typography.caption,
-                            color = secondaryColor
-                        )
-                        Checkbox(
-                            onCheckedChange = {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    items(listRoleData){ item ->
+                        Box(
+                            modifier = Modifier.fillMaxWidth().background(Color.Transparent)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    item.nmPosisi,
+                                    style = MaterialTheme.typography.caption,
+                                    color = secondaryColor
+                                )
+                                Checkbox(
+                                    onCheckedChange = {
 
-                            },
-                            checked = true,
-                            colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
-                        )
+                                    },
+                                    checked = true,
+                                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
+                                )
 
+                            }
+
+                        }
                     }
-
                 }
             }
         }

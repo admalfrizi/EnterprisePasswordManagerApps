@@ -6,11 +6,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataGroupSources
+import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class PassDataGroupRepository(
     private val remotePassDataGroupSources: RemotePassDataGroupSources,
+    private val remoteRolePositionGroup: RemoteRolePositionGroup,
     private val localData : LocalStoreData
 ) {
     fun listPassDataGroup(
@@ -107,6 +109,36 @@ class PassDataGroupRepository(
         try {
             localData.getToken.collect { token ->
                 val result = remotePassDataGroupSources.getDataPassGroupById(token,groupId,passDataGroupId!!)
+                when(result.success){
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        if(result.code == 400){
+                            emit(NetworkResult.Error("Maaf anda harus masukan data yang valid !"))
+                        } else if(result.code == 404){
+                            emit(NetworkResult.Error("Maaf Role di grup ini Tidak Tersedia !"))
+                        } else {
+                            emit(NetworkResult.Error(result.message))
+                        }
+                    }
+                }
+            }
+        }catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun getListRoleData(
+        groupId: Int
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteRolePositionGroup.listRolePositionInGroup(token,groupId)
                 when(result.success){
                     true -> {
                         emit(NetworkResult.Success(result))
