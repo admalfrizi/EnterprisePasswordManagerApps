@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
-import org.apps.simpenpass.models.pass_data.AddContentPassData
+import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
@@ -117,15 +117,10 @@ class FormPassGroupViewModel(
                         _formPassGroupDataState.update {
                             it.copy(
                                 isLoading = false,
-                                passData = result.data.data
+                                passData = result.data.data,
+                                listAddContentPassData = result.data.data?.addPassContent!!
                             )
                         }
-
-//                        if(_formPassGroupDataState.value.passData?.id != null){
-//                            withContext(Dispatchers.IO){
-//                                listContentPassData(passId)
-//                            }
-//                        }
                     }
                 }
             }
@@ -139,7 +134,7 @@ data class FormPassGroupState(
     val passData: PassDataGroupByIdResponse? = null,
     val passDataGroupId: String? = null,
     val insertAddContentPassData: List<InsertAddContentDataPass> = emptyList(),
-    val listAddContentPassData: List<AddContentPassData> = emptyList(),
+    val listAddContentPassData: List<AddContentPassDataGroup> = emptyList(),
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
     val groupId: String? = null,

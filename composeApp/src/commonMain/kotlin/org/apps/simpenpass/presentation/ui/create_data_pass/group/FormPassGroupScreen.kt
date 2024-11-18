@@ -145,7 +145,7 @@ fun FormPassGroupScreen(
         userName = formPassGroupState.passData?.username!!
         nmAccount = formPassGroupState.passData?.accountName!!
         desc = formPassGroupState.passData?.desc!!
-        email = formPassGroupState.passData?.email!!
+        email = formPassGroupState.passData?.email ?: ""
         jnsPass = formPassGroupState.passData?.jenisData ?: ""
         passData = formPassGroupState.passData?.password!!
         urlPass = formPassGroupState.passData?.url ?: ""
@@ -691,7 +691,6 @@ fun AddContentPassView(
                 }
             }
         }
-
 
         item {
             Card(

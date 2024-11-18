@@ -19,6 +19,8 @@ data class PassDataGroup(
     val email: String?,
     @SerialName("password")
     val password: String?,
+    @SerialName("jenis_data")
+    val jenisData: String?,
     @SerialName("url")
     val url: String?,
     @SerialName("desc")

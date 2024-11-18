@@ -2,6 +2,7 @@ package org.apps.simpenpass.models.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 
 @Serializable
 data class PassDataGroupByIdResponse(
@@ -12,7 +13,7 @@ data class PassDataGroupByIdResponse(
     @SerialName("group_id")
     val groupId: String,
     @SerialName("jenis_data")
-    var jenisData: String,
+    var jenisData: String?,
     @SerialName("account_name")
     var accountName: String,
     @SerialName("username")
@@ -24,5 +25,7 @@ data class PassDataGroupByIdResponse(
     @SerialName("url")
     var url: String?,
     @SerialName("desc")
-    var desc: String?
+    var desc: String?,
+    @SerialName("add_pass_content")
+    var addPassContent: List<AddContentPassDataGroup>
 )

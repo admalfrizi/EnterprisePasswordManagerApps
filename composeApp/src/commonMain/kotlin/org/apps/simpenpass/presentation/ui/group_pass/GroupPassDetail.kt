@@ -278,7 +278,7 @@ fun ContentView(
                                 color = Color.White
                             )
                             Text(
-                                "23",
+                                groupState.passDataGroup.size.toString(),
                                 style = MaterialTheme.typography.body2,
                                 fontSize = 24.sp
                             )
