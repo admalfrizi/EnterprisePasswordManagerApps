@@ -199,6 +199,10 @@ fun FormContentView(
 
     val formState by formPassGroupViewModel.formPassDataGroupState.collectAsStateWithLifecycle()
 
+//    LaunchedEffect(formState.passDataGroupId != "{passDataGroupId}"){
+//        Napier.v("passGroupId : ${formState.passDataGroupId}")
+//    }
+
     Box(
         modifier = Modifier.padding(paddingValues).fillMaxWidth().wrapContentHeight()
     ) {

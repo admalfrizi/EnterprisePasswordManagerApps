@@ -43,6 +43,7 @@ import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
+import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
@@ -59,6 +60,7 @@ fun PassDataScreen(
     groupDtlViewModel: GroupDetailsViewModel
 ) {
     var isAllData = remember { mutableStateOf(true) }
+    var passGroupDataId = remember { mutableStateOf("") }
     val isLoading = groupState.listRoleGroup.isNotEmpty() && groupState.groupId != null && groupState.passDataGroup.isEmpty()
     LaunchedEffect(isLoading && isAllData.value) {
         if(isLoading){
@@ -93,7 +95,9 @@ fun PassDataScreen(
             ) {
                 items(groupState.passDataGroup){ data ->
                     Box(
-                        modifier = Modifier.fillMaxWidth().background(Color.White)
+                        modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
+                            navController.navigate(Screen.PassDataGroupDtl.route)
+                        }
                     ) {
                         Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Column {
@@ -110,7 +114,9 @@ fun PassDataScreen(
                                 )
                             }
                             IconButton(
-                                onClick = {}
+                                onClick = {
+
+                                }
                             ){
                                 Image(
                                     painterResource(Res.drawable.menu_ic),""
@@ -227,10 +233,12 @@ fun FilterRow(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AddPassDataBtnHolder(isShowBottomSheet: ModalBottomSheetState, scope: CoroutineScope) {
+fun AddPassDataBtnHolder(
+    isShowBottomSheet: ModalBottomSheetState,
+    scope: CoroutineScope
+) {
     Box(
         modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
-//            navController.navigate(Screen.EditAnggota.route)
             scope.launch {
                 isShowBottomSheet.show()
             }

@@ -20,11 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import org.apps.simpenpass.models.pass_data.DataPass
@@ -36,6 +38,7 @@ import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupScreen
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
 import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
+import org.apps.simpenpass.presentation.ui.group_pass.PassDataDetailsScreen
 import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
 import org.apps.simpenpass.presentation.ui.group_pass.retrieve_data_pass.RetrieveDataPass
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
@@ -232,11 +235,29 @@ fun NavGraphBuilder.groupPassDetail(
                         slideOutVertically(animationSpec = tween(durationMillis = 300)) {
                             with(density) { (30).dp.roundToPx() }
                         }
-            }
+            },
+            arguments = listOf(
+                navArgument(Screen.FormPassGroup.ARG_PASS_DATA_GROUP_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
         ){
             FormPassGroupScreen(
                 navController,
                 bottomEdgeColor
+            )
+        }
+
+        dialog(
+            route = Screen.PassDataGroupDtl.route,
+            dialogProperties = DialogProperties(
+                usePlatformDefaultWidth = false
+            )
+        ) {
+            PassDataDetailsScreen(
+                navController
             )
         }
 

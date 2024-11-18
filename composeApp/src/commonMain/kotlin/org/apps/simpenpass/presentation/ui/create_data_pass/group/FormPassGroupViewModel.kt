@@ -24,7 +24,7 @@ class FormPassGroupViewModel(
     private val _formPassGroupDataState = MutableStateFlow(FormPassGroupState())
     val formPassDataGroupState = _formPassGroupDataState.asStateFlow()
 
-    private val passDataGroupId = savedStateHandle.get<String>("groupId")
+    private val passDataGroupId = savedStateHandle.get<String>("passDataGroupId")
 
     init {
         _formPassGroupDataState.update {
@@ -71,7 +71,14 @@ class FormPassGroupViewModel(
                 }
         }
     }
+
+    fun updatePassData(){
+        viewModelScope.launch {
+
+        }
+    }
 }
+
 
 data class FormPassGroupState(
     val isLoading : Boolean = false,
