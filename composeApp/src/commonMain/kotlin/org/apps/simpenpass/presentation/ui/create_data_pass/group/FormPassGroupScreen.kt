@@ -157,6 +157,7 @@ fun FormPassGroupScreen(
         jnsPass = formPassGroupState.passData?.jenisData ?: ""
         passData = formPassGroupState.passData?.password!!
         urlPass = formPassGroupState.passData?.url ?: ""
+        roleId.value = formPassGroupState.passData?.posisiId?.toInt() ?: 0
     }
 
     LaunchedEffect(formPassGroupState.groupId != "{groupId}"){
