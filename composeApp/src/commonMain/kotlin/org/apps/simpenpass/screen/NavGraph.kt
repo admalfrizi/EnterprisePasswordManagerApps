@@ -241,6 +241,11 @@ fun NavGraphBuilder.groupPassDetail(
                     type = NavType.StringType
                     nullable = true
                     defaultValue = ""
+                },
+                navArgument(Screen.FormPassGroup.ARG_GROUP_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
                 }
             )
         ){

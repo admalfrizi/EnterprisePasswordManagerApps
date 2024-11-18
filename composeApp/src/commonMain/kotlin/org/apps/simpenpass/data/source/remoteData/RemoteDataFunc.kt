@@ -19,6 +19,7 @@ import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
 import org.apps.simpenpass.models.response.LatestPassDataResponse
+import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.models.response.SendOtpResponse
@@ -116,6 +117,7 @@ interface RolePositionFunc {
 interface PassDataGroupFunc {
     suspend fun listGroupPassword(token: String,groupId: Int) : BaseResponse<List<PassDataGroup>>
     suspend fun listGroupPasswordRoleFiltered(token: String, groupId: Int, roleId: Int) : BaseResponse<List<PassDataGroup>>
+    suspend fun getDataPassGroupById(token: String, groupId: Int, passDataGroupId: Int) : BaseResponse<PassDataGroupByIdResponse>
     suspend fun addPassGroup(token: String,groupId: Int,roleId: Int,addDataPass: PassDataRequest) : BaseResponse<PassResponseData>
     suspend fun updatePassGroup()
 }

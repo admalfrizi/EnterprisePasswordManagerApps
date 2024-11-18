@@ -15,6 +15,7 @@ import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.PassDataGroup
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
 
@@ -54,6 +55,26 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
         }
     }
 
+    override suspend fun getDataPassGroupById(
+        token: String,
+        groupId: Int,
+        passDataGroupId: Int
+    ): BaseResponse<PassDataGroupByIdResponse> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "loadDataPassGroupById/$groupId")
+            {
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("passDataGroupId", passDataGroupId)
+            }
+            return response.body<BaseResponse<PassDataGroupByIdResponse>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
     override suspend fun addPassGroup(token: String,groupId: Int,roleId: Int,addDataPass: PassDataRequest) : BaseResponse<PassResponseData> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addPassDataToGroup/$groupId"){
@@ -64,7 +85,6 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
             }
 
             return response.body<BaseResponse<PassResponseData>>()
-
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

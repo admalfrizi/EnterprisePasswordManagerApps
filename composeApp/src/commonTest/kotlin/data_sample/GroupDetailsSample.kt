@@ -27,4 +27,8 @@ class GroupDetailsSample {
             }
         ]
     """.trimIndent()
+
+    val passDataGroupId = """
+        
+    """.trimIndent()
 }

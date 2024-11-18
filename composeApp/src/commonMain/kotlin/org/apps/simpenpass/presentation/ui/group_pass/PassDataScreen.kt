@@ -121,7 +121,7 @@ fun PassDataScreen(
                             Row {
                                 IconButton(
                                     onClick = {
-
+                                        navController.navigate(Screen.FormPassGroup.passData(data?.id.toString(),groupState.groupId!!))
                                     }
                                 ){
                                     Image(

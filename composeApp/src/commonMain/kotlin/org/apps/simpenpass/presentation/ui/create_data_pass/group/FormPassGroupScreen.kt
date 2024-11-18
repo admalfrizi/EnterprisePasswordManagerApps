@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -41,7 +46,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.github.aakira.napier.Napier
@@ -68,11 +73,13 @@ import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.add_option_ic
+import resources.menu_ic
 
 @Composable
 fun FormPassGroupScreen(
@@ -82,7 +89,10 @@ fun FormPassGroupScreen(
 ) {
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
+    val isDismiss = remember { mutableStateOf(false) }
     val formPassGroupState by formPassGroupViewModel.formPassDataGroupState.collectAsStateWithLifecycle()
+    var isDropdownShow by remember { mutableStateOf(false) }
+    var isDialogPopup by remember { mutableStateOf(false) }
 
     var nmAccount by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
@@ -116,14 +126,33 @@ fun FormPassGroupScreen(
         url = urlPass,
     )
 
-    LaunchedEffect(formPassGroupState.passDataGroupId != "{passDataGroupId}"){
-        Napier.v("passGroupId : ${formPassGroupState.passDataGroupId}")
-    }
-
     if(sheetState.isVisible){
         nmData.value = ""
         vlData.value = ""
     }
+
+    if(formPassGroupState.isLoading){
+        popUpLoading(isDismiss)
+    }
+
+    if(isDialogPopup){
+        DialogEditRoleInPassData({
+            isDialogPopup = false
+        })
+    }
+
+    if(formPassGroupState.passData != null){
+        userName = formPassGroupState.passData?.username!!
+        nmAccount = formPassGroupState.passData?.accountName!!
+        desc = formPassGroupState.passData?.desc!!
+        email = formPassGroupState.passData?.email!!
+        jnsPass = formPassGroupState.passData?.jenisData ?: ""
+        passData = formPassGroupState.passData?.password!!
+        urlPass = formPassGroupState.passData?.url ?: ""
+    }
+
+    Napier.v("groupId : ${formPassGroupState.groupId}")
+    Napier.v("passGroupId : ${formPassGroupState.passDataGroupId}")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -168,6 +197,35 @@ fun FormPassGroupScreen(
                                     )
                                 }
                             )
+                        },
+                        actions = {
+                            IconButton(
+                                onClick = {
+                                    isDropdownShow = true
+                                },
+                                content = {
+                                    Image(
+                                        painterResource(Res.drawable.menu_ic),
+                                        "",
+                                        colorFilter = ColorFilter.tint(Color.White)
+                                    )
+                                }
+                            )
+                            DropdownMenu(
+                                expanded = isDropdownShow,
+                                onDismissRequest = { isDropdownShow = false }
+                            ) {
+                                DropdownMenuItem(
+                                    content = {
+                                        Text(text = "Edit Role Pass Group")
+                                    },
+                                    onClick = {
+//                                        navController.navigateUp()
+                                        isDialogPopup = true
+                                        isDropdownShow = false
+                                    }
+                                )
+                            }
                         },
                         elevation = 0.dp
                     )
@@ -671,6 +729,77 @@ fun AddContentPassView(
                             )
                         }
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DialogEditRoleInPassData(
+    onDismissDialog: () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = {
+            onDismissDialog()
+        }
+    ){
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            elevation = 0.dp,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Masukan Data Role",
+                        style = MaterialTheme.typography.body1,
+                        color = secondaryColor
+                    )
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
+                    IconButton(
+                        onClick = {
+                            onDismissDialog()
+                        },
+                        content = {
+                            Image(
+                                Icons.Default.Clear,
+                                ""
+                            )
+                        }
+                    )
+                }
+                Box(
+                    modifier = Modifier.fillMaxWidth().background(Color.Transparent)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Role Name",
+                            style = MaterialTheme.typography.caption,
+                            color = secondaryColor
+                        )
+                        Checkbox(
+                            onCheckedChange = {
+
+                            },
+                            checked = true,
+                            colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
+                        )
+
+                    }
+
                 }
             }
         }

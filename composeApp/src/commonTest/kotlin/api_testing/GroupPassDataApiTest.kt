@@ -10,6 +10,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.apps.simpenpass.utils.Constants
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -72,5 +73,23 @@ class GroupPassDataApiTest {
         println(response.bodyAsText())
 
         assertEquals(baseReponseSample(groupDetailsSample.listPassDataGroup), response.bodyAsText())
+    }
+
+    @Test
+    fun `get pass data by id test api`() = runTest {
+        val apiClient = apiMockEngine.setupApiMocking(groupDetailsSample.passDataGroupId)
+        apiMockEngine.givenSuccess()
+
+        val token = "2|DKWA4gE7hi09GKIDWqJFjAL3MlZdEtOJgAAJiQ6Je0d3addc"
+        val groupId = 2
+
+        val response = apiClient.get(Constants.BASE_API_URL+"allPassGroupData/$groupId"){
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }
+
+        println(response.bodyAsText())
+
+        assertEquals(baseReponseSample(groupDetailsSample.passDataGroupId), response.bodyAsText())
     }
 }

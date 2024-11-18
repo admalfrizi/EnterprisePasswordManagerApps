@@ -14,7 +14,7 @@ import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.utils.NetworkResult
 import kotlin.collections.plus
 
@@ -26,12 +26,18 @@ class FormPassGroupViewModel(
     val formPassDataGroupState = _formPassGroupDataState.asStateFlow()
 
     private val passDataGroupId = savedStateHandle.get<String>("passDataGroupId")
+    private val groupId = savedStateHandle.get<String>("groupId")
 
     init {
         _formPassGroupDataState.update {
             it.copy(
-                passDataGroupId = passDataGroupId
+                passDataGroupId = passDataGroupId,
+                groupId = groupId
             )
+        }
+
+        if(_formPassGroupDataState.value.passDataGroupId?.isNotEmpty() == true && _formPassGroupDataState.value.passDataGroupId != "{passDataGroupId}"){
+            loadDataPassById(_formPassGroupDataState.value.passDataGroupId?.toInt(),_formPassGroupDataState.value.groupId!!)
         }
     }
 
@@ -88,17 +94,55 @@ class FormPassGroupViewModel(
             }
         }
     }
+
+    fun loadDataPassById(passDataGroupId: Int?, groupId: String) {
+        viewModelScope.launch {
+            repoPassDataGroup.getPassDataGroupById(groupId.toInt(),passDataGroupId?.toInt()).collect { result ->
+                when(result){
+                    is NetworkResult.Error -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                error = result.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                passData = result.data.data
+                            )
+                        }
+
+//                        if(_formPassGroupDataState.value.passData?.id != null){
+//                            withContext(Dispatchers.IO){
+//                                listContentPassData(passId)
+//                            }
+//                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
 data class FormPassGroupState(
     val isLoading : Boolean = false,
-    val passData: PassResponseData? = null,
+    val passData: PassDataGroupByIdResponse? = null,
     val passDataGroupId: String? = null,
     val insertAddContentPassData: List<InsertAddContentDataPass> = emptyList(),
     val listAddContentPassData: List<AddContentPassData> = emptyList(),
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
+    val groupId: String? = null,
     val error : String? = null,
     val msg : String? = null,
     val msgAddContentData: String? = null

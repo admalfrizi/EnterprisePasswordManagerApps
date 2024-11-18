@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class GroupRepositoryMockTest {
     private val apiMockEngine = ApiMocking()
@@ -63,7 +64,10 @@ class GroupRepositoryMockTest {
     }
 
     @Test
-    fun `create group data result test`() = runTest {
+    fun `get Data Pass Group by id`() = runTest {
 
+        var result = ""
+
+        assertTrue(result.isNotEmpty())
     }
 }
