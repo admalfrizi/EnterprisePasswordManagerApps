@@ -12,11 +12,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
+import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.pass_data.PassDataGroup
-import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.request.InsertAddContentDataPass
+import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
-import org.apps.simpenpass.models.response.PassResponseData
+import org.apps.simpenpass.models.response.PassGroupResponseData
 import org.apps.simpenpass.utils.Constants
 
 class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataGroupFunc {
@@ -75,16 +77,15 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
         }
     }
 
-    override suspend fun addPassGroup(token: String,groupId: Int,roleId: Int,addDataPass: PassDataRequest) : BaseResponse<PassResponseData> {
+    override suspend fun addPassGroup(token: String,groupId: Int,addDataPass: PassDataGroupRequest) : BaseResponse<PassGroupResponseData> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addPassDataToGroup/$groupId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
-                parameter("roleId", roleId)
                 setBody(addDataPass)
             }
 
-            return response.body<BaseResponse<PassResponseData>>()
+            return response.body<BaseResponse<PassGroupResponseData>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){
@@ -94,5 +95,26 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
 
     override suspend fun updatePassGroup() {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun addContentPassData(
+        token: String,
+        groupId: Int,
+        passGroupDataId: Int,
+        addContentPassData: List<InsertAddContentDataPass>
+    ): BaseResponse<List<AddContentPassDataGroup>> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addContentPassDataGroup/$groupId/$passGroupDataId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(addContentPassData)
+            }
+
+            return response.body<BaseResponse<List<AddContentPassDataGroup>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
     }
 }

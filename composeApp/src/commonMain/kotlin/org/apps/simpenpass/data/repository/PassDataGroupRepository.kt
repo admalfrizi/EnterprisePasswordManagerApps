@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataGroupSources
-import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class PassDataGroupRepository(
@@ -67,14 +67,16 @@ class PassDataGroupRepository(
 
     fun addPassDataGroup(
         groupId: Int,
-        roleId: Int,
-        addPassDataGroup: PassDataRequest
+        addPassDataGroup: PassDataGroupRequest
     ) = flow {
         try {
             localData.getToken.collect { token ->
-                val result = remotePassDataGroupSources.addPassGroup(token,groupId,roleId,addPassDataGroup)
+                val result = remotePassDataGroupSources.addPassGroup(token,groupId,addPassDataGroup)
                 when(result.success){
                     true -> {
+                        if(addPassDataGroup.addPassContent != null && result.data?.id != null){
+                            remotePassDataGroupSources.addContentPassData(token,groupId,result.data.id,addPassDataGroup.addPassContent)
+                        }
                         emit(NetworkResult.Success(result))
                     }
                     false -> {

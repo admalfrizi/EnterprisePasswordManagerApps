@@ -63,10 +63,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
+import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
@@ -116,7 +116,7 @@ fun FormPassGroupScreen(
         setToast("Data Berhasil Ditambahkan")
     }
 
-    val formData = PassDataRequest(
+    val formData = PassDataGroupRequest(
         accountName = nmAccount,
         username = userName,
         desc = desc,
@@ -124,6 +124,8 @@ fun FormPassGroupScreen(
         jenisData = jnsPass,
         password = passData,
         url = urlPass,
+        posisiId = roleId,
+        addPassContent = formPassGroupState.insertAddContentPassData
     )
 
     if(sheetState.isVisible){
@@ -150,9 +152,6 @@ fun FormPassGroupScreen(
         passData = formPassGroupState.passData?.password!!
         urlPass = formPassGroupState.passData?.url ?: ""
     }
-
-    Napier.v("groupId : ${formPassGroupState.groupId}")
-    Napier.v("passGroupId : ${formPassGroupState.passDataGroupId}")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -241,8 +240,7 @@ fun FormPassGroupScreen(
                                     passData,
                                     formPassGroupViewModel,
                                     formData,
-                                    formPassGroupState.passDataGroupId!!,
-                                    roleId
+                                    formPassGroupState.passDataGroupId!!
                                 )
                             }
                         },
@@ -823,13 +821,12 @@ fun validatorPassData(
     accountName: String,
     pass: String,
     formViewModel: FormPassGroupViewModel,
-    formData: PassDataRequest,
-    groupId: String,
-    roleId: Int
+    formData: PassDataGroupRequest,
+    groupId: String
 ) {
     if(accountName.isEmpty() && pass.isEmpty()){
         setToast("Nama Akun dan Password Tidak Boleh Kosong")
     }  else {
-        formViewModel.createPassData(formData,groupId,roleId)
+        formViewModel.createPassData(formData,groupId)
     }
 }

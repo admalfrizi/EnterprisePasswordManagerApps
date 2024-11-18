@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
-import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.utils.NetworkResult
 import kotlin.collections.plus
@@ -42,12 +42,11 @@ class FormPassGroupViewModel(
     }
 
     fun createPassData(
-        formData: PassDataRequest,
-        groupId: String,
-        roleId: Int
+        formData: PassDataGroupRequest,
+        groupId: String
     ) {
         viewModelScope.launch {
-            repoPassDataGroup.addPassDataGroup(groupId.toInt(),roleId,formData).flowOn(Dispatchers.IO)
+            repoPassDataGroup.addPassDataGroup(groupId.toInt(),formData).flowOn(Dispatchers.IO)
                 .collect { res ->
                     when(res){
                         is NetworkResult.Error -> {
@@ -86,12 +85,10 @@ class FormPassGroupViewModel(
     }
 
     fun addContentDataToList(member: InsertAddContentDataPass){
-        viewModelScope.launch(Dispatchers.Main) {
-            _formPassGroupDataState.update { currentList ->
-                currentList.copy(
-                    insertAddContentPassData = currentList.insertAddContentPassData + member
-                )
-            }
+        _formPassGroupDataState.update { currentList ->
+            currentList.copy(
+                insertAddContentPassData = currentList.insertAddContentPassData + member
+            )
         }
     }
 
