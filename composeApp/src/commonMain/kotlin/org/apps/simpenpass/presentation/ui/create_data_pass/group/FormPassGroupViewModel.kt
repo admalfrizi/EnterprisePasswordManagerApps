@@ -16,6 +16,7 @@ import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.NetworkResult
+import kotlin.collections.plus
 
 class FormPassGroupViewModel(
     private val repoPassDataGroup: PassDataGroupRepository,
@@ -75,6 +76,16 @@ class FormPassGroupViewModel(
     fun updatePassData(){
         viewModelScope.launch {
 
+        }
+    }
+
+    fun addContentDataToList(member: InsertAddContentDataPass){
+        viewModelScope.launch(Dispatchers.Main) {
+            _formPassGroupDataState.update { currentList ->
+                currentList.copy(
+                    insertAddContentPassData = currentList.insertAddContentPassData + member
+                )
+            }
         }
     }
 }

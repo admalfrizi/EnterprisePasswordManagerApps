@@ -24,7 +24,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -35,8 +38,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,16 +53,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
+import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -80,21 +91,52 @@ fun FormPassGroupScreen(
     var passData by remember { mutableStateOf("") }
     var urlPass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
+    val nmData = remember { mutableStateOf("") }
+    val vlData = remember { mutableStateOf("") }
+    val roleId by remember { mutableStateOf(0) }
 
     bottomEdgeColor.value = secondaryColor
+
+    if(sheetState.isVisible){
+        bottomEdgeColor.value = Color.White
+    }
+
+    if(formPassGroupState.isCreated){
+        navController.navigateUp()
+        setToast("Data Berhasil Ditambahkan")
+    }
+
+    val formData = PassDataRequest(
+        accountName = nmAccount,
+        username = userName,
+        desc = desc,
+        email = email,
+        jenisData = jnsPass,
+        password = passData,
+        url = urlPass,
+    )
+
+    LaunchedEffect(formPassGroupState.passDataGroupId != "{passDataGroupId}"){
+        Napier.v("passGroupId : ${formPassGroupState.passDataGroupId}")
+    }
+
+    if(sheetState.isVisible){
+        nmData.value = ""
+        vlData.value = ""
+    }
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,
         sheetContent = {
-//            AddContentDataForm(
-//                Modifier.fillMaxWidth(),
-//                sheetState,
-//                scope,
-//                formViewModel,
-//                nmData,
-//                vlData
-//            )
+            AddContentPassDataGroupForm(
+                Modifier.fillMaxWidth(),
+                sheetState,
+                scope,
+                formPassGroupViewModel,
+                nmData,
+                vlData
+            )
         },
         sheetElevation = 0.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -136,12 +178,14 @@ fun FormPassGroupScreen(
                             if(formPassGroupState.passDataGroupId?.isNotEmpty() == true){
 //                                formViewModel.editUserPassData(passId = passId.toInt(), formData)
                             } else {
-//                                validatorData(
-//                                    nmAccount,
-//                                    passData,
-//                                    formViewModel,
-//                                    formData
-//                                )
+                                validatorPassData(
+                                    nmAccount,
+                                    passData,
+                                    formPassGroupViewModel,
+                                    formData,
+                                    formPassGroupState.passDataGroupId!!,
+                                    roleId
+                                )
                             }
                         },
                         {
@@ -166,7 +210,7 @@ fun FormPassGroupScreen(
                 },
                 content = {
                    FormContentView(
-                       formPassGroupViewModel,
+                       formPassGroupState,
                        it,
                        scope,
                        sheetState,
@@ -188,21 +232,12 @@ fun FormPassGroupScreen(
 
 @Composable
 fun FormContentView(
-    formPassGroupViewModel: FormPassGroupViewModel,
+    formState: FormPassGroupState,
     paddingValues: PaddingValues,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     passDataRequest: PassDataRequest
 ) {
-    val nmData = remember { mutableStateOf("") }
-    val vlData = remember { mutableStateOf("") }
-
-    val formState by formPassGroupViewModel.formPassDataGroupState.collectAsStateWithLifecycle()
-
-//    LaunchedEffect(formState.passDataGroupId != "{passDataGroupId}"){
-//        Napier.v("passGroupId : ${formState.passDataGroupId}")
-//    }
-
     Box(
         modifier = Modifier.padding(paddingValues).fillMaxWidth().wrapContentHeight()
     ) {
@@ -232,9 +267,9 @@ fun FormContentView(
                         labelHints = "Isi Nama Akun",
                         leadingIcon = null,
                         onValueChange = {
-//                                            if (formState.passData != null) {
-//                                                formState.passData?.accountName = it
-//                                            }
+                            if (formState.passData != null) {
+                                formState.passData.accountName = it
+                            }
 
                             passDataRequest.accountName = it
                         }
@@ -257,9 +292,9 @@ fun FormContentView(
                         labelHints = "Isi Username",
                         leadingIcon = null,
                         onValueChange = {
-//                                            if (formState.passData != null) {
-//                                                formState.passData?.username = it
-//                                            }
+                            if (formState.passData != null) {
+                                formState.passData.username = it
+                            }
                             passDataRequest.username = it
                         }
                     )
@@ -281,9 +316,9 @@ fun FormContentView(
                         labelHints = "Isi Jenis Password",
                         leadingIcon = null,
                         onValueChange = {
-//                                            if (formState.passData != null) {
-//                                                formState.passData?.jenisData = it
-//                                            }
+                            if (formState.passData != null) {
+                                formState.passData.jenisData = it
+                            }
 
                             passDataRequest.jenisData = it
                         }
@@ -306,9 +341,9 @@ fun FormContentView(
                         labelHints = "Isi Email",
                         leadingIcon = null,
                         onValueChange = {
-//                                            if (formState.passData != null) {
-//                                                formState.passData?.email = it
-//                                            }
+                            if (formState.passData != null) {
+                                formState.passData.email = it
+                            }
 
                             passDataRequest.email = it
                         }
@@ -332,9 +367,9 @@ fun FormContentView(
                         labelHints = "Isi Data Password",
                         leadingIcon = null,
                         onValueChange = {
-//                                            if (formState.passData != null) {
-//                                                formState.passData?.password = it
-//                                            }
+                            if (formState.passData != null) {
+                                formState.passData.password = it
+                            }
 
                             passDataRequest.password = it
                         }
@@ -357,9 +392,9 @@ fun FormContentView(
                         labelHints = "Isi Data URL",
                         leadingIcon = null,
                         onValueChange = {
-//                                            if (formState.passData != null) {
-//                                                formState.passData?.url = it
-//                                            }
+                            if (formState.passData != null) {
+                                formState.passData.url = it
+                            }
 
                             passDataRequest.url = it
                         }
@@ -382,9 +417,9 @@ fun FormContentView(
                         labelHints = "Isi Catatan Berikut Ini",
                         leadingIcon = null,
                         onValueChange = {
-//                                            if (formState.passData != null) {
-//                                                formState.passData?.desc = it
-//                                            }
+                            if (formState.passData != null) {
+                                formState.passData.desc = it
+                            }
 
                             passDataRequest.desc = it
                         }
@@ -405,16 +440,127 @@ fun FormContentView(
                 Spacer(
                     modifier = Modifier.height(9.dp)
                 )
-//                AddContentPassView(
-//                    formState,
-//                    scope = scope,
-//                    sheetState
-//                )
+                AddContentPassView(
+                    formState,
+                    scope = scope,
+                    sheetState
+                )
                 Spacer(
                     modifier = Modifier.height(14.dp)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun AddContentPassDataGroupForm(
+    modifier: Modifier = Modifier,
+    sheetState: ModalBottomSheetState,
+    scope: CoroutineScope,
+    formViewModel: FormPassGroupViewModel,
+    nmData: MutableState<String>,
+    vlData: MutableState<String>
+) {
+    Column(
+        modifier = modifier,
+    ){
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+        IconButton(
+            onClick = {
+                scope.launch {
+                    sheetState.hide()
+                }
+            },
+            content = {
+                Icon(
+                    Icons.Filled.Clear,
+                    ""
+                )
+            }
+        )
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            text = "Data Tambahan",
+            style = MaterialTheme.typography.button.copy(
+                color = secondaryColor
+            )
+        )
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            text = "Nama Data",
+            style = MaterialTheme.typography.body2.copy(
+                color = secondaryColor
+            )
+        )
+        Spacer(
+            modifier = Modifier.height(9.dp)
+        )
+        FormTextField(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            value = nmData.value,
+            labelHints = "Isi Jenis Nama Data",
+            leadingIcon = null,
+            onValueChange = {
+                nmData.value = it
+            }
+        )
+        Spacer(
+            modifier = Modifier.height(21.dp)
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            text = "Isi Data",
+            style = MaterialTheme.typography.body2.copy(
+                color = secondaryColor
+            )
+        )
+        Spacer(
+            modifier = Modifier.height(9.dp)
+        )
+        FormTextField(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            value = vlData.value,
+            labelHints = "Isi Data Tambahan",
+            leadingIcon = null,
+            onValueChange = {
+                vlData.value = it
+            }
+        )
+        Spacer(
+            modifier = Modifier.height(32.dp)
+        )
+        Button(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            onClick = {
+                scope.launch {
+                    formViewModel.addContentDataToList(InsertAddContentDataPass(nmData.value,vlData.value))
+                    sheetState.hide()
+                }
+
+            },
+            shape = RoundedCornerShape(20.dp),
+            elevation = ButtonDefaults.elevation(0.dp),
+            colors = ButtonDefaults.buttonColors(btnColor),
+            content = {
+                Text(
+                    "Tambahkan",
+                    style = MaterialTheme.typography.h6,
+                    color = fontColor1
+                )
+            }
+        )
+        Spacer(
+            modifier = Modifier.height(20.dp)
+        )
     }
 }
 
@@ -429,7 +575,7 @@ fun AddContentPassView(
         horizontalArrangement = Arrangement.spacedBy(7.dp),
         verticalArrangement = Arrangement.spacedBy(7.dp),
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).heightIn(
-            max = 0.dp
+            max = checkData(formState)
         ),
         userScrollEnabled = false
     ){
@@ -471,7 +617,7 @@ fun AddContentPassView(
                     modifier = Modifier.padding(14.dp),
                 ) {
                     Text(
-                        "",
+                        item.nmData,
                         style = MaterialTheme.typography.body1,
                         color = fontColor1
                     )
@@ -479,7 +625,7 @@ fun AddContentPassView(
                         modifier = Modifier.height(26.dp)
                     )
                     Text(
-                        "",
+                        item.vlData,
                         style = MaterialTheme.typography.subtitle1,
                         color = fontColor1,
                         fontSize = 10.sp
@@ -492,9 +638,9 @@ fun AddContentPassView(
         item {
             Card(
                 modifier = Modifier.width(168.dp).clickable {
-//                    scope.launch {
-//                        sheetState.show()
-//                    }
+                    scope.launch {
+                        sheetState.show()
+                    }
                 },
                 backgroundColor = Color(0xFF78A1D7),
                 shape = RoundedCornerShape(10.dp),
@@ -528,5 +674,34 @@ fun AddContentPassView(
                 }
             }
         }
+    }
+}
+
+fun checkData(
+    formState: FormPassGroupState,
+): Dp {
+    val totalSize = (formState.listAddContentPassData.size + formState.insertAddContentPassData.size)
+
+    return if (formState.listAddContentPassData.isEmpty() && formState.insertAddContentPassData.isEmpty()) {
+        105.dp
+    } else if(totalSize.toString().isNotEmpty()) {
+        (totalSize * 105).dp
+    }  else {
+        0.dp
+    }
+}
+
+fun validatorPassData(
+    accountName: String,
+    pass: String,
+    formViewModel: FormPassGroupViewModel,
+    formData: PassDataRequest,
+    groupId: String,
+    roleId: Int
+) {
+    if(accountName.isEmpty() && pass.isEmpty()){
+        setToast("Nama Akun dan Password Tidak Boleh Kosong")
+    }  else {
+        formViewModel.createPassData(formData,groupId,roleId)
     }
 }

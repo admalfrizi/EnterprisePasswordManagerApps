@@ -47,8 +47,9 @@ import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
+import resources.copy_paste
+import resources.edit_pass_ic
 import resources.empty_pass_ic
-import resources.menu_ic
 import resources.pass_data_ic
 
 @Composable
@@ -99,7 +100,11 @@ fun PassDataScreen(
                             navController.navigate(Screen.PassDataGroupDtl.route)
                         }
                     ) {
-                        Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             Column {
                                 Text(
                                     data?.accountName!!,
@@ -113,15 +118,27 @@ fun PassDataScreen(
                                     color = secondaryColor
                                 )
                             }
-                            IconButton(
-                                onClick = {
+                            Row {
+                                IconButton(
+                                    onClick = {
 
+                                    }
+                                ){
+                                    Image(
+                                        painterResource(Res.drawable.edit_pass_ic),""
+                                    )
                                 }
-                            ){
-                                Image(
-                                    painterResource(Res.drawable.menu_ic),""
-                                )
+                                IconButton(
+                                    onClick = {
+
+                                    }
+                                ){
+                                    Image(
+                                        painterResource(Res.drawable.copy_paste),""
+                                    )
+                                }
                             }
+
                         }
                     }
                 }
