@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -107,7 +106,7 @@ fun FormPassGroupScreen(
     var desc by remember { mutableStateOf("") }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
-    val roleId by remember { mutableStateOf(0) }
+    var roleId = remember { mutableStateOf(0) }
 
     bottomEdgeColor.value = secondaryColor
 
@@ -128,7 +127,7 @@ fun FormPassGroupScreen(
         jenisData = jnsPass,
         password = passData,
         url = urlPass,
-        posisiId = roleId,
+        posisiId = roleId.value,
         addPassContent = formPassGroupState.insertAddContentPassData
     )
 
@@ -143,6 +142,7 @@ fun FormPassGroupScreen(
 
     if(isDialogPopup){
         DialogEditRoleInPassData(
+            roleId,
             formPassGroupState.listRoleData
         ) {
             isDialogPopup = false
@@ -164,8 +164,6 @@ fun FormPassGroupScreen(
             formPassGroupViewModel.getListRoleData(formPassGroupState.groupId!!)
         }
     }
-
-    Napier.v("groupId : ${formPassGroupState.groupId}")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -748,6 +746,7 @@ fun AddContentPassView(
 
 @Composable
 fun DialogEditRoleInPassData(
+    roleId: MutableState<Int>,
     listRoleData: List<RoleGroupData>,
     onDismissDialog: () -> Unit,
 ) {
@@ -808,9 +807,9 @@ fun DialogEditRoleInPassData(
                                 )
                                 Checkbox(
                                     onCheckedChange = {
-
+                                        roleId.value = item.id
                                     },
-                                    checked = true,
+                                    checked = roleId.value == item.id,
                                     colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
                                 )
 

@@ -37,7 +37,7 @@ class FormPassGroupViewModel(
             )
         }
 
-        if(_formPassGroupDataState.value.passDataGroupId?.isNotEmpty() == true && _formPassGroupDataState.value.passDataGroupId != "{passDataGroupId}" && _formPassGroupDataState.value.passDataGroupId != "-1"){
+        if(_formPassGroupDataState.value.passDataGroupId != "{passDataGroupId}" && _formPassGroupDataState.value.passDataGroupId != "-1"){
             loadDataPassById(_formPassGroupDataState.value.passDataGroupId?.toInt(),_formPassGroupDataState.value.groupId!!)
         }
     }
