@@ -80,6 +80,7 @@ import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
 import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
+import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
@@ -172,7 +173,7 @@ fun ContentView(
     isPopUp : MutableState<Boolean>
 ) {
     var indexTab by rememberSaveable { mutableStateOf(0) }
-    val imagesName = groupState.dtlGroupData?.img_grup
+    val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
     val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
 
     if(isPopUp.value) {
@@ -241,7 +242,7 @@ fun ContentView(
                                     )
                                 } else {
                                     Text(
-                                        text = profileNameInitials(groupState.dtlGroupData.nm_grup),
+                                        text = profileNameInitials(groupState.dtlGroupData.groupDtl.nm_grup),
                                         style = MaterialTheme.typography.body1,
                                         fontSize = 36.sp,
                                         color = Color.White,
@@ -254,13 +255,13 @@ fun ContentView(
                             Column(modifier = Modifier.align(Alignment.CenterVertically)) {
                                 Spacer(modifier = Modifier.height(14.dp))
                                 Text(
-                                    groupState.dtlGroupData.nm_grup,
+                                    groupState.dtlGroupData.groupDtl.nm_grup,
                                     style = MaterialTheme.typography.button,
                                     color = secondaryColor
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    groupState.dtlGroupData.desc ?: "",
+                                    groupState.dtlGroupData.groupDtl.desc ?: "",
                                     style = MaterialTheme.typography.subtitle1,
                                     color = secondaryColor
                                 )
@@ -272,53 +273,78 @@ fun ContentView(
                 Spacer(
                     modifier = Modifier.height(14.dp)
                 )
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                    Card(
-                        modifier = Modifier.width(167.dp).height(93.dp).weight(1f),
-                        backgroundColor = Color(0xFF1E559C),
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(11.dp).fillMaxHeight(),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                "Jumlah Data Password",
-                                style = MaterialTheme.typography.subtitle2,
-                                color = Color.White
-                            )
-                            Text(
-                                groupState.passDataGroup.size.toString(),
-                                style = MaterialTheme.typography.body2,
-                                fontSize = 24.sp
-                            )
-                        }
+                if(groupState.isLoading  && groupState.dtlGroupData == null){
+                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).shimmer()) {
+                        Box(
+                            modifier = Modifier
+                                .width(167.dp)
+                                .height(93.dp)
+                                .weight(1f)
+                                .background(Color.LightGray,RoundedCornerShape(10.dp))
+                            ,
+                        )
+                        Spacer(
+                            modifier = Modifier.width(9.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(167.dp)
+                                .height(93.dp)
+                                .weight(1f)
+                                .background(Color.LightGray,RoundedCornerShape(10.dp))
+                            ,
+                        )
                     }
-                    Spacer(
-                        modifier = Modifier.width(9.dp)
-                    )
-                    Card(
-                        modifier = Modifier.width(167.dp).height(93.dp).weight(1f),
-                        backgroundColor = Color(0xFF1E559C),
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(11.dp).fillMaxHeight(),
-                            verticalArrangement = Arrangement.SpaceBetween
+                }
+                if(groupState.dtlGroupData != null){
+                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                        Card(
+                            modifier = Modifier.width(167.dp).height(93.dp).weight(1f),
+                            backgroundColor = Color(0xFF1E559C),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text(
-                                "Jumlah Anggota Grup",
-                                style = MaterialTheme.typography.subtitle2,
-                                color = Color.White
-                            )
-                            Spacer(
-                                modifier = Modifier.height(20.dp)
-                            )
-                            Text(
-                                groupState.memberGroupData.size.toString(),
-                                style = MaterialTheme.typography.body2,
-                                fontSize = 24.sp
-                            )
+                            Column(
+                                modifier = Modifier.padding(11.dp).fillMaxHeight(),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "Jumlah Data Password",
+                                    style = MaterialTheme.typography.subtitle2,
+                                    color = Color.White
+                                )
+                                Text(
+                                    groupState.dtlGroupData.totalPassData.toString(),
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 24.sp
+                                )
+                            }
+                        }
+                        Spacer(
+                            modifier = Modifier.width(9.dp)
+                        )
+                        Card(
+                            modifier = Modifier.width(167.dp).height(93.dp).weight(1f),
+                            backgroundColor = Color(0xFF1E559C),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(11.dp).fillMaxHeight(),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "Jumlah Anggota Grup",
+                                    style = MaterialTheme.typography.subtitle2,
+                                    color = Color.White
+                                )
+                                Spacer(
+                                    modifier = Modifier.height(20.dp)
+                                )
+                                Text(
+                                    groupState.dtlGroupData.totalMember.toString(),
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 24.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -416,8 +442,8 @@ fun EditGroupDialog(
     val interactionSource = remember { MutableInteractionSource() }
 
     if(groupState.dtlGroupData != null){
-        grupName = groupState.dtlGroupData.nm_grup
-        desc = groupState.dtlGroupData.desc ?: ""
+        grupName = groupState.dtlGroupData.groupDtl.nm_grup
+        desc = groupState.dtlGroupData.groupDtl.desc ?: ""
     }
 
     val context = LocalPlatformContext.current
@@ -516,7 +542,7 @@ fun EditGroupDialog(
                             }
                             false -> {
                                 Text(
-                                    text = profileNameInitials(groupState.dtlGroupData?.nm_grup!!),
+                                    text = profileNameInitials(groupState.dtlGroupData?.groupDtl?.nm_grup!!),
                                     style = MaterialTheme.typography.body1,
                                     fontSize = 36.sp,
                                     color = Color.White,
@@ -550,7 +576,7 @@ fun EditGroupDialog(
                         value = grupName,
                         onValueChange = {
                             if(groupState.dtlGroupData != null) {
-                                groupState.dtlGroupData.nm_grup = it
+                                groupState.dtlGroupData.groupDtl.nm_grup = it
                             }
 
                             grupName = it
@@ -600,7 +626,7 @@ fun EditGroupDialog(
                     value = desc,
                     onValueChange = {
                         if(groupState.dtlGroupData != null) {
-                            groupState.dtlGroupData.desc = it
+                            groupState.dtlGroupData.groupDtl.desc = it
                         }
                         desc = it
                     },
@@ -663,7 +689,7 @@ fun EditGroupDialog(
                         scope.launch {
                             keyboardController?.hide()
                         }
-                        groupViewModel.updateGroupData(groupState.dtlGroupData?.id.toString(), AddGroupRequest(grupName,desc),imgFile,nameImg)
+                        groupViewModel.updateGroupData(groupState.dtlGroupData?.groupDtl?.id.toString(), AddGroupRequest(grupName,desc),imgFile,nameImg)
                     },
                     shape = RoundedCornerShape(20.dp),
                     elevation = ButtonDefaults.elevation(0.dp),

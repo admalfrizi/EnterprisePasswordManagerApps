@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -117,6 +118,7 @@ fun FormPassGroupScreen(
     if(formPassGroupState.isCreated){
         navController.navigateUp()
         setToast("Data Berhasil Ditambahkan")
+        formPassGroupState.isCreated = false
     }
 
     if(sheetState.isVisible){
@@ -126,12 +128,6 @@ fun FormPassGroupScreen(
 
     if(formPassGroupState.isLoading){
         popUpLoading(isDismiss)
-    }
-
-    if(formPassGroupState.isCreated){
-        navController.navigateUp()
-        setToast("Data Berhasil Ditambahkan")
-        formPassGroupState.isCreated = false
     }
 
     if(formPassGroupState.isUpdated) {
@@ -181,6 +177,8 @@ fun FormPassGroupScreen(
         posisiId = roleId.value,
         addPassContent = formPassGroupState.insertAddContentPassData
     )
+
+    Napier.v("debug : ${formPassGroupState.passData}")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -261,8 +259,9 @@ fun FormPassGroupScreen(
                 bottomBar = {
                     BtnForm(
                         {
-                            if(formPassGroupState.passDataGroupId != "-1"){
+                            if(formPassGroupState.passDataGroupId != "-1" && formPassGroupState.passData != null){
                                 formPassGroupViewModel.updatePassData(formPassGroupState.groupId!!,formPassGroupState.passDataGroupId!!, formData)
+                                Napier.v("execute update data pass!!")
                             } else {
                                 validatorPassData(
                                     nmAccount.value,
@@ -271,6 +270,7 @@ fun FormPassGroupScreen(
                                     formData,
                                     formPassGroupState.groupId!!
                                 )
+                                Napier.v("execute create data pass!!")
                             }
                         },
                         {

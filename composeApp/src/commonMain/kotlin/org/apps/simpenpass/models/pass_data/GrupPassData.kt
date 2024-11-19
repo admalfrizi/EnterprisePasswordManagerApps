@@ -17,6 +17,16 @@ data class GrupPassData(
 
 @Serializable
 data class DtlGrupPass(
+    @SerialName("group_dtl")
+    val groupDtl: GrupDtl,
+    @SerialName("total_pass_data")
+    val totalPassData: Int,
+    @SerialName("total_member")
+    var totalMember: Int,
+)
+
+@Serializable
+data class GrupDtl(
     @SerialName("id")
     val id: Int,
     @SerialName("img_grup")
