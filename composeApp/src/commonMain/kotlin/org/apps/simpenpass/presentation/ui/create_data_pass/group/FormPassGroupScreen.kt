@@ -178,8 +178,6 @@ fun FormPassGroupScreen(
         addPassContent = formPassGroupState.insertAddContentPassData
     )
 
-    Napier.v("debug : ${formPassGroupState.passData}")
-
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,

@@ -60,7 +60,7 @@ fun PassDataScreen(
     groupState: GroupDetailsState,
     groupDtlViewModel: GroupDetailsViewModel
 ) {
-    var isAllData = remember { mutableStateOf(true) }
+    val isAllData = remember { mutableStateOf(true) }
     var passGroupDataId = remember { mutableStateOf("") }
     val isLoading = groupState.listRoleGroup.isNotEmpty() && groupState.groupId != null && groupState.passDataGroup.isEmpty()
     LaunchedEffect(isLoading && isAllData.value) {
@@ -196,28 +196,28 @@ fun FilterRow(
                 Box(modifier = Modifier.fillMaxWidth()){
                     FilterChip(
                         onClick = {
-                            if(isAllData.value == false) {
+                            if(!isAllData.value) {
                                 isAllData.value = true
                                 groupDtlViewModel.getAllPassDataGroup(groupState.groupId!!)
                             }
 
                         },
-                        selected = isAllData.value == true,
+                        selected = isAllData.value,
                         colors = ChipDefaults.filterChipColors(backgroundColor = Color.White, selectedBackgroundColor = secondaryColor),
                         shape = RoundedCornerShape(7.dp),
-                        border = BorderStroke(color = if(isAllData.value == true) Color.Transparent else Color(0xFF78A1D7), width = 1.dp)
+                        border = BorderStroke(color = if(isAllData.value) Color.Transparent else Color(0xFF78A1D7), width = 1.dp)
                     ){
                         Text(
                             "Semua",
                             style = MaterialTheme.typography.subtitle2,
-                            color = if(isAllData.value == true) Color.White else Color(0xFF78A1D7),
+                            color = if(isAllData.value) Color.White else Color(0xFF78A1D7),
                         )
                     }
                 }
             }
 
             items(listRole){ item ->
-                val isSelected = chipSelected == item?.id && isAllData.value == false
+                val isSelected = chipSelected == item?.id && !isAllData.value
                 Box(modifier = Modifier.fillMaxWidth()){
                     FilterChip(
                         onClick = {
