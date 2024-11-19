@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -106,7 +107,7 @@ fun FormPassGroupScreen(
     var desc = remember { mutableStateOf("") }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
-    var roleId = remember { mutableStateOf(0) }
+    var roleId = remember { mutableStateOf(-1) }
 
     bottomEdgeColor.value = secondaryColor
 
@@ -119,18 +120,6 @@ fun FormPassGroupScreen(
         setToast("Data Berhasil Ditambahkan")
     }
 
-    val formData = PassDataGroupRequest(
-        accountName = nmAccount.value,
-        username = userName.value,
-        desc = desc.value,
-        email = email.value,
-        jenisData = jnsPass.value,
-        password = passData.value,
-        url = urlPass.value,
-        posisiId = roleId.value,
-        addPassContent = formPassGroupState.insertAddContentPassData
-    )
-
     if(sheetState.isVisible){
         nmData.value = ""
         vlData.value = ""
@@ -140,9 +129,20 @@ fun FormPassGroupScreen(
         popUpLoading(isDismiss)
     }
 
+    if(formPassGroupState.isCreated){
+        navController.navigateUp()
+        setToast("Data Berhasil Ditambahkan")
+    }
+
+    if(formPassGroupState.isUpdated) {
+        navController.navigateUp()
+        setToast("Data Berhasil Diperbarui")
+    }
+
     if(isDialogPopup){
         DialogEditRoleInPassData(
             roleId,
+            formPassGroupState,
             formPassGroupState.listRoleData
         ) {
             isDialogPopup = false
@@ -157,7 +157,10 @@ fun FormPassGroupScreen(
         jnsPass.value = formPassGroupState.passData?.jenisData ?: ""
         passData.value = formPassGroupState.passData?.password!!
         urlPass.value = formPassGroupState.passData?.url ?: ""
-        roleId.value = formPassGroupState.passData?.posisiId?.toInt() ?: 0
+    }
+
+    if(formPassGroupState.passData?.posisiId != null){
+        roleId.value = formPassGroupState.passData?.posisiId!!
     }
 
     LaunchedEffect(formPassGroupState.groupId != "{groupId}"){
@@ -165,6 +168,21 @@ fun FormPassGroupScreen(
             formPassGroupViewModel.getListRoleData(formPassGroupState.groupId!!)
         }
     }
+
+    val formData = PassDataGroupRequest(
+        accountName = nmAccount.value,
+        username = userName.value,
+        desc = desc.value,
+        email = email.value,
+        jenisData = jnsPass.value,
+        password = passData.value,
+        url = urlPass.value,
+        posisiId = roleId.value,
+        addPassContent = formPassGroupState.insertAddContentPassData
+    )
+
+    Napier.v("formGroup :$formData")
+    Napier.v("roleId : ${roleId.value}")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -245,15 +263,15 @@ fun FormPassGroupScreen(
                 bottomBar = {
                     BtnForm(
                         {
-                            if(formPassGroupState.passDataGroupId?.isNotEmpty() == true){
-//                                formViewModel.editUserPassData(passId = passId.toInt(), formData)
+                            if(formPassGroupState.passDataGroupId != "-1"){
+                                formPassGroupViewModel.updatePassData(formPassGroupState.groupId!!,formPassGroupState.passDataGroupId!!, formData)
                             } else {
                                 validatorPassData(
                                     nmAccount.value,
                                     passData.value,
                                     formPassGroupViewModel,
                                     formData,
-                                    formPassGroupState.passDataGroupId!!
+                                    formPassGroupState.groupId!!
                                 )
                             }
                         },
@@ -752,6 +770,7 @@ fun AddContentPassView(
 @Composable
 fun DialogEditRoleInPassData(
     roleId: MutableState<Int>,
+    formState: FormPassGroupState,
     listRoleData: List<RoleGroupData>,
     onDismissDialog: () -> Unit,
 ) {
@@ -812,6 +831,9 @@ fun DialogEditRoleInPassData(
                                 )
                                 Checkbox(
                                     onCheckedChange = {
+                                        if(formState.passData != null){
+                                            formState.passData.posisiId = item.id
+                                        }
                                         roleId.value = item.id
                                     },
                                     checked = roleId.value == item.id,

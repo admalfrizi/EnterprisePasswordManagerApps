@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
@@ -157,9 +156,6 @@ fun FilterRow(
 ) {
     val listRole = groupState.listRoleGroup
     var chipSelected by remember { mutableStateOf(-1) }
-
-    Napier.v("chipSelected : $chipSelected")
-    Napier.v("isAllData : ${isAllData.value}")
 
     if(groupState.isLoading && listRole.isEmpty()){
         Row(

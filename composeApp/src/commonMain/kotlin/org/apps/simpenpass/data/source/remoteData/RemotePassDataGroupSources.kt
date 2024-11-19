@@ -93,8 +93,26 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
         }
     }
 
-    override suspend fun updatePassGroup() {
-        TODO("Not yet implemented")
+    override suspend fun updatePassGroup(
+        token: String,
+        groupId: Int,
+        passDataGroupId: Int,
+        updatePassData: PassDataGroupRequest
+    ): BaseResponse<PassGroupResponseData> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updatePassDataGroup/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("passGroupId", passDataGroupId)
+                setBody(updatePassData)
+            }
+
+            return response.body<BaseResponse<PassGroupResponseData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
     }
 
     override suspend fun addContentPassData(

@@ -162,4 +162,39 @@ class PassDataGroupRepository(
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
+
+    fun updatePassDataGroupById(
+        groupId: Int,
+        passDataGroupId: Int?,
+        updatePassData: PassDataGroupRequest
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassDataGroupSources.updatePassGroup(token,groupId,passDataGroupId!!,updatePassData)
+                when(result.success){
+                    true -> {
+                        if(updatePassData.addPassContent != null && result.data?.id != null){
+                            remotePassDataGroupSources.addContentPassData(token,groupId,passDataGroupId,updatePassData.addPassContent)
+                        }
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        if(result.code == 400){
+                            emit(NetworkResult.Error("Maaf anda harus masukan data yang valid !"))
+                        } else if(result.code == 404){
+                            emit(NetworkResult.Error("Maaf Role di grup ini Tidak Tersedia !"))
+                        } else {
+                            emit(NetworkResult.Error(result.message))
+                        }
+                    }
+                }
+            }
+        }catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
 }

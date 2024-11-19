@@ -111,9 +111,41 @@ class FormPassGroupViewModel(
         }
     }
 
-    fun updatePassData(){
+    fun updatePassData(
+        groupId: String,
+        passGroupDataId: String,
+        updateFormData: PassDataGroupRequest
+    ){
         viewModelScope.launch {
-
+            repoPassDataGroup.updatePassDataGroupById(groupId.toInt(),passGroupDataId.toInt(),updateFormData).flowOn(
+                Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isUpdated = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 

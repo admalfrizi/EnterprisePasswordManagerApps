@@ -9,7 +9,7 @@ data class PassDataGroupByIdResponse(
     @SerialName("id")
     val id: Int,
     @SerialName("posisi_id")
-    val posisiId: String?,
+    var posisiId: Int?,
     @SerialName("group_id")
     val groupId: String,
     @SerialName("jenis_data")

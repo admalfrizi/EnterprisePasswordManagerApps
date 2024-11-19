@@ -122,6 +122,6 @@ interface PassDataGroupFunc {
     suspend fun listGroupPasswordRoleFiltered(token: String, groupId: Int, roleId: Int) : BaseResponse<List<PassDataGroup>>
     suspend fun getDataPassGroupById(token: String, groupId: Int, passDataGroupId: Int) : BaseResponse<PassDataGroupByIdResponse>
     suspend fun addPassGroup(token: String,groupId: Int,addDataPass: PassDataGroupRequest) : BaseResponse<PassGroupResponseData>
-    suspend fun updatePassGroup()
+    suspend fun updatePassGroup(token: String, groupId: Int,passDataGroupId: Int, updatePassData: PassDataGroupRequest ) : BaseResponse<PassGroupResponseData>
     suspend fun addContentPassData(token: String,groupId: Int, passGroupDataId: Int,addContentPassData: List<InsertAddContentDataPass>) : BaseResponse<List<AddContentPassDataGroup>>
 }
