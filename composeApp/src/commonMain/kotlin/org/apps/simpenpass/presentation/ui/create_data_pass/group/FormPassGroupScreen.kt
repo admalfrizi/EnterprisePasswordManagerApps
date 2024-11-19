@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -132,11 +131,13 @@ fun FormPassGroupScreen(
     if(formPassGroupState.isCreated){
         navController.navigateUp()
         setToast("Data Berhasil Ditambahkan")
+        formPassGroupState.isCreated = false
     }
 
     if(formPassGroupState.isUpdated) {
         navController.navigateUp()
         setToast("Data Berhasil Diperbarui")
+        formPassGroupState.isUpdated = false
     }
 
     if(isDialogPopup){
@@ -180,9 +181,6 @@ fun FormPassGroupScreen(
         posisiId = roleId.value,
         addPassContent = formPassGroupState.insertAddContentPassData
     )
-
-    Napier.v("formGroup :$formData")
-    Napier.v("roleId : ${roleId.value}")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
