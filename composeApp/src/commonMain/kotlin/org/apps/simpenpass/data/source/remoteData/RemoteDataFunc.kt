@@ -29,11 +29,13 @@ import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.response.UpdateRoleMemberResponse
 import org.apps.simpenpass.models.response.UserResponseData
 import org.apps.simpenpass.models.response.VerifyOtpResponse
+import org.apps.simpenpass.models.user_data.UserDataStats
 
 interface UserDataFunc {
     suspend fun login(data: LoginRequest): BaseResponse<UserResponseData>
     suspend fun register(data: RegisterRequest) : BaseResponse<UserResponseData>
     suspend fun logout(token: String?) : BaseResponse<UserResponseData>
+    suspend fun userDataStats(token: String, userId: Int): BaseResponse<UserDataStats>
 }
 
 interface PassDataFunc {

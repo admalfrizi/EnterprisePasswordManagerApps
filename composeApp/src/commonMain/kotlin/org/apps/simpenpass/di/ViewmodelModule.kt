@@ -32,7 +32,6 @@ val viewModelModule = module {
         HomeViewModel(
             userRepo = get(),
             passRepo = get(),
-            groupRepo = get(),
             konnection = get()
         )
     }

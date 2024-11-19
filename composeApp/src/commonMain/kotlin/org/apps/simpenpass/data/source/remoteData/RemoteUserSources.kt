@@ -2,6 +2,7 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -14,6 +15,7 @@ import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.UserResponseData
+import org.apps.simpenpass.models.user_data.UserDataStats
 import org.apps.simpenpass.utils.Constants
 
 class RemoteUserSources(private val httpClient: HttpClient) : UserDataFunc {
@@ -50,6 +52,21 @@ class RemoteUserSources(private val httpClient: HttpClient) : UserDataFunc {
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
             return response.body<BaseResponse<UserResponseData>>()
+        } catch (e: UnresolvedAddressException) {
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun userDataStats(
+        token: String,
+        userId: Int
+    ): BaseResponse<UserDataStats> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "userDataPassStats/$userId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            return response.body<BaseResponse<UserDataStats>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
         }

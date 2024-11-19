@@ -83,4 +83,27 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
     suspend fun getStatusLoggedIn(): Flow<Boolean> {
         return localData.checkLoggedIn()
     }
+
+    fun getUserDataStats(
+        userId: Int
+    ) = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteUserSources.userDataStats(token,userId)
+                when(result.success){
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
 }
