@@ -38,7 +38,7 @@ import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupScreen
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
 import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
-import org.apps.simpenpass.presentation.ui.group_pass.PassDataDetailsScreen
+import org.apps.simpenpass.presentation.ui.group_pass.pass_data_group_detail.PassDataDetailsScreen
 import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
 import org.apps.simpenpass.presentation.ui.group_pass.retrieve_data_pass.RetrieveDataPass
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
@@ -262,6 +262,18 @@ fun NavGraphBuilder.groupPassDetail(
             route = Screen.PassDataGroupDtl.route,
             dialogProperties = DialogProperties(
                 usePlatformDefaultWidth = false
+            ),
+            arguments = listOf(
+                navArgument(Screen.PassDataGroupDtl.ARG_PASS_DATA_GROUP_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                },
+                navArgument(Screen.PassDataGroupDtl.ARG_GROUP_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
             )
         ) {
             PassDataDetailsScreen(

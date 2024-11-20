@@ -89,7 +89,7 @@ fun PassDataScreen(
                 items(groupState.passDataGroup){ data ->
                     Box(
                         modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
-                            navController.navigate(Screen.PassDataGroupDtl.route)
+                            navController.navigate(Screen.PassDataGroupDtl.passDataGroupId(data?.id.toString(),groupState.groupId.toString()))
                         }
                     ) {
                         Row(
