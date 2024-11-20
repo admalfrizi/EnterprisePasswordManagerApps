@@ -2,6 +2,7 @@ package org.apps.simpenpass.presentation.ui.group_pass.pass_data_group_detail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
 import org.apps.simpenpass.presentation.components.rootComponents.DataInfoHolder
 import org.apps.simpenpass.style.fontColor1
@@ -184,6 +186,19 @@ fun PassDataDetailsScreen(
                         modifier = Modifier.height(11.dp)
                     )
 
+                    if(passDataDetailsState.value.passData!!.addPassContent.isEmpty()){
+                        Box(
+                            modifier = Modifier.fillMaxSize()
+                        ){
+                            EmptyWarning(
+                                modifier = Modifier.fillMaxWidth().align(Alignment.Center),
+                                warnTitle = "Data Tambahan Anda Kosong !",
+                                warnText = "Silahkan Tambahkan saat Mengupdate Data",
+                                isEnableBtn = false
+                            )
+                        }
+                    }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(11.dp)
@@ -225,6 +240,7 @@ fun PassDataDetailsScreen(
                                             },
                                             onClick = {
                                                 copyText(item.vlData)
+                                                setToast("Data ${item.nmData} Telah di Salin")
                                             }
                                         )
                                     }
