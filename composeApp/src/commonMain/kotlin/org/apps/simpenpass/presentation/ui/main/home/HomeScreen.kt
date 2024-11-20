@@ -66,7 +66,9 @@ fun HomeScreen(
     val isConnected by homeViewModel.isConnected.collectAsStateWithLifecycle()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = homeState.isLoading,
-        onRefresh = homeViewModel::getData
+        onRefresh = {
+            homeViewModel.getData()
+        }
     )
 
     LaunchedEffect(isConnected) {
@@ -88,9 +90,7 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
                 ) {
                     HeaderContainer(
-                        homeState.name,
-                        homeState.totalDataPass ?: 0,
-                        homeState.totalGroupJoined ?: 0,
+                        homeState,
                         navigateToListUserPass
                     )
                     Spacer(modifier = Modifier.height(16.dp))

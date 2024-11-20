@@ -21,6 +21,8 @@ data class DtlGrupPass(
     val groupDtl: GrupDtl,
     @SerialName("total_pass_data")
     val totalPassData: Int,
+    @SerialName("total_role")
+    val totalRole: Int,
     @SerialName("total_member")
     var totalMember: Int,
 )

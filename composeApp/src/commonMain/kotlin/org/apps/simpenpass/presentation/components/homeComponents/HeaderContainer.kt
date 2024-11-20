@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.valentinilk.shimmer.shimmer
+import org.apps.simpenpass.presentation.ui.main.home.HomeState
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import resources.Res
@@ -27,9 +29,7 @@ import resources.pass_data_ic
 
 @Composable
 fun HeaderContainer(
-    nameUser: String?,
-    totalUserDataPass: Int,
-    totalJoinedGroup: Int,
+    homeState: HomeState,
     navToListPass: () -> Unit,
 ) {
     Box(
@@ -43,7 +43,7 @@ fun HeaderContainer(
                 modifier = Modifier.height(18.dp)
             )
             Text(
-                "Selamat Datang, $nameUser",
+                "Selamat Datang, ${homeState.name}",
                 style = MaterialTheme.typography.button,
                 modifier = Modifier.padding(start = 16.dp),
             )
@@ -59,47 +59,82 @@ fun HeaderContainer(
             Spacer(
                 modifier = Modifier.height(18.dp)
             )
-            Row(
-                modifier = Modifier.horizontalScroll(rememberScrollState())
-            ) {
-                Spacer(
-                    modifier = Modifier.width(16.dp)
-                )
-                InfoContainer(
-                    titleInfo = "Jumlah Data Password Anda",
-                    vlData = totalUserDataPass,
-                    bgColor = Color(0xFF1E559C),
-                    iconInfo = Res.drawable.pass_data_ic,
-                    onClick = {
-                        navToListPass()
-                    }
-                )
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
-                InfoContainer(
-                    titleInfo = "Grup Yang Tergabung",
-                    vlData = totalJoinedGroup,
-                    bgColor = Color(0xFF192E49) ,
-                    iconInfo = Res.drawable.group_ic,
-                    onClick = {
 
-                    }
-                )
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
-                InfoContainer(
-                    titleInfo = "Total Data Password Grup",
-                    vlData = 5,
-                    bgColor = Color(0xFF1A8B7E),
-                    iconInfo = Res.drawable.pass_data_ic,
-                    onClick = {}
-                )
-                Spacer(
-                    modifier = Modifier.width(16.dp)
-                )
+            if(homeState.isLoading){
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()).shimmer()
+                ){
+                    Spacer(
+                        modifier = Modifier.width(16.dp)
+                    )
+                    Box(
+                        modifier = Modifier.width(132.dp).height(93.dp).background(color = Color.LightGray,
+                            RoundedCornerShape(10.dp)
+                        ),
+                    )
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
+                    Box(
+                        modifier = Modifier.width(132.dp).height(93.dp).background(color = Color.LightGray,
+                            RoundedCornerShape(10.dp)
+                        ),
+                    )
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
+                    Box(
+                        modifier = Modifier.width(132.dp).height(93.dp).background(color = Color.LightGray,
+                            RoundedCornerShape(10.dp)
+                        ),
+                    )
+                }
             }
+
+            if(!homeState.isLoading && homeState.totalDataPass != null && homeState.totalGroupJoined != null){
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState())
+                ) {
+                    Spacer(
+                        modifier = Modifier.width(16.dp)
+                    )
+                    InfoContainer(
+                        titleInfo = "Jumlah Data Password Anda",
+                        vlData = homeState.totalDataPass,
+                        bgColor = Color(0xFF1E559C),
+                        iconInfo = Res.drawable.pass_data_ic,
+                        onClick = {
+                            navToListPass()
+                        }
+                    )
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
+                    InfoContainer(
+                        titleInfo = "Grup Yang Tergabung",
+                        vlData = homeState.totalGroupJoined,
+                        bgColor = Color(0xFF192E49) ,
+                        iconInfo = Res.drawable.group_ic,
+                        onClick = {
+
+                        }
+                    )
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
+                    InfoContainer(
+                        titleInfo = "Total Data Password Grup",
+                        vlData = 5,
+                        bgColor = Color(0xFF1A8B7E),
+                        iconInfo = Res.drawable.pass_data_ic,
+                        onClick = {}
+                    )
+                    Spacer(
+                        modifier = Modifier.width(16.dp)
+                    )
+                }
+            }
+
             Spacer(
                 modifier = Modifier.height(23.dp)
             )

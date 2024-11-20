@@ -128,6 +128,7 @@ fun GroupPassDetail(
     if(sheetState.isVisible){
         bottomEdgeColor.value = Color.White
     }
+
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -299,7 +300,7 @@ fun ContentView(
                 if(groupState.dtlGroupData != null){
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                         Card(
-                            modifier = Modifier.width(167.dp).height(93.dp).weight(1f),
+                            modifier = Modifier.height(93.dp).weight(1f),
                             backgroundColor = Color(0xFF1E559C),
                             shape = RoundedCornerShape(10.dp)
                         ) {
@@ -323,7 +324,31 @@ fun ContentView(
                             modifier = Modifier.width(9.dp)
                         )
                         Card(
-                            modifier = Modifier.width(167.dp).height(93.dp).weight(1f),
+                            modifier = Modifier.height(93.dp).weight(1f),
+                            backgroundColor = Color(0xFF1E559C),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(11.dp).fillMaxHeight(),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "Jumlah Role Group",
+                                    style = MaterialTheme.typography.subtitle2,
+                                    color = Color.White
+                                )
+                                Text(
+                                    groupState.dtlGroupData.totalRole.toString(),
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 24.sp
+                                )
+                            }
+                        }
+                        Spacer(
+                            modifier = Modifier.width(9.dp)
+                        )
+                        Card(
+                            modifier = Modifier.height(93.dp).weight(1f),
                             backgroundColor = Color(0xFF1E559C),
                             shape = RoundedCornerShape(10.dp)
                         ) {
@@ -335,9 +360,6 @@ fun ContentView(
                                     "Jumlah Anggota Grup",
                                     style = MaterialTheme.typography.subtitle2,
                                     color = Color.White
-                                )
-                                Spacer(
-                                    modifier = Modifier.height(20.dp)
                                 )
                                 Text(
                                     groupState.dtlGroupData.totalMember.toString(),
@@ -501,6 +523,7 @@ fun EditGroupDialog(
                     IconButton(
                         onClick = {
                             onDismissRequest()
+                            groupViewModel.getDetailGroup(groupState.groupId!!)
                         },
                         content = {
                             Icon(

@@ -288,7 +288,7 @@ fun FormPassGroupScreen(
                             .fillMaxWidth()
                             .height(80.dp)
                             .background(secondaryColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
-                        isPassIdExist = false
+                        isPassIdExist = formPassGroupState.passDataGroupId != null && formPassGroupState.passDataGroupId != "-1"
                     )
                 },
                 content = {

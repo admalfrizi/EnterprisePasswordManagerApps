@@ -27,7 +27,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,13 +60,6 @@ fun PassDataScreen(
     groupDtlViewModel: GroupDetailsViewModel
 ) {
     val isAllData = remember { mutableStateOf(true) }
-    var passGroupDataId = remember { mutableStateOf("") }
-    val isLoading = groupState.listRoleGroup.isNotEmpty() && groupState.groupId != null && groupState.passDataGroup.isEmpty()
-    LaunchedEffect(isLoading && isAllData.value) {
-        if(isLoading){
-            groupDtlViewModel.getAllPassDataGroup(groupState.groupId)
-        }
-    }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -256,7 +248,7 @@ fun AddPassDataBtnHolder(
             }
         }
     ){
-        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier.size(55.dp).background(color = Color(0xFF78A1D7),shape = RoundedCornerShape(7.dp))
             ) {
