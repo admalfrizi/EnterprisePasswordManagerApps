@@ -268,7 +268,7 @@ data class GroupDetailsState(
     val dtlGroupData: DtlGrupPass? = null,
     val groupId: String? = null,
     var msg: String = "",
-    val memberGroupData: List<MemberGroupData?> = emptyList(),
+    val memberGroupData: List<MemberGroupData> = emptyList(),
     var isUpdated: Boolean = false,
     var isError: Boolean = false,
     var isLoading: Boolean = false,

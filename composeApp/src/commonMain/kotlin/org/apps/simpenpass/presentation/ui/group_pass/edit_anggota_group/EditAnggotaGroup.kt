@@ -1,5 +1,6 @@
 package org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +21,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -30,12 +34,17 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,8 +87,30 @@ fun EditAnggotaGroup(
     )
     val scope = rememberCoroutineScope()
 
+    var isSelectionMode = remember {
+        mutableStateOf(false)
+    }
+
+    val selectedItems = remember {
+        mutableStateListOf<MemberGroupData>()
+    }
+
+    val resetSelectionMode = {
+        isSelectionMode.value = false
+        selectedItems.clear()
+    }
+
     LaunchedEffect(groupId){
         groupViewModel.getMemberDataGroup(groupId)
+    }
+
+    LaunchedEffect(
+        key1 = isSelectionMode,
+        key2 = selectedItems.size
+    ){
+        if(isSelectionMode.value && selectedItems.isEmpty()){
+            isSelectionMode.value = false
+        }
     }
 
     bottomEdgeColor.value = Color.White
@@ -93,7 +124,8 @@ fun EditAnggotaGroup(
                 navToEditRole = navToEditRole,
                 groupId = groupId,
                 sheetState,
-                scope
+                scope,
+                isSelectionMode
             )
         },
         content = {
@@ -103,7 +135,10 @@ fun EditAnggotaGroup(
                 scope,
                 sheetState,
                 groupState,
-                height
+                height,
+                isSelectionMode = isSelectionMode.value,
+                selectedItems = selectedItems,
+                resetSelectionMode = resetSelectionMode
             )
         }
     )
@@ -114,7 +149,8 @@ fun OptionMenu(
     navToEditRole: (String) -> Unit,
     groupId: String,
     sheetState: ModalBottomSheetState,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    isSelectionMode: MutableState<Boolean>,
 ) {
     Column {
         Spacer(
@@ -169,6 +205,32 @@ fun OptionMenu(
                 )
             }
         }
+        Box(
+            modifier = Modifier.fillMaxWidth().clickable {
+                isSelectionMode.value = true
+                scope.launch {
+                    sheetState.hide()
+                }
+            }
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painterResource(Res.drawable.role_change),
+                    ""
+                )
+                Spacer(
+                    modifier = Modifier.width(18.dp)
+                )
+                Text(
+                    "Ubah Admin Anggota",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = secondaryColor
+                )
+            }
+        }
         Spacer(
             modifier = Modifier.height(31.dp)
         )
@@ -182,28 +244,72 @@ fun ScaffoldContent(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     groupState: GroupDetailsState,
-    height : Int
+    height : Int,
+    selectedItems: MutableList<MemberGroupData>,
+    isSelectionMode: Boolean,
+    resetSelectionMode: () -> Unit
 ) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelectionMode) Color(0xFF001530) else secondaryColor // Color changes
+    )
+
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+        floatingActionButton = {
+            if(isSelectionMode && selectedItems.isNotEmpty()){
+                FloatingActionButton(
+                    onClick = {
+
+                    },
+                    content = {
+                        Image(
+                            Icons.Default.Check,
+                            ""
+                        )
+                    }
+                )
+            } else {
+                null
+            }
+        },
         topBar = {
             TopAppBar(
-                backgroundColor = secondaryColor,
-                title = { Text("Edit Anggota") },
+                backgroundColor = backgroundColor,
+                title = {
+                    if(isSelectionMode){
+                        Text("Ada ${selectedItems.size} Anggota yang Dipilih")
+                    } else {
+                        Text("Edit Anggota")
+                    }
+                },
                 elevation = 0.dp,
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        },
-                        content = {
-                            Image(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                "",
-                                colorFilter = ColorFilter.tint(Color.White)
-                            )
-                        }
-                    )
+                    if(isSelectionMode){
+                        IconButton(
+                            onClick = resetSelectionMode,
+                            content = {
+                                Image(
+                                    Icons.Default.Clear,
+                                    "",
+                                    colorFilter = ColorFilter.tint(Color.White)
+                                )
+                            }
+                        )
+                    } else {
+                        IconButton(
+                            onClick = {
+                                navController.navigateUp()
+                            },
+                            content = {
+                                Image(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    "",
+                                    colorFilter = ColorFilter.tint(Color.White)
+                                )
+                            }
+                        )
+                    }
+
                 },
                 actions = {
                     IconButton(
@@ -248,7 +354,7 @@ fun ScaffoldContent(
                                 modifier = Modifier.background(Color(0xFF78A1D7), CircleShape).size(65.dp)
                             ) {
                                 Text(
-                                    text = profileNameInitials(item?.nama_anggota!!),
+                                    text = profileNameInitials(item.nama_anggota),
                                     style = MaterialTheme.typography.h5.copy(fontSize = 20.sp),
                                     modifier = Modifier.align(Alignment.Center)
                                 )
@@ -261,7 +367,7 @@ fun ScaffoldContent(
                                 horizontalAlignment = Alignment.Start
                             ) {
                                 Text(
-                                    item?.nama_anggota!!,
+                                    item.nama_anggota,
                                     style = MaterialTheme.typography.h6,
                                     color = secondaryColor
                                 )
@@ -279,7 +385,7 @@ fun ScaffoldContent(
                                     color = secondaryColor
                                 )
                             }
-                            if(itemsData.size != 1){
+                            if(itemsData.size != 1 && !isSelectionMode){
                                 IconButton(
                                     onClick = {
 
@@ -291,12 +397,39 @@ fun ScaffoldContent(
                                     }
                                 )
                             }
-
+                            if (isSelectionMode){
+                                Checkbox(
+                                    onCheckedChange = {
+                                        if(selectedItems.contains(item)){
+                                            selectedItems.remove(item)
+                                        } else {
+                                            selectedItems.add(item)
+                                        }
+                                    },
+                                    checked = checkedIsAdmin(item,selectedItems) ,
+                                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
 
+    }
+}
+
+fun checkedIsAdmin(
+    item: MemberGroupData,
+    list: MutableList<MemberGroupData>
+): Boolean {
+    when(item.isGroupAdmin == true && !list.contains(item)){
+        true -> {
+            list.add(item)
+            return list.contains(item)
+        }
+        false -> {
+            return list.contains(item)
+        }
     }
 }

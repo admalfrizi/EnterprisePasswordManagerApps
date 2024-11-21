@@ -137,7 +137,7 @@ fun RootNavGraph(
                         }
                     } }
         ){
-            ProfileScreen(navController, navigateToLogout = navigateToLogout)
+            ProfileScreen(navigateToLogout = navigateToLogout)
         }
     }
 }
