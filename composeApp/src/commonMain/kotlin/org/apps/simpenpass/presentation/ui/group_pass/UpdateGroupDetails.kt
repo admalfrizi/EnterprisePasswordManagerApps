@@ -1,4 +1,4 @@
-package org.apps.simpenpass.presentation.ui.dialog_screens.update_group_details
+package org.apps.simpenpass.presentation.ui.group_pass
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,8 +63,6 @@ import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
-import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsState
-import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading

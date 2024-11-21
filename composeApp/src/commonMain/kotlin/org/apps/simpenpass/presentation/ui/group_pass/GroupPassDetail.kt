@@ -58,7 +58,6 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
-import org.apps.simpenpass.presentation.ui.dialog_screens.update_group_details.UpdateGroupDetails
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
