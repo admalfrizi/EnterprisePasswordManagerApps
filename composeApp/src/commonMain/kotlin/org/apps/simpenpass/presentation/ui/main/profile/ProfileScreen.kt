@@ -58,7 +58,6 @@ fun ProfileScreen(
 @Composable
 fun SettingListView(navigateToLogout: () -> Unit, profileState: ProfileState, profileViewModel: ProfileViewModel) {
     var isLogoutWarningShow by remember { mutableStateOf(false) }
-    var isDisableScreenShot = remember { mutableStateOf(false) }
 
     if(isLogoutWarningShow){
         DialogWarning(
@@ -101,16 +100,13 @@ fun SettingListView(navigateToLogout: () -> Unit, profileState: ProfileState, pr
             color = secondaryColor
         )
         Column {
-            SettingsListHolder("Nyalakan Screenshot", isSwitch = true, checked = isDisableScreenShot)
             SettingsListHolder("Informasi Aplikasi", {})
         }
         Spacer(
             modifier = Modifier.height(24.dp)
         )
         SettingsListHolder("Logout", onClick = {
-            {
-                isLogoutWarningShow = true
-            }
+            isLogoutWarningShow = true
         })
     }
 }

@@ -65,5 +65,3 @@ fun newDiskCache(): DiskCache {
         .maxSizeBytes(1024L * 1024 * 1024) // 512MB
         .build()
 }
-
-expect fun disableScreenshots(enable: Boolean)
