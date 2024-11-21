@@ -37,36 +37,6 @@ class HomeViewModel(
             }
         }
 
-        viewModelScope.launch {
-            userRepo.getUserDataStats(userRepo.getUserData().id!!).collect { result ->
-                when(result) {
-                    is NetworkResult.Error -> {
-                        _homeState.update {
-                            it.copy(
-                                error = result.error,
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _homeState.update {
-                            it.copy(
-                                isLoading = true
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _homeState.update {
-                            it.copy(
-                                totalGroupJoined = result.data.data?.totalJoinedGroup,
-                                totalDataPass = result.data.data?.totalPassData,
-                                isLoading = false
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
         observeConnection()
     }
 
@@ -78,6 +48,42 @@ class HomeViewModel(
                     it.copy(
                         isLoading = false
                     )
+                }
+            }
+        }
+    }
+
+    fun getUserDataStats(){
+        if(isConnected.value) {
+            viewModelScope.launch {
+                userRepo.getUserDataStats(userRepo.getUserData().id!!).collect { result ->
+                    when (result) {
+                        is NetworkResult.Error -> {
+                            _homeState.update {
+                                it.copy(
+                                    error = result.error,
+                                )
+                            }
+                        }
+
+                        is NetworkResult.Loading -> {
+                            _homeState.update {
+                                it.copy(
+                                    isLoading = true
+                                )
+                            }
+                        }
+
+                        is NetworkResult.Success -> {
+                            _homeState.update {
+                                it.copy(
+                                    totalGroupJoined = result.data.data?.totalJoinedGroup,
+                                    totalDataPass = result.data.data?.totalPassData,
+                                    isLoading = false
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -107,7 +113,6 @@ class HomeViewModel(
                             _homeState.update {
                                 it.copy(
                                     passDataList = result.data.data?.latest!!,
-                                    totalDataPass = result.data.data.totalDataOriginSize,
                                     isLoading = false
                                 )
                             }

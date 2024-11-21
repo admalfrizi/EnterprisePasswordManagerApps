@@ -20,10 +20,16 @@ fun isValidEmail(email: String): Boolean{
 }
 
 fun profileNameInitials(name: String): String {
-    return name
+    val truncateStr = name
         .split(' ')
         .mapNotNull { it.firstOrNull()?.toString() }
         .reduce { acc, s -> acc + s }
+
+    if(truncateStr.length <= 2){
+        return truncateStr
+    } else {
+        return truncateStr.substring(0,2)
+    }
 }
 
 fun detectRoute(navController: NavController): String? {

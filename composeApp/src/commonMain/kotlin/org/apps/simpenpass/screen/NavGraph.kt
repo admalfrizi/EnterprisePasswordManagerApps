@@ -81,7 +81,6 @@ fun RootNavGraph(
                     } }
         ){
             HomeScreen(
-                navController,
                 sheetState,
                 data,
                 passDataId = navigateToFormWithArgs,

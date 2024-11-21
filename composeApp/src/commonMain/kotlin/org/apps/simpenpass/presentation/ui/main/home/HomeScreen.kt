@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.ConnectionWarning
@@ -53,7 +52,6 @@ import resources.menu_ic
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    navController: NavHostController,
     sheetState: ModalBottomSheetState,
     dataPass: MutableState<DataPass?>,
     homeViewModel: HomeViewModel = koinViewModel(),
@@ -68,12 +66,14 @@ fun HomeScreen(
         refreshing = homeState.isLoading,
         onRefresh = {
             homeViewModel.getData()
+            homeViewModel.getUserDataStats()
         }
     )
 
     LaunchedEffect(isConnected) {
         if(isConnected){
             homeViewModel.getData()
+            homeViewModel.getUserDataStats()
         }
     }
 
@@ -170,7 +170,7 @@ fun HomeContentView(
                     Spacer(
                         modifier = Modifier.height(16.dp)
                     )
-                    UserPassDataSection(homeState.passDataList,homeState.totalDataPass!!,dataPass,sheetState,navigateToListUserPass)
+                    UserPassDataSection(homeState.passDataList,homeState.totalDataPass ?: 0,dataPass,sheetState,navigateToListUserPass)
                 }
         }
     }

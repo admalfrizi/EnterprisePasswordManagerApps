@@ -193,7 +193,7 @@ fun UpdateGroupDetails(
                             }
                             false -> {
                                 Text(
-                                    text = profileNameInitials(groupState.dtlGroupData?.groupDtl?.nm_grup ?: "JUD"),
+                                    profileNameInitials(groupState.dtlGroupData?.groupDtl?.nm_grup ?: "JUD"),
                                     style = MaterialTheme.typography.body1,
                                     fontSize = 36.sp,
                                     color = Color.White,
