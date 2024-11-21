@@ -65,6 +65,7 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateGroup/$groupId")
             {
                 contentType(ContentType.MultiPart.FormData)
+                contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
                 setBody(MultiPartFormDataContent(
                     formData {
@@ -73,10 +74,9 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                                 append(HttpHeaders.ContentDisposition, "form-data; name=\"img_group\"; filename=\"$imgName\"")
                             })
                         }
-                        append("nm_group" ,data.nmGroup)
-                        append("desc", data.desc ?: "")
                     }
                 ))
+                setBody(data)
             }
             return response.body<BaseResponse<GrupPassData>>()
         } catch (e: Exception){

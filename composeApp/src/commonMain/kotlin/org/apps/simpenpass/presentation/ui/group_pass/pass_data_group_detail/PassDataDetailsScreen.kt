@@ -104,153 +104,151 @@ fun PassDataDetailsScreen(
             }
 
             if(passDataDetailsState.value.passData != null && passDataDetailsState.value.isLoading == false) {
-                Column(
+                LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    Spacer(
-                        modifier = Modifier.height(10.dp)
-                    )
-                    DataInfoHolder(
-                        {
-                            setToast("Data Jenis telah Disalin")
-                        },
-                        Res.drawable.jenis_data_pass_ic,
-                        passDataDetailsState.value.passData?.jenisData ?: ""
-                    )
-                    Spacer(
-                        modifier = Modifier.height(17.dp)
-                    )
-                    DataInfoHolder(
-                        {
-                            setToast("Data Username telah Disalin")
-                        }, Res.drawable.user_ic, passDataDetailsState.value.passData?.username ?: ""
-                    )
-                    Spacer(
-                        modifier = Modifier.height(17.dp)
-                    )
-                    DataInfoHolder(
-                        {
-                            setToast("Data Email telah Disalin")
-                        }, Res.drawable.email_ic, passDataDetailsState.value.passData?.email ?: ""
-                    )
-                    Spacer(
-                        modifier = Modifier.height(17.dp)
-                    )
-                    DataInfoHolder(
-                        {
-                            setToast("Data Password telah Disalin")
-                        },
-                        Res.drawable.pass_ic,
-                        passDataDetailsState.value.passData?.password ?: "",
-                        isPassData = true
-                    )
-                    Spacer(
-                        modifier = Modifier.height(17.dp)
-                    )
-                    DataInfoHolder(
-                        {
-                            setToast("Data URL telah Disalin")
-                        }, Res.drawable.url_link, passDataDetailsState.value.passData?.url ?: ""
-                    )
-                    Text(
-                        "Deskripsi",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        style = MaterialTheme.typography.h6.copy(
-                            fontSize = 14.sp,
-                            color = secondaryColor
+                    item {
+                        Spacer(
+                            modifier = Modifier.height(10.dp)
                         )
-                    )
-                    Spacer(
-                        modifier = Modifier.height(11.dp)
-                    )
-                    Text(
-                        passDataDetailsState.value.passData?.desc ?: "Tidak Ada Deskripsi",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        style = MaterialTheme.typography.subtitle1.copy(
-                            fontSize = 12.sp,
-                            color = secondaryColor
+                        DataInfoHolder(
+                            {
+                                setToast("Data Jenis telah Disalin")
+                            },
+                            Res.drawable.jenis_data_pass_ic,
+                            passDataDetailsState.value.passData?.jenisData ?: ""
                         )
-                    )
-                    Spacer(
-                        modifier = Modifier.height(17.dp)
-                    )
-                    Text(
-                        "Tambahan Data",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        style = MaterialTheme.typography.h6.copy(
-                            fontSize = 14.sp,
-                            color = secondaryColor
+                        Spacer(
+                            modifier = Modifier.height(17.dp)
                         )
-                    )
-                    Spacer(
-                        modifier = Modifier.height(11.dp)
-                    )
-
-                    if(passDataDetailsState.value.passData!!.addPassContent.isEmpty()){
-                        Box(
-                            modifier = Modifier.fillMaxSize()
-                        ){
-                            EmptyWarning(
-                                modifier = Modifier.fillMaxWidth().align(Alignment.Center),
-                                warnTitle = "Data Tambahan Anda Kosong !",
-                                warnText = "Silahkan Tambahkan saat Mengupdate Data",
-                                isEnableBtn = false
+                        DataInfoHolder(
+                            {
+                                setToast("Data Username telah Disalin")
+                            }, Res.drawable.user_ic, passDataDetailsState.value.passData?.username ?: ""
+                        )
+                        Spacer(
+                            modifier = Modifier.height(17.dp)
+                        )
+                        DataInfoHolder(
+                            {
+                                setToast("Data Email telah Disalin")
+                            }, Res.drawable.email_ic, passDataDetailsState.value.passData?.email ?: ""
+                        )
+                        Spacer(
+                            modifier = Modifier.height(17.dp)
+                        )
+                        DataInfoHolder(
+                            {
+                                setToast("Data Password telah Disalin")
+                            },
+                            Res.drawable.pass_ic,
+                            passDataDetailsState.value.passData?.password ?: "",
+                            isPassData = true
+                        )
+                        Spacer(
+                            modifier = Modifier.height(17.dp)
+                        )
+                        DataInfoHolder(
+                            {
+                                setToast("Data URL telah Disalin")
+                            }, Res.drawable.url_link, passDataDetailsState.value.passData?.url ?: ""
+                        )
+                        Text(
+                            "Deskripsi",
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            style = MaterialTheme.typography.h6.copy(
+                                fontSize = 14.sp,
+                                color = secondaryColor
                             )
+                        )
+                        Spacer(
+                            modifier = Modifier.height(11.dp)
+                        )
+                        Text(
+                            passDataDetailsState.value.passData?.desc ?: "Tidak Ada Deskripsi",
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            style = MaterialTheme.typography.subtitle1.copy(
+                                fontSize = 12.sp,
+                                color = secondaryColor
+                            )
+                        )
+                        Spacer(
+                            modifier = Modifier.height(17.dp)
+                        )
+                        Text(
+                            "Tambahan Data",
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            style = MaterialTheme.typography.h6.copy(
+                                fontSize = 14.sp,
+                                color = secondaryColor
+                            )
+                        )
+                        Spacer(
+                            modifier = Modifier.height(11.dp)
+                        )
+                    }
+
+
+                    if(passDataDetailsState.value.passData?.addPassContent?.isEmpty() == true){
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                            ){
+                                EmptyWarning(
+                                    modifier = Modifier.fillMaxWidth().align(Alignment.Center),
+                                    warnTitle = "Data Tambahan Anda Kosong !",
+                                    warnText = "Silahkan Tambahkan saat Mengupdate Data",
+                                    isEnableBtn = false
+                                )
+                            }
                         }
                     }
 
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(11.dp)
-                    ) {
-                        if (passDataDetailsState.value.passData != null) {
-                            items(passDataDetailsState.value.passData!!.addPassContent) { item ->
-                                Card(
-                                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                                    backgroundColor = Color(0xFFB7D8F8),
-                                    shape = RoundedCornerShape(10.dp),
-                                    elevation = 0.dp
+                    if (passDataDetailsState.value.passData?.addPassContent != null) {
+                        items(passDataDetailsState.value.passData!!.addPassContent) { item ->
+                            Card(
+                                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                                backgroundColor = Color(0xFFB7D8F8),
+                                shape = RoundedCornerShape(10.dp),
+                                elevation = 0.dp
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(
+                                        horizontal = 16.dp,
+                                        vertical = 12.dp
+                                    ),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row(
-                                        modifier = Modifier.padding(
-                                            horizontal = 16.dp,
-                                            vertical = 12.dp
-                                        ),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Column {
-                                            Text(
-                                                item.nmData,
-                                                style = MaterialTheme.typography.body1,
-                                                color = secondaryColor
-                                            )
-                                            Spacer(
-                                                modifier = Modifier.height(4.dp)
-                                            )
-                                            Text(
-                                                item.vlData,
-                                                style = MaterialTheme.typography.subtitle1,
-                                                color = secondaryColor
-                                            )
-                                        }
-                                        IconButton(
-                                            content = {
-                                                Image(painterResource(Res.drawable.copy_paste), "")
-                                            },
-                                            onClick = {
-                                                copyText(item.vlData)
-                                                setToast("Data ${item.nmData} Telah di Salin")
-                                            }
+                                    Column {
+                                        Text(
+                                            item.nmData,
+                                            style = MaterialTheme.typography.body1,
+                                            color = secondaryColor
+                                        )
+                                        Spacer(
+                                            modifier = Modifier.height(4.dp)
+                                        )
+                                        Text(
+                                            item.vlData,
+                                            style = MaterialTheme.typography.subtitle1,
+                                            color = secondaryColor
                                         )
                                     }
+                                    IconButton(
+                                        content = {
+                                            Image(painterResource(Res.drawable.copy_paste), "")
+                                        },
+                                        onClick = {
+                                            copyText(item.vlData)
+                                            setToast("Data ${item.nmData} Telah di Salin")
+                                        }
+                                    )
                                 }
                             }
-                            item {
-                                Spacer(
-                                    modifier = Modifier.height(20.dp)
-                                )
-                            }
+                            Spacer(
+                                modifier = Modifier.height(11.dp)
+                            )
                         }
                     }
                 }
