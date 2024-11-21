@@ -66,3 +66,4 @@ fun newDiskCache(): DiskCache {
         .build()
 }
 
+expect fun disableScreenshots(enable: Boolean)
