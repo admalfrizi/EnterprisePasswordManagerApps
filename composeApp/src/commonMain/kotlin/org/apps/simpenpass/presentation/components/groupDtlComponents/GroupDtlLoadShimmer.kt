@@ -23,7 +23,7 @@ fun GroupDtlLoadShimmer() {
         modifier = Modifier
             .shimmer()
             .fillMaxWidth()
-            .padding(start = 16.dp, end= 16.dp,top = 22.dp),
+            .padding(start = 16.dp, end= 16.dp,top = 50.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Box(

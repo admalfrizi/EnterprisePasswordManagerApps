@@ -100,6 +100,7 @@ kotlin {
                 implementation(libs.datastore)
                 implementation(libs.atomicfu)
                 implementation(libs.konnection)
+                implementation(libs.sdp.ssp.compose.multiplatform)
             }
         }
 

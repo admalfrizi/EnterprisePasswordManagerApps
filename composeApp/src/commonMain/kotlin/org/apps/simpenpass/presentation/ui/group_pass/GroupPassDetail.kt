@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -55,6 +55,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.CoroutineScope
+import network.chaintech.sdpcomposemultiplatform.ssp
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
@@ -259,17 +260,21 @@ fun ContentView(
                 if(groupState.dtlGroupData != null){
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                         Card(
-                            modifier = Modifier.height(93.dp).weight(1f),
+                            modifier = Modifier.wrapContentHeight().weight(1f),
                             backgroundColor = Color(0xFF1E559C),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Column(
-                                modifier = Modifier.padding(11.dp).fillMaxHeight(),
+                                modifier = Modifier.padding(11.dp),
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     "Jumlah Data Password",
-                                    style = MaterialTheme.typography.subtitle2,
+                                    style = MaterialTheme.typography.subtitle2.copy(
+                                        fontSize = 10.ssp
+                                    ),
+                                    minLines = 2,
+                                    maxLines = 2,
                                     color = Color.White
                                 )
                                 Text(
@@ -283,41 +288,21 @@ fun ContentView(
                             modifier = Modifier.width(9.dp)
                         )
                         Card(
-                            modifier = Modifier.height(93.dp).weight(1f),
+                            modifier = Modifier.wrapContentHeight().weight(1f),
                             backgroundColor = Color(0xFF1E559C),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Column(
-                                modifier = Modifier.padding(11.dp).fillMaxHeight(),
-                                verticalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    "Jumlah Role Group",
-                                    style = MaterialTheme.typography.subtitle2,
-                                    color = Color.White
-                                )
-                                Text(
-                                    groupState.dtlGroupData.totalRole.toString(),
-                                    style = MaterialTheme.typography.body2,
-                                    fontSize = 24.sp
-                                )
-                            }
-                        }
-                        Spacer(
-                            modifier = Modifier.width(9.dp)
-                        )
-                        Card(
-                            modifier = Modifier.height(93.dp).weight(1f),
-                            backgroundColor = Color(0xFF1E559C),
-                            shape = RoundedCornerShape(10.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(11.dp).fillMaxHeight(),
+                                modifier = Modifier.padding(11.dp),
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     "Jumlah Anggota Grup",
-                                    style = MaterialTheme.typography.subtitle2,
+                                    style = MaterialTheme.typography.subtitle2.copy(
+                                        fontSize = 10.ssp
+                                    ),
+                                    minLines = 2,
+                                    maxLines = 2,
                                     color = Color.White
                                 )
                                 Text(
