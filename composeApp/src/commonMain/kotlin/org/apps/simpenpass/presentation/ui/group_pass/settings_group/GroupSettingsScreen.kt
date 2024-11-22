@@ -358,6 +358,10 @@ fun GroupSettingsScreen(
                     navToEditRole(groupState.groupId!!)
                 }
             )
+            SettingsListHolder(
+                "Enkripsi Data",
+                isSwitch = true,
+            )
         }
     }
 }

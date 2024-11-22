@@ -72,14 +72,6 @@ fun TopBarDtl(
             ) {
                 DropdownMenuItem(
                     content = {
-                        Text(text = "Edit Data Grup")
-                    },
-                    onClick = {
-                        isDropdownShow = false
-                    }
-                )
-                DropdownMenuItem(
-                    content = {
                         Text(text = "Pengaturan Grup")
                     },
                     onClick = {
