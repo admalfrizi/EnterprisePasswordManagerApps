@@ -43,6 +43,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -186,8 +187,19 @@ fun ContentView(
                 Box {
                     Box(
                         modifier = Modifier.fillMaxWidth().background(secondaryColor)
-                            .height(43.dp)
-                    )
+                            .height(80.dp)
+                    ){
+                        if(imagesName != null){
+                            AsyncImage(
+                                model = urlImages,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .blur(20.dp),
+                                contentDescription = "Group Profile Picture",
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
 
                     if(groupState.isLoading  && groupState.dtlGroupData == null){
                         GroupDtlLoadShimmer()
@@ -195,7 +207,7 @@ fun ContentView(
 
                     if(groupState.dtlGroupData != null){
                         Row(
-                            modifier = Modifier.padding(start = 16.dp, end= 16.dp, top = 22.dp).fillMaxWidth()
+                            modifier = Modifier.padding(start = 16.dp, end= 16.dp, top = 50.dp).fillMaxWidth()
                                 .align(
                                     Alignment.BottomStart
                                 )
@@ -224,7 +236,7 @@ fun ContentView(
                             }
                             Spacer(modifier = Modifier.width(38.dp))
                             Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-                                Spacer(modifier = Modifier.height(14.dp))
+                                Spacer(modifier = Modifier.height(28.dp))
                                 Text(
                                     groupState.dtlGroupData.groupDtl.nm_grup,
                                     style = MaterialTheme.typography.button,

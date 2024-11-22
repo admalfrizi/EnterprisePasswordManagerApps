@@ -340,20 +340,23 @@ fun ScaffoldContent(
 
                 },
                 actions = {
-                    IconButton(
-                        content = {
-                            Image(
-                                painterResource(Res.drawable.menu_ic),
-                                "",
-                                colorFilter = ColorFilter.tint(Color.White),
-                            )
-                        },
-                        onClick = {
-                            scope.launch {
-                                sheetState.show()
+                    if(!isSelectionMode){
+                        IconButton(
+                            content = {
+                                Image(
+                                    painterResource(Res.drawable.menu_ic),
+                                    "",
+                                    colorFilter = ColorFilter.tint(Color.White),
+                                )
+                            },
+                            onClick = {
+                                scope.launch {
+                                    sheetState.show()
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
+
                 },
                 modifier = Modifier.fillMaxWidth()
             )

@@ -163,10 +163,11 @@ fun NavGraphBuilder.groupPassDetail(
             enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
                     slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
                         with(density) { 30.dp.roundToPx() }
-                    } },
+                    }
+            },
             exitTransition = {  fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
                     slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
-                        with(density) { (-30).dp.roundToPx() }
+                        with(density) { (30).dp.roundToPx() }
                     }
             }
         ) {
