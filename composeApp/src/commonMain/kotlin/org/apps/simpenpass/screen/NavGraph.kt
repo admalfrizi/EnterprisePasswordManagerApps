@@ -41,6 +41,7 @@ import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
 import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
 import org.apps.simpenpass.presentation.ui.group_pass.pass_data_group_detail.PassDataDetailsScreen
 import org.apps.simpenpass.presentation.ui.group_pass.retrieve_data_pass.RetrieveDataPass
+import org.apps.simpenpass.presentation.ui.group_pass.settings_group.GroupSettingsScreen
 import org.apps.simpenpass.presentation.ui.main.group.GroupScreen
 import org.apps.simpenpass.presentation.ui.main.home.HomeScreen
 import org.apps.simpenpass.presentation.ui.main.profile.ProfileScreen
@@ -179,6 +180,9 @@ fun NavGraphBuilder.groupPassDetail(
                 navToBack = {
                     navController.navigateUp()
                 },
+                navToGroupSettings = {
+                    navController.navigate(Screen.GroupSettings.groupId(it))
+                },
                 bottomEdgeColor = bottomEdgeColor
             )
         }
@@ -207,10 +211,7 @@ fun NavGraphBuilder.groupPassDetail(
             EditAnggotaGroup(
                 navController,
                 groupId = groupId!!,
-                bottomEdgeColor = bottomEdgeColor,
-                navToEditRole = {
-                    navController.navigate(Screen.EditRole.groupId(groupId))
-                }
+                bottomEdgeColor = bottomEdgeColor
             )
         }
 
@@ -296,6 +297,26 @@ fun NavGraphBuilder.groupPassDetail(
             EditRoleScreen(
                 navController,
                 groupId = groupId!!
+            )
+        }
+
+        composable(
+            route = Screen.GroupSettings.route,
+            arguments = listOf(
+                navArgument(Screen.GroupSettings.ARG_GROUP_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
+        ){
+            GroupSettingsScreen(
+                navToEditRole = {
+                    navController.navigate(Screen.EditRole.groupId(it))
+                },
+                navToBack = {
+                    navController.navigateUp()
+                }
             )
         }
     }

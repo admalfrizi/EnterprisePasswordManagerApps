@@ -55,7 +55,6 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLoadShimmer
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
@@ -73,6 +72,7 @@ import resources.your_data_ic
 fun GroupPassDetail(
     navController: NavController,
     navToBack: () -> Unit,
+    navToGroupSettings: (String) -> Unit,
     navToFormGroupPass: (String) -> Unit,
     groupViewModel: GroupDetailsViewModel = koinViewModel(),
     bottomEdgeColor: MutableState<Color>
@@ -89,7 +89,6 @@ fun GroupPassDetail(
         MethodSelection(1, Res.drawable.edit_ic, " Buat Data Baru"),
         MethodSelection(2, Res.drawable.your_data_ic, "Ambil Dari Data Anda"),
     )
-    var isPopUp = remember { mutableStateOf(false) }
 
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -119,13 +118,15 @@ fun GroupPassDetail(
         ContentView(
             navController,
             navToBack,
+            navToGroupSettings = {
+                navToGroupSettings(groupState.groupId!!)
+            },
             snackBarHostState,
             tabsName,
             sheetState,
             scope,
             groupState,
-            groupViewModel,
-            isPopUp
+            groupViewModel
         )
     }
 }
@@ -135,39 +136,17 @@ fun GroupPassDetail(
 fun ContentView(
     navController: NavController,
     navToBack: () -> Unit,
+    navToGroupSettings: () -> Unit,
     snackbarHostState: SnackbarHostState,
     tabsName: List<String>,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
     groupState: GroupDetailsState,
-    groupViewModel : GroupDetailsViewModel,
-    isPopUp : MutableState<Boolean>
+    groupViewModel : GroupDetailsViewModel
 ) {
     var indexTab by rememberSaveable { mutableStateOf(0) }
     val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
     val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
-
-    if(isPopUp.value){
-        UpdateGroupDetails(
-            onDismissRequest = {
-                isPopUp.value = false
-            },
-            isPopUp,
-            scope,
-            urlImages,
-            groupViewModel,
-            imagesName,
-            groupState
-        )
-    }
-
-    if(groupState.isUpdated){
-        scope.launch {
-            snackbarHostState.showSnackbar("Data Grup telah Diperbaharui")
-        }
-        groupViewModel.groupDtlState.value.isUpdated = false
-    }
-
 
     Scaffold(
         modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
@@ -175,10 +154,8 @@ fun ContentView(
         topBar = {
             TopBarDtl(
                 navToBack,
-                groupViewModel,
-                popUpEditGroup = {
-                   isPopUp.value = true
-                }
+                navToGroupSettings,
+                groupViewModel
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

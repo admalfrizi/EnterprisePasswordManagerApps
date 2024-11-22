@@ -25,8 +25,8 @@ import resources.menu_ic
 @Composable
 fun TopBarDtl(
     navBack: () -> Unit,
-    groupState: GroupDetailsViewModel,
-    popUpEditGroup: () -> Unit
+    navToGroupSettings: () -> Unit,
+    groupState: GroupDetailsViewModel
 ) {
     var isDropdownShow by remember { mutableStateOf(false) }
 
@@ -75,16 +75,16 @@ fun TopBarDtl(
                         Text(text = "Edit Data Grup")
                     },
                     onClick = {
-                        popUpEditGroup()
                         isDropdownShow = false
                     }
                 )
                 DropdownMenuItem(
                     content = {
-                        Text(text = "Hapus Grup Ini")
+                        Text(text = "Pengaturan Grup")
                     },
                     onClick = {
-
+                        navToGroupSettings()
+                        isDropdownShow = false
                     }
                 )
             }

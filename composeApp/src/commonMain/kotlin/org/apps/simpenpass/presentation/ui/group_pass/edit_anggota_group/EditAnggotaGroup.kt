@@ -30,6 +30,8 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -64,7 +66,6 @@ import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.getScreenHeight
 import org.apps.simpenpass.utils.profileNameInitials
-import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -79,8 +80,7 @@ fun EditAnggotaGroup(
     navController: NavController,
     groupViewModel: GroupDetailsViewModel = koinViewModel(),
     groupId: String,
-    bottomEdgeColor: MutableState<Color>,
-    navToEditRole: (String) -> Unit
+    bottomEdgeColor: MutableState<Color>
 ) {
     val groupState by groupViewModel.groupDtlState.collectAsState()
     val itemsData = groupState.memberGroupData
@@ -103,6 +103,8 @@ fun EditAnggotaGroup(
         isSelectionMode.value = false
         selectedItems.clear()
     }
+
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(groupId){
         groupViewModel.getMemberDataGroup(groupId)
@@ -132,9 +134,9 @@ fun EditAnggotaGroup(
         sheetBackgroundColor = Color(0xFFF1F1F1),
         sheetContent = {
             OptionMenu(
-                navToEditRole = navToEditRole,
                 groupId = groupId,
                 sheetState,
+                snackBarHostState,
                 scope,
                 isSelectionMode,
                 groupState,
@@ -144,6 +146,7 @@ fun EditAnggotaGroup(
         content = {
             ScaffoldContent(
                 navController = navController,
+                snackBarHostState,
                 itemsData,
                 scope,
                 sheetState,
@@ -159,9 +162,9 @@ fun EditAnggotaGroup(
 
 @Composable
 fun OptionMenu(
-    navToEditRole: (String) -> Unit,
     groupId: String,
     sheetState: ModalBottomSheetState,
+    snackbarHostState: SnackbarHostState,
     scope: CoroutineScope,
     isSelectionMode: MutableState<Boolean>,
     groupState: GroupDetailsState,
@@ -196,32 +199,6 @@ fun OptionMenu(
         }
         Box(
             modifier = Modifier.fillMaxWidth().clickable {
-                navToEditRole(groupId)
-                scope.launch {
-                    sheetState.hide()
-                }
-            }
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painterResource(Res.drawable.role_change),
-                    ""
-                )
-                Spacer(
-                    modifier = Modifier.width(18.dp)
-                )
-                Text(
-                    "Ubah Posisi Anggota",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = secondaryColor
-                )
-            }
-        }
-        Box(
-            modifier = Modifier.fillMaxWidth().clickable {
                 when(groupState.memberGroupData.size > 1){
                     true -> {
                         isSelectionMode.value = true
@@ -232,7 +209,10 @@ fun OptionMenu(
                         }
                     }
                     false -> {
-                        setToast("Maaf Anda adalah Admin Grup Ini !")
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Maaf Anda adalah Admin Grup Ini !")
+                        }
+
                     }
                 }
 
@@ -268,6 +248,7 @@ fun OptionMenu(
 @Composable
 fun ScaffoldContent(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     itemsData: List<MemberGroupData?>,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
@@ -300,6 +281,7 @@ fun ScaffoldContent(
                 null
             }
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 backgroundColor = backgroundColor,
