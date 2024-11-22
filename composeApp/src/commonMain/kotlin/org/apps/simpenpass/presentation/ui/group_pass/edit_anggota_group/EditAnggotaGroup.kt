@@ -62,6 +62,7 @@ import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.getScreenHeight
 import org.apps.simpenpass.utils.profileNameInitials
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -125,7 +126,9 @@ fun EditAnggotaGroup(
                 groupId = groupId,
                 sheetState,
                 scope,
-                isSelectionMode
+                isSelectionMode,
+                groupState,
+                selectedItems
             )
         },
         content = {
@@ -151,6 +154,8 @@ fun OptionMenu(
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
     isSelectionMode: MutableState<Boolean>,
+    groupState: GroupDetailsState,
+    listItem: MutableList<MemberGroupData>
 ) {
     Column {
         Spacer(
@@ -207,7 +212,20 @@ fun OptionMenu(
         }
         Box(
             modifier = Modifier.fillMaxWidth().clickable {
-                isSelectionMode.value = true
+                when(groupState.memberGroupData.size > 1){
+                    true -> {
+                        isSelectionMode.value = true
+                        groupState.memberGroupData.forEach {
+                            if(it.isGroupAdmin == true){
+                                listItem.add(it)
+                            }
+                        }
+                    }
+                    false -> {
+                        setToast("Maaf Anda adalah Admin Grup Ini !")
+                    }
+                }
+
                 scope.launch {
                     sheetState.hide()
                 }
@@ -331,7 +349,6 @@ fun ScaffoldContent(
             )
         }
     ){
-
         LazyColumn {
             if(groupState.isLoading){
                 item{
@@ -406,7 +423,7 @@ fun ScaffoldContent(
                                             selectedItems.add(item)
                                         }
                                     },
-                                    checked = checkedIsAdmin(item,selectedItems) ,
+                                    checked = selectedItems.contains(item),
                                     colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
                                 )
                             }
@@ -419,17 +436,19 @@ fun ScaffoldContent(
     }
 }
 
-fun checkedIsAdmin(
-    item: MemberGroupData,
-    list: MutableList<MemberGroupData>
-): Boolean {
-    when(item.isGroupAdmin == true && !list.contains(item)){
-        true -> {
-            list.add(item)
-            return list.contains(item)
-        }
-        false -> {
-            return list.contains(item)
-        }
-    }
-}
+//fun checkedIsAdmin(
+//    item: MemberGroupData,
+//    list: MutableList<MemberGroupData>,
+//    isSelectionMode: Boolean
+//): Boolean {
+//    when(item.isGroupAdmin == true && !list.contains(item)){
+//        true -> {
+//            list.add(item)
+//
+//            return list.contains(item)
+//        }
+//        false -> {
+//            return list.contains(item)
+//        }
+//    }
+//}
