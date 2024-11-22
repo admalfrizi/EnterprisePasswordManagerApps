@@ -53,6 +53,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
@@ -71,6 +73,7 @@ import resources.delete_ic
 import resources.menu_ic
 import resources.role_change
 
+@OptIn(InternalVoyagerApi::class)
 @Composable
 fun EditAnggotaGroup(
     navController: NavController,
@@ -113,6 +116,13 @@ fun EditAnggotaGroup(
             isSelectionMode.value = false
         }
     }
+
+    BackHandler(
+        enabled = isSelectionMode.value,
+        onBack = {
+            resetSelectionMode()
+        }
+    )
 
     bottomEdgeColor.value = Color.White
 
