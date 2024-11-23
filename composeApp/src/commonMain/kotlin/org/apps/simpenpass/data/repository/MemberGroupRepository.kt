@@ -8,6 +8,7 @@ import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddMemberRequest
+import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
@@ -74,6 +75,20 @@ class MemberGroupRepository(
         emit(NetworkResult.Loading())
         localData.getToken.collect { token ->
             val result = remoteRolePositionGroup.updateRoleMemberGroup(token, groupId,updateRole)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            } else {
+                emit(NetworkResult.Error(result.message))
+            }
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun updateAdminMemberGroup(groupId: Int, updateAdmin : List<UpdateAdminMemberGroupRequest>) = flow {
+        emit(NetworkResult.Loading())
+        localData.getToken.collect { token ->
+            val result = remoteMemberDataSources.updateAdminMemberGroup(token, groupId,updateAdmin)
             if(result.success){
                 emit(NetworkResult.Success(result))
             } else {

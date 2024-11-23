@@ -60,6 +60,7 @@ import cafe.adriel.voyager.navigator.internal.BackHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
+import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsState
 import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
@@ -79,6 +80,7 @@ import resources.role_change
 fun EditAnggotaGroup(
     navController: NavController,
     groupViewModel: GroupDetailsViewModel = koinViewModel(),
+    editAnggotaViewModel: EditAnggotaGroupViewModel = koinViewModel(),
     groupId: String,
     bottomEdgeColor: MutableState<Color>
 ) {
@@ -96,7 +98,7 @@ fun EditAnggotaGroup(
     }
 
     val selectedItems = remember {
-        mutableStateListOf<MemberGroupData>()
+        mutableStateListOf<UpdateAdminMemberGroupRequest>()
     }
 
     val resetSelectionMode = {
@@ -151,6 +153,7 @@ fun EditAnggotaGroup(
                 scope,
                 sheetState,
                 groupState,
+                editAnggotaViewModel,
                 height,
                 isSelectionMode = isSelectionMode.value,
                 selectedItems = selectedItems,
@@ -168,7 +171,7 @@ fun OptionMenu(
     scope: CoroutineScope,
     isSelectionMode: MutableState<Boolean>,
     groupState: GroupDetailsState,
-    listItem: MutableList<MemberGroupData>
+    listItem: MutableList<UpdateAdminMemberGroupRequest>
 ) {
     Column {
         Spacer(
@@ -204,7 +207,7 @@ fun OptionMenu(
                         isSelectionMode.value = true
                         groupState.memberGroupData.forEach {
                             if(it.isGroupAdmin == true){
-                                listItem.add(it)
+                                listItem.add(UpdateAdminMemberGroupRequest(it.id,it.isGroupAdmin!!))
                             }
                         }
                     }
@@ -253,8 +256,9 @@ fun ScaffoldContent(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     groupState: GroupDetailsState,
+    editAnggotaGroupViewModel: EditAnggotaGroupViewModel,
     height : Int,
-    selectedItems: MutableList<MemberGroupData>,
+    selectedItems: MutableList<UpdateAdminMemberGroupRequest>,
     isSelectionMode: Boolean,
     resetSelectionMode: () -> Unit
 ) {
@@ -268,7 +272,7 @@ fun ScaffoldContent(
             if(isSelectionMode && selectedItems.isNotEmpty()){
                 FloatingActionButton(
                     onClick = {
-
+                        editAnggotaGroupViewModel.updateAdminMember(groupState.groupId!!,selectedItems)
                     },
                     content = {
                         Image(
@@ -412,13 +416,13 @@ fun ScaffoldContent(
                             if (isSelectionMode){
                                 Checkbox(
                                     onCheckedChange = {
-                                        if(selectedItems.contains(item)){
-                                            selectedItems.remove(item)
+                                        if(selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))){
+                                            selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
                                         } else {
-                                            selectedItems.add(item)
+                                            selectedItems.add(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
                                         }
                                     },
-                                    checked = selectedItems.contains(item),
+                                    checked = selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!)),
                                     colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
                                 )
                             }

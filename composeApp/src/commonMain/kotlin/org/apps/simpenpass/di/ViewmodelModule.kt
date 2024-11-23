@@ -6,6 +6,7 @@ import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupV
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormViewModel
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleViewModel
 import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
+import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroupViewModel
 import org.apps.simpenpass.presentation.ui.group_pass.pass_data_group_detail.PassDataDetailsViewModel
 import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataViewModel
 import org.apps.simpenpass.presentation.ui.main.SplashViewModel
@@ -90,6 +91,12 @@ val viewModelModule = module {
         PassDataDetailsViewModel(
             repoPassDataGroup = get(),
             savedStateHandle = get()
+        )
+    }
+
+    viewModel {
+        EditAnggotaGroupViewModel(
+            repo = get()
         )
     }
 
