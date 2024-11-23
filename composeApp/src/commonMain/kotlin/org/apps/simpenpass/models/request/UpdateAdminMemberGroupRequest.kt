@@ -8,5 +8,5 @@ data class UpdateAdminMemberGroupRequest(
     @SerialName("member_id")
     val memberId : Int,
     @SerialName("is_group_admin")
-    val isGroupAdmin: Boolean,
+    var isGroupAdmin: Boolean,
 )

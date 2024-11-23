@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.navigator.internal.BackHandler
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
@@ -206,9 +207,7 @@ fun OptionMenu(
                     true -> {
                         isSelectionMode.value = true
                         groupState.memberGroupData.forEach {
-                            if(it.isGroupAdmin == true){
-                                listItem.add(UpdateAdminMemberGroupRequest(it.id,it.isGroupAdmin!!))
-                            }
+                            listItem.add(UpdateAdminMemberGroupRequest(it.id,it.isGroupAdmin!!))
                         }
                     }
                     false -> {
@@ -266,6 +265,8 @@ fun ScaffoldContent(
         targetValue = if (isSelectionMode) Color(0xFF001530) else secondaryColor // Color changes
     )
 
+    Napier.v("selecteditems : $selectedItems")
+
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         floatingActionButton = {
@@ -291,7 +292,7 @@ fun ScaffoldContent(
                 backgroundColor = backgroundColor,
                 title = {
                     if(isSelectionMode){
-                        Text("Ada ${selectedItems.size} Anggota yang Dipilih")
+                        Text("Silahkan Pilih Anggota Anda !")
                     } else {
                         Text("Edit Anggota")
                     }
@@ -416,13 +417,17 @@ fun ScaffoldContent(
                             if (isSelectionMode){
                                 Checkbox(
                                     onCheckedChange = {
-                                        if(selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))){
+                                        if(item.isGroupAdmin == true || selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,true))){
                                             selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
-                                        } else {
-                                            selectedItems.add(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
+                                            selectedItems.add(UpdateAdminMemberGroupRequest(item.id,false))
+                                        }
+
+                                        if(item.isGroupAdmin == false || selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,false))){
+                                            selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
+                                            selectedItems.add(UpdateAdminMemberGroupRequest(item.id,true))
                                         }
                                     },
-                                    checked = selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!)),
+                                    checked = selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,true)),
                                     colors = CheckboxDefaults.colors(checkedColor = Color(0xFF78A1D7), uncheckedColor = secondaryColor)
                                 )
                             }
@@ -435,19 +440,18 @@ fun ScaffoldContent(
     }
 }
 
-//fun checkedIsAdmin(
-//    item: MemberGroupData,
-//    list: MutableList<MemberGroupData>,
-//    isSelectionMode: Boolean
-//): Boolean {
-//    when(item.isGroupAdmin == true && !list.contains(item)){
-//        true -> {
-//            list.add(item)
-//
-//            return list.contains(item)
-//        }
-//        false -> {
-//            return list.contains(item)
-//        }
-//    }
-//}
+fun checkedIsAdmin(
+    item: MemberGroupData,
+    list: MutableList<MemberGroupData>
+): Boolean {
+    when(item.isGroupAdmin == true && !list.contains(item)){
+        true -> {
+            list.add(item)
+
+            return list.contains(item)
+        }
+        false -> {
+            return list.contains(item)
+        }
+    }
+}
