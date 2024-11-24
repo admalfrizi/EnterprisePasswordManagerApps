@@ -125,6 +125,14 @@ fun EditAnggotaGroup(
 
     bottomEdgeColor.value = Color.White
 
+    if(groupState.isUpdated && !groupState.isLoading){
+        scope.launch {
+            snackBarHostState.showSnackbar(groupState.msg)
+        }
+        resetSelectionMode()
+        groupState.isUpdated = false
+    }
+
     ModalBottomSheetLayout(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetState = sheetState,

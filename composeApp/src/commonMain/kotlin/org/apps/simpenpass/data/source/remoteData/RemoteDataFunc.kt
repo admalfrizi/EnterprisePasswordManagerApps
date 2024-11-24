@@ -27,6 +27,7 @@ import org.apps.simpenpass.models.response.PassGroupResponseData
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.models.response.SendOtpResponse
+import org.apps.simpenpass.models.response.UpdateAdminMemberResponse
 import org.apps.simpenpass.models.response.UpdateRoleMemberResponse
 import org.apps.simpenpass.models.response.UserResponseData
 import org.apps.simpenpass.models.response.VerifyOtpResponse
@@ -82,7 +83,7 @@ interface MemberGroupDataFunc {
     suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
     suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
     suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<SearchResultResponse>
-    suspend fun updateAdminMemberGroup(token: String,groupId: Int ,listUpdate: List<UpdateAdminMemberGroupRequest>) : BaseResponse<AddMemberRequest>
+    suspend fun updateAdminMemberGroup(token: String,groupId: Int ,listUpdate: List<UpdateAdminMemberGroupRequest>) : BaseResponse<List<UpdateAdminMemberResponse>>
 }
 
 interface ResetPassFunc {

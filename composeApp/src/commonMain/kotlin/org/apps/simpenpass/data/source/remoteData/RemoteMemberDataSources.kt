@@ -19,6 +19,7 @@ import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.SearchResultResponse
+import org.apps.simpenpass.models.response.UpdateAdminMemberResponse
 import org.apps.simpenpass.utils.Constants
 
 class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupDataFunc {
@@ -90,15 +91,15 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
     override suspend fun updateAdminMemberGroup(
         token: String,
         groupId: Int ,listUpdate: List<UpdateAdminMemberGroupRequest>
-    ): BaseResponse<AddMemberRequest> {
+    ): BaseResponse<List<UpdateAdminMemberResponse>> {
         try {
-            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "updateAdminMember/$groupId"){
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateAdminMember/$groupId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
                 setBody(listUpdate)
             }
 
-            return response.body<BaseResponse<AddMemberRequest>>()
+            return response.body<BaseResponse<List<UpdateAdminMemberResponse>>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

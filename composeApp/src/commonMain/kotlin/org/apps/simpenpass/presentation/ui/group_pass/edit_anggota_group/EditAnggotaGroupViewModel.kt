@@ -91,6 +91,7 @@ class EditAnggotaGroupViewModel(
                             it.copy(
                                 isLoading = false,
                                 isUpdated = true,
+                                msg = res.data.message
                             )
                         }
                     }
