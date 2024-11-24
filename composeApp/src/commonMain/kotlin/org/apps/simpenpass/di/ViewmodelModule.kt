@@ -2,6 +2,7 @@ package org.apps.simpenpass.di
 
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupViewModel
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
+import org.apps.simpenpass.presentation.ui.change_data_screen.ChangeDataViewModel
 import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupViewModel
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormViewModel
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleViewModel
@@ -43,6 +44,10 @@ val viewModelModule = module {
         FormViewModel(
             repo = get()
         )
+    }
+
+    viewModel {
+        ChangeDataViewModel()
     }
 
     viewModel {

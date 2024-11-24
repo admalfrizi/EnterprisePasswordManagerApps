@@ -65,7 +65,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -477,10 +476,6 @@ fun UpdateRoleNameDialog(
     listRoleState: ListRoleState,
     editRoleViewModel: EditRoleViewModel,
 ) {
-    Napier.v("nameRole : ${nameRole.value}")
-    Napier.v("roleId : ${roleId.value}")
-//    if(RoleGroupData() in listRoleState.listRoleMember)
-
     Dialog(
         onDismissRequest = {
             onDismissRequest()
@@ -518,9 +513,6 @@ fun UpdateRoleNameDialog(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-//                        when(listRoleState.listRoleMember?.contains(RoleGroupData(roleId.value,nameRole.value)) == true){
-//
-//                        }
                         editRoleViewModel.updateRoleName(
                             roleId.value,
                             UpdateRoleNameRequest(
