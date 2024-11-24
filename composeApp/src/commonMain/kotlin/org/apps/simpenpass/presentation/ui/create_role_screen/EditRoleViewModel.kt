@@ -16,6 +16,7 @@ import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
+import org.apps.simpenpass.models.request.UpdateRoleNameRequest
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -236,6 +237,41 @@ class EditRoleViewModel(
                     }
                     is NetworkResult.Success -> {
                         _deleteRoleState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateRoleName(roleId: Int, updateRoleName: UpdateRoleNameRequest){
+        viewModelScope.launch {
+            repoGroup.updateRoleNamePosition(roleId,updateRoleName).flowOn(Dispatchers.IO).collectLatest { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _editRoleState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _editRoleState.update {
+                            it.copy(
+                                isLoading = true,
+                                isError = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _editRoleState.update {
                             it.copy(
                                 isLoading = false,
                                 isSuccess = true,

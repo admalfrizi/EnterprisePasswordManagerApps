@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
@@ -64,15 +65,19 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
+import org.apps.simpenpass.models.request.UpdateRoleNameRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
+import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.groupComponents.GroupLoadingShimmer
+import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.profileNameInitials
@@ -101,7 +106,9 @@ fun EditRoleScreen(
     val deleteRoleState by editRoleViewModel.deleteRoleState.collectAsStateWithLifecycle()
 
     var nameRole = remember { mutableStateOf("") }
+    var isEditNameRole = remember { mutableStateOf(false) }
     var roleId = remember { mutableStateOf(0) }
+    var toEditRoleId = remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(groupId){
@@ -119,11 +126,25 @@ fun EditRoleScreen(
 
     if(editRoleState.isSuccess){
         editRoleViewModel.getListRolePositionData(groupId)
+        editRoleViewModel.getMemberDataGroup(groupId)
     }
 
     if(deleteRoleState.isSuccess){
         editRoleViewModel.getListRolePositionData(groupId)
         editRoleViewModel.getMemberDataGroup(groupId)
+    }
+
+    if(isEditNameRole.value){
+        UpdateRoleNameDialog(
+            nameRole,
+            toEditRoleId,
+            editRoleViewModel = editRoleViewModel,
+            updateRoleState = editRoleState,
+            listRoleState = listRoleState,
+            onDismissRequest = {
+                isEditNameRole.value = false
+            }
+        )
     }
 
     ModalBottomSheetLayout(
@@ -135,7 +156,9 @@ fun EditRoleScreen(
                 scope,
                 groupId,
                 roleId,
-                nameRole.value
+                toEditRoleId,
+                nameRole,
+                isEditNameRole
             )
         },
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -445,6 +468,94 @@ fun OverlayContent(
     )
 }
 
+@Composable
+fun UpdateRoleNameDialog(
+    nameRole: MutableState<String>,
+    roleId: MutableState<Int>,
+    onDismissRequest: () -> Unit,
+    updateRoleState: EditRoleState,
+    listRoleState: ListRoleState,
+    editRoleViewModel: EditRoleViewModel,
+) {
+    Napier.v("nameRole : ${nameRole.value}")
+    Napier.v("roleId : ${roleId.value}")
+//    if(RoleGroupData() in listRoleState.listRoleMember)
+
+    Dialog(
+        onDismissRequest = {
+            onDismissRequest()
+        },
+    ){
+        Card(
+            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+            shape = RoundedCornerShape(20.dp),
+            elevation = 0.dp,
+        ){
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ){
+                Text(
+                    "Edit Nama Posisi",
+                    style = MaterialTheme.typography.h6.copy(color = secondaryColor),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+                FormTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = nameRole.value,
+                    labelHints = "Update Nama Role Disini...",
+                    leadingIcon = null,
+                    onValueChange = {
+                        nameRole.value = it
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+//                        when(listRoleState.listRoleMember?.contains(RoleGroupData(roleId.value,nameRole.value)) == true){
+//
+//                        }
+                        editRoleViewModel.updateRoleName(
+                            roleId.value,
+                            UpdateRoleNameRequest(
+                                nameRole.value,
+                            )
+                        )
+                        if(!updateRoleState.isLoading) {
+                            onDismissRequest()
+                        }
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+                    content = {
+                        if(updateRoleState.isLoading){
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                "Ubah",
+                                style = MaterialTheme.typography.h6,
+                                color = fontColor1
+                            )
+                        }
+
+                    }
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun BottomSheetContent(
@@ -453,7 +564,9 @@ fun BottomSheetContent(
     scope: CoroutineScope,
     groupId: String,
     roleId: MutableState<Int>,
-    nameRole: String,
+    toEditRoleId : MutableState<Int>,
+    nameRole: MutableState<String>,
+    isEditRoleName: MutableState<Boolean>
 ) {
     val detailRoleState by editRoleViewModel.detailRoleState.collectAsStateWithLifecycle()
 
@@ -461,7 +574,6 @@ fun BottomSheetContent(
         if(roleId.value != 0){
             editRoleViewModel.getDetailRoleGroup(roleId.value)
         }
-
     }
 
     if(!sheetState.isVisible){
@@ -594,6 +706,27 @@ fun BottomSheetContent(
 
         Spacer(
             modifier = Modifier.height(16.dp)
+        )
+        Button(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            onClick = {
+                nameRole.value = detailRoleState.roleData?.nmPosisi!!
+                toEditRoleId.value = detailRoleState.roleData?.id!!
+                isEditRoleName.value = true
+                scope.launch {
+                    sheetState.hide()
+                }
+            },
+            shape = RoundedCornerShape(20.dp),
+            elevation = ButtonDefaults.elevation(0.dp),
+            colors = ButtonDefaults.buttonColors(btnColor),
+            content = {
+                Text(
+                    "Ubah Nama",
+                    style = MaterialTheme.typography.h6,
+                    color = fontColor1
+                )
+            }
         )
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

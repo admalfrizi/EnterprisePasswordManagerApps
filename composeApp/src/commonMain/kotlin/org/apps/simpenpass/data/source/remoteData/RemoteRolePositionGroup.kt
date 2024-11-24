@@ -16,6 +16,7 @@ import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
+import org.apps.simpenpass.models.request.UpdateRoleNameRequest
 import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
@@ -109,6 +110,26 @@ class RemoteRolePositionGroup(private val httpClient: HttpClient) : RolePosition
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
                 parameter("roleId",roleId)
+            }
+
+            return response.body<BaseResponse<AddRoleReponse>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun updateRoleNamePosition(
+        token: String,
+        roleId: Int,
+        updateRoleName: UpdateRoleNameRequest
+    ): BaseResponse<AddRoleReponse> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateRoleName/$roleId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(updateRoleName)
             }
 
             return response.body<BaseResponse<AddRoleReponse>>()

@@ -10,5 +10,5 @@ data class RoleGroupData(
     @SerialName("nm_posisi")
     val nmPosisi: String,
     @SerialName("jmlh_anggota")
-    val jmlhAnggota: Int
+    val jmlhAnggota: Int?
 )

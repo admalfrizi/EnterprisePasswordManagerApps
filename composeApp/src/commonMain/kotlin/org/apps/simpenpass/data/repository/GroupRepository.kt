@@ -5,6 +5,7 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
@@ -13,6 +14,7 @@ import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.AddRoleRequest
+import org.apps.simpenpass.models.request.UpdateRoleNameRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupRepository(
@@ -214,6 +216,29 @@ class GroupRepository(
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun updateRoleNamePosition(roleId: Int, updateRoleName: UpdateRoleNameRequest) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteRolePositionGroup.updateRoleNamePosition(token,roleId,updateRoleName)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
