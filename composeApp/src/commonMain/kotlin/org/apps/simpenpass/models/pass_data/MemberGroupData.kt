@@ -16,5 +16,5 @@ data class MemberGroupData(
     @SerialName("nama_posisi")
     val nmPosisi: String?,
     @SerialName("isGroupAdmin")
-    var isGroupAdmin: Boolean? = false
+    var isGroupAdmin: Boolean
 )

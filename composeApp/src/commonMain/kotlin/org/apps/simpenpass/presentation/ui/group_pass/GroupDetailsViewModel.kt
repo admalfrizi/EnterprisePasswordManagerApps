@@ -34,7 +34,6 @@ class GroupDetailsViewModel(
         getDetailGroup(groupId!!)
         getRoleGroupList(groupId)
         getAllPassDataGroup(groupId)
-        getMemberDataGroup(groupId)
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),_groupDtlState.value)
 
     init {

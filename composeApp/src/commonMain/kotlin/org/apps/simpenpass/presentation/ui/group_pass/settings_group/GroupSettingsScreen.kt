@@ -352,14 +352,20 @@ fun GroupSettingsScreen(
                 modifier = Modifier.height(12.dp)
             )
             SettingsListHolder(
+                "Enkripsi Data",
+                isSwitch = true,
+            )
+            SettingsListHolder(
                 "Edit Role Anggota",
                 {
                     navToEditRole(groupState.groupId!!)
                 }
             )
             SettingsListHolder(
-                "Enkripsi Data",
-                isSwitch = true,
+                "Tambahkan Pertanyaan Keamanan Grup",
+                {
+
+                }
             )
         }
     }

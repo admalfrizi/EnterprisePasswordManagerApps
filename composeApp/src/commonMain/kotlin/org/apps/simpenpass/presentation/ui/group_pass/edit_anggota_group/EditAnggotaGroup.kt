@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -66,6 +67,7 @@ import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberL
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.getScreenHeight
 import org.apps.simpenpass.utils.profileNameInitials
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -172,15 +174,29 @@ fun ScaffoldContent(
     val backgroundColor by animateColorAsState(
         targetValue = if (isSelectionMode) Color(0xFF001530) else secondaryColor // Color changes
     )
+    val equal = compareListsForIsAdmin(selectedItems,groupState.listMember, {
+        it.isGroupAdmin to it.memberId
+    },{
+        it.isGroupAdmin to it.id
+    })
 
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         floatingActionButton = {
             if(isSelectionMode && selectedItems.isNotEmpty()){
                 FloatingActionButton(
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp),
                     backgroundColor = Color(0xFF1E78EE),
                     onClick = {
-                        editAnggotaGroupViewModel.updateAdminMember(selectedItems)
+                        when(equal){
+                            true -> {
+                                setToast("Maaf Data Anda Tidak Ada Perubahan !")
+                            }
+                            false -> {
+                                editAnggotaGroupViewModel.updateAdminMember(selectedItems)
+                            }
+                        }
+
                     },
                     content = {
                         Icon(
@@ -325,8 +341,8 @@ fun ScaffoldContent(
                             if (isSelectionMode){
                                 Checkbox(
                                     onCheckedChange = {
-                                        if(selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))){
-                                            selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
+                                        if(selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin))){
+                                            selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin))
                                             when(item.isGroupAdmin == true){
                                                 true -> {
                                                     selectedItems.add(UpdateAdminMemberGroupRequest(item.id,false))
@@ -402,7 +418,7 @@ fun OptionMenu(
                     true -> {
                         isSelectionMode.value = true
                         groupState.listMember.forEach {
-                            listItem.add(UpdateAdminMemberGroupRequest(it.id,it.isGroupAdmin!!))
+                            listItem.add(UpdateAdminMemberGroupRequest(it.id,it.isGroupAdmin))
                         }
                     }
                     false -> {
@@ -440,4 +456,15 @@ fun OptionMenu(
             modifier = Modifier.height(31.dp)
         )
     }
+}
+
+fun compareListsForIsAdmin(
+    selectedItems: List<UpdateAdminMemberGroupRequest>,
+    memberData: List<MemberGroupData>,
+    selector1: (UpdateAdminMemberGroupRequest) -> Any,
+    selector2: (MemberGroupData) -> Any,
+): Boolean {
+    val set1 = selectedItems.map(selector1).toSet()
+    val set2 = memberData.map(selector2).toSet()
+    return set1 == set2
 }

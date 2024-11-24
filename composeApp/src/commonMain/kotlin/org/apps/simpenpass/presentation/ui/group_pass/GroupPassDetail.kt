@@ -34,6 +34,7 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -148,6 +149,12 @@ fun ContentView(
     var indexTab by rememberSaveable { mutableStateOf(0) }
     val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
     val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
+
+    LaunchedEffect(indexTab == 1){
+        if(indexTab != 0){
+            groupViewModel.getMemberDataGroup(groupState.groupId!!)
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
