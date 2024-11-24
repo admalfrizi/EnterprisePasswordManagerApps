@@ -89,9 +89,9 @@ fun SettingListView(navigateToLogout: () -> Unit, profileState: ProfileState, pr
             color = secondaryColor
         )
         Column {
-            SettingsListHolder("Ubah Email", {})
-            SettingsListHolder("Ubah Password", {})
-            SettingsListHolder("Keamanan Biometrik", {})
+            SettingsListHolder("Ubah Email", onClick = {})
+            SettingsListHolder("Ubah Password", onClick =  {})
+            SettingsListHolder("Keamanan Biometrik",onClick =  {})
         }
         Text(
             "Pengaturan Aplikasi",
@@ -100,7 +100,7 @@ fun SettingListView(navigateToLogout: () -> Unit, profileState: ProfileState, pr
             color = secondaryColor
         )
         Column {
-            SettingsListHolder("Informasi Aplikasi", {})
+            SettingsListHolder("Informasi Aplikasi", onClick =  {})
         }
         Spacer(
             modifier = Modifier.height(24.dp)

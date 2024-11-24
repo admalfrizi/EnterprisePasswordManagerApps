@@ -1,18 +1,12 @@
 package org.apps.simpenpass.presentation.components.groupDtlComponents
 
 import androidx.compose.foundation.Image
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
@@ -20,7 +14,7 @@ import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
-import resources.menu_ic
+import resources.settings_ic
 
 @Composable
 fun TopBarDtl(
@@ -28,8 +22,6 @@ fun TopBarDtl(
     navToGroupSettings: () -> Unit,
     groupState: GroupDetailsViewModel
 ) {
-    var isDropdownShow by remember { mutableStateOf(false) }
-
     TopAppBar(
         backgroundColor = secondaryColor,
         title = {
@@ -56,30 +48,16 @@ fun TopBarDtl(
         actions = {
             IconButton(
                 onClick = {
-                    isDropdownShow = true
+                    navToGroupSettings()
                 },
                 content = {
                     Image(
-                        painterResource(Res.drawable.menu_ic),
+                        painterResource(Res.drawable.settings_ic),
                         "",
                         colorFilter = ColorFilter.tint(Color.White)
                     )
                 }
             )
-            DropdownMenu(
-                expanded = isDropdownShow,
-                onDismissRequest = { isDropdownShow = false }
-            ) {
-                DropdownMenuItem(
-                    content = {
-                        Text(text = "Pengaturan Grup")
-                    },
-                    onClick = {
-                        navToGroupSettings()
-                        isDropdownShow = false
-                    }
-                )
-            }
         }
     )
 }

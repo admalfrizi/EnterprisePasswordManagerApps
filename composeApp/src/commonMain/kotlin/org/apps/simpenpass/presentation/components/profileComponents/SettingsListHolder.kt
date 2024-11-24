@@ -28,6 +28,7 @@ import resources.arrow_right_ic
 @Composable
 fun SettingsListHolder(
     titleSettings: String,
+    prefixTitle : String? = null,
     onClick : () -> Unit = {},
     isSwitch: Boolean = false,
     checked: MutableState<Boolean>? = null,
@@ -59,10 +60,18 @@ fun SettingsListHolder(
                     )
                 }
 
-                if(isSwitch != true){
+                if(prefixTitle == null && isSwitch != true){
                     Image(
                         painter = painterResource(Res.drawable.arrow_right_ic),
                         ""
+                    )
+                }
+
+                if(prefixTitle?.isNotEmpty() == true && isSwitch != true){
+                    Text(
+                        prefixTitle,
+                        style = MaterialTheme.typography.subtitle2,
+                        color = secondaryColor
                     )
                 }
             }

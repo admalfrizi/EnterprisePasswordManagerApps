@@ -357,13 +357,14 @@ fun GroupSettingsScreen(
             )
             SettingsListHolder(
                 "Edit Role Anggota",
+                prefixTitle = "${groupState.groupData?.totalRole} Posisi",
                 {
                     navToEditRole(groupState.groupId!!)
                 }
             )
             SettingsListHolder(
                 "Tambahkan Pertanyaan Keamanan Grup",
-                {
+                onClick =  {
 
                 }
             )
