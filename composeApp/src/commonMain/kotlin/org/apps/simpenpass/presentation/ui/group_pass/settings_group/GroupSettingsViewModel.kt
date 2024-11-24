@@ -1,4 +1,4 @@
-package org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group
+package org.apps.simpenpass.presentation.ui.group_pass.settings_group
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,33 +10,37 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.apps.simpenpass.data.repository.MemberGroupRepository
-import org.apps.simpenpass.models.pass_data.MemberGroupData
-import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
+import org.apps.simpenpass.data.repository.GroupRepository
+import org.apps.simpenpass.models.pass_data.DtlGrupPass
+import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
-class EditAnggotaGroupViewModel(
-    private val repo: MemberGroupRepository,
+class GroupSettingsViewModel(
+    private val repo: GroupRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _editAnggotaState = MutableStateFlow(EditAnggotaState())
-    val editAnggotaState = _editAnggotaState.asStateFlow()
+    private val _groupSettingsState = MutableStateFlow(GroupSettingsState())
+    val groupSettingsState = _groupSettingsState.asStateFlow()
 
     private val groupId = savedStateHandle.get<String>("groupId")
 
     init {
-        if(groupId != null){
-            getMemberDataGroup()
+        if(groupId != null && groupId != "{groupId}"){
+            _groupSettingsState.update {
+                it.copy(
+                    groupId = groupId
+                )
+            }
+            getDetailGroup()
         }
-
     }
 
-    fun getMemberDataGroup() {
+    fun getDetailGroup() {
         viewModelScope.launch {
-            repo.getMemberGroup(groupId?.toInt()!!).collect { res ->
+            repo.detailGroup(groupId?.toInt()!!).collect { res ->
                 when(res) {
                     is NetworkResult.Error -> {
-                        _editAnggotaState.update {
+                        _groupSettingsState.update {
                             it.copy(
                                 isLoading = false,
                                 isError = true,
@@ -45,17 +49,17 @@ class EditAnggotaGroupViewModel(
                         }
                     }
                     is NetworkResult.Loading -> {
-                        _editAnggotaState.update {
+                        _groupSettingsState.update {
                             it.copy(
                                 isLoading = true,
                             )
                         }
                     }
                     is NetworkResult.Success -> {
-                        _editAnggotaState.update {
+                        _groupSettingsState.update {
                             it.copy(
                                 isLoading = false,
-                                listMember = res.data.data!!,
+                                groupData = res.data.data!!,
                             )
                         }
                     }
@@ -64,14 +68,17 @@ class EditAnggotaGroupViewModel(
         }
     }
 
-    fun updateAdminMember(
-        listUpdateMember: List<UpdateAdminMemberGroupRequest>
+    fun updateGroupData(
+        groupId: String,
+        updateGroupRequest: AddGroupRequest,
+        imgFile: ByteArray?,
+        imgName : String?
     ) {
         viewModelScope.launch {
-            repo.updateAdminMemberGroup(groupId?.toInt()!!,listUpdateMember).flowOn(Dispatchers.IO).collect { res ->
+            repo.updateGroup(groupId.toInt(),updateGroupRequest,imgName,imgFile).flowOn(Dispatchers.IO).collect{ res ->
                 when(res){
                     is NetworkResult.Error -> {
-                        _editAnggotaState.update {
+                        _groupSettingsState.update {
                             it.copy(
                                 isLoading = false,
                                 isError = true,
@@ -80,17 +87,19 @@ class EditAnggotaGroupViewModel(
                         }
                     }
                     is NetworkResult.Loading -> {
-                        _editAnggotaState.update {
+                        _groupSettingsState.update {
                             it.copy(
-                                isLoading = true
+                                isLoading = true,
                             )
                         }
                     }
                     is NetworkResult.Success -> {
-                        _editAnggotaState.update {
+                        _groupSettingsState.update {
                             it.copy(
                                 isLoading = false,
-                                isUpdated = true,
+                                isError = false,
+                                isSuccess = true,
+                                msg = res.data.message
                             )
                         }
                     }
@@ -100,10 +109,11 @@ class EditAnggotaGroupViewModel(
     }
 }
 
-data class EditAnggotaState(
-    var msg: String = "",
-    val listMember: List<MemberGroupData> = emptyList(),
-    var isUpdated: Boolean = false,
-    var isError: Boolean = false,
-    var isLoading: Boolean = false,
+data class GroupSettingsState(
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val groupId: String? = null,
+    val msg : String? = null,
+    val isError: Boolean = false,
+    val groupData: DtlGrupPass? = null
 )

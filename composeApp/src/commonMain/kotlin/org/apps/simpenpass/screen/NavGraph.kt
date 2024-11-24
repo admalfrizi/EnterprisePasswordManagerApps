@@ -206,11 +206,9 @@ fun NavGraphBuilder.groupPassDetail(
                 }
             )
         ) {
-            val groupId = it.arguments?.getString(Screen.EditAnggota.ARG_GROUP_ID)
 
             EditAnggotaGroup(
                 navController,
-                groupId = groupId!!,
                 bottomEdgeColor = bottomEdgeColor
             )
         }

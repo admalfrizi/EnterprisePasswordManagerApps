@@ -19,7 +19,6 @@ import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.PassDataGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
-import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupDetailsViewModel(
@@ -71,46 +70,6 @@ class GroupDetailsViewModel(
                             it.copy(
                                 isLoading = false,
                                 dtlGroupData = res.data.data!!,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fun updateGroupData(
-        groupId: String,
-        updateGroupRequest: AddGroupRequest,
-        imgFile: ByteArray?,
-        imgName : String?
-    ) {
-        viewModelScope.launch {
-            repoGroup.updateGroup(groupId.toInt(),updateGroupRequest,imgName,imgFile).flowOn(Dispatchers.IO).collect{ res ->
-                when(res){
-                    is NetworkResult.Error -> {
-                        _groupDtlState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupDtlState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupDtlState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = false,
-                                isUpdated = true,
-                                msg = res.data.message
                             )
                         }
                     }

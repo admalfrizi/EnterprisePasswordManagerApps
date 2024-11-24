@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -57,14 +58,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.navigator.internal.BackHandler
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
-import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsState
-import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.getScreenHeight
 import org.apps.simpenpass.utils.profileNameInitials
@@ -80,13 +78,11 @@ import resources.role_change
 @Composable
 fun EditAnggotaGroup(
     navController: NavController,
-    groupViewModel: GroupDetailsViewModel = koinViewModel(),
     editAnggotaViewModel: EditAnggotaGroupViewModel = koinViewModel(),
-    groupId: String,
     bottomEdgeColor: MutableState<Color>
 ) {
-    val groupState by groupViewModel.groupDtlState.collectAsState()
-    val itemsData = groupState.memberGroupData
+    val groupState by editAnggotaViewModel.editAnggotaState.collectAsState()
+    val itemsData = groupState.listMember
     val height = getScreenHeight().value.toInt()
 
     val sheetState = rememberModalBottomSheetState(
@@ -108,10 +104,6 @@ fun EditAnggotaGroup(
     }
 
     val snackBarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(groupId){
-        groupViewModel.getMemberDataGroup(groupId)
-    }
 
     LaunchedEffect(
         key1 = isSelectionMode,
@@ -137,7 +129,6 @@ fun EditAnggotaGroup(
         sheetBackgroundColor = Color(0xFFF1F1F1),
         sheetContent = {
             OptionMenu(
-                groupId = groupId,
                 sheetState,
                 snackBarHostState,
                 scope,
@@ -165,98 +156,15 @@ fun EditAnggotaGroup(
 }
 
 @Composable
-fun OptionMenu(
-    groupId: String,
-    sheetState: ModalBottomSheetState,
-    snackbarHostState: SnackbarHostState,
-    scope: CoroutineScope,
-    isSelectionMode: MutableState<Boolean>,
-    groupState: GroupDetailsState,
-    listItem: MutableList<UpdateAdminMemberGroupRequest>
-) {
-    Column {
-        Spacer(
-            modifier = Modifier.height(32.dp)
-        )
-        Box(
-            modifier = Modifier.fillMaxWidth().clickable {
-
-            }
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painterResource(Res.drawable.add_member_ic),
-                    ""
-                )
-                Spacer(
-                    modifier = Modifier.width(18.dp)
-                )
-                Text(
-                    "Undang Anggota Baru",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = secondaryColor
-                )
-            }
-        }
-        Box(
-            modifier = Modifier.fillMaxWidth().clickable {
-                when(groupState.memberGroupData.size > 1){
-                    true -> {
-                        isSelectionMode.value = true
-                        groupState.memberGroupData.forEach {
-                            listItem.add(UpdateAdminMemberGroupRequest(it.id,it.isGroupAdmin!!))
-                        }
-                    }
-                    false -> {
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Maaf Anda adalah Admin Grup Ini !")
-                        }
-
-                    }
-                }
-
-                scope.launch {
-                    sheetState.hide()
-                }
-            }
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painterResource(Res.drawable.role_change),
-                    ""
-                )
-                Spacer(
-                    modifier = Modifier.width(18.dp)
-                )
-                Text(
-                    "Ubah Admin Anggota",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = secondaryColor
-                )
-            }
-        }
-        Spacer(
-            modifier = Modifier.height(31.dp)
-        )
-    }
-}
-
-@Composable
 fun ScaffoldContent(
     navController: NavController,
     snackbarHostState: SnackbarHostState,
-    itemsData: List<MemberGroupData?>,
+    itemsData: List<MemberGroupData>?,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    groupState: GroupDetailsState,
+    groupState: EditAnggotaState,
     editAnggotaGroupViewModel: EditAnggotaGroupViewModel,
-    height : Int,
+    height: Int,
     selectedItems: MutableList<UpdateAdminMemberGroupRequest>,
     isSelectionMode: Boolean,
     resetSelectionMode: () -> Unit
@@ -265,20 +173,20 @@ fun ScaffoldContent(
         targetValue = if (isSelectionMode) Color(0xFF001530) else secondaryColor // Color changes
     )
 
-    Napier.v("selecteditems : $selectedItems")
-
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         floatingActionButton = {
             if(isSelectionMode && selectedItems.isNotEmpty()){
                 FloatingActionButton(
+                    backgroundColor = Color(0xFF1E78EE),
                     onClick = {
-                        editAnggotaGroupViewModel.updateAdminMember(groupState.groupId!!,selectedItems)
+                        editAnggotaGroupViewModel.updateAdminMember(selectedItems)
                     },
                     content = {
-                        Image(
+                        Icon(
                             Icons.Default.Check,
-                            ""
+                            "",
+                            tint = Color.White
                         )
                     }
                 )
@@ -358,8 +266,8 @@ fun ScaffoldContent(
                 }
             }
 
-            if(groupState.memberGroupData.isNotEmpty() && !groupState.isLoading){
-                items(groupState.memberGroupData){ item ->
+            if(groupState.listMember.isNotEmpty() == true && !groupState.isLoading){
+                items(groupState.listMember){ item ->
                     Box(
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -402,7 +310,7 @@ fun ScaffoldContent(
                                     color = secondaryColor
                                 )
                             }
-                            if(itemsData.size != 1 && !isSelectionMode){
+                            if(itemsData?.size != 1 && !isSelectionMode){
                                 IconButton(
                                     onClick = {
 
@@ -417,14 +325,27 @@ fun ScaffoldContent(
                             if (isSelectionMode){
                                 Checkbox(
                                     onCheckedChange = {
-                                        if(item.isGroupAdmin == true || selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,true))){
+                                        if(selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))){
                                             selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
-                                            selectedItems.add(UpdateAdminMemberGroupRequest(item.id,false))
-                                        }
-
-                                        if(item.isGroupAdmin == false || selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,false))){
-                                            selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,item.isGroupAdmin!!))
-                                            selectedItems.add(UpdateAdminMemberGroupRequest(item.id,true))
+                                            when(item.isGroupAdmin == true){
+                                                true -> {
+                                                    selectedItems.add(UpdateAdminMemberGroupRequest(item.id,false))
+                                                }
+                                                false -> {
+                                                    selectedItems.add(UpdateAdminMemberGroupRequest(item.id,true))
+                                                }
+                                            }
+                                        } else {
+                                            when(selectedItems.contains(UpdateAdminMemberGroupRequest(item.id, true))){
+                                                true -> {
+                                                    selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,true))
+                                                    selectedItems.add(UpdateAdminMemberGroupRequest(item.id,false))
+                                                }
+                                                false -> {
+                                                    selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,false))
+                                                    selectedItems.add(UpdateAdminMemberGroupRequest(item.id,true))
+                                                }
+                                            }
                                         }
                                     },
                                     checked = selectedItems.contains(UpdateAdminMemberGroupRequest(item.id,true)),
@@ -436,22 +357,87 @@ fun ScaffoldContent(
                 }
             }
         }
-
     }
 }
 
-fun checkedIsAdmin(
-    item: MemberGroupData,
-    list: MutableList<MemberGroupData>
-): Boolean {
-    when(item.isGroupAdmin == true && !list.contains(item)){
-        true -> {
-            list.add(item)
+@Composable
+fun OptionMenu(
+    sheetState: ModalBottomSheetState,
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
+    isSelectionMode: MutableState<Boolean>,
+    groupState: EditAnggotaState,
+    listItem: MutableList<UpdateAdminMemberGroupRequest>
+) {
+    Column {
+        Spacer(
+            modifier = Modifier.height(32.dp)
+        )
+        Box(
+            modifier = Modifier.fillMaxWidth().clickable {
 
-            return list.contains(item)
+            }
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painterResource(Res.drawable.add_member_ic),
+                    ""
+                )
+                Spacer(
+                    modifier = Modifier.width(18.dp)
+                )
+                Text(
+                    "Undang Anggota Baru",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = secondaryColor
+                )
+            }
         }
-        false -> {
-            return list.contains(item)
+        Box(
+            modifier = Modifier.fillMaxWidth().clickable {
+                when(groupState.listMember.size > 1){
+                    true -> {
+                        isSelectionMode.value = true
+                        groupState.listMember.forEach {
+                            listItem.add(UpdateAdminMemberGroupRequest(it.id,it.isGroupAdmin!!))
+                        }
+                    }
+                    false -> {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Maaf Anda adalah Admin Grup Ini !")
+                        }
+
+                    }
+                }
+
+                scope.launch {
+                    sheetState.hide()
+                }
+            }
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painterResource(Res.drawable.role_change),
+                    ""
+                )
+                Spacer(
+                    modifier = Modifier.width(18.dp)
+                )
+                Text(
+                    "Ubah Admin Anggota",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = secondaryColor
+                )
+            }
         }
+        Spacer(
+            modifier = Modifier.height(31.dp)
+        )
     }
 }

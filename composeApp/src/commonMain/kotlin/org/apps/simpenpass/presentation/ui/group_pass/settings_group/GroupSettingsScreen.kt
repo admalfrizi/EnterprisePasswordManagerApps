@@ -66,7 +66,6 @@ import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.presentation.components.profileComponents.SettingsListHolder
-import org.apps.simpenpass.presentation.ui.group_pass.GroupDetailsViewModel
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.Constants
@@ -81,7 +80,7 @@ import resources.group_ic
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GroupSettingsScreen(
-    groupViewModel: GroupDetailsViewModel = koinViewModel(),
+    groupSettingsViewModel: GroupSettingsViewModel = koinViewModel(),
     navToEditRole : (String) -> Unit,
     navToBack : () -> Unit
 ) {
@@ -91,12 +90,12 @@ fun GroupSettingsScreen(
     var desc by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val interactionSource = remember { MutableInteractionSource() }
-    val groupState by groupViewModel.groupDtlState.collectAsStateWithLifecycle()
+    val groupState by groupSettingsViewModel.groupSettingsState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
-    if(groupState.dtlGroupData != null){
-        grupName = groupState.dtlGroupData?.groupDtl?.nm_grup!!
-        desc = groupState.dtlGroupData?.groupDtl?.desc ?: ""
+    if(groupState.groupData != null){
+        grupName = groupState.groupData?.groupDtl?.nm_grup!!
+        desc = groupState.groupData?.groupDtl?.desc ?: ""
     }
 
     val context = LocalPlatformContext.current
@@ -115,10 +114,10 @@ fun GroupSettingsScreen(
             }
         }
     )
-    val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
+    val imagesName = groupState.groupData?.groupDtl?.img_grup
     val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
 
-    if(groupState.isUpdated && !groupState.isLoading){
+    if(groupState.isSuccess && !groupState.isLoading){
         setToast("Data Telah Berhasil Diperbaharui !")
     }
 
@@ -190,7 +189,7 @@ fun GroupSettingsScreen(
                         }
                         false -> {
                             Text(
-                                profileNameInitials(groupState.dtlGroupData?.groupDtl?.nm_grup ?: "JUD"),
+                                profileNameInitials(groupState.groupData?.groupDtl?.nm_grup ?: "JUD"),
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 36.sp,
                                 color = Color.White,
@@ -223,8 +222,8 @@ fun GroupSettingsScreen(
                 BasicTextField(
                     value = grupName,
                     onValueChange = {
-                        if(groupState.dtlGroupData != null) {
-                            groupState.dtlGroupData?.groupDtl?.nm_grup = it
+                        if(groupState.groupData != null) {
+                            groupState.groupData?.groupDtl?.nm_grup = it
                         }
 
                         grupName = it
@@ -273,8 +272,8 @@ fun GroupSettingsScreen(
             BasicTextField(
                 value = desc,
                 onValueChange = {
-                    if(groupState.dtlGroupData != null) {
-                        groupState.dtlGroupData?.groupDtl?.desc = it
+                    if(groupState.groupData != null) {
+                        groupState.groupData?.groupDtl?.desc = it
                     }
                     desc = it
                 },
@@ -333,7 +332,7 @@ fun GroupSettingsScreen(
             Button(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 onClick = {
-                    groupViewModel.updateGroupData(groupState.dtlGroupData?.groupDtl?.id.toString(), AddGroupRequest(grupName,desc),imgFile,nameImg)
+                    groupSettingsViewModel.updateGroupData(groupState.groupData?.groupDtl?.id.toString(), AddGroupRequest(grupName,desc),imgFile,nameImg)
                     scope.launch {
                         keyboardController?.hide()
                     }

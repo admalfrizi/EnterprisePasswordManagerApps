@@ -63,7 +63,7 @@ fun MemberGroupScreen(
                 if(memberData.isNotEmpty()){
                     LazyColumn {
                         items(memberData){ item ->
-                            AnggotaDataHolder(item!!)
+                            AnggotaDataHolder(item)
                         }
                     }
                 }
