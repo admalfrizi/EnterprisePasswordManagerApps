@@ -84,6 +84,11 @@ fun SettingListView(
         DialogLoading {}
     }
 
+    if(profileState.isSuccess){
+        navigateToChangePass()
+        profileState.isSuccess = false
+    }
+
     Column(
         modifier= Modifier.fillMaxWidth()
     ) {
@@ -96,7 +101,7 @@ fun SettingListView(
         Column {
             SettingsListHolder("Ubah Biodata", onClick = {})
             SettingsListHolder("Ubah Password", onClick =  {
-                navigateToChangePass()
+                profileViewModel.sendOtp(profileState.userData?.email!!)
             })
         }
         Text(

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.UserRepository
+import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -71,11 +72,45 @@ class ProfileViewModel(
             }
         }
     }
+
+    fun sendOtp(email: String){
+        viewModelScope.launch {
+            repo.changeDataOtp(email).collect { result ->
+                when (result) {
+                    is NetworkResult.Error -> {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = false,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading ->  {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                otpResponse = result.data.data
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class ProfileState(
     val isLogout: Boolean = false,
     val isLoading: Boolean = false,
+    var isSuccess: Boolean = false,
+    val otpResponse: SendOtpResponse? = null,
     val userData: LocalUserStore? = null,
     val token: String? = null,
     val error: String? = null
