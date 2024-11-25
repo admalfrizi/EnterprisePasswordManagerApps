@@ -29,6 +29,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,18 +47,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
+import org.apps.simpenpass.style.linkColor
 import org.apps.simpenpass.style.secondaryColor
 
 @Composable
 fun OtpScreen(
     navToBack: () -> Unit,
 ) {
-    var otp = remember { mutableStateListOf("","","","") }
+    var otp = remember { mutableStateListOf<String>("","","","") }
     val focusRequesters = List(4) { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        focusRequesters.first().requestFocus()
+    }
+
+    Napier.v("otpValues : ${otp.joinToString()}")
 
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).imePadding().fillMaxSize(),
@@ -86,7 +95,9 @@ fun OtpScreen(
             )
         }
     ){
-        Box {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             Column(
                 modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter)
             ){
@@ -147,7 +158,12 @@ fun OtpScreen(
                             maxLines = 1,
                             value = value,
                             onValueChange = { otpVl ->
-                                if(otpVl.length <= 1){
+                                if(otpVl.length == 4) {
+                                    for(i in otp.indices){
+                                        otp[i] = if(i < otpVl.length && otpVl[i].isDigit()) otpVl[i].toString() else otpVl
+                                    }
+                                    keyboardController?.hide()
+                                } else if(otpVl.length <= 1){
                                     otp[index] = otpVl
                                     if(otpVl.isNotEmpty()){
                                         if(index < 4 - 1){
@@ -156,6 +172,8 @@ fun OtpScreen(
                                             keyboardController?.hide()
                                         }
                                     }
+                                } else {
+                                    if(index < 4 - 1) focusRequesters[index].requestFocus()
                                 }
                             },
                             keyboardOptions = KeyboardOptions(
@@ -185,6 +203,12 @@ fun OtpScreen(
                             ),
                             shape = RoundedCornerShape(13.dp)
                         )
+
+                        LaunchedEffect(value) {
+                            if (otp.all { it.isNotEmpty() }) {
+                                focusManager.clearFocus()
+                            }
+                        }
                     }
                 }
                 Spacer(
@@ -205,6 +229,35 @@ fun OtpScreen(
                         style = MaterialTheme.typography.button
                     )
                 }
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Tidak Mendapatkan Kode ? Cek Di Spam",
+                    color = fontColor1,
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+                Text(
+                    "Atau",
+                    color = fontColor1,
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+                Text(
+                    "Kirimkan Kode Lain",
+                    color = linkColor,
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Spacer(
+                    modifier = Modifier.height(20.dp)
+                )
             }
         }
 
