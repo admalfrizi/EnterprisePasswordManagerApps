@@ -75,4 +75,6 @@ sealed class Screen(val route : String) {
 
         const val ARG_GROUP_ID = "groupId"
     }
+
+    data object Otp : Screen(route = "otpVerify")
 }

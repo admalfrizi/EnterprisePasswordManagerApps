@@ -150,8 +150,8 @@ fun ContentView(
     val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
     val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
 
-    LaunchedEffect(indexTab == 1){
-        if(indexTab != 0){
+    LaunchedEffect(indexTab != 0 && groupState.memberGroupData.isEmpty()){
+        if(indexTab != 0 && groupState.memberGroupData.isEmpty()){
             groupViewModel.getMemberDataGroup(groupState.groupId!!)
         }
     }

@@ -5,19 +5,25 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.localData.LocalStoreData
+import org.apps.simpenpass.data.source.remoteData.RemoteResetPassSources
 import org.apps.simpenpass.data.source.remoteData.RemoteUserSources
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.utils.NetworkResult
 
-class UserRepository(private val remoteUserSources: RemoteUserSources,private val localData : LocalStoreData) {
-    fun login(data: LoginRequest)  = flow {
+class UserRepository(
+    private val remoteUserSources: RemoteUserSources,
+    private val remoteResetPassSources: RemoteResetPassSources,
+    private val localData : LocalStoreData
+){
+    fun login(data: LoginRequest) = flow {
         emit(NetworkResult.Loading())
         try {
             val userData = remoteUserSources.login(data)
-            if(userData.success){
+            if (userData.success) {
                 userData.data?.user?.let { localData.saveUserData(it) }
                 userData.data?.accessToken?.let { localData.saveUserToken(it) }
                 localData.setLoggedInStatus(true)
@@ -25,7 +31,7 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
             } else {
                 emit(NetworkResult.Error(userData.message))
             }
-        } catch (e: UnresolvedAddressException){
+        } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
 
@@ -38,13 +44,13 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
         emit(NetworkResult.Loading())
         try {
             val userData = remoteUserSources.register(data)
-            if(userData.success){
+            if (userData.success) {
                 emit(NetworkResult.Success(userData.data?.user))
             } else {
                 emit(NetworkResult.Error(userData.message))
             }
             Napier.d("Response Data: $userData")
-        } catch (e: UnresolvedAddressException){
+        } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
     }.catch { error ->
@@ -56,7 +62,7 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
         emit(NetworkResult.Loading())
         try {
             val userData = remoteUserSources.logout(token!!)
-            if(userData.success){
+            if (userData.success) {
                 emit(userData.data?.let { NetworkResult.Success(it.user) })
             } else {
                 emit(NetworkResult.Error(userData.message))
@@ -64,7 +70,7 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
             localData.setLoggedInStatus(false)
             localData.clearUserData()
             Napier.v("Response Message: $userData")
-        } catch (e: UnresolvedAddressException){
+        } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
     }.catch { error ->
@@ -90,19 +96,43 @@ class UserRepository(private val remoteUserSources: RemoteUserSources,private va
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
-                val result = remoteUserSources.userDataStats(token,userId)
-                when(result.success){
+                val result = remoteUserSources.userDataStats(token, userId)
+                when (result.success) {
                     true -> {
                         emit(NetworkResult.Success(result))
                     }
+
                     false -> {
                         emit(NetworkResult.Error(result.message))
                     }
                 }
             }
-        } catch (e: UnresolvedAddressException){
+        } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun changeDataOtp(
+        email: String
+    ) = flow {
+        try {
+            val result = remoteResetPassSources.sendOtp(email)
+            when (result.success) {
+                true -> {
+                    emit(NetworkResult.Success(result))
+                }
+
+                false -> {
+                    emit(NetworkResult.Error(result.message))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }

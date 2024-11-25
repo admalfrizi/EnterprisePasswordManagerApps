@@ -28,9 +28,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileScreen(
-
     profileViewModel: ProfileViewModel = koinViewModel(),
-    navigateToLogout: () -> Unit
+    navigateToLogout: () -> Unit,
+    navToChangePass: () -> Unit,
 ) {
     val profileState by profileViewModel.profileState.collectAsState()
 
@@ -49,14 +49,19 @@ fun ProfileScreen(
                     modifier= Modifier.height(11.dp)
                 )
 
-                SettingListView(navigateToLogout, profileState,profileViewModel)
+                SettingListView(navigateToLogout, navToChangePass, profileState,profileViewModel)
             }
         }
     )
 }
 
 @Composable
-fun SettingListView(navigateToLogout: () -> Unit, profileState: ProfileState, profileViewModel: ProfileViewModel) {
+fun SettingListView(
+    navigateToLogout: () -> Unit,
+    navigateToChangePass: () -> Unit,
+    profileState: ProfileState,
+    profileViewModel: ProfileViewModel
+) {
     var isLogoutWarningShow by remember { mutableStateOf(false) }
 
     if(isLogoutWarningShow){
@@ -89,9 +94,10 @@ fun SettingListView(navigateToLogout: () -> Unit, profileState: ProfileState, pr
             color = secondaryColor
         )
         Column {
-            SettingsListHolder("Ubah Email", onClick = {})
-            SettingsListHolder("Ubah Password", onClick =  {})
-            SettingsListHolder("Keamanan Biometrik",onClick =  {})
+            SettingsListHolder("Ubah Biodata", onClick = {})
+            SettingsListHolder("Ubah Password", onClick =  {
+                navigateToChangePass()
+            })
         }
         Text(
             "Pengaturan Aplikasi",

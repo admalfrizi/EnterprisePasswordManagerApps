@@ -12,6 +12,7 @@ val repoModule = module {
     factory<UserRepository> {
         UserRepository(
             remoteUserSources = get(),
+            remoteResetPassSources = get(),
             localData = get()
         )
     }

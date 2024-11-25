@@ -47,7 +47,9 @@ val viewModelModule = module {
     }
 
     viewModel {
-        ChangeDataViewModel()
+        ChangeDataViewModel(
+            userRepo = get()
+        )
     }
 
     viewModel {

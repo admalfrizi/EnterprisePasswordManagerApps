@@ -7,7 +7,9 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -30,6 +32,7 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.ui.RootScreen
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
+import org.apps.simpenpass.presentation.ui.change_data_screen.OtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
 import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.SplashViewModel
@@ -112,6 +115,9 @@ fun MainNavigation(
                 },
                 navigateToFormPass = {
                     navController.navigate(Screen.FormPassData.route)
+                },
+                navigateToChangePass = {
+                    navController.navigate(Screen.Otp.route)
                 }
             )
         }
@@ -183,6 +189,26 @@ fun MainNavigation(
                     navController.navigate(Screen.FormPassData.passDataId(it))
                 },
                 navigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable(
+            route = Screen.Otp.route,
+            enterTransition = {
+                slideInHorizontally { initialOffset ->
+                    initialOffset
+                }
+            },
+            exitTransition = {
+                slideOutHorizontally { initialOffset ->
+                    initialOffset
+                }
+            }
+        ){
+            OtpScreen(
+                navToBack = {
                     navController.navigateUp()
                 }
             )
