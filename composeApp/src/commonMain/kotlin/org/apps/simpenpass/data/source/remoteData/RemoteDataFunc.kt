@@ -18,6 +18,7 @@ import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleNameRequest
+import org.apps.simpenpass.models.request.UpdateUserDataRequest
 import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
@@ -32,6 +33,7 @@ import org.apps.simpenpass.models.response.UpdateAdminMemberResponse
 import org.apps.simpenpass.models.response.UpdateRoleMemberResponse
 import org.apps.simpenpass.models.response.UserResponseData
 import org.apps.simpenpass.models.response.VerifyOtpResponse
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.models.user_data.UserDataStats
 
 interface UserDataFunc {
@@ -39,6 +41,7 @@ interface UserDataFunc {
     suspend fun register(data: RegisterRequest) : BaseResponse<UserResponseData>
     suspend fun logout(token: String?) : BaseResponse<UserResponseData>
     suspend fun userDataStats(token: String, userId: Int): BaseResponse<UserDataStats>
+    suspend fun updateUserData(token: String,userId: Int, updateUser: UpdateUserDataRequest): BaseResponse<UserData>
 }
 
 interface PassDataFunc {

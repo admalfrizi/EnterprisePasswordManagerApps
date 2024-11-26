@@ -2,13 +2,19 @@ package org.apps.simpenpass.presentation.ui.change_data_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.ForgotPassRepository
 import org.apps.simpenpass.data.repository.UserRepository
+import org.apps.simpenpass.models.request.UpdateUserDataRequest
 import org.apps.simpenpass.models.response.SendOtpResponse
+import org.apps.simpenpass.models.user_data.LocalUserStore
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.utils.NetworkResult
 
 class ChangeDataViewModel(
@@ -23,7 +29,19 @@ class ChangeDataViewModel(
             userRepo.getUserData().let { userData ->
                 _changeDataState.update {
                     it.copy(
-                        userId = userData.id
+                        userId = userData.id,
+                    )
+                }
+            }
+        }
+    }
+
+    fun getUserData(){
+        viewModelScope.launch {
+            userRepo.getUserData().let { userData ->
+                _changeDataState.update {
+                    it.copy(
+                        updateData = userData,
                     )
                 }
             }
@@ -99,6 +117,47 @@ class ChangeDataViewModel(
         }
     }
 
+    fun updateDataUser(
+        userId: Int,
+        updateUser: UpdateUserDataRequest
+    ){
+        viewModelScope.launch {
+            userRepo.updateDataUser(userId,updateUser).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Loading -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Success -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                userData = res.data.data
+                            )
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+
 }
 
 data class ChangeDataState(
@@ -108,6 +167,8 @@ data class ChangeDataState(
     val isError : Boolean = false,
     val userId: Int? = null,
     val otpResponse: SendOtpResponse? = null,
+    val updateData: LocalUserStore? = null,
+    val userData: UserData? = null,
     val resetPassTokens: String? = null,
     val msg: String? = null
 )

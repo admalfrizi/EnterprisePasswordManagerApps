@@ -299,6 +299,13 @@ fun MainNavigation(
             ChangeBiodataScreen(
                 navToBack = {
                     navController.navigateUp()
+                },
+                navToHome = {
+                    navController.navigate(Screen.Root.route){
+                        popUpTo(Screen.ChangeBioData.route){
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

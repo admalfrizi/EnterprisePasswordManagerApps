@@ -106,6 +106,7 @@ fun SettingListView(
         Column {
             SettingsListHolder("Ubah Biodata", onClick = {
                 dataType = "bioData"
+                profileViewModel.sendOtp(profileState.userData?.email!!)
             })
             SettingsListHolder("Ubah Password", onClick =  {
                 dataType = "passData"

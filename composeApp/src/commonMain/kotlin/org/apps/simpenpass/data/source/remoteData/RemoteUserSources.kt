@@ -13,8 +13,10 @@ import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.request.UpdateUserDataRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.UserResponseData
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.models.user_data.UserDataStats
 import org.apps.simpenpass.utils.Constants
 
@@ -67,6 +69,23 @@ class RemoteUserSources(private val httpClient: HttpClient) : UserDataFunc {
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
             return response.body<BaseResponse<UserDataStats>>()
+        } catch (e: UnresolvedAddressException) {
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun updateUserData(
+        token: String,
+        userId: Int,
+        updateUser: UpdateUserDataRequest
+    ): BaseResponse<UserData> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateUserData/$userId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(updateUser)
+            }
+            return response.body<BaseResponse<UserData>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
         }

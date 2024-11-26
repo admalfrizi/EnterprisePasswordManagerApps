@@ -12,6 +12,7 @@ import org.apps.simpenpass.data.source.remoteData.RemoteUserSources
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.request.UpdateUserDataRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class UserRepository(
@@ -130,6 +131,31 @@ class UserRepository(
             }
         } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun updateDataUser(
+        userId: Int,
+        updateUser: UpdateUserDataRequest
+    ) = flow {
+        localData.getToken.collect { token ->
+            val result = remoteUserSources.updateUserData(token, userId,updateUser)
+            when (result.success) {
+                true -> {
+                    result.data.let {
+                        localData.saveUserData(it!!)
+                    }
+                    emit(NetworkResult.Success(result))
+                }
+
+                false -> {
+                    emit(NetworkResult.Error(result.message))
+                }
+            }
         }
     }.onStart {
         emit(NetworkResult.Loading())
