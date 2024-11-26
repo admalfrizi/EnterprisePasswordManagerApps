@@ -39,12 +39,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.aakira.napier.Napier
+import org.apps.simpenpass.models.request.UpdateUserDataRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.primaryColor
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -88,13 +91,13 @@ fun ChangeBiodataScreen(
             },
             {
                 navToHome()
+                isPopUp = false
             }
         )
     }
 
 //    var updateData = UpdateUserDataRequest(nmData,emailData)
 //
-//    Napier.v("update Data : $updateData")
 
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).imePadding().fillMaxSize(),
@@ -192,7 +195,16 @@ fun ChangeBiodataScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-//                    changeDataViewModel.updateDataUser(changeDataState.userId!!,updateData)
+                    Napier.v("updateData : ${UpdateUserDataRequest(nmData,emailData)}")
+                    Napier.v("isNameSame : ${changeDataState.updateData?.name == nmData && changeDataState.updateData?.email == emailData}")
+
+
+                    if(changeDataState.updateData?.name == nmData && changeDataState.updateData?.email == emailData){
+                        setToast("Maaf Data Anda Masih Sama !")
+                    } else {
+                        changeDataViewModel.updateDataUser(changeDataState.userId!!,UpdateUserDataRequest(nmData,emailData))
+                    }
+
                 }
             ){
                 Text(
