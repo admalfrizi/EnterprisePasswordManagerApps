@@ -90,4 +90,12 @@ sealed class Screen(val route : String) {
 
         const val ARG_TOKEN = "token"
     }
+
+    data object ChangeBioData : Screen(route = "changeBioData"){
+//        fun token(
+//            token : String
+//        ) = "changePass/$token"
+//
+//        const val ARG_TOKEN = "token"
+    }
 }

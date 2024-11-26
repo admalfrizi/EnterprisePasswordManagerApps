@@ -32,6 +32,7 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.ui.RootScreen
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
+import org.apps.simpenpass.presentation.ui.change_data_screen.ChangeBiodataScreen
 import org.apps.simpenpass.presentation.ui.change_data_screen.ChangePassScreen
 import org.apps.simpenpass.presentation.ui.change_data_screen.OtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
@@ -117,7 +118,7 @@ fun MainNavigation(
                 navigateToFormPass = {
                     navController.navigate(Screen.FormPassData.route)
                 },
-                navigateToChangePass = {
+                navigateToOtpFirst = {
                     navController.navigate(Screen.Otp.dataType(it))
                 }
             )
@@ -221,9 +222,19 @@ fun MainNavigation(
                     navController.navigateUp()
                 },
                 navToChangePass = {
-                    navController.navigate(Screen.ChangePass.route)
+                    navController.navigate(Screen.ChangePass.token(it)){
+                        popUpTo(Screen.Otp.route){
+                            inclusive = true
+                        }
+                    }
                 },
-                navToChangeBiodata = {},
+                navToChangeBiodata = {
+                    navController.navigate(Screen.ChangeBioData.route){
+                        popUpTo(Screen.Otp.route){
+                            inclusive = true
+                        }
+                    }
+                },
                 dataType
             )
         }
@@ -251,6 +262,41 @@ fun MainNavigation(
             val token = requireNotNull(it.arguments?.getString("token"))
             ChangePassScreen(
                 token,
+                navToBack = {
+                    navController.navigateUp()
+                },
+                navToHome = {
+                    navController.navigate(Screen.Root.route){
+                        popUpTo(Screen.ChangePass.route){
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ChangeBioData.route,
+            enterTransition = {
+                slideInHorizontally { initialOffset ->
+                    initialOffset
+                }
+            },
+            exitTransition = {
+                slideOutHorizontally { initialOffset ->
+                    initialOffset
+                }
+            },
+//            arguments = listOf(
+//                navArgument(Screen.ChangePass.ARG_TOKEN){
+//                    type = NavType.StringType
+//                    nullable = true
+//                    defaultValue = ""
+//                }
+//            )
+        ){
+//            val token = requireNotNull(it.arguments?.getString("token"))
+            ChangeBiodataScreen(
                 navToBack = {
                     navController.navigateUp()
                 }

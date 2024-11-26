@@ -30,8 +30,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProfileScreen(
     profileViewModel: ProfileViewModel = koinViewModel(),
     navigateToLogout: () -> Unit,
-    navToChangePass: (String) -> Unit,
-    navToChangeBiodata: (String) -> Unit,
+    navigateToOtpFirst: (String) -> Unit
 ) {
     val profileState by profileViewModel.profileState.collectAsState()
 
@@ -52,7 +51,7 @@ fun ProfileScreen(
 
                 SettingListView(
                     navigateToLogout,
-                    { navToChangePass(it) },
+                    { navigateToOtpFirst(it) },
                     profileState,
                     profileViewModel
                 )
@@ -64,10 +63,11 @@ fun ProfileScreen(
 @Composable
 fun SettingListView(
     navigateToLogout: () -> Unit,
-    navigateToChangePass: (String) -> Unit,
+    navigateToOtpFirst: (String) -> Unit,
     profileState: ProfileState,
     profileViewModel: ProfileViewModel
 ) {
+    var dataType by remember { mutableStateOf("") }
     var isLogoutWarningShow by remember { mutableStateOf(false) }
     if(isLogoutWarningShow){
         DialogWarning(
@@ -88,11 +88,11 @@ fun SettingListView(
         isLogoutWarningShow = false
         DialogLoading {}
     }
-
-//    if(profileState.isSuccess){
-//        navigateToChangePass("passData")
-//        profileState.isSuccess = false
-//    }
+//
+    if(profileState.isSuccess){
+        navigateToOtpFirst(dataType)
+        profileState.isSuccess = false
+    }
 
     Column(
         modifier= Modifier.fillMaxWidth()
@@ -104,10 +104,12 @@ fun SettingListView(
             color = secondaryColor
         )
         Column {
-            SettingsListHolder("Ubah Biodata", onClick = {})
+            SettingsListHolder("Ubah Biodata", onClick = {
+                dataType = "bioData"
+            })
             SettingsListHolder("Ubah Password", onClick =  {
-                 navigateToChangePass("passData")
-//                profileViewModel.sendOtp(profileState.userData?.email!!)
+                dataType = "passData"
+                profileViewModel.sendOtp(profileState.userData?.email!!)
             })
         }
         Text(

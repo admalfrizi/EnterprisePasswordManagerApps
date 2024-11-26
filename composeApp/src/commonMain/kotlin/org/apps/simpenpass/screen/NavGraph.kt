@@ -55,8 +55,7 @@ fun RootNavGraph(
     data: MutableState<DataPass?>,
     navigateToFormWithArgs : MutableState<(DataPass)->Unit>,
     navigateToLogout: () -> Unit,
-    navigateToChangePass: (String) -> Unit,
-    navigateToChangeBiodata: (String) -> Unit,
+    navigateToOtpFirst: (String) -> Unit,
     navigateToGroupDtl: (String) -> Unit,
     navigateToListUserPass : () -> Unit,
     navigateToEditPass: (String) -> Unit,
@@ -64,7 +63,7 @@ fun RootNavGraph(
 ) {
     val density = LocalDensity.current
 
-    NavHost(navController,startDestination = Screen.Home.route , modifier = Modifier.fillMaxSize().padding(
+    NavHost(navController,startDestination = Screen.Home.route, modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
         composable(route = Screen.Home.route,
@@ -142,10 +141,7 @@ fun RootNavGraph(
         ){
             ProfileScreen(
                 navigateToLogout = navigateToLogout,
-                navToChangePass = { navigateToChangePass(it) } ,
-                navToChangeBiodata = {
-                    navigateToChangeBiodata(it)
-                }
+                navigateToOtpFirst = { navigateToOtpFirst(it) }
             )
         }
     }

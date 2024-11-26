@@ -32,6 +32,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -50,13 +51,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import network.chaintech.sdpcomposemultiplatform.ssp
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.linkColor
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.popUpLoading
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -65,7 +66,7 @@ import resources.otp_icon
 @Composable
 fun OtpScreen(
     navToBack: () -> Unit,
-    navToChangePass: () -> Unit,
+    navToChangePass: (String) -> Unit,
     navToChangeBiodata: () -> Unit,
     dataType: String,
     changeDataViewModel: ChangeDataViewModel = koinViewModel()
@@ -77,12 +78,28 @@ fun OtpScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val isDismiss = remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         focusRequesters.first().requestFocus()
     }
 
-    Napier.v("dataType : $dataType")
+    if(changeDataState.value.isVerify){
+        when(dataType){
+            "passData" -> {
+                if(changeDataState.value.resetPassTokens != null){
+                    navToChangePass(changeDataState.value.resetPassTokens!!)
+                }
+            }
+            "bioData" -> {
+                navToChangeBiodata()
+            }
+        }
+    }
+
+    if(changeDataState.value.isLoading){
+        popUpLoading(isDismiss)
+    }
 
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).imePadding().fillMaxSize(),
@@ -125,7 +142,7 @@ fun OtpScreen(
             )
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                text = "Silahkan Masukan OTP",
+                text = "Silahkan Masukan Kode OTP",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h1.copy(fontSize = 18.ssp),
             )
@@ -134,7 +151,7 @@ fun OtpScreen(
             )
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth(),
-                text = "Saat ini sedang mengirimkan kode OTP, untuk pemulihan kata sandi.",
+                text = "Saat ini sedang mengirimkan kode OTP, untuk pemulihan data anda.",
                 style = MaterialTheme.typography.caption,
                 textAlign = TextAlign.Center,
                 color = Color.White
@@ -241,17 +258,8 @@ fun OtpScreen(
                             snackBarHostState.showSnackbar("Ada ${emptyItems.size} yang Kosong")
                         }
                     } else {
-                        when(dataType){
-                            "passData" -> {
-                                navToChangePass()
-                            }
-                            "bioData" -> {
-                               navToChangeBiodata()
-                            }
-                        }
-                        scope.launch {
-                            snackBarHostState.showSnackbar("Data Anda Terisi")
-                        }
+//                        Napier.v("otp : ${otp.joinToString("")}")
+                        changeDataViewModel.verifyOtp(otp.joinToString(""))
                     }
                 },
             ){

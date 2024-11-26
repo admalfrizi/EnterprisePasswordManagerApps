@@ -35,7 +35,7 @@ import org.koin.compose.koinInject
 fun RootScreen(
     bottomEdgeColor: MutableState<Color>,
     navigateToLogout: () -> Unit,
-    navigateToChangePass: (String) -> Unit,
+    navigateToOtpFirst: (String) -> Unit,
     navigateToAddGroup: () -> Unit,
     navigateToGroupDtl: (String) -> Unit,
     navigateToListUserPass : () -> Unit,
@@ -114,6 +114,7 @@ fun RootScreen(
                 BottomNavigationBar(navController, routeNav)
             }
         ) { paddingValues ->
+
             RootNavGraph(
                 navController,
                 if(!isMainScreen) null else paddingValues,
@@ -121,11 +122,8 @@ fun RootScreen(
                 dataDetail,
                 navigateToFormWithArgs = onClick,
                 navigateToLogout,
-                navigateToChangePass = {
-                    navigateToChangePass(it)
-                },
-                navigateToChangeBiodata = {
-
+                navigateToOtpFirst = {
+                    navigateToOtpFirst(it)
                 },
                 navigateToGroupDtl,
                 navigateToListUserPass,

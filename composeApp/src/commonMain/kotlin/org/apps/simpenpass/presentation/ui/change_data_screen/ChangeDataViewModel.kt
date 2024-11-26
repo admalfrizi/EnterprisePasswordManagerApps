@@ -64,6 +64,41 @@ class ChangeDataViewModel(
         }
     }
 
+    fun resetPassword(password: String, token: String){
+        viewModelScope.launch {
+            forgotPassRepo.resetPassword(password, token).collect { result ->
+                when (result) {
+                    is NetworkResult.Error -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = result.error
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Loading -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                msg = result.data.message,
+                                isSuccess = true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 data class ChangeDataState(
