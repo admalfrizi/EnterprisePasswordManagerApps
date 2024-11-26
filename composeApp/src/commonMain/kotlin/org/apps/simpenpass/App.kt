@@ -32,6 +32,7 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.ui.RootScreen
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
+import org.apps.simpenpass.presentation.ui.change_data_screen.ChangePassScreen
 import org.apps.simpenpass.presentation.ui.change_data_screen.OtpScreen
 import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
 import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
@@ -117,7 +118,7 @@ fun MainNavigation(
                     navController.navigate(Screen.FormPassData.route)
                 },
                 navigateToChangePass = {
-                    navController.navigate(Screen.Otp.route)
+                    navController.navigate(Screen.Otp.dataType(it))
                 }
             )
         }
@@ -205,9 +206,51 @@ fun MainNavigation(
                 slideOutHorizontally { initialOffset ->
                     initialOffset
                 }
-            }
+            },
+            arguments = listOf(
+                navArgument(Screen.Otp.ARG_DATA_TYPE){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
         ){
+            val dataType = requireNotNull(it.arguments?.getString("dataType"))
             OtpScreen(
+                navToBack = {
+                    navController.navigateUp()
+                },
+                navToChangePass = {
+                    navController.navigate(Screen.ChangePass.route)
+                },
+                navToChangeBiodata = {},
+                dataType
+            )
+        }
+
+        composable(
+            route = Screen.ChangePass.route,
+            enterTransition = {
+                slideInHorizontally { initialOffset ->
+                    initialOffset
+                }
+            },
+            exitTransition = {
+                slideOutHorizontally { initialOffset ->
+                    initialOffset
+                }
+            },
+            arguments = listOf(
+                navArgument(Screen.ChangePass.ARG_TOKEN){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
+        ){
+            val token = requireNotNull(it.arguments?.getString("token"))
+            ChangePassScreen(
+                token,
                 navToBack = {
                     navController.navigateUp()
                 }

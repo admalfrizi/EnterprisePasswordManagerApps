@@ -30,7 +30,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProfileScreen(
     profileViewModel: ProfileViewModel = koinViewModel(),
     navigateToLogout: () -> Unit,
-    navToChangePass: () -> Unit,
+    navToChangePass: (String) -> Unit,
+    navToChangeBiodata: (String) -> Unit,
 ) {
     val profileState by profileViewModel.profileState.collectAsState()
 
@@ -49,7 +50,12 @@ fun ProfileScreen(
                     modifier= Modifier.height(11.dp)
                 )
 
-                SettingListView(navigateToLogout, navToChangePass, profileState,profileViewModel)
+                SettingListView(
+                    navigateToLogout,
+                    { navToChangePass(it) },
+                    profileState,
+                    profileViewModel
+                )
             }
         }
     )
@@ -58,12 +64,11 @@ fun ProfileScreen(
 @Composable
 fun SettingListView(
     navigateToLogout: () -> Unit,
-    navigateToChangePass: () -> Unit,
+    navigateToChangePass: (String) -> Unit,
     profileState: ProfileState,
     profileViewModel: ProfileViewModel
 ) {
     var isLogoutWarningShow by remember { mutableStateOf(false) }
-
     if(isLogoutWarningShow){
         DialogWarning(
             dialogTitle = "Anda akan Logout dari Aplikasi ini !",
@@ -84,10 +89,10 @@ fun SettingListView(
         DialogLoading {}
     }
 
-    if(profileState.isSuccess){
-        navigateToChangePass()
-        profileState.isSuccess = false
-    }
+//    if(profileState.isSuccess){
+//        navigateToChangePass("passData")
+//        profileState.isSuccess = false
+//    }
 
     Column(
         modifier= Modifier.fillMaxWidth()
@@ -101,7 +106,8 @@ fun SettingListView(
         Column {
             SettingsListHolder("Ubah Biodata", onClick = {})
             SettingsListHolder("Ubah Password", onClick =  {
-                profileViewModel.sendOtp(profileState.userData?.email!!)
+                 navigateToChangePass("passData")
+//                profileViewModel.sendOtp(profileState.userData?.email!!)
             })
         }
         Text(

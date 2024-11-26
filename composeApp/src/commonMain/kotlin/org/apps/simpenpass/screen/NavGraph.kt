@@ -55,7 +55,8 @@ fun RootNavGraph(
     data: MutableState<DataPass?>,
     navigateToFormWithArgs : MutableState<(DataPass)->Unit>,
     navigateToLogout: () -> Unit,
-    navigateToChangePass: () -> Unit,
+    navigateToChangePass: (String) -> Unit,
+    navigateToChangeBiodata: (String) -> Unit,
     navigateToGroupDtl: (String) -> Unit,
     navigateToListUserPass : () -> Unit,
     navigateToEditPass: (String) -> Unit,
@@ -139,7 +140,13 @@ fun RootNavGraph(
                         }
                     } }
         ){
-            ProfileScreen(navigateToLogout = navigateToLogout, navToChangePass = navigateToChangePass )
+            ProfileScreen(
+                navigateToLogout = navigateToLogout,
+                navToChangePass = { navigateToChangePass(it) } ,
+                navToChangeBiodata = {
+                    navigateToChangeBiodata(it)
+                }
+            )
         }
     }
 }

@@ -35,7 +35,7 @@ import org.koin.compose.koinInject
 fun RootScreen(
     bottomEdgeColor: MutableState<Color>,
     navigateToLogout: () -> Unit,
-    navigateToChangePass: () -> Unit,
+    navigateToChangePass: (String) -> Unit,
     navigateToAddGroup: () -> Unit,
     navigateToGroupDtl: (String) -> Unit,
     navigateToListUserPass : () -> Unit,
@@ -121,7 +121,12 @@ fun RootScreen(
                 dataDetail,
                 navigateToFormWithArgs = onClick,
                 navigateToLogout,
-                navigateToChangePass,
+                navigateToChangePass = {
+                    navigateToChangePass(it)
+                },
+                navigateToChangeBiodata = {
+
+                },
                 navigateToGroupDtl,
                 navigateToListUserPass,
                 navigateToEditPass = navigateToEditPass,

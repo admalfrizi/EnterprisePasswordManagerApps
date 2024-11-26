@@ -76,5 +76,18 @@ sealed class Screen(val route : String) {
         const val ARG_GROUP_ID = "groupId"
     }
 
-    data object Otp : Screen(route = "otpVerify")
+    data object Otp : Screen(route = "otpVerify/{dataType}"){
+        fun dataType(
+            dataType : String
+        ) = "otpVerify/$dataType"
+
+        const val ARG_DATA_TYPE = "dataType"
+    }
+    data object ChangePass : Screen(route = "changePass/{token}"){
+        fun token(
+            token : String
+        ) = "changePass/$token"
+
+        const val ARG_TOKEN = "token"
+    }
 }

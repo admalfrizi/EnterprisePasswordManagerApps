@@ -2,7 +2,6 @@ package org.apps.simpenpass.presentation.ui.change_data_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
@@ -32,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -47,26 +49,40 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.launch
+import network.chaintech.sdpcomposemultiplatform.ssp
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.linkColor
 import org.apps.simpenpass.style.secondaryColor
+import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
+import resources.Res
+import resources.otp_icon
 
 @Composable
 fun OtpScreen(
     navToBack: () -> Unit,
+    navToChangePass: () -> Unit,
+    navToChangeBiodata: () -> Unit,
+    dataType: String,
+    changeDataViewModel: ChangeDataViewModel = koinViewModel()
 ) {
     var otp = remember { mutableStateListOf<String>("","","","") }
+    val changeDataState = changeDataViewModel.changeDataState.collectAsStateWithLifecycle()
     val focusRequesters = List(4) { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         focusRequesters.first().requestFocus()
     }
 
-    Napier.v("otpValues : ${otp.joinToString()}")
+    Napier.v("dataType : $dataType")
 
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).imePadding().fillMaxSize(),
@@ -93,147 +109,165 @@ fun OtpScreen(
                     )
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackBarHostState)
         }
     ){
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter)
+
+        Column(
+            modifier = Modifier.fillMaxWidth().imePadding()
+        ){
+            Image(
+                painterResource(Res.drawable.otp_icon),"", colorFilter = ColorFilter.tint(Color.White),
+                alignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                text = "Silahkan Masukan OTP",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h1.copy(fontSize = 18.ssp),
+            )
+            Spacer(
+                modifier = Modifier.height(23.dp)
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth(),
+                text = "Saat ini sedang mengirimkan kode OTP, untuk pemulihan kata sandi.",
+                style = MaterialTheme.typography.caption,
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+            Spacer(
+                modifier = Modifier.height(21.dp)
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth(),
+                text = "Silahkan untuk mengecek email yang masuk diperangkat anda.",
+                style = MaterialTheme.typography.caption,
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+            Spacer(
+                modifier = Modifier.height(37.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(13.dp)
             ){
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                    text = "Silahkan Masukan OTP",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h1,
-                    fontSize = 32.sp
-                )
-                Spacer(
-                    modifier = Modifier.height(23.dp)
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth(),
-                    text = "Saat ini sedang mengirimkan kode OTP, untuk pemulihan kata sandi.",
-                    style = MaterialTheme.typography.caption,
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
-                Spacer(
-                    modifier = Modifier.height(21.dp)
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth(),
-                    text = "Silahkan untuk mengecek email yang masuk diperangkat anda.",
-                    style = MaterialTheme.typography.caption,
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
-                Spacer(
-                    modifier = Modifier.height(37.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(13.dp)
-                ){
-                    otp.forEachIndexed { index, value ->
-                        OutlinedTextField(
-                            modifier = Modifier.focusRequester(focusRequesters[index])
-                                .weight(1f)
-                                .onKeyEvent { keyEvent ->
-                                    if (keyEvent.key == androidx.compose.ui.input.key.Key.Backspace) {
-                                        if (otp[index].isEmpty() && index > 0) {
-                                            otp[index] = ""
-                                            focusRequesters[index - 1].requestFocus()
-                                        } else {
-                                            otp[index] = ""
-                                        }
-                                        true
+                otp.forEachIndexed { index, value ->
+                    OutlinedTextField(
+                        modifier = Modifier.focusRequester(focusRequesters[index])
+                            .weight(1f)
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.key == androidx.compose.ui.input.key.Key.Backspace) {
+                                    if (otp[index].isEmpty() && index > 0) {
+                                        otp[index] = ""
+                                        focusRequesters[index - 1].requestFocus()
                                     } else {
-                                        false
+                                        otp[index] = ""
                                     }
-                                },
-                            singleLine = true,
-                            maxLines = 1,
-                            value = value,
-                            onValueChange = { otpVl ->
-                                if(otpVl.length == 4) {
-                                    for(i in otp.indices){
-                                        otp[i] = if(i < otpVl.length && otpVl[i].isDigit()) otpVl[i].toString() else otpVl
-                                    }
-                                    keyboardController?.hide()
-                                } else if(otpVl.length <= 1){
-                                    otp[index] = otpVl
-                                    if(otpVl.isNotEmpty()){
-                                        if(index < 4 - 1){
-                                            focusRequesters[index + 1].requestFocus()
-                                        } else {
-                                            keyboardController?.hide()
-                                        }
-                                    }
+                                    true
                                 } else {
-                                    if(index < 4 - 1) focusRequesters[index].requestFocus()
+                                    false
                                 }
                             },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = if (index == 4 - 1) ImeAction.Done else ImeAction.Next
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onNext = {
-                                    if (index < 4 - 1) {
-                                        focusRequesters[index + 1].requestFocus()
-                                    }
-                                },
-                                onDone = {
-                                    keyboardController?.hide()
-                                    focusManager.clearFocus()
+                        singleLine = true,
+                        maxLines = 1,
+                        value = value,
+                        onValueChange = { otpVl ->
+                            if(otpVl.length == 4) {
+                                for(i in otp.indices){
+                                    otp[i] = if(i < otpVl.length && otpVl[i].isDigit()) otpVl[i].toString() else ""
                                 }
-                            ),
-                            textStyle = MaterialTheme.typography.h2.copy(
-                                fontSize = 38.sp,
-                                textAlign = TextAlign.Center
-                            ),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                textColor = secondaryColor,
-                                focusedBorderColor = btnColor,
-                                backgroundColor = Color.White,
-                                cursorColor = secondaryColor
-                            ),
-                            shape = RoundedCornerShape(13.dp)
-                        )
-
-                        LaunchedEffect(value) {
-                            if (otp.all { it.isNotEmpty() }) {
+                                keyboardController?.hide()
+                            } else if(otpVl.length <= 1){
+                                otp[index] = otpVl
+                                if(otpVl.isNotEmpty()){
+                                    if(index < 4 - 1){
+                                        focusRequesters[index + 1].requestFocus()
+                                    } else {
+                                        keyboardController?.hide()
+                                    }
+                                }
+                            } else {
+                                if(index < 4 - 1) focusRequesters[index].requestFocus()
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = if (index == 4 - 1) ImeAction.Done else ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                if (index < 4 - 1) {
+                                    focusRequesters[index + 1].requestFocus()
+                                }
+                            },
+                            onDone = {
+                                keyboardController?.hide()
                                 focusManager.clearFocus()
                             }
-                        }
-                    }
-                }
-                Spacer(
-                    modifier = Modifier.height(58.dp)
-                )
-                Button(
-                    elevation = ButtonDefaults.elevation(0.dp),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth().height(40.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
-                    shape = RoundedCornerShape(10.dp),
-                    onClick = {
-
-                    }
-                ){
-                    Text(
-                        text = "Verifikasi Kode",
-                        color = fontColor1,
-                        style = MaterialTheme.typography.button
+                        ),
+                        textStyle = MaterialTheme.typography.h2.copy(
+                            fontSize = 38.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            textColor = secondaryColor,
+                            focusedBorderColor = btnColor,
+                            backgroundColor = Color.White,
+                            cursorColor = secondaryColor
+                        ),
+                        shape = RoundedCornerShape(13.dp)
                     )
                 }
             }
+            Spacer(
+                modifier = Modifier.height(58.dp)
+            )
+            Button(
+                elevation = ButtonDefaults.elevation(0.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth().height(40.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    val emptyItems = otp.filter { it.isEmpty() }
+                    if(emptyItems.isNotEmpty()){
+                        scope.launch {
+                            snackBarHostState.showSnackbar("Ada ${emptyItems.size} yang Kosong")
+                        }
+                    } else {
+                        when(dataType){
+                            "passData" -> {
+                                navToChangePass()
+                            }
+                            "bioData" -> {
+                               navToChangeBiodata()
+                            }
+                        }
+                        scope.launch {
+                            snackBarHostState.showSnackbar("Data Anda Terisi")
+                        }
+                    }
+                },
+            ){
+                Text(
+                    text = "Verifikasi Kode",
+                    color = fontColor1,
+                    style = MaterialTheme.typography.button
+                )
+            }
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).align(Alignment.BottomCenter),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            ){
                 Text(
                     "Tidak Mendapatkan Kode ? Cek Di Spam",
                     color = fontColor1,
@@ -259,6 +293,7 @@ fun OtpScreen(
                     modifier = Modifier.height(20.dp)
                 )
             }
+
         }
 
     }
