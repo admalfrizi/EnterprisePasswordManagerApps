@@ -39,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
@@ -68,20 +67,18 @@ fun ChangePassScreen(
     val isDismiss = remember { mutableStateOf(true) }
     var isPopUp by remember { mutableStateOf(false) }
 
-    Napier.v("token : $token")
-
     if(changeDataState.isLoading){
         popUpLoading(isDismiss)
     }
 
-//    if(changeDataState.isSuccess){
-//        isPopUp = true
-//    }
+    if(changeDataState.isSuccess){
+        isPopUp = true
+    }
 
     if(isPopUp){
         SuccessResetPass(
             {
-
+                isPopUp = false
             },
             {
                 navToHome()
@@ -188,14 +185,13 @@ fun ChangePassScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-//                    validateData(
-//                        newPassword,
-//                        cPassword,
-//                        token,
-//                        isValidated,
-//                        changeDataViewModel
-//                    )
-                    isPopUp = true
+                    validateData(
+                        newPassword,
+                        cPassword,
+                        token,
+                        isValidated,
+                        changeDataViewModel
+                    )
                 }
             ){
                 Text(

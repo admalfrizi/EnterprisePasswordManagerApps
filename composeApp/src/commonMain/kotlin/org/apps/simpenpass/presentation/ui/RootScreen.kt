@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +29,7 @@ import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.presentation.ui.main.group.JoinGroupDialog
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.RootNavGraph
+import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.primaryColor
 import org.koin.compose.koinInject
 
@@ -56,6 +58,11 @@ fun RootScreen(
     val isMainScreen = checkScreenNav in routeNav.map { it.route }
     val onClick = remember { mutableStateOf<(DataPass) -> Unit>({}) }
     var isJoinDialogPopUp by remember { mutableStateOf(false) }
+    val currentScreen = rememberSaveable { mutableStateOf("") }
+
+    if(currentScreen.value != navController.currentDestination?.route){
+        currentScreen.value = navController.currentDestination?.route ?: Screen.Home.route
+    }
 
     bottomEdgeColor.value = primaryColor
 
@@ -117,6 +124,7 @@ fun RootScreen(
 
             RootNavGraph(
                 navController,
+                currentScreen.value,
                 if(!isMainScreen) null else paddingValues,
                 sheetState,
                 dataDetail,

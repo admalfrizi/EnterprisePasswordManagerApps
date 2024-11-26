@@ -50,6 +50,7 @@ import org.apps.simpenpass.utils.detectRoute
 @Composable
 fun RootNavGraph(
     navController: NavHostController,
+    current: String,
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
     data: MutableState<DataPass?>,
@@ -63,14 +64,14 @@ fun RootNavGraph(
 ) {
     val density = LocalDensity.current
 
-    NavHost(navController,startDestination = Screen.Home.route, modifier = Modifier.fillMaxSize().padding(
+    NavHost(navController,startDestination = current, modifier = Modifier.fillMaxSize().padding(
         paddingValues ?: PaddingValues()
     )){
         composable(route = Screen.Home.route,
             enterTransition = {   fadeIn(animationSpec = tween(durationMillis = 210, delayMillis = 90, easing = LinearOutSlowInEasing)) +
-                slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
-                    with(density) { -30.dp.roundToPx() }
-                } },
+                    slideInHorizontally(animationSpec = tween(durationMillis = 300)) {
+                        with(density) { -30.dp.roundToPx() }
+                    } },
             exitTransition = {   fadeOut(animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)) +
                     slideOutHorizontally(animationSpec = tween(durationMillis = 300)) {
                         with(density) {
