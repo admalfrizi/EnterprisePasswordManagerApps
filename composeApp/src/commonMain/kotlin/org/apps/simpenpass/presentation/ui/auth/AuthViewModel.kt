@@ -144,9 +144,9 @@ class AuthViewModel(
         }
     }
 
-    fun verifyOtp(otp: String, userId: String){
+    fun verifyOtp(otp: String,userId: String){
         viewModelScope.launch {
-            forgotPassRepo.verifyOtp(otp.toInt(), userId).collect { result ->
+            forgotPassRepo.verifyOtp(otp.toInt(),true,userId).collect { result ->
                 when (result) {
                     is NetworkResult.Error -> {
                         _authState.update {

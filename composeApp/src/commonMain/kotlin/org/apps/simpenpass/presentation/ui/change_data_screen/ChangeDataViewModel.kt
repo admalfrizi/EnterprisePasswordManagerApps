@@ -48,9 +48,9 @@ class ChangeDataViewModel(
         }
     }
 
-    fun verifyOtp(otp: String){
+    fun verifyOtp(otp: String, isResetPass: Boolean){
         viewModelScope.launch {
-            forgotPassRepo.verifyOtp(otp.toInt(), _changeDataState.value.userId.toString()).collect { result ->
+            forgotPassRepo.verifyOtp(otp.toInt(), isResetPass,_changeDataState.value.userId.toString()).collect { result ->
                 when (result) {
                     is NetworkResult.Error -> {
                         _changeDataState.update {
@@ -73,7 +73,7 @@ class ChangeDataViewModel(
                             it.copy(
                                 isLoading = false,
                                 isVerify = true,
-                                resetPassTokens = result.data.data?.tokenOtp,
+                                resetPassTokens = result.data.data?.tokenOtp ?: "",
                             )
                         }
                     }

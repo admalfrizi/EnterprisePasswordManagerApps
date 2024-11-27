@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class VerifyOtpResponse(
     @SerialName("token_otp")
-    val tokenOtp: String
+    val tokenOtp: String?
 )

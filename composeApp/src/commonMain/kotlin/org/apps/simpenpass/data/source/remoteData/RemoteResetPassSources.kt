@@ -33,11 +33,11 @@ class RemoteResetPassSources(
         }
     }
 
-    override suspend fun verifyOtp(otp: Int, userId: Int): BaseResponse<VerifyOtpResponse> {
+    override suspend fun verifyOtp(otp: Int, isResetPass: Boolean,userId: Int): BaseResponse<VerifyOtpResponse> {
         try {
             val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "verifyOtp/$userId"){
                 contentType(ContentType.Application.Json)
-                setBody(VerifyOtpRequest(otp))
+                setBody(VerifyOtpRequest(otp,isResetPass))
             }
             return response.body<BaseResponse<VerifyOtpResponse>>()
         } catch (e: UnresolvedAddressException) {

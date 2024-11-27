@@ -258,8 +258,15 @@ fun OtpScreen(
                             snackBarHostState.showSnackbar("Ada ${emptyItems.size} yang Kosong")
                         }
                     } else {
-//                        Napier.v("otp : ${otp.joinToString("")}")
-                        changeDataViewModel.verifyOtp(otp.joinToString(""))
+                        when(dataType){
+                            "passData" -> {
+                                changeDataViewModel.verifyOtp(otp.joinToString(""),true)
+                            }
+                            "bioData" -> {
+                                changeDataViewModel.verifyOtp(otp.joinToString(""),false)
+                            }
+                        }
+
                     }
                 },
             ){

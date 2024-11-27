@@ -7,4 +7,6 @@ import kotlinx.serialization.Serializable
 data class VerifyOtpRequest(
     @SerialName("otp")
     val otp: Int,
+    @SerialName("isResetPass")
+    val isResetPass: Boolean,
 )

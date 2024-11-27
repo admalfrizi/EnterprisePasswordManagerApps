@@ -24,9 +24,9 @@ class ForgotPassRepository(
         Napier.v("otp error ${it.message}")
     }
 
-    fun verifyOtp(otp: Int, id : String) = flow {
+    fun verifyOtp(otp: Int, isResetPass: Boolean, id : String) = flow {
         emit(NetworkResult.Loading())
-        val result = remoteResetPassSources.verifyOtp(otp, id.toInt())
+        val result = remoteResetPassSources.verifyOtp(otp, isResetPass ,id.toInt())
         emit(NetworkResult.Success(result))
 
         when(result.success){
