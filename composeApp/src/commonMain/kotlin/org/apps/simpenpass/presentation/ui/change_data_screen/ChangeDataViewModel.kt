@@ -157,7 +157,11 @@ class ChangeDataViewModel(
         }
     }
 
-
+    fun saveUserData(user: UserData){
+        viewModelScope.launch {
+            userRepo.saveUserData(user)
+        }
+    }
 }
 
 data class ChangeDataState(

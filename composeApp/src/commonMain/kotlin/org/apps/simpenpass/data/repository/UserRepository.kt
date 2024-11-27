@@ -13,6 +13,7 @@ import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.request.UpdateUserDataRequest
+import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.utils.NetworkResult
 
 class UserRepository(
@@ -83,6 +84,10 @@ class UserRepository(
         return localData.getUserData()
     }
 
+    suspend fun saveUserData(user: UserData) {
+        return localData.saveUserData(user)
+    }
+
     fun getToken(): Flow<String> {
         return localData.getToken
     }
@@ -146,12 +151,8 @@ class UserRepository(
             val result = remoteUserSources.updateUserData(token, userId,updateUser)
             when (result.success) {
                 true -> {
-                    result.data.let {
-                        localData.saveUserData(it!!)
-                    }
                     emit(NetworkResult.Success(result))
                 }
-
                 false -> {
                     emit(NetworkResult.Error(result.message))
                 }

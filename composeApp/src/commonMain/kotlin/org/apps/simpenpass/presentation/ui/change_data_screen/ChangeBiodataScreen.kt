@@ -47,7 +47,6 @@ import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.primaryColor
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
-import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -82,6 +81,7 @@ fun ChangeBiodataScreen(
 
     if(changeDataState.isSuccess){
         isPopUp = true
+        changeDataViewModel.saveUserData(changeDataState.userData!!)
     }
 
     if(isPopUp){
@@ -96,6 +96,8 @@ fun ChangeBiodataScreen(
         )
     }
 
+    Napier.v("response : ${changeDataState.userData}")
+    Napier.v("updateData : ${UpdateUserDataRequest(nmData,emailData)}")
 //    var updateData = UpdateUserDataRequest(nmData,emailData)
 //
 
@@ -161,6 +163,10 @@ fun ChangeBiodataScreen(
                 },
                 isFocus = false,
                 onValueChange = {
+                    if(changeDataState.updateData != null){
+                        changeDataState.updateData?.name = it
+                    }
+
                     nmData = it
                 },
                 focusColor = Color(0xFF4433DB)
@@ -182,6 +188,10 @@ fun ChangeBiodataScreen(
                 },
                 isFocus = false,
                 onValueChange = {
+                    if(changeDataState.updateData != null){
+                        changeDataState.updateData?.email = it
+                    }
+
                     emailData = it
                 },
                 focusColor = Color(0xFF4433DB)
@@ -195,16 +205,7 @@ fun ChangeBiodataScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    Napier.v("updateData : ${UpdateUserDataRequest(nmData,emailData)}")
-                    Napier.v("isNameSame : ${changeDataState.updateData?.name == nmData && changeDataState.updateData?.email == emailData}")
-
-
-                    if(changeDataState.updateData?.name == nmData && changeDataState.updateData?.email == emailData){
-                        setToast("Maaf Data Anda Masih Sama !")
-                    } else {
-                        changeDataViewModel.updateDataUser(changeDataState.userId!!,UpdateUserDataRequest(nmData,emailData))
-                    }
-
+                    changeDataViewModel.updateDataUser(changeDataState.userId!!,UpdateUserDataRequest(nmData,emailData))
                 }
             ){
                 Text(
