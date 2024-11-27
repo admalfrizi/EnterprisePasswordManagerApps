@@ -39,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.request.UpdateUserDataRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.style.btnColor
@@ -95,12 +94,6 @@ fun ChangeBiodataScreen(
             }
         )
     }
-
-    Napier.v("response : ${changeDataState.userData}")
-    Napier.v("updateData : ${UpdateUserDataRequest(nmData,emailData)}")
-//    var updateData = UpdateUserDataRequest(nmData,emailData)
-//
-
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).imePadding().fillMaxSize(),
         backgroundColor = secondaryColor,
