@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UpdateUserDataRequest(
     @SerialName("nama")
-    val name: String,
+    val nama: String,
     @SerialName("email")
     val email: String
 )
