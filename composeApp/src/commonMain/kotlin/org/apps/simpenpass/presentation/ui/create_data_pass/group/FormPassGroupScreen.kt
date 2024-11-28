@@ -259,7 +259,6 @@ fun FormPassGroupScreen(
                         {
                             if(formPassGroupState.passDataGroupId != "-1" && formPassGroupState.passData != null){
                                 formPassGroupViewModel.updatePassData(formPassGroupState.groupId!!,formPassGroupState.passDataGroupId!!, formData)
-                                Napier.v("execute update data pass!!")
                             } else {
                                 validatorPassData(
                                     nmAccount.value,
@@ -268,7 +267,6 @@ fun FormPassGroupScreen(
                                     formData,
                                     formPassGroupState.groupId!!
                                 )
-                                Napier.v("execute create data pass!!")
                             }
                         },
                         {
