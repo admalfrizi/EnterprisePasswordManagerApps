@@ -74,9 +74,10 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                                 append(HttpHeaders.ContentDisposition, "form-data; name=\"img_group\"; filename=\"$imgName\"")
                             })
                         }
+                        append("nm_group" ,data.nmGroup)
+                        append("desc", data.desc ?: "")
                     }
                 ))
-                setBody(data)
             }
             return response.body<BaseResponse<GrupPassData>>()
         } catch (e: Exception){

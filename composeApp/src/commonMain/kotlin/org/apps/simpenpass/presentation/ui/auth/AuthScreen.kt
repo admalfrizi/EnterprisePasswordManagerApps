@@ -120,7 +120,7 @@ fun AuthScreen(
         Napier.d("Response: ${loginState.token}")
     }
 
-    if(loginState.error?.isNotEmpty() == true && !loginState.isLoading){
+    if(loginState.error != null && !loginState.isLoading){
         localCoroutineScope.launch {
             snackBarHostState.showSnackbar(loginState.error!!)
         }

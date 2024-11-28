@@ -61,7 +61,6 @@ import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLo
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
 import org.apps.simpenpass.style.secondaryColor
-import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -148,7 +147,6 @@ fun ContentView(
 ) {
     var indexTab by rememberSaveable { mutableStateOf(0) }
     val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
-    val urlImages = "${Constants.IMAGE_URL}groupProfile/$imagesName"
 
     LaunchedEffect(indexTab != 0 && groupState.memberGroupData.isEmpty()){
         if(indexTab != 0 && groupState.memberGroupData.isEmpty()){
@@ -176,7 +174,7 @@ fun ContentView(
                     ){
                         if(imagesName != null){
                             AsyncImage(
-                                model = urlImages,
+                                model = imagesName,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .blur(20.dp),
@@ -203,7 +201,7 @@ fun ContentView(
                             ){
                                 if(imagesName != null){
                                     AsyncImage(
-                                        model = urlImages,
+                                        model = imagesName,
                                         modifier = Modifier.size(99.dp),
                                         contentDescription = "Profile Picture",
                                         contentScale = ContentScale.Crop

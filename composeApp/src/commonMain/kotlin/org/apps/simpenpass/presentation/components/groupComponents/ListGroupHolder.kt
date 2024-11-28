@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.style.secondaryColor
-import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
 
 @Composable
@@ -35,8 +34,6 @@ fun ListGroupHolder(
     item: GrupPassData?,
     onClick: () -> Unit
 ) {
-    val urlImages = "${Constants.IMAGE_URL}groupProfile/${item?.img_grup}"
-
     Column {
         Card(
             modifier = Modifier.fillMaxWidth().clickable{
@@ -53,7 +50,7 @@ fun ListGroupHolder(
                 ){
                     if(item?.img_grup != null){
                         AsyncImage(
-                            model = urlImages,
+                            model = item.img_grup,
                             modifier = Modifier.size(99.dp),
                             contentDescription = "Profile Picture",
                             contentScale = ContentScale.Crop

@@ -224,6 +224,6 @@ data class AuthState (
     val otpResponse: SendOtpResponse? = null,
     val token: String? = null,
     val resetPassTokens: String? = null,
-    val error: String? = null,
+    var error: String? = null,
     val message: String? = null
 )
