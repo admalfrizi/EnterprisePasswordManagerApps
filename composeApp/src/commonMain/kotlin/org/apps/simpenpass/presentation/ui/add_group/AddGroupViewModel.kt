@@ -101,45 +101,6 @@ class AddGroupViewModel(
         }
     }
 
-//    private fun addMemberToDb(
-//        memberList: List<AddMember>,
-//        groupId: Int,
-//    ) {
-//        viewModelScope.launch {
-//            repoMember.addUsersToJoinGroup(memberList,groupId).flowOn(Dispatchers.IO).collect { res ->
-//                when(res){
-//                    is NetworkResult.Error -> {
-//                        _addGroupState.update {
-//                            it.copy(
-//                                isLoading = false,
-//                                isError = true,
-//                                msgAddMember = res.error
-//                            )
-//                        }
-//                    }
-//                    is NetworkResult.Loading -> {
-//                        _addGroupState.update {
-//                            it.copy(
-//                                isLoading = true,
-//                                isError = false,
-//                            )
-//                        }
-//                    }
-//                    is NetworkResult.Success -> {
-//                        _addGroupState.update {
-//                            it.copy(
-//                                isLoading = false,
-//                                isError = false,
-//                                isAdded = true,
-//                                msgAddMember = res.data.message
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     fun findMemberForAddToGroup(query: String){
         viewModelScope.launch {
             repoMember.findUsersToJoinedGroup(query).collect{ result ->
