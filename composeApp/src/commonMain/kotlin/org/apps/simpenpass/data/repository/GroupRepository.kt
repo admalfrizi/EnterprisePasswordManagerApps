@@ -74,11 +74,11 @@ class GroupRepository(
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
 
-    fun detailGroup(groupId : Int) = flow {
+    fun detailGroup(groupId : Int,userId: Int) = flow {
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
-                val result = remoteGroupSources.detailGroupData(token,groupId)
+                val result = remoteGroupSources.detailGroupData(token,groupId,userId)
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 }

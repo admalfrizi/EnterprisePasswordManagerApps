@@ -111,15 +111,18 @@ fun PassDataScreen(
                                 )
                             }
                             Row {
-                                IconButton(
-                                    onClick = {
-                                        navController.navigate(Screen.FormPassGroup.passData(data?.id.toString(),groupState.groupId!!))
+                                if(groupState.dtlGroupData?.isUserAdmin == true){
+                                    IconButton(
+                                        onClick = {
+                                            navController.navigate(Screen.FormPassGroup.passData(data?.id.toString(),groupState.groupId!!))
+                                        }
+                                    ){
+                                        Image(
+                                            painterResource(Res.drawable.edit_pass_ic),""
+                                        )
                                     }
-                                ){
-                                    Image(
-                                        painterResource(Res.drawable.edit_pass_ic),""
-                                    )
                                 }
+
                                 IconButton(
                                     onClick = {
 

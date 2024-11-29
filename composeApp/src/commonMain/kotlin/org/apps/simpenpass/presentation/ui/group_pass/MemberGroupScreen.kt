@@ -46,8 +46,10 @@ fun MemberGroupScreen(
     val memberData = groupState.memberGroupData
 
     Column {
-        EditAnggotaBtnHolder {
-            navController.navigate(Screen.EditAnggota.groupId(groupState.groupId!!))
+        if(groupState.dtlGroupData?.isUserAdmin == true){
+            EditAnggotaBtnHolder {
+                navController.navigate(Screen.EditAnggota.groupId(groupState.groupId!!))
+            }
         }
         Spacer(
             modifier = Modifier.height(16.dp)
@@ -108,7 +110,7 @@ fun AnggotaDataHolder(item: MemberGroupData) {
             Column(
                 horizontalAlignment = Alignment.End
             ) {
-                if(item.isGroupAdmin!!){
+                if(item.isGroupAdmin){
                     Card(
                         backgroundColor = Color(0xFF78A1D7),
                         shape = RoundedCornerShape(4.dp)
@@ -124,7 +126,7 @@ fun AnggotaDataHolder(item: MemberGroupData) {
                     }
                     Spacer(modifier = Modifier.height(14.dp))
                 }
-                Row(modifier = Modifier.padding(vertical = if(item.isGroupAdmin!!) 0.dp  else 19.dp)) {
+                Row(modifier = Modifier.padding(vertical = if(item.isGroupAdmin) 0.dp  else 19.dp)) {
                     Image(
                         painterResource(Res.drawable.whatsapp_ic),
                         "",

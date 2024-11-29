@@ -74,7 +74,8 @@ interface GroupPassDataFunc {
     ): BaseResponse<List<GrupPassData>>
     suspend fun detailGroupData(
         token: String,
-        groupId: Int
+        groupId: Int,
+        userId: Int
     ): BaseResponse<DtlGrupPass>
     suspend fun searchGroup(
         token: String,

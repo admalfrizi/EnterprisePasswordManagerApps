@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
+import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.PassDataGroup
@@ -23,6 +24,7 @@ import org.apps.simpenpass.utils.NetworkResult
 
 class GroupDetailsViewModel(
     private val repoGroup: GroupRepository,
+    private val userRepo: UserRepository,
     private val repoPassDataGroup: PassDataGroupRepository,
     private val repoMemberGroup: MemberGroupRepository,
     savedStateHandle: SavedStateHandle
@@ -46,7 +48,7 @@ class GroupDetailsViewModel(
 
     fun getDetailGroup(groupId: String) {
         viewModelScope.launch {
-            repoGroup.detailGroup(groupId.toInt()).collect { res ->
+            repoGroup.detailGroup(groupId.toInt(),userRepo.getUserData().id!!).collect { res ->
                 when(res) {
                     is NetworkResult.Error -> {
                         _groupDtlState.update {

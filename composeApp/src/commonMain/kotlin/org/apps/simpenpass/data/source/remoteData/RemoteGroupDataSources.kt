@@ -105,11 +105,12 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
         }
     }
 
-    override suspend fun detailGroupData(token: String, groupId: Int): BaseResponse<DtlGrupPass> {
+    override suspend fun detailGroupData(token: String, groupId: Int,userId: Int): BaseResponse<DtlGrupPass> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "dtlGroup/$groupId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("userId", userId)
             }
 
             return response.body<BaseResponse<DtlGrupPass>>()

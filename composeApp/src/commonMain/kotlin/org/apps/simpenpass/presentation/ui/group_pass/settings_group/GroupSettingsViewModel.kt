@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
+import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupSettingsViewModel(
     private val repo: GroupRepository,
+    private val userRepo: UserRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _groupSettingsState = MutableStateFlow(GroupSettingsState())
@@ -37,7 +39,7 @@ class GroupSettingsViewModel(
 
     fun getDetailGroup() {
         viewModelScope.launch {
-            repo.detailGroup(groupId?.toInt()!!).collect { res ->
+            repo.detailGroup(groupId?.toInt()!!,userRepo.getUserData().id!!).collect { res ->
                 when(res) {
                     is NetworkResult.Error -> {
                         _groupSettingsState.update {

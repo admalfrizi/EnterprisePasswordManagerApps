@@ -46,18 +46,20 @@ fun TopBarDtl(
             )
         },
         actions = {
-            IconButton(
-                onClick = {
-                    navToGroupSettings()
-                },
-                content = {
-                    Image(
-                        painterResource(Res.drawable.settings_ic),
-                        "",
-                        colorFilter = ColorFilter.tint(Color.White)
-                    )
-                }
-            )
+            if(groupState.groupDtlState.value.dtlGroupData?.isUserAdmin == true){
+                IconButton(
+                    onClick = {
+                        navToGroupSettings()
+                    },
+                    content = {
+                        Image(
+                            painterResource(Res.drawable.settings_ic),
+                            "",
+                            colorFilter = ColorFilter.tint(Color.White)
+                        )
+                    }
+                )
+            }
         }
     )
 }

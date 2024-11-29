@@ -19,6 +19,8 @@ data class GrupPassData(
 data class DtlGrupPass(
     @SerialName("group_dtl")
     val groupDtl: GrupDtl,
+    @SerialName("is_user_admin")
+    val isUserAdmin: Boolean?,
     @SerialName("total_pass_data")
     val totalPassData: Int,
     @SerialName("total_role")
