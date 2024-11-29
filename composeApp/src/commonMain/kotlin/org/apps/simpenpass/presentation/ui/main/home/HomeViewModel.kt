@@ -32,7 +32,8 @@ class HomeViewModel(
         viewModelScope.launch {
             _homeState.update {
                 it.copy(
-                    name = userRepo.getUserData().name
+                    name = userRepo.getUserData().name,
+                    id = userRepo.getUserData().id
                 )
             }
         }
@@ -53,10 +54,10 @@ class HomeViewModel(
         }
     }
 
-    fun getUserDataStats(){
+    fun getUserDataStats(userId: Int){
         if(isConnected.value) {
             viewModelScope.launch {
-                userRepo.getUserDataStats(userRepo.getUserData().id!!).collect { result ->
+                userRepo.getUserDataStats(userId).collect { result ->
                     when (result) {
                         is NetworkResult.Error -> {
                             _homeState.update {
@@ -138,6 +139,7 @@ class HomeViewModel(
 
 data class HomeState(
     val name: String? = null,
+    val id: Int? = null,
     val passDataList : List<DataPass> = emptyList(),
     val totalGroupJoined: Int? = null,
     val totalDataPass: Int? = null,

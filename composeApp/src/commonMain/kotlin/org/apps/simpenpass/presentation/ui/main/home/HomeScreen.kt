@@ -66,14 +66,19 @@ fun HomeScreen(
         refreshing = homeState.isLoading,
         onRefresh = {
             homeViewModel.getData()
-            homeViewModel.getUserDataStats()
+            homeViewModel.getUserDataStats(homeState.id!!)
         }
     )
 
     LaunchedEffect(isConnected) {
         if(isConnected){
             homeViewModel.getData()
-            homeViewModel.getUserDataStats()
+        }
+    }
+
+    LaunchedEffect(homeState.id != null){
+        if(homeState.id != null){
+            homeViewModel.getUserDataStats(homeState.id!!)
         }
     }
 

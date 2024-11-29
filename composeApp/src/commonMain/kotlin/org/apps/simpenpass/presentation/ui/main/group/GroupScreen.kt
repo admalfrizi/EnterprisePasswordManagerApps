@@ -1,5 +1,6 @@
 package org.apps.simpenpass.presentation.ui.main.group
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -97,9 +98,10 @@ fun GroupScreen(
                       )
                   }
 
-                  if(groupState.isLoading){
+                  if(groupState.isLoading && isConnected){
                       Column(
-                          modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                          modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                          verticalArrangement = Arrangement.Center
                       ){
                           repeat(heightWidget / 82){
                               GroupLoadingShimmer()
