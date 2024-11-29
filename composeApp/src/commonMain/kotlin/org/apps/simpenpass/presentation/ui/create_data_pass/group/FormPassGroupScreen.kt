@@ -50,6 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,10 +66,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
+import org.apps.simpenpass.models.request.DeleteAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
@@ -108,6 +110,9 @@ fun FormPassGroupScreen(
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
     var roleId = remember { mutableStateOf(-1) }
+    val selectedDelete = remember {
+        mutableStateListOf<DeleteAddContentPassDataGroup>()
+    }
 
     bottomEdgeColor.value = secondaryColor
 
@@ -258,7 +263,13 @@ fun FormPassGroupScreen(
                     BtnForm(
                         {
                             if(formPassGroupState.passDataGroupId != "-1" && formPassGroupState.passData != null){
-                                formPassGroupViewModel.updatePassData(formPassGroupState.groupId!!,formPassGroupState.passDataGroupId!!, formData)
+                                formPassGroupViewModel.updatePassData(
+                                    formPassGroupState.groupId!!,
+                                    formPassGroupState.passDataGroupId!!,
+                                    formData,
+                                    selectedDelete
+                                )
+
                             } else {
                                 validatorPassData(
                                     nmAccount.value,
@@ -295,6 +306,7 @@ fun FormPassGroupScreen(
                        it,
                        scope,
                        sheetState,
+                       selectedDelete,
                        nmAccount ,
                         desc ,
                         email ,
@@ -315,6 +327,7 @@ fun FormContentView(
     paddingValues: PaddingValues,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
+    selectedDelete: MutableList<DeleteAddContentPassDataGroup>,
     nmAccount : MutableState<String>,
     desc : MutableState<String>,
     email : MutableState<String>,
@@ -527,6 +540,7 @@ fun FormContentView(
                 )
                 AddContentPassView(
                     formState,
+                    selectedDelete,
                     scope = scope,
                     sheetState
                 )
@@ -652,9 +666,20 @@ fun AddContentPassDataGroupForm(
 @Composable
 fun AddContentPassView(
     formState: FormPassGroupState,
+    selectedDelete: MutableList<DeleteAddContentPassDataGroup>,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
+    val listItem = mutableStateListOf<AddContentPassDataGroup>()
+
+    LaunchedEffect(formState.listAddContentPassData.isNotEmpty()){
+        formState.listAddContentPassData.forEach {
+            listItem.add(it)
+        }
+    }
+
+
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(7.dp),
@@ -664,7 +689,7 @@ fun AddContentPassView(
         ),
         userScrollEnabled = false
     ){
-        items(formState.listAddContentPassData){ item ->
+        items(listItem){ item ->
             Card(
                 modifier = Modifier.width(168.dp),
                 backgroundColor = Color(0xFF4470A9),
@@ -674,11 +699,28 @@ fun AddContentPassView(
                 Column(
                     modifier = Modifier.padding(14.dp),
                 ) {
-                    Text(
-                        item.nmData,
-                        style = MaterialTheme.typography.body1,
-                        color = fontColor1
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(
+                            item.nmData,
+                            style = MaterialTheme.typography.body1,
+                            maxLines = 2,
+                            color = fontColor1
+                        )
+                        Icon(
+                            Icons.Default.Clear,
+                            "",
+                            tint = Color.White,
+                            modifier = Modifier.clickable {
+                                selectedDelete.add(DeleteAddContentPassDataGroup(item.id,item.nmData,item.vlData))
+                                if(selectedDelete.contains(DeleteAddContentPassDataGroup(item.id,item.nmData,item.vlData))){
+                                    listItem.remove(item)
+                                }
+                            }
+                        )
+                    }
                     Spacer(
                         modifier = Modifier.height(26.dp)
                     )

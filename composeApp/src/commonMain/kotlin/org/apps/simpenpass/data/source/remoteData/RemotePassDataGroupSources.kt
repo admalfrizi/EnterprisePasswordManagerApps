@@ -2,6 +2,7 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -14,6 +15,7 @@ import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.pass_data.PassDataGroup
+import org.apps.simpenpass.models.request.DeleteAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
@@ -126,6 +128,26 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
                 setBody(addContentPassData)
+            }
+
+            return response.body<BaseResponse<List<AddContentPassDataGroup>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun deleteAddContentPassData(
+        token: String,
+        passGroupDataId: Int,
+        deleteAddContentPassData: List<DeleteAddContentPassDataGroup>
+    ): BaseResponse<List<AddContentPassDataGroup>> {
+        try {
+            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "deleteAddDataPassContentGroup/$passGroupDataId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(deleteAddContentPassData)
             }
 
             return response.body<BaseResponse<List<AddContentPassDataGroup>>>()

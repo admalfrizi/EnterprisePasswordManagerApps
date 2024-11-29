@@ -10,6 +10,7 @@ import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.AddRoleRequest
+import org.apps.simpenpass.models.request.DeleteAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.PassDataGroupRequest
@@ -140,4 +141,9 @@ interface PassDataGroupFunc {
     suspend fun addPassGroup(token: String,groupId: Int,addDataPass: PassDataGroupRequest) : BaseResponse<PassGroupResponseData>
     suspend fun updatePassGroup(token: String, groupId: Int,passDataGroupId: Int, updatePassData: PassDataGroupRequest ) : BaseResponse<PassGroupResponseData>
     suspend fun addContentPassData(token: String,groupId: Int, passGroupDataId: Int,addContentPassData: List<InsertAddContentDataPass>) : BaseResponse<List<AddContentPassDataGroup>>
+    suspend fun deleteAddContentPassData(
+        token: String,
+        passGroupDataId: Int,
+        deleteAddContentPassData: List<DeleteAddContentPassDataGroup>
+    ): BaseResponse<List<AddContentPassDataGroup>>
 }
