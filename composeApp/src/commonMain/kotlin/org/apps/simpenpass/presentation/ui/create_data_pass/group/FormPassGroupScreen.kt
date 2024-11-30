@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -188,6 +189,10 @@ fun FormPassGroupScreen(
         posisiId = roleId.value,
         addPassContent = insertAddContentPassData
     )
+    Napier.v("deleteList : $selectedDelete")
+    Napier.v("updateList : $updateListItemAddContent")
+    Napier.v("insertAddDataList : $insertAddContentPassData")
+
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -276,8 +281,8 @@ fun FormPassGroupScreen(
                                     formPassGroupState.groupId!!,
                                     formPassGroupState.passDataGroupId!!,
                                     formData,
-                                    selectedDelete,
-                                    listItemAddContent
+                                    updateListItemAddContent,
+                                    selectedDelete
                                 )
 
                             } else {
