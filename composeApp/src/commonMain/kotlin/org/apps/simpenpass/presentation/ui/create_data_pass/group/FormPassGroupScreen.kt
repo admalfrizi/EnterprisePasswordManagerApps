@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.RoleGroupData
@@ -124,6 +123,7 @@ fun FormPassGroupScreen(
     val updateListItemAddContent = remember {
         mutableStateListOf<FormAddContentPassDataGroup>()
     }
+    val insertAddContentPassData = remember { mutableStateListOf<InsertAddContentDataPass>() }
 
     bottomEdgeColor.value = secondaryColor
 
@@ -176,7 +176,6 @@ fun FormPassGroupScreen(
             formPassGroupViewModel.getListRoleData(formPassGroupState.groupId!!)
         }
     }
-    Napier.v("updateList : $updateListItemAddContent")
 
     val formData = PassDataGroupRequest(
         accountName = nmAccount.value,
@@ -187,7 +186,7 @@ fun FormPassGroupScreen(
         password = passData.value,
         url = urlPass.value,
         posisiId = roleId.value,
-        addPassContent = formPassGroupState.insertAddContentPassData
+        addPassContent = insertAddContentPassData
     )
 
     ModalBottomSheetLayout(
@@ -198,7 +197,7 @@ fun FormPassGroupScreen(
                 Modifier.fillMaxWidth(),
                 sheetState,
                 scope,
-                formPassGroupViewModel,
+                insertAddContentPassData,
                 updateListItemAddContent,
                 listItemAddContent,
                 nmData,
@@ -320,6 +319,7 @@ fun FormPassGroupScreen(
                        it,
                        scope,
                        sheetState,
+                       insertAddContentPassData,
                        selectedDelete,
                        listItemAddContent,
                        nmAccount ,
@@ -345,6 +345,7 @@ fun FormContentView(
     paddingValues: PaddingValues,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
+    insertAddContentPassData: MutableList<InsertAddContentDataPass>,
     selectedDelete: MutableList<FormAddContentPassDataGroup>,
     listItemAddContent: MutableList<FormAddContentPassDataGroup>,
     nmAccount : MutableState<String>,
@@ -567,6 +568,7 @@ fun FormContentView(
                         nmData.value = data.nmData
                         vlData.value = data.vlData
                     },
+                    insertAddContentPassData,
                     selectedDelete,
                     listItemAddContent,
                     scope = scope,
@@ -585,7 +587,7 @@ fun AddContentPassDataGroupForm(
     modifier: Modifier = Modifier,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
-    formViewModel: FormPassGroupViewModel,
+    insertAddContentPassData: MutableList<InsertAddContentDataPass>,
     updateListAddData: MutableList<FormAddContentPassDataGroup>,
     itemListAddData: MutableList<FormAddContentPassDataGroup>,
     nmData: MutableState<String>,
@@ -696,7 +698,7 @@ fun AddContentPassDataGroupForm(
                     }
                     false -> {
                         scope.launch {
-                            formViewModel.addContentDataToList(InsertAddContentDataPass(nmData.value,vlData.value))
+                            insertAddContentPassData.add(InsertAddContentDataPass(nmData.value,vlData.value))
                             sheetState.hide()
                         }
                     }
@@ -723,74 +725,79 @@ fun AddContentPassDataGroupForm(
 fun AddContentPassView(
     formState: FormPassGroupState,
     updateAddContentData: (FormAddContentPassDataGroup) -> Unit,
+    insertAddContentPassData: MutableList<InsertAddContentDataPass>,
     selectedDelete: MutableList<FormAddContentPassDataGroup>,
     listItemAddContent: MutableList<FormAddContentPassDataGroup>,
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
-    if(listItemAddContent.isEmpty()){
-        formState.listAddContentPassData.forEach {
-            listItemAddContent.add(FormAddContentPassDataGroup(it.id,it.nmData,it.vlData))
+    LaunchedEffect(formState.listAddContentPassData.isNotEmpty()){
+        if(formState.listAddContentPassData.isNotEmpty()){
+            formState.listAddContentPassData.forEach {
+                listItemAddContent.add(FormAddContentPassDataGroup(it.id,it.nmData,it.vlData))
+            }
         }
     }
+
+
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(7.dp),
         verticalArrangement = Arrangement.spacedBy(7.dp),
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).heightIn(
-            max = checkData(listItemAddContent,formState)
+            max = checkData(listItemAddContent,insertAddContentPassData)
         ),
         userScrollEnabled = false
     ){
         items(listItemAddContent){ item ->
-                Card(
-                    modifier = Modifier.width(168.dp).clickable {
-                        updateAddContentData(item)
-                    },
-                    backgroundColor = Color(0xFF4470A9),
-                    shape = RoundedCornerShape(10.dp),
-                    elevation = 0.dp
+            Card(
+                modifier = Modifier.width(168.dp).clickable {
+                    updateAddContentData(item)
+                },
+                backgroundColor = Color(0xFF4470A9),
+                shape = RoundedCornerShape(10.dp),
+                elevation = 0.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
                 ) {
-                    Column(
-                        modifier = Modifier.padding(14.dp),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ){
-                            Text(
-                                item.nmData,
-                                style = MaterialTheme.typography.body1,
-                                maxLines = 2,
-                                color = fontColor1
-                            )
-                            Icon(
-                                Icons.Default.Clear,
-                                "",
-                                tint = Color.White,
-                                modifier = Modifier.clickable {
-                                    selectedDelete.add(FormAddContentPassDataGroup(item.id,item.nmData,item.vlData))
-                                    if(selectedDelete.contains(FormAddContentPassDataGroup(item.id,item.nmData,item.vlData))){
-                                        listItemAddContent.remove(item)
-                                    }
-                                }
-                            )
-                        }
-                        Spacer(
-                            modifier = Modifier.height(26.dp)
-                        )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
                         Text(
-                            item.vlData,
-                            style = MaterialTheme.typography.subtitle1,
-                            color = fontColor1,
-                            fontSize = 10.sp
+                            item.nmData,
+                            style = MaterialTheme.typography.body1,
+                            maxLines = 2,
+                            color = fontColor1
+                        )
+                        Icon(
+                            Icons.Default.Clear,
+                            "",
+                            tint = Color.White,
+                            modifier = Modifier.clickable {
+                                selectedDelete.add(FormAddContentPassDataGroup(item.id,item.nmData,item.vlData))
+                                if(selectedDelete.contains(FormAddContentPassDataGroup(item.id,item.nmData,item.vlData))){
+                                    listItemAddContent.remove(item)
+                                }
+                            }
                         )
                     }
+                    Spacer(
+                        modifier = Modifier.height(26.dp)
+                    )
+                    Text(
+                        item.vlData,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = fontColor1,
+                        fontSize = 10.sp
+                    )
                 }
             }
+        }
 
-        items(formState.insertAddContentPassData){ item ->
+        items(insertAddContentPassData){ item ->
             Card(
                 modifier = Modifier.width(168.dp),
                 backgroundColor = Color(0xFF4470A9),
@@ -815,6 +822,9 @@ fun AddContentPassView(
                             "",
                             tint = Color.White,
                             modifier = Modifier.clickable {
+                                if(insertAddContentPassData.contains(InsertAddContentDataPass(item.nmData,item.vlData))){
+                                    insertAddContentPassData.remove(item)
+                                }
                             }
                         )
                     }
@@ -830,6 +840,7 @@ fun AddContentPassView(
                 }
             }
         }
+
 
         item {
             Card(
@@ -958,11 +969,12 @@ fun DialogEditRoleInPassData(
 
 fun checkData(
     listItemAddContent: MutableList<FormAddContentPassDataGroup>,
-    formState: FormPassGroupState
+    insertAddContentPassData: MutableList<InsertAddContentDataPass>
 ): Dp {
-    val totalSize = (listItemAddContent.size + formState.insertAddContentPassData.size)
+    val insertAddContentPassDataSize = insertAddContentPassData.size
+    val totalSize = listItemAddContent.size + insertAddContentPassDataSize
 
-    return if (listItemAddContent.isEmpty() && formState.insertAddContentPassData.isEmpty()) {
+    return if (listItemAddContent.isEmpty() && insertAddContentPassData.isEmpty()) {
         105.dp
     } else if(totalSize.toString().isNotEmpty()) {
         (totalSize * 105).dp

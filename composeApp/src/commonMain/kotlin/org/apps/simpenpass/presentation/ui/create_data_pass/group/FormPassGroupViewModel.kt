@@ -14,11 +14,9 @@ import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
-import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.utils.NetworkResult
-import kotlin.collections.plus
 
 class FormPassGroupViewModel(
     private val repoPassDataGroup: PassDataGroupRepository,
@@ -152,14 +150,6 @@ class FormPassGroupViewModel(
         }
     }
 
-    fun addContentDataToList(member: InsertAddContentDataPass){
-        _formPassGroupDataState.update { currentList ->
-            currentList.copy(
-                insertAddContentPassData = currentList.insertAddContentPassData + member
-            )
-        }
-    }
-
     fun loadDataPassById(passDataGroupId: Int?, groupId: String) {
         viewModelScope.launch {
             repoPassDataGroup.getPassDataGroupById(groupId.toInt(),passDataGroupId?.toInt()).collect { result ->
@@ -198,7 +188,6 @@ data class FormPassGroupState(
     val isLoading : Boolean = false,
     val passData: PassDataGroupByIdResponse? = null,
     val passDataGroupId: String? = null,
-    val insertAddContentPassData: List<InsertAddContentDataPass> = emptyList(),
     val listAddContentPassData: List<AddContentPassDataGroup> = emptyList(),
     val listRoleData: List<RoleGroupData> = emptyList(),
     var isCreated: Boolean = false,
