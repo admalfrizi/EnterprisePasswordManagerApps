@@ -739,7 +739,6 @@ fun AddContentPassView(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(7.dp),
@@ -822,7 +821,9 @@ fun AddContentPassView(
                         Text(
                             item.nmData,
                             style = MaterialTheme.typography.body1,
+                            modifier = Modifier.weight(1f),
                             maxLines = 2,
+                            minLines = 2,
                             color = fontColor1
                         )
                         Icon(
