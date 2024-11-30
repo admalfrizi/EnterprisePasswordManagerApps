@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataGroupSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
-import org.apps.simpenpass.models.request.DeleteAddContentPassDataGroup
+import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -168,7 +168,8 @@ class PassDataGroupRepository(
         groupId: Int,
         passDataGroupId: Int?,
         updatePassData: PassDataGroupRequest,
-        deleteAddContentPassDataGroup: List<DeleteAddContentPassDataGroup>
+        deleteListAddContentPass: List<FormAddContentPassDataGroup>,
+        updateListAddContentPass: List<FormAddContentPassDataGroup>,
     ) = flow {
         try {
             localData.getToken.collect { token ->
@@ -179,8 +180,12 @@ class PassDataGroupRepository(
                             remotePassDataGroupSources.addContentPassData(token,groupId,passDataGroupId,updatePassData.addPassContent)
                         }
 
-                        if(deleteAddContentPassDataGroup.isNotEmpty()){
-                            remotePassDataGroupSources.deleteAddContentPassData(token,passDataGroupId,deleteAddContentPassDataGroup)
+                        if(deleteListAddContentPass.isNotEmpty()){
+                            remotePassDataGroupSources.deleteAddContentPassData(token,passDataGroupId,deleteListAddContentPass)
+                        }
+
+                        if(updateListAddContentPass.isNotEmpty()){
+                            remotePassDataGroupSources.updateAddContentPassData(token,passDataGroupId,updateListAddContentPass)
                         }
 
                         emit(NetworkResult.Success(result))
@@ -196,7 +201,7 @@ class PassDataGroupRepository(
                     }
                 }
             }
-        }catch (e: UnresolvedAddressException){
+        } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
     }.onStart {

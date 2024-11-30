@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
-import org.apps.simpenpass.models.request.DeleteAddContentPassDataGroup
+import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
@@ -116,10 +116,11 @@ class FormPassGroupViewModel(
         groupId: String,
         passGroupDataId: String,
         updateFormData: PassDataGroupRequest,
-        deleteAddContentPassDataGroup: List<DeleteAddContentPassDataGroup>
+        updateAddContentPassDataGroup: List<FormAddContentPassDataGroup>,
+        deleteAddContentPassDataGroup: List<FormAddContentPassDataGroup>
     ){
         viewModelScope.launch {
-            repoPassDataGroup.updatePassDataGroupById(groupId.toInt(),passGroupDataId.toInt(),updateFormData,deleteAddContentPassDataGroup).flowOn(
+            repoPassDataGroup.updatePassDataGroupById(groupId.toInt(),passGroupDataId.toInt(),updateFormData,deleteAddContentPassDataGroup,updateAddContentPassDataGroup).flowOn(
                 Dispatchers.IO).collect { res ->
                 when(res){
                     is NetworkResult.Error -> {

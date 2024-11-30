@@ -15,7 +15,7 @@ import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.pass_data.PassDataGroup
-import org.apps.simpenpass.models.request.DeleteAddContentPassDataGroup
+import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
@@ -141,13 +141,33 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
     override suspend fun deleteAddContentPassData(
         token: String,
         passGroupDataId: Int,
-        deleteAddContentPassData: List<DeleteAddContentPassDataGroup>
+        deleteAddContentPassData: List<FormAddContentPassDataGroup>
     ): BaseResponse<List<AddContentPassDataGroup>> {
         try {
             val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "deleteAddDataPassContentGroup/$passGroupDataId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
                 setBody(deleteAddContentPassData)
+            }
+
+            return response.body<BaseResponse<List<AddContentPassDataGroup>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun updateAddContentPassData(
+        token: String,
+        passGroupDataId: Int,
+        updateAddContentPassData: List<FormAddContentPassDataGroup>
+    ): BaseResponse<List<AddContentPassDataGroup>> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateAddDataPassContentGroup/$passGroupDataId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(updateAddContentPassData)
             }
 
             return response.body<BaseResponse<List<AddContentPassDataGroup>>>()
