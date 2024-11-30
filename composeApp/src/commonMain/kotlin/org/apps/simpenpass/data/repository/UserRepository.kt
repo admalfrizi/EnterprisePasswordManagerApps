@@ -71,13 +71,11 @@ class UserRepository(
             }
             localData.setLoggedInStatus(false)
             localData.clearUserData()
-            Napier.v("Response Message: $userData")
         } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
         }
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
-        Napier.v("Error Message: ${error.message}")
     }
 
     suspend fun getUserData(): LocalUserStore {

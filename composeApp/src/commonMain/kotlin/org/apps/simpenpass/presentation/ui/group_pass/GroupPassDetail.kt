@@ -147,11 +147,16 @@ fun ContentView(
 ) {
     var indexTab by rememberSaveable { mutableStateOf(0) }
     val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
+    var isUserAdmin by remember { mutableStateOf(false) }
 
     LaunchedEffect(indexTab != 0 && groupState.memberGroupData.isEmpty()){
         if(indexTab != 0 && groupState.memberGroupData.isEmpty()){
             groupViewModel.getMemberDataGroup(groupState.groupId!!)
         }
+    }
+
+    if(groupState.dtlGroupData != null){
+        isUserAdmin = groupState.dtlGroupData.isUserAdmin
     }
 
     Scaffold(
@@ -161,7 +166,8 @@ fun ContentView(
             TopBarDtl(
                 navToBack,
                 navToGroupSettings,
-                groupViewModel
+                groupViewModel,
+                isUserAdmin
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

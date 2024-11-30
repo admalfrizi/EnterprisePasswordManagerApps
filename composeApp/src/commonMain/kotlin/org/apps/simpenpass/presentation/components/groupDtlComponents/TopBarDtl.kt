@@ -20,7 +20,8 @@ import resources.settings_ic
 fun TopBarDtl(
     navBack: () -> Unit,
     navToGroupSettings: () -> Unit,
-    groupState: GroupDetailsViewModel
+    groupState: GroupDetailsViewModel,
+    isUserAdmin: Boolean,
 ) {
     TopAppBar(
         backgroundColor = secondaryColor,
@@ -46,7 +47,7 @@ fun TopBarDtl(
             )
         },
         actions = {
-            if(groupState.groupDtlState.value.dtlGroupData?.isUserAdmin == true){
+            if(isUserAdmin){
                 IconButton(
                     onClick = {
                         navToGroupSettings()
