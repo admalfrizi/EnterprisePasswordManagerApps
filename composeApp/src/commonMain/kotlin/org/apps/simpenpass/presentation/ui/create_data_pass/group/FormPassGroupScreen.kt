@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +72,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import network.chaintech.sdpcomposemultiplatform.ssp
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
@@ -737,6 +739,7 @@ fun AddContentPassView(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(7.dp),
@@ -765,8 +768,13 @@ fun AddContentPassView(
                         Text(
                             item.nmData,
                             style = MaterialTheme.typography.body1,
+                            modifier = Modifier.weight(1f),
                             maxLines = 2,
+                            minLines = 2,
                             color = fontColor1
+                        )
+                        Spacer(
+                            modifier = Modifier.width(24.dp)
                         )
                         Icon(
                             Icons.Default.Clear,
@@ -780,13 +788,17 @@ fun AddContentPassView(
                             }
                         )
                     }
+
                     Spacer(
                         modifier = Modifier.height(26.dp)
                     )
+
                     Text(
                         item.vlData,
-                        style = MaterialTheme.typography.subtitle1,
+                        style = MaterialTheme.typography.subtitle1.copy(fontSize = 12.ssp),
                         color = fontColor1,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         fontSize = 10.sp
                     )
                 }
@@ -971,9 +983,9 @@ fun checkData(
     val totalSize = listItemAddContent.size + insertAddContentPassDataSize
 
     return if (listItemAddContent.isEmpty() && insertAddContentPassData.isEmpty()) {
-        105.dp
+        120.dp
     } else if(totalSize.toString().isNotEmpty()) {
-        (totalSize * 105).dp
+        (totalSize * 120).dp
     }  else {
         0.dp
     }
