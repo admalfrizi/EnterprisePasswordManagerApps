@@ -177,6 +177,14 @@ fun FormPassGroupScreen(
         }
     }
 
+    LaunchedEffect(formPassGroupState.listAddContentPassData.isNotEmpty()){
+        if(formPassGroupState.listAddContentPassData.isNotEmpty()){
+            formPassGroupState.listAddContentPassData.forEach {
+                listItemAddContent.add(FormAddContentPassDataGroup(it.id,it.nmData,it.vlData))
+            }
+        }
+    }
+
     val formData = PassDataGroupRequest(
         accountName = nmAccount.value,
         username = userName.value,
@@ -559,7 +567,6 @@ fun FormContentView(
                     modifier = Modifier.height(9.dp)
                 )
                 AddContentPassView(
-                    formState,
                     { data ->
                         scope.launch {
                             sheetState.show()
@@ -723,7 +730,6 @@ fun AddContentPassDataGroupForm(
 
 @Composable
 fun AddContentPassView(
-    formState: FormPassGroupState,
     updateAddContentData: (FormAddContentPassDataGroup) -> Unit,
     insertAddContentPassData: MutableList<InsertAddContentDataPass>,
     selectedDelete: MutableList<FormAddContentPassDataGroup>,
@@ -731,16 +737,6 @@ fun AddContentPassView(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
-    LaunchedEffect(formState.listAddContentPassData.isNotEmpty()){
-        if(formState.listAddContentPassData.isNotEmpty()){
-            formState.listAddContentPassData.forEach {
-                listItemAddContent.add(FormAddContentPassDataGroup(it.id,it.nmData,it.vlData))
-            }
-        }
-    }
-
-
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(7.dp),
