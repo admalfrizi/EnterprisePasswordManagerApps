@@ -111,17 +111,18 @@ fun FormPassGroupScreen(
     var passData = remember { mutableStateOf("") }
     var urlPass = remember { mutableStateOf("") }
     var desc = remember { mutableStateOf("") }
+
     val addContentId = remember { mutableStateOf(0) }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
     var roleId = remember { mutableStateOf(-1) }
+
     val selectedDelete = remember {
         mutableStateListOf<FormAddContentPassDataGroup>()
     }
     val listItemAddContent = remember {
         mutableStateListOf<FormAddContentPassDataGroup>()
     }
-
     val updateListItemAddContent = remember {
         mutableStateListOf<FormAddContentPassDataGroup>()
     }
