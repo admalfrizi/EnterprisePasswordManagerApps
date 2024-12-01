@@ -442,6 +442,7 @@ fun FormScreen(
                                         scope.launch {
                                             sheetState.show()
                                         }
+
                                         addContentId.value = data.id
                                         nmData.value = data.nmData
                                         vlData.value = data.vlData
@@ -450,8 +451,8 @@ fun FormScreen(
                                         scope.launch {
                                             sheetState.show()
                                         }
-                                        addContentId.value = data.id
                                         isInsertData.value = true
+                                        addContentId.value = data.id
                                         nmData.value = data.nmData
                                         vlData.value = data.vlData
                                     },
@@ -755,6 +756,7 @@ fun AddContentDataForm(
                             sheetState.hide()
                         }
 
+                        isInsertData.value = false
                         nmData.value = ""
                         vlData.value = ""
                         addContentId.value = 0
@@ -795,9 +797,9 @@ fun checkData(
     val totalSize = (formState.listAddContentPassData.size + insertAddContentDataPass.size)
 
     return if (formState.listAddContentPassData.isEmpty() && insertAddContentDataPass.isEmpty()) {
-        105.dp
+        120.dp
     } else if(totalSize.toString().isNotEmpty()) {
-        (totalSize * 105).dp
+        (totalSize * 120).dp
     }  else {
         0.dp
     }
