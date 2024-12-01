@@ -59,7 +59,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.FormAddContentPassData
@@ -96,6 +95,7 @@ fun FormScreen(
     var urlPass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
 
+    var isInsertData = remember { mutableStateOf(false) }
     val addContentId = remember { mutableStateOf(0) }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
@@ -169,8 +169,6 @@ fun FormScreen(
         urlPass = formState.passData?.url ?: ""
     }
 
-    Napier.v("insertAddContentPassData : $insertAddContentDataPass")
-
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,
@@ -182,6 +180,7 @@ fun FormScreen(
                 updateListItemAddContent,
                 listAddContentPassData,
                 scope,
+                isInsertData,
                 nmData,
                 vlData,
                 addContentId
@@ -447,6 +446,15 @@ fun FormScreen(
                                         nmData.value = data.nmData
                                         vlData.value = data.vlData
                                     },
+                                    { data ->
+                                        scope.launch {
+                                            sheetState.show()
+                                        }
+                                        addContentId.value = data.id
+                                        isInsertData.value = true
+                                        nmData.value = data.nmData
+                                        vlData.value = data.vlData
+                                    },
                                     listAddContentPassData,
                                     selectedDelete,
                                     insertAddContentDataPass,
@@ -469,6 +477,7 @@ fun FormScreen(
 @Composable
 fun AddContentPassDataUserView(
     updateAddContentPass: (FormAddContentPassData) -> Unit,
+    updateInsertAddContentPass: (InsertAddContentDataPass) -> Unit,
     listAddContentPassData: MutableList<FormAddContentPassData>,
     selectedDelete: MutableList<FormAddContentPassData>,
     insertAddContentDataPass: MutableList<InsertAddContentDataPass>,
@@ -541,7 +550,9 @@ fun AddContentPassDataUserView(
 
         items(insertAddContentDataPass){ items ->
             Card(
-                modifier = Modifier.width(168.dp),
+                modifier = Modifier.width(168.dp).clickable {
+                    updateInsertAddContentPass(items)
+                },
                 backgroundColor = Color(0xFF4470A9),
                 shape = RoundedCornerShape(10.dp),
                 elevation = 0.dp
@@ -566,7 +577,7 @@ fun AddContentPassDataUserView(
                             "",
                             tint = Color.White,
                             modifier = Modifier.clickable {
-
+                                insertAddContentDataPass.remove(items)
                             }
                         )
                     }
@@ -633,6 +644,7 @@ fun AddContentDataForm(
     updateListAddData: MutableList<FormAddContentPassData>,
     listAddContentPassData: MutableList<FormAddContentPassData>,
     scope: CoroutineScope,
+    isInsertData: MutableState<Boolean>,
     nmData: MutableState<String>,
     vlData: MutableState<String>,
     addContentId: MutableState<Int>
@@ -726,10 +738,17 @@ fun AddContentDataForm(
                 focusManager.clearFocus()
                 when(addContentId.value != 0){
                     true -> {
-                        val index = listAddContentPassData.indexOfFirst { it.id == addContentId.value }
-                        if (index != -1) {
-                            listAddContentPassData[index] = listAddContentPassData[index].copy(nmData = nmData.value, vlData = vlData.value)
-                            updateListAddData.add(listAddContentPassData[index])
+                        if(!isInsertData.value){
+                            val index = listAddContentPassData.indexOfFirst { it.id == addContentId.value }
+                            if (index != -1) {
+                                listAddContentPassData[index] = listAddContentPassData[index].copy(nmData = nmData.value, vlData = vlData.value)
+                                updateListAddData.add(listAddContentPassData[index])
+                            }
+                        } else {
+                            val index = insertAddContentDataPass.indexOfFirst { it.id == addContentId.value }
+                            if (index != -1) {
+                                insertAddContentDataPass[index] = insertAddContentDataPass[index].copy(nmData = nmData.value, vlData = vlData.value)
+                            }
                         }
 
                         scope.launch {
