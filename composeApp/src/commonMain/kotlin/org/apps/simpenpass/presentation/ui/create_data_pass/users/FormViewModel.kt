@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassData
+import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.PassResponseData
@@ -105,9 +106,14 @@ class FormViewModel(
         }
     }
 
-    fun editUserPassData(passId: Int, editData: PassDataRequest) {
+    fun editUserPassData(
+        passId: Int,
+        editData: PassDataRequest,
+        deleteAddContentPassData: MutableList<FormAddContentPassData>,
+        updateAddContentPassData: MutableList<FormAddContentPassData>
+    ) {
         viewModelScope.launch {
-            repo.editUserPassData(editData, passId,formState.value.insertAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
+            repo.editUserPassData(editData, passId,formState.value.insertAddContentPassData,deleteAddContentPassData,updateAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
                 when(result){
                     is NetworkResult.Error -> {
                         _formState.update {

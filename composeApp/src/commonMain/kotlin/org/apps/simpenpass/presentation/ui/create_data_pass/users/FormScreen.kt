@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
@@ -92,6 +95,15 @@ fun FormScreen(
     val vlData = remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
+    val selectedDelete = remember {
+        mutableStateListOf<FormAddContentPassData>()
+    }
+    val updateListItemAddContent = remember {
+        mutableStateListOf<FormAddContentPassData>()
+    }
+    val listAddContentPassData = remember {
+        mutableStateListOf<FormAddContentPassData>()
+    }
 
     val formData = PassDataRequest(
         accountName = nmAccount,
@@ -129,6 +141,14 @@ fun FormScreen(
         }
     }
 
+    LaunchedEffect(formState.listAddContentPassData.isNotEmpty()){
+        if(formState.listAddContentPassData.isNotEmpty()){
+            formState.listAddContentPassData.forEach {
+                listAddContentPassData.add(FormAddContentPassData(it.id,it.nmData,it.vlData))
+            }
+        }
+    }
+
     if(formState.passData != null){
         userName = formState.passData?.username!!
         nmAccount = formState.passData?.accountName!!
@@ -162,7 +182,12 @@ fun FormScreen(
                     BtnForm(
                         {
                             if(passId.isNotEmpty() && passId != "{passId}"){
-                                formViewModel.editUserPassData(passId = passId.toInt(), formData)
+                                formViewModel.editUserPassData(
+                                    passId = passId.toInt(),
+                                    formData,
+                                    selectedDelete,
+                                    updateListItemAddContent
+                                )
                             } else {
                                 validatorData(
                                     nmAccount,
@@ -396,113 +421,13 @@ fun FormScreen(
                                 Spacer(
                                     modifier = Modifier.height(9.dp)
                                 )
-                                LazyVerticalGrid(
-                                    columns = GridCells.Fixed(2),
-                                    horizontalArrangement = Arrangement.spacedBy(7.dp),
-                                    verticalArrangement = Arrangement.spacedBy(7.dp),
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).heightIn(
-                                        max = checkData(formState)
-                                    ),
-                                    userScrollEnabled = false
-                                ){
-                                    items(formState.listAddContentPassData){ items ->
-                                        Card(
-                                            modifier = Modifier.width(168.dp),
-                                            backgroundColor = Color(0xFF4470A9),
-                                            shape = RoundedCornerShape(10.dp),
-                                            elevation = 0.dp
-                                        ) {
-                                            Column(
-                                                modifier = Modifier.padding(14.dp),
-                                            ) {
-                                                Text(
-                                                    items.nmData,
-                                                    style = MaterialTheme.typography.body1,
-                                                    color = fontColor1
-                                                )
-                                                Spacer(
-                                                    modifier = Modifier.height(26.dp)
-                                                )
-                                                Text(
-                                                    items.vlData,
-                                                    style = MaterialTheme.typography.subtitle1,
-                                                    color = fontColor1,
-                                                    fontSize = 10.sp
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    items(formState.insertAddContentPassData){ items ->
-                                        Card(
-                                            modifier = Modifier.width(168.dp),
-                                            backgroundColor = Color(0xFF4470A9),
-                                            shape = RoundedCornerShape(10.dp),
-                                            elevation = 0.dp
-                                        ) {
-                                            Column(
-                                                modifier = Modifier.padding(14.dp),
-                                            ) {
-                                                Text(
-                                                    items.nmData,
-                                                    style = MaterialTheme.typography.body1,
-                                                    color = fontColor1
-                                                )
-                                                Spacer(
-                                                    modifier = Modifier.height(26.dp)
-                                                )
-                                                Text(
-                                                    items.vlData,
-                                                    style = MaterialTheme.typography.subtitle1,
-                                                    color = fontColor1,
-                                                    fontSize = 10.sp
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    item {
-                                        Card(
-                                            modifier = Modifier.width(168.dp).clickable {
-                                                scope.launch {
-                                                    sheetState.show()
-                                                }
-                                            },
-                                            backgroundColor = Color(0xFF78A1D7),
-                                            shape = RoundedCornerShape(10.dp),
-                                            elevation = 0.dp
-                                        ) {
-                                            Column(
-                                                modifier = Modifier.padding(18.dp).fillMaxWidth(),
-                                                horizontalAlignment = Alignment.CenterHorizontally
-                                            ) {
-                                                Text(
-                                                    "Buat Data Baru",
-                                                    style = MaterialTheme.typography.body1,
-                                                    color = fontColor1,
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    textAlign = TextAlign.Center
-                                                )
-                                                Spacer(
-                                                    modifier = Modifier.height(8.dp)
-                                                )
-                                                Card(
-                                                    modifier = Modifier.size(40.dp),
-                                                    shape = RoundedCornerShape(10.dp),
-                                                    backgroundColor = Color(0xFF6C8BB4),
-                                                    elevation = 0.dp,
-                                                    content = {
-                                                        Image(
-                                                            painterResource(Res.drawable.add_option_ic),""
-                                                        )
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-
+                                AddContentPassDataUserView(
+                                    listAddContentPassData,
+                                    selectedDelete,
+                                    formState,
+                                    sheetState,
+                                    scope
+                                )
                                 Spacer(
                                     modifier = Modifier.height(14.dp)
                                 )
@@ -513,6 +438,161 @@ fun FormScreen(
             )
         }
     )
+}
+
+@Composable
+fun AddContentPassDataUserView(
+    listAddContentPassData: MutableList<FormAddContentPassData>,
+    selectedDelete: MutableList<FormAddContentPassData>,
+    formState: FormState,
+    sheetState: ModalBottomSheetState,
+    scope: CoroutineScope
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(7.dp),
+        verticalArrangement = Arrangement.spacedBy(7.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).heightIn(
+            max = checkData(formState)
+        ),
+        userScrollEnabled = false
+    ){
+        items(listAddContentPassData){ items ->
+            Card(
+                modifier = Modifier.width(168.dp),
+                backgroundColor = Color(0xFF4470A9),
+                shape = RoundedCornerShape(10.dp),
+                elevation = 0.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(
+                            items.nmData,
+                            style = MaterialTheme.typography.body1,
+                            color = fontColor1,
+                            modifier = Modifier.weight(1f),
+                            maxLines = 2,
+                            minLines = 2,
+                        )
+                        Spacer(
+                            modifier = Modifier.width(24.dp)
+                        )
+                        Icon(
+                            Icons.Default.Clear,
+                            "",
+                            tint = Color.White,
+                            modifier = Modifier.clickable {
+                                selectedDelete.add(FormAddContentPassData(items.id,items.nmData,items.vlData))
+                                if(selectedDelete.contains(FormAddContentPassData(items.id,items.nmData,items.vlData))){
+                                    listAddContentPassData.remove(items)
+                                }
+                            }
+                        )
+                    }
+
+
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
+                    Text(
+                        items.vlData,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = fontColor1,
+                        fontSize = 10.sp
+                    )
+                }
+            }
+        }
+
+        items(formState.insertAddContentPassData){ items ->
+            Card(
+                modifier = Modifier.width(168.dp),
+                backgroundColor = Color(0xFF4470A9),
+                shape = RoundedCornerShape(10.dp),
+                elevation = 0.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(
+                            items.nmData,
+                            style = MaterialTheme.typography.body1,
+                            color = fontColor1,
+                            modifier = Modifier.weight(1f),
+                            maxLines = 2,
+                            minLines = 2,
+                        )
+                        Icon(
+                            Icons.Default.Clear,
+                            "",
+                            tint = Color.White,
+                            modifier = Modifier.clickable {
+
+                            }
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
+                    Text(
+                        items.vlData,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = fontColor1,
+                        fontSize = 10.sp
+                    )
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.width(168.dp).clickable {
+                    scope.launch {
+                        sheetState.show()
+                    }
+                },
+                backgroundColor = Color(0xFF78A1D7),
+                shape = RoundedCornerShape(10.dp),
+                elevation = 0.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp).fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Buat Data Baru",
+                        style = MaterialTheme.typography.body1,
+                        color = fontColor1,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+                    Card(
+                        modifier = Modifier.size(40.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        backgroundColor = Color(0xFF6C8BB4),
+                        elevation = 0.dp,
+                        content = {
+                            Image(
+                                painterResource(Res.drawable.add_option_ic),""
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

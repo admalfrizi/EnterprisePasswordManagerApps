@@ -13,6 +13,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.AddContentPassData
+import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.response.BaseResponse
@@ -132,6 +133,46 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "listAddDataPass/$passId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            return response.body<BaseResponse<List<AddContentPassData>>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun updateAddContentPassData(
+        token: String,
+        passId: Int,
+        updateAddContentPass: List<FormAddContentPassData>
+    ): BaseResponse<List<AddContentPassData>> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateAddDataPassContentUser/$passId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(updateAddContentPass)
+            }
+            return response.body<BaseResponse<List<AddContentPassData>>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun deleteAddContentPassData(
+        token: String,
+        passId: Int,
+        deleteAddContentPass: List<FormAddContentPassData>
+    ): BaseResponse<List<AddContentPassData>> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "deleteAddDataPassContentUser/$passId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(deleteAddContentPass)
             }
             return response.body<BaseResponse<List<AddContentPassData>>>()
 

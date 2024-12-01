@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
+import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.utils.NetworkResult
@@ -40,16 +41,35 @@ class PassRepository(
     fun editUserPassData(
         editData: PassDataRequest,
         passId: Int,
-        listAddContentPassData: List<InsertAddContentDataPass>
+        listAddContentPassData: List<InsertAddContentDataPass>,
+        deleteListAddContentPass: List<FormAddContentPassData>,
+        updateListAddContentPass: List<FormAddContentPassData>,
     ) = flow {
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
                 val result = remotePassSources.editPassData(token, editData, passId)
-                val updateAddContentData = remotePassSources.addContentDataPass(token,passId,listAddContentPassData)
+                when(result.success){
+                    true -> {
 
-                if(result.success && updateAddContentData.success){
-                    emit(NetworkResult.Success(result))
+                        if(listAddContentPassData.isNotEmpty()){
+                            remotePassSources.addContentDataPass(token,passId,listAddContentPassData)
+                        }
+
+                        if(updateListAddContentPass.isNotEmpty()){
+                            remotePassSources.updateAddContentPassData(token,passId,updateListAddContentPass)
+                        }
+
+                        if(deleteListAddContentPass.isNotEmpty()){
+                            remotePassSources.deleteAddContentPassData(token,passId,deleteListAddContentPass)
+                        }
+
+                        emit(NetworkResult.Success(result))
+
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
                 }
             }
         } catch (e: UnresolvedAddressException){

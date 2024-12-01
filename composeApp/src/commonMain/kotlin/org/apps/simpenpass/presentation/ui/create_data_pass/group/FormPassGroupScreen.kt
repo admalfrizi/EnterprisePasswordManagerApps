@@ -789,7 +789,7 @@ fun AddContentPassView(
                     }
 
                     Spacer(
-                        modifier = Modifier.height(26.dp)
+                        modifier = Modifier.height(20.dp)
                     )
 
                     Text(
@@ -838,7 +838,7 @@ fun AddContentPassView(
                         )
                     }
                     Spacer(
-                        modifier = Modifier.height(26.dp)
+                        modifier = Modifier.height(20.dp)
                     )
                     Text(
                         item.vlData,
