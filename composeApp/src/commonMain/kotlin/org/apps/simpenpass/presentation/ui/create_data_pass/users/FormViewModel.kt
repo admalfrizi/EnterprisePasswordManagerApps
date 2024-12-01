@@ -26,9 +26,12 @@ class FormViewModel(
     private val _formState = MutableStateFlow(FormState())
     val formState = _formState.asStateFlow()
 
-    fun createUserPassData(formData: PassDataRequest){
+    fun createUserPassData(
+        formData: PassDataRequest,
+        insertAddContentPassData: MutableList<InsertAddContentDataPass>
+    ){
         viewModelScope.launch {
-            repo.createUserPassData(formData,formState.value.insertAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
+            repo.createUserPassData(formData,insertAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
                 when(result) {
                     is NetworkResult.Error -> {
                         _formState.update {
@@ -109,11 +112,12 @@ class FormViewModel(
     fun editUserPassData(
         passId: Int,
         editData: PassDataRequest,
+        insertAddContentPassData: MutableList<InsertAddContentDataPass>,
         deleteAddContentPassData: MutableList<FormAddContentPassData>,
         updateAddContentPassData: MutableList<FormAddContentPassData>
     ) {
         viewModelScope.launch {
-            repo.editUserPassData(editData, passId,formState.value.insertAddContentPassData,deleteAddContentPassData,updateAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
+            repo.editUserPassData(editData, passId,insertAddContentPassData,deleteAddContentPassData,updateAddContentPassData).flowOn(Dispatchers.IO).collect { result ->
                 when(result){
                     is NetworkResult.Error -> {
                         _formState.update {
@@ -146,16 +150,6 @@ class FormViewModel(
 //                        }
                     }
                 }
-            }
-        }
-    }
-
-    fun addContentDataToList(member: InsertAddContentDataPass){
-        viewModelScope.launch {
-            _formState.update { currentList ->
-                currentList.copy(
-                    insertAddContentPassData = currentList.insertAddContentPassData + member
-                )
             }
         }
     }
@@ -237,7 +231,6 @@ class FormViewModel(
 data class FormState(
     val isLoading : Boolean = false,
     val passData: PassResponseData? = null,
-    val insertAddContentPassData: List<InsertAddContentDataPass> = emptyList(),
     val listAddContentPassData: List<AddContentPassData> = emptyList(),
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,

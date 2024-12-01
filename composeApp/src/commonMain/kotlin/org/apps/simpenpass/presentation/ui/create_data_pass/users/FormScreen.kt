@@ -50,12 +50,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.FormAddContentPassData
@@ -91,8 +95,11 @@ fun FormScreen(
     var passData by remember { mutableStateOf("") }
     var urlPass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
+
+    val addContentId = remember { mutableStateOf(0) }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
+
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
     val selectedDelete = remember {
@@ -103,6 +110,9 @@ fun FormScreen(
     }
     val listAddContentPassData = remember {
         mutableStateListOf<FormAddContentPassData>()
+    }
+    val insertAddContentDataPass = remember {
+        mutableStateListOf<InsertAddContentDataPass>()
     }
 
     val formData = PassDataRequest(
@@ -159,6 +169,8 @@ fun FormScreen(
         urlPass = formState.passData?.url ?: ""
     }
 
+    Napier.v("insertAddContentPassData : $insertAddContentDataPass")
+
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,
@@ -166,10 +178,13 @@ fun FormScreen(
             AddContentDataForm(
                 Modifier.fillMaxWidth(),
                 sheetState,
+                insertAddContentDataPass,
+                updateListItemAddContent,
+                listAddContentPassData,
                 scope,
-                formViewModel,
                 nmData,
-                vlData
+                vlData,
+                addContentId
             )
         },
         sheetElevation = 0.dp,
@@ -185,12 +200,14 @@ fun FormScreen(
                                 formViewModel.editUserPassData(
                                     passId = passId.toInt(),
                                     formData,
+                                    insertAddContentDataPass,
                                     selectedDelete,
                                     updateListItemAddContent
                                 )
                             } else {
                                 validatorData(
                                     nmAccount,
+                                    insertAddContentDataPass,
                                     passData,
                                     formViewModel,
                                     formData
@@ -422,8 +439,17 @@ fun FormScreen(
                                     modifier = Modifier.height(9.dp)
                                 )
                                 AddContentPassDataUserView(
+                                    { data ->
+                                        scope.launch {
+                                            sheetState.show()
+                                        }
+                                        addContentId.value = data.id
+                                        nmData.value = data.nmData
+                                        vlData.value = data.vlData
+                                    },
                                     listAddContentPassData,
                                     selectedDelete,
+                                    insertAddContentDataPass,
                                     formState,
                                     sheetState,
                                     scope
@@ -442,8 +468,10 @@ fun FormScreen(
 
 @Composable
 fun AddContentPassDataUserView(
+    updateAddContentPass: (FormAddContentPassData) -> Unit,
     listAddContentPassData: MutableList<FormAddContentPassData>,
     selectedDelete: MutableList<FormAddContentPassData>,
+    insertAddContentDataPass: MutableList<InsertAddContentDataPass>,
     formState: FormState,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope
@@ -453,13 +481,15 @@ fun AddContentPassDataUserView(
         horizontalArrangement = Arrangement.spacedBy(7.dp),
         verticalArrangement = Arrangement.spacedBy(7.dp),
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).heightIn(
-            max = checkData(formState)
+            max = checkData(formState,insertAddContentDataPass)
         ),
         userScrollEnabled = false
     ){
         items(listAddContentPassData){ items ->
             Card(
-                modifier = Modifier.width(168.dp),
+                modifier = Modifier.width(168.dp).clickable {
+                    updateAddContentPass(items)
+                },
                 backgroundColor = Color(0xFF4470A9),
                 shape = RoundedCornerShape(10.dp),
                 elevation = 0.dp
@@ -509,7 +539,7 @@ fun AddContentPassDataUserView(
             }
         }
 
-        items(formState.insertAddContentPassData){ items ->
+        items(insertAddContentDataPass){ items ->
             Card(
                 modifier = Modifier.width(168.dp),
                 backgroundColor = Color(0xFF4470A9),
@@ -599,11 +629,17 @@ fun AddContentPassDataUserView(
 fun AddContentDataForm(
     modifier: Modifier = Modifier,
     sheetState: ModalBottomSheetState,
+    insertAddContentDataPass: MutableList<InsertAddContentDataPass>,
+    updateListAddData: MutableList<FormAddContentPassData>,
+    listAddContentPassData: MutableList<FormAddContentPassData>,
     scope: CoroutineScope,
-    formViewModel: FormViewModel,
     nmData: MutableState<String>,
-    vlData: MutableState<String>
+    vlData: MutableState<String>,
+    addContentId: MutableState<Int>
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier,
     ){
@@ -612,6 +648,10 @@ fun AddContentDataForm(
         )
         IconButton(
             onClick = {
+                focusManager.clearFocus()
+                addContentId.value = 0
+                nmData.value = ""
+                vlData.value = ""
                 scope.launch {
                     sheetState.hide()
                 }
@@ -647,7 +687,7 @@ fun AddContentDataForm(
             modifier = Modifier.height(9.dp)
         )
         FormTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).focusRequester(focusRequester),
             value = nmData.value,
             labelHints = "Isi Jenis Nama Data",
             leadingIcon = null,
@@ -669,7 +709,7 @@ fun AddContentDataForm(
             modifier = Modifier.height(9.dp)
         )
         FormTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).focusRequester(focusRequester),
             value = vlData.value,
             labelHints = "Isi Data Tambahan",
             leadingIcon = null,
@@ -683,10 +723,33 @@ fun AddContentDataForm(
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
-                scope.launch {
-                    formViewModel.addContentDataToList(InsertAddContentDataPass(nmData.value,vlData.value))
-                    sheetState.hide()
+                focusManager.clearFocus()
+                when(addContentId.value != 0){
+                    true -> {
+                        val index = listAddContentPassData.indexOfFirst { it.id == addContentId.value }
+                        if (index != -1) {
+                            listAddContentPassData[index] = listAddContentPassData[index].copy(nmData = nmData.value, vlData = vlData.value)
+                            updateListAddData.add(listAddContentPassData[index])
+                        }
+
+                        scope.launch {
+                            sheetState.hide()
+                        }
+
+                        nmData.value = ""
+                        vlData.value = ""
+                        addContentId.value = 0
+                    }
+                    false -> {
+                        insertAddContentDataPass.add(InsertAddContentDataPass(insertAddContentDataPass.size + 1,nmData.value,vlData.value))
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        nmData.value = ""
+                        vlData.value = ""
+                    }
                 }
+
 
             },
             shape = RoundedCornerShape(20.dp),
@@ -694,7 +757,7 @@ fun AddContentDataForm(
             colors = ButtonDefaults.buttonColors(btnColor),
             content = {
                 Text(
-                    "Tambahkan",
+                    if(addContentId.value != 0) "Ubah Data" else "Tambahkan",
                     style = MaterialTheme.typography.h6,
                     color = fontColor1
                 )
@@ -708,10 +771,11 @@ fun AddContentDataForm(
 
 fun checkData(
     formState: FormState,
+    insertAddContentDataPass: MutableList<InsertAddContentDataPass>
 ): Dp {
-    val totalSize = (formState.listAddContentPassData.size + formState.insertAddContentPassData.size)
+    val totalSize = (formState.listAddContentPassData.size + insertAddContentDataPass.size)
 
-    return if (formState.listAddContentPassData.isEmpty() && formState.insertAddContentPassData.isEmpty()) {
+    return if (formState.listAddContentPassData.isEmpty() && insertAddContentDataPass.isEmpty()) {
         105.dp
     } else if(totalSize.toString().isNotEmpty()) {
         (totalSize * 105).dp
@@ -722,6 +786,7 @@ fun checkData(
 
 fun validatorData(
     accountName: String,
+    insertAddContentDataPass: MutableList<InsertAddContentDataPass>,
     pass: String,
     formViewModel: FormViewModel,
     formData: PassDataRequest,
@@ -729,6 +794,6 @@ fun validatorData(
     if(accountName.isEmpty() && pass.isEmpty()){
         setToast("Nama Akun dan Password Tidak Boleh Kosong")
     }  else {
-        formViewModel.createUserPassData(formData)
+        formViewModel.createUserPassData(formData,insertAddContentDataPass)
     }
 }

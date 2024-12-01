@@ -605,6 +605,7 @@ fun AddContentPassDataGroupForm(
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    var idCounter = 1
 
     Column(
         modifier = modifier,
@@ -707,7 +708,7 @@ fun AddContentPassDataGroupForm(
                     }
                     false -> {
                         scope.launch {
-                            insertAddContentPassData.add(InsertAddContentDataPass(nmData.value,vlData.value))
+                            insertAddContentPassData.add(InsertAddContentDataPass(idCounter++,nmData.value,vlData.value))
                             sheetState.hide()
                         }
                     }
@@ -831,7 +832,7 @@ fun AddContentPassView(
                             "",
                             tint = Color.White,
                             modifier = Modifier.clickable {
-                                if(insertAddContentPassData.contains(InsertAddContentDataPass(item.nmData,item.vlData))){
+                                if(insertAddContentPassData.contains(InsertAddContentDataPass(item.id,item.nmData,item.vlData))){
                                     insertAddContentPassData.remove(item)
                                 }
                             }
