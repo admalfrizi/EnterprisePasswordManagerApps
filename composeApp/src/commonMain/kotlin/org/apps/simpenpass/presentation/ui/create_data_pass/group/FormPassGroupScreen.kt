@@ -126,6 +126,9 @@ fun FormPassGroupScreen(
         mutableStateListOf<FormAddContentPassDataGroup>()
     }
     val insertAddContentPassData = remember { mutableStateListOf<InsertAddContentDataPass>() }
+    var isInsertData = remember {
+        mutableStateOf(false)
+    }
 
     bottomEdgeColor.value = secondaryColor
 
@@ -210,6 +213,7 @@ fun FormPassGroupScreen(
                 insertAddContentPassData,
                 updateListItemAddContent,
                 listItemAddContent,
+                isInsertData,
                 nmData,
                 vlData,
                 addContentId
@@ -323,6 +327,7 @@ fun FormPassGroupScreen(
                 content = {
                    FormContentView(
                        formPassGroupState,
+                       isInsertData,
                        nmData,
                        vlData,
                        addContentId,
@@ -349,6 +354,7 @@ fun FormPassGroupScreen(
 @Composable
 fun FormContentView(
     formState: FormPassGroupState,
+    isInsertData: MutableState<Boolean>,
     nmData: MutableState<String>,
     vlData: MutableState<String>,
     addContentId: MutableState<Int>,
@@ -577,6 +583,16 @@ fun FormContentView(
                         nmData.value = data.nmData
                         vlData.value = data.vlData
                     },
+                    { data ->
+                        scope.launch {
+                            sheetState.show()
+                        }
+                        isInsertData.value = true
+                        addContentId.value = data.id
+                        nmData.value = data.nmData
+                        vlData.value = data.vlData
+
+                    },
                     insertAddContentPassData,
                     selectedDelete,
                     listItemAddContent,
@@ -599,13 +615,13 @@ fun AddContentPassDataGroupForm(
     insertAddContentPassData: MutableList<InsertAddContentDataPass>,
     updateListAddData: MutableList<FormAddContentPassDataGroup>,
     itemListAddData: MutableList<FormAddContentPassDataGroup>,
+    isInsertData: MutableState<Boolean>,
     nmData: MutableState<String>,
     vlData: MutableState<String>,
     addContentId: MutableState<Int>
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    var idCounter = 1
 
     Column(
         modifier = modifier,
@@ -692,25 +708,35 @@ fun AddContentPassDataGroupForm(
                 focusManager.clearFocus()
                 when(addContentId.value != 0){
                     true -> {
-                        val index = itemListAddData.indexOfFirst { it.id == addContentId.value }
-                        if (index != -1) {
-                            itemListAddData[index] = itemListAddData[index].copy(nmData = nmData.value, vlData = vlData.value)
-                            updateListAddData.add(itemListAddData[index])
+                        if(!isInsertData.value) {
+                            val index = itemListAddData.indexOfFirst { it.id == addContentId.value }
+                            if (index != -1) {
+                                itemListAddData[index] = itemListAddData[index].copy(nmData = nmData.value, vlData = vlData.value)
+                                updateListAddData.add(itemListAddData[index])
+                            }
+                        } else {
+                            val index = insertAddContentPassData.indexOfFirst { it.id == addContentId.value }
+                            if (index != -1) {
+                                insertAddContentPassData[index] = insertAddContentPassData[index].copy(nmData = nmData.value, vlData = vlData.value)
+                            }
                         }
 
+
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        isInsertData.value = false
                         nmData.value = ""
                         vlData.value = ""
                         addContentId.value = 0
-
-                        scope.launch {
-                            sheetState.hide()
-                        }
                     }
                     false -> {
                         scope.launch {
-                            insertAddContentPassData.add(InsertAddContentDataPass(idCounter++,nmData.value,vlData.value))
+                            insertAddContentPassData.add(InsertAddContentDataPass(insertAddContentPassData.size + 1,nmData.value,vlData.value))
                             sheetState.hide()
                         }
+                        nmData.value = ""
+                        vlData.value = ""
                     }
                 }
             },
@@ -734,6 +760,7 @@ fun AddContentPassDataGroupForm(
 @Composable
 fun AddContentPassView(
     updateAddContentData: (FormAddContentPassDataGroup) -> Unit,
+    updateInsertAddContentData: (InsertAddContentDataPass) -> Unit,
     insertAddContentPassData: MutableList<InsertAddContentDataPass>,
     selectedDelete: MutableList<FormAddContentPassDataGroup>,
     listItemAddContent: MutableList<FormAddContentPassDataGroup>,
@@ -771,6 +798,7 @@ fun AddContentPassView(
                             modifier = Modifier.weight(1f),
                             maxLines = 2,
                             minLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                             color = fontColor1
                         )
                         Spacer(
@@ -807,7 +835,9 @@ fun AddContentPassView(
 
         items(insertAddContentPassData){ item ->
             Card(
-                modifier = Modifier.width(168.dp),
+                modifier = Modifier.width(168.dp).clickable {
+                    updateInsertAddContentData(item)
+                },
                 backgroundColor = Color(0xFF4470A9),
                 shape = RoundedCornerShape(10.dp),
                 elevation = 0.dp
