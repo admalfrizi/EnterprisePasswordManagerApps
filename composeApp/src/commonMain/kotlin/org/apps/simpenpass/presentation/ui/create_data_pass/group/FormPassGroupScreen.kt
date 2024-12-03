@@ -732,8 +732,8 @@ fun AddContentPassDataGroupForm(
                         addContentId.value = 0
                     }
                     false -> {
+                        insertAddContentPassData.add(InsertAddContentDataPass(insertAddContentPassData.size + 1,nmData.value,vlData.value))
                         scope.launch {
-                            insertAddContentPassData.add(InsertAddContentDataPass(insertAddContentPassData.size + 1,nmData.value,vlData.value))
                             sheetState.hide()
                         }
                         nmData.value = ""

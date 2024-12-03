@@ -350,10 +350,6 @@ fun GroupSettingsScreen(
                 modifier = Modifier.height(12.dp)
             )
             SettingsListHolder(
-                "Enkripsi Data",
-                isSwitch = true,
-            )
-            SettingsListHolder(
                 "Edit Role Anggota",
                 prefixTitle = "${groupState.groupData?.totalRole} Posisi",
                 {
