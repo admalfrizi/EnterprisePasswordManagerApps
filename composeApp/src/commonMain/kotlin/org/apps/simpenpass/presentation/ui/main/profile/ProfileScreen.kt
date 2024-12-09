@@ -113,15 +113,15 @@ fun SettingListView(
                 profileViewModel.sendOtp(profileState.userData?.email!!)
             })
         }
-        Text(
-            "Pengaturan Aplikasi",
-            modifier = Modifier.padding(vertical = 11.dp, horizontal = 16.dp).fillMaxWidth(),
-            style = MaterialTheme.typography.body2,
-            color = secondaryColor
-        )
-        Column {
-            SettingsListHolder("Informasi Aplikasi", onClick =  {})
-        }
+//        Text(
+//            "Pengaturan Aplikasi",
+//            modifier = Modifier.padding(vertical = 11.dp, horizontal = 16.dp).fillMaxWidth(),
+//            style = MaterialTheme.typography.body2,
+//            color = secondaryColor
+//        )
+//        Column {
+//            SettingsListHolder("Informasi Aplikasi", onClick =  {})
+//        }
         Spacer(
             modifier = Modifier.height(24.dp)
         )

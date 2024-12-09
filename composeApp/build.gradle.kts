@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.splitties.appcontext)
             implementation(libs.core.splashscreen)
+            implementation(libs.bcprov.jdk15on)
         }
         val commonMain by getting {
             dependencies {

@@ -149,8 +149,8 @@ fun ContentView(
     val imagesName = groupState.dtlGroupData?.groupDtl?.img_grup
     var isUserAdmin by remember { mutableStateOf(false) }
 
-    LaunchedEffect(indexTab != 0 && groupState.memberGroupData.isEmpty()){
-        if(indexTab != 0 && groupState.memberGroupData.isEmpty()){
+    LaunchedEffect(indexTab != 0){
+        if(indexTab != 0){
             groupViewModel.getMemberDataGroup(groupState.groupId!!)
         }
     }

@@ -212,13 +212,13 @@ fun AuthScreen(
                 Spacer(
                     modifier = Modifier.height(77.dp)
                 )
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Masuk Dengan Keamanan Biometrik",
-                    color = linkColor,
-                    style = MaterialTheme.typography.subtitle1,
-                    textAlign = TextAlign.Center
-                )
+//                Text(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    text = "Masuk Dengan Keamanan Biometrik",
+//                    color = linkColor,
+//                    style = MaterialTheme.typography.subtitle1,
+//                    textAlign = TextAlign.Center
+//                )
                 Spacer(
                     modifier = Modifier.height(20.dp)
                 )
