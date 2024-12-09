@@ -117,9 +117,6 @@ class CamelliaCrypto {
         D1 = FFuncSubkeys(D2, SIGMA[5]) xor D1
         KA_KB[2] = D2
         KA_KB[3] = D1
-//        KA_KB.forEach { t ->
-//            println(t.toString(16))
-//        }
 
         return KA_KB
     }
@@ -266,15 +263,17 @@ class CamelliaCrypto {
     }
 
     private fun FLINVFunc(data: ULong, subkey: ULong): ULong {
-        var y1 = (data.toInt() ushr 32)
+        var y1 = (data shr 32).toInt()
         var y2 = (data and 0xFFFFFFFFUL).toInt()
-        val k1 = (subkey.toInt() ushr 32)
+        val k1 = (subkey shr 32).toInt()
         val k2 = (subkey and 0xFFFFFFFFUL).toInt()
 
         y1 = y1 xor (y2 or k2)
-        y2 = y2 xor cycleShift((y1 and k1), 1)
+        y2 = y2 xor cycleShift(y1 and k1, 1)
 
-        return ((y1.toULong() shl 32) or (y2.toULong() and 0xFFFFFFFFUL))
+        val res = ((y1.toULong() shl 32) or (y2.toULong() and 0xFFFFFFFFUL))
+
+        return res
     }
 
     private fun FLFunc(data: ULong, subkey: ULong): ULong {
@@ -283,9 +282,12 @@ class CamelliaCrypto {
         val k1 = (subkey shr 32).toInt()
         val k2 = (subkey and 0xFFFFFFFFUL).toInt()
 
-        x2 = x2 xor (cycleShift((x1 and k1), 1))
+        x2 = x2 xor cycleShift((x1 and k1), 1)
         x1 = x1 xor (x2 or k2)
-        return ((x1.toULong() shl 32) or (x2.toULong() and 0xFFFFFFFFUL))
+
+        val res = ((x1.toULong() shl 32) or (x2.toULong() and 0xFFFFFFFFUL))
+
+        return res
     }
 
     @OptIn(ExperimentalUnsignedTypes::class)
