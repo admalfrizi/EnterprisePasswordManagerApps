@@ -78,7 +78,7 @@ fun HomeScreen(
 
     LaunchedEffect(isConnected) {
         Napier.v("Encrypt : $enc")
-        Napier.v("Decrypt : ${dec.trimEnd()}")
+        Napier.v("Decrypt : $dec")
         if(isConnected){
             homeViewModel.getData()
         }

@@ -551,7 +551,7 @@ class CamelliaCrypto {
         afterDec.forEach { (l, r) ->
             listDec.add(longToAsciiString(l,r))
         }
-        val dec = listDec.joinToString("")
+        val dec = listDec.joinToString("").trimEnd()
 
         return dec
     }
