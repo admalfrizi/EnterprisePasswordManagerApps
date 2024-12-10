@@ -71,15 +71,14 @@ fun HomeScreen(
             homeViewModel.getUserDataStats(homeState.id!!)
         }
     )
-    val data = "Neti Rusri Yanti"
+    val data = "Neti Rusri Yanti Abdul Mufakir"
     val key = "Skripsi2018-NETI"
+    val enc = CamelliaCrypto().encrypt(data,key)
+    val dec = CamelliaCrypto().decrypt(enc,key)
 
     LaunchedEffect(isConnected) {
-        val encData = CamelliaCrypto().encrypt(data,key)
-        val decData = CamelliaCrypto().decrypt(encData,key)
-        Napier.v(encData)
-        Napier.v(decData)
-
+        Napier.v("Encrypt : $enc")
+        Napier.v("Decrypt : $dec")
         if(isConnected){
             homeViewModel.getData()
         }

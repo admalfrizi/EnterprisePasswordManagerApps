@@ -30,11 +30,11 @@ class CamelliaCrypto {
     )
 
     private val SBOX2 = IntArray(256) { index ->
-        (SBOX1[index] shl 1 and 0xFF) or (SBOX1[index] shr 7) // <<< 1
+        (SBOX1[index] shl 1 and 0xFF) or (SBOX1[index] shr 7)
     }
 
     private val SBOX3 = IntArray(256) { index ->
-        (SBOX1[index] shl 7 and 0xFF) or (SBOX1[index] shr 1) // <<< 7
+        (SBOX1[index] shl 7 and 0xFF) or (SBOX1[index] shr 1)
     }
 
     private val SBOX4 = generateSBOX4(SBOX1)
@@ -43,6 +43,22 @@ class CamelliaCrypto {
         val temp = (value) ushr (32 - count)
         val show = ((value shl count) + temp)
         return show
+    }
+
+    private fun circularLeftShift(value: Int, shift: Int, bitSize: Int = 32): Int {
+        return (value shl shift) or (value ushr (bitSize - shift))
+    }
+
+    private fun generateSBOX4(sbox1: IntArray): IntArray {
+        val sboxSize = sbox1.size
+        val sbox4 = IntArray(sboxSize)
+
+        for (x in sbox1.indices) {
+            val shiftedX = circularLeftShift(x, 1, bitSize = 8)
+            sbox4[x] = sbox1[shiftedX and 0xFF]
+        }
+
+        return sbox4
     }
 
 
@@ -62,20 +78,99 @@ class CamelliaCrypto {
         return newVL
     }
 
-    fun circularLeftShift(value: Int, shift: Int, bitSize: Int = 32): Int {
-        return (value shl shift) or (value ushr (bitSize - shift))
+
+    private fun getSubkeys128(KL_KR: ULongArray, KA_KB: ULongArray): ULongArray {
+        val subkeys = ULongArray(26)
+
+        val KL = ulongArrayOf(KL_KR[0], KL_KR[1])
+        val KA = ulongArrayOf(KA_KB[0], KA_KB[1])
+
+        subkeys[0] = KL[0]
+        subkeys[1] = KL[1]
+        subkeys[2] = KA[0]
+        subkeys[3] = KA[1]
+
+        subkeys[4] = cycleShiftForPair(KL, 15)[0]
+        subkeys[5] = cycleShiftForPair(KL, 15)[1]
+        subkeys[6] = cycleShiftForPair(KA, 15)[0]
+        subkeys[7] = cycleShiftForPair(KA, 15)[1]
+        subkeys[8] = cycleShiftForPair(KA, 30)[0]
+        subkeys[9] = cycleShiftForPair(KA, 30)[1]
+        subkeys[10] = cycleShiftForPair(KL, 45)[0]
+        subkeys[11] = cycleShiftForPair(KL, 45)[1]
+        subkeys[12] = cycleShiftForPair(KA, 45)[0]
+        subkeys[13] = cycleShiftForPair(KL, 60)[1]
+        subkeys[14] = cycleShiftForPair(KA, 60)[0]
+        subkeys[15] = cycleShiftForPair(KA, 60)[1]
+        subkeys[16] = cycleShiftForPair(KL, 77)[0]
+        subkeys[17] = cycleShiftForPair(KL, 77)[1]
+        subkeys[18] = cycleShiftForPair(KL, 94)[0]
+        subkeys[19] = cycleShiftForPair(KL, 94)[1]
+        subkeys[20] = cycleShiftForPair(KA, 94)[0]
+        subkeys[21] = cycleShiftForPair(KA, 94)[1]
+        subkeys[22] = cycleShiftForPair(KL, 111)[0]
+        subkeys[23] = cycleShiftForPair(KL, 111)[1]
+        subkeys[24] = cycleShiftForPair(KA, 111)[0]
+        subkeys[25] = cycleShiftForPair(KA, 111)[1]
+
+        return subkeys
     }
 
-    fun generateSBOX4(sbox1: IntArray): IntArray {
-        val sboxSize = sbox1.size
-        val sbox4 = IntArray(sboxSize)
+    fun getSubKeys192_256Bit(KL_KR: ULongArray, KA_KB: ULongArray) : ULongArray{
+        val subkeys = ULongArray(34)
+        val KL = ulongArrayOf(KL_KR[0], KL_KR[1])
+        val KR = ulongArrayOf(KL_KR[2], KL_KR[3])
+        val KA = ulongArrayOf(KA_KB[0], KA_KB[1])
+        val KB = ulongArrayOf(KA_KB[2], KA_KB[3])
 
-        for (x in sbox1.indices) {
-            val shiftedX = circularLeftShift(x, 1, bitSize = 8) // Assuming 8-bit values
-            sbox4[x] = sbox1[shiftedX and 0xFF] // Ensure the index is within bounds
+        subkeys[0] = KL[0]
+        subkeys[1] = KL[1]
+        subkeys[2] = KB[0]
+        subkeys[3] = KB[1]
+        subkeys[4] = cycleShiftForPair(KR, 15)[0]
+        subkeys[5] = cycleShiftForPair(KR, 15)[1]
+        subkeys[6] = cycleShiftForPair(KA, 15)[0]
+        subkeys[7] = cycleShiftForPair(KA, 15)[1]
+        subkeys[8] = cycleShiftForPair(KR, 30)[0]
+        subkeys[9] = cycleShiftForPair(KR, 30)[1]
+        subkeys[10] = cycleShiftForPair(KB, 30)[0]
+        subkeys[11] = cycleShiftForPair(KB, 30)[1]
+        subkeys[12] = cycleShiftForPair(KL, 45)[0]
+        subkeys[13] = cycleShiftForPair(KL, 45)[1]
+        subkeys[14] = cycleShiftForPair(KA, 45)[0]
+        subkeys[15] = cycleShiftForPair(KA, 45)[1]
+        subkeys[16] = cycleShiftForPair(KL, 60)[0]
+        subkeys[17] = cycleShiftForPair(KL, 60)[1]
+        subkeys[18] = cycleShiftForPair(KR, 60)[0]
+        subkeys[19] = cycleShiftForPair(KR, 60)[1]
+        subkeys[20] = cycleShiftForPair(KB, 60)[0]
+        subkeys[21] = cycleShiftForPair(KB, 60)[1]
+        subkeys[22] = cycleShiftForPair(KL, 77)[0]
+        subkeys[23] = cycleShiftForPair(KL, 77)[1]
+        subkeys[24] = cycleShiftForPair(KA, 77)[0]
+        subkeys[25] = cycleShiftForPair(KA, 77)[1]
+        subkeys[26] = cycleShiftForPair(KR, 94)[0]
+        subkeys[27] = cycleShiftForPair(KR, 94)[1]
+        subkeys[28] = cycleShiftForPair(KA, 94)[0]
+        subkeys[29] = cycleShiftForPair(KA, 94)[1]
+        subkeys[30] = cycleShiftForPair(KL, 111)[0]
+        subkeys[31] = cycleShiftForPair(KL, 111)[1]
+        subkeys[32] = cycleShiftForPair(KB, 111)[0]
+        subkeys[33] = cycleShiftForPair(KB, 111)[1]
+
+        return subkeys
+    }
+
+
+    fun generateSubkeys(key: String): ULongArray {
+        val KL_KR = getKLKR(key)
+        val KA_KB = getKAKB(KL_KR)
+
+        return if (key.length * 8 <= 128) {
+            getSubkeys128(KL_KR, KA_KB)
+        } else {
+            getSubKeys192_256Bit(KL_KR,KA_KB)
         }
-
-        return sbox4
     }
 
 
@@ -90,9 +185,8 @@ class CamelliaCrypto {
             key[c] += byteKey[i].toULong() and 0xFFUL
         }
 
-        // Handle case where key length is between 16 and 24 bytes
         if (byteKey.size <= 24 && byteKey.size > 16) {
-            key[3] = key[2].inv() // Invert key[2] if size is between 17 and 24 bytes
+            key[3] = key[2].inv()
         }
 
         return key
@@ -121,7 +215,41 @@ class CamelliaCrypto {
         return KA_KB
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class)
+
+    fun FFuncSubkeys(data: ULong, subkey: ULong): ULong {
+        var x = data xor subkey
+        var result = 0UL
+        val t = ULongArray(8)
+        val listT = ULongArray(8)
+
+        t[0] = (x shr 56)
+        t[1] = ((x shr 48) and 0xFFUL)
+        t[2] = ((x shr 40) and 0xFFUL)
+        t[3] = ((x shr 32) and 0xFFUL)
+        t[4] = ((x shr 24) and 0xFFUL)
+        t[5] = ((x shr 16) and 0xFFUL)
+        t[6] = ((x shr 8) and 0xFFUL)
+        t[7] = ((x shr 0) and 0xFFUL)
+
+
+        listT[0]= SBOX1[t[0].toInt()].toULong()
+        listT[1]= SBOX4[t[1].toInt()].toULong()
+        listT[2]= SBOX3[t[2].toInt()].toULong()
+        listT[3]= SBOX2[t[3].toInt()].toULong()
+        listT[4]= SBOX4[t[4].toInt()].toULong()
+        listT[5]= SBOX3[t[5].toInt()].toULong()
+        listT[6]= SBOX2[t[6].toInt()].toULong()
+        listT[7]= SBOX1[t[7].toInt()].toULong()
+
+        for (i in 0..7) {
+            result = result shl 8
+            result += (listT[i].toInt() and 0xFF).toULong()
+        }
+
+        return result
+    }
+
+
     private fun FFunc(data: ULong, subkey: ULong): ULong {
         var x = data xor subkey
         var result = 0UL
@@ -168,114 +296,6 @@ class CamelliaCrypto {
         return result
     }
 
-
-    fun FFuncSubkeys(data: ULong, subkey: ULong): ULong {
-        var x = data xor subkey
-        var result = 0UL
-        val t = ULongArray(8)
-        val listT = ULongArray(8)
-
-        t[0] = (x shr 56)
-        t[1] = ((x shr 48) and 0xFFUL)
-        t[2] = ((x shr 40) and 0xFFUL)
-        t[3] = ((x shr 32) and 0xFFUL)
-        t[4] = ((x shr 24) and 0xFFUL)
-        t[5] = ((x shr 16) and 0xFFUL)
-        t[6] = ((x shr 8) and 0xFFUL)
-        t[7] = ((x shr 0) and 0xFFUL)
-
-//        t.forEach { t ->
-//            println(t.toInt())
-//        }
-
-        listT[0]= SBOX1[t[0].toInt()].toULong()
-        listT[1]= SBOX4[t[1].toInt()].toULong()
-        listT[2]= SBOX3[t[2].toInt()].toULong()
-        listT[3]= SBOX2[t[3].toInt()].toULong()
-        listT[4]= SBOX4[t[4].toInt()].toULong()
-        listT[5]= SBOX3[t[5].toInt()].toULong()
-        listT[6]= SBOX2[t[6].toInt()].toULong()
-        listT[7]= SBOX1[t[7].toInt()].toULong()
-
-//        println(" ")
-//        listT.forEach { t ->
-//            println(t.toInt())
-//        }
-
-        for (i in 0..7) {
-            result = result shl 8
-            result += (listT[i].toInt() and 0xFF).toULong()
-        }
-
-        return result
-    }
-
-    private fun getSubkeys128(KL_KR: ULongArray, KA_KB: ULongArray): ULongArray {
-        val subkeys = ULongArray(26)
-
-        // Split KL_KR and KA_KB into individual parts
-        val KL = ulongArrayOf(KL_KR[0], KL_KR[1])
-        val KA = ulongArrayOf(KA_KB[0], KA_KB[1])
-
-        // Assign the first four subkeys directly
-        subkeys[0] = KL[0]
-        subkeys[1] = KL[1]
-        subkeys[2] = KA[0]
-        subkeys[3] = KA[1]
-
-        // Perform cyclical shifts and assign the results to subkeys
-        subkeys[4] = cycleShiftForPair(KL, 15)[0]
-        subkeys[5] = cycleShiftForPair(KL, 15)[1]
-        subkeys[6] = cycleShiftForPair(KA, 15)[0]
-        subkeys[7] = cycleShiftForPair(KA, 15)[1]
-        subkeys[8] = cycleShiftForPair(KA, 30)[0]
-        subkeys[9] = cycleShiftForPair(KA, 30)[1]
-        subkeys[10] = cycleShiftForPair(KL, 45)[0]
-        subkeys[11] = cycleShiftForPair(KL, 45)[1]
-        subkeys[12] = cycleShiftForPair(KA, 45)[0]
-        subkeys[13] = cycleShiftForPair(KL, 60)[1]
-        subkeys[14] = cycleShiftForPair(KA, 60)[0]
-        subkeys[15] = cycleShiftForPair(KA, 60)[1]
-        subkeys[16] = cycleShiftForPair(KL, 77)[0]
-        subkeys[17] = cycleShiftForPair(KL, 77)[1]
-        subkeys[18] = cycleShiftForPair(KL, 94)[0]
-        subkeys[19] = cycleShiftForPair(KL, 94)[1]
-        subkeys[20] = cycleShiftForPair(KA, 94)[0]
-        subkeys[21] = cycleShiftForPair(KA, 94)[1]
-        subkeys[22] = cycleShiftForPair(KL, 111)[0]
-        subkeys[23] = cycleShiftForPair(KL, 111)[1]
-        subkeys[24] = cycleShiftForPair(KA, 111)[0]
-        subkeys[25] = cycleShiftForPair(KA, 111)[1]
-
-        return subkeys
-    }
-
-
-    fun generateSubkeys(key: String): ULongArray {
-        val KL_KR = getKLKR(key)
-        val KA_KB = getKAKB(KL_KR)
-
-        return if (key.length * 8 <= 128) {
-            getSubkeys128(KL_KR, KA_KB)
-        } else {
-            throw UnsupportedOperationException("Key size not supported: ${key.length * 8}")
-        }
-    }
-
-    private fun FLINVFunc(data: ULong, subkey: ULong): ULong {
-        var y1 = (data shr 32).toInt()
-        var y2 = (data and 0xFFFFFFFFUL).toInt()
-        val k1 = (subkey shr 32).toInt()
-        val k2 = (subkey and 0xFFFFFFFFUL).toInt()
-
-        y1 = y1 xor (y2 or k2)
-        y2 = y2 xor cycleShift(y1 and k1, 1)
-
-        val res = ((y1.toULong() shl 32) or (y2.toULong() and 0xFFFFFFFFUL))
-
-        return res
-    }
-
     private fun FLFunc(data: ULong, subkey: ULong): ULong {
         var x1 = (data shr 32).toInt()
         var x2 = (data and 0xFFFFFFFFUL).toInt()
@@ -290,26 +310,21 @@ class CamelliaCrypto {
         return res
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class)
-    fun transformKeys128(subkeys: ULongArray): ULongArray {
-        val newSubkeys = ULongArray(subkeys.size)
+    private fun FLINVFunc(data: ULong, subkey: ULong): ULong {
+        var y1 = (data shr  32).toInt()
+        var y2 = (data and 0xFFFFFFFFUL).toInt()
+        val k1 = (subkey shr 32).toInt()
+        val k2 = (subkey and 0xFFFFFFFFUL).toInt()
 
-        // Swap elements at specific positions
-        newSubkeys[0] = subkeys[25]
-        newSubkeys[1] = subkeys[24]
-        newSubkeys[24] = subkeys[0]
-        newSubkeys[25] = subkeys[1]
+        y1 = y1 xor (y2 or k2)
+        y2 = y2 xor cycleShift(y1 and k1, 1)
 
-        // Swap the rest of the elements
-        for (i in 2..12) {
-            newSubkeys[i] = subkeys[25 - i]
-            newSubkeys[25 - i] = subkeys[i]
-        }
+        val res = ((y1.toULong() shl 32) or (y2.toULong() and 0xFFFFFFFFUL))
 
-        return newSubkeys
+        return res
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class)
+
     fun crypt(D1: ULong, D2: ULong, subkeys: ULongArray) : ULongArray {
         val size = subkeys.size
 
@@ -318,13 +333,6 @@ class CamelliaCrypto {
 
         val m1 = subkeys[0] xor d1
         val m2 = subkeys[1] xor d2
-
-        println("L : ${m1.toString(16)}")
-        println("R : ${m2.toString(16)}")
-
-        subkeys.forEachIndexed { idx, t ->
-            println("Subkey ${idx}: ${t.toString(16)}")
-        }
 
         when(size <= 26){
             true -> {
@@ -353,27 +361,50 @@ class CamelliaCrypto {
                 d2 = d2 xor subkeys[24]
                 d1 = d1 xor subkeys[25]
 
-                println("L : ${d1.toString(16)}")
-                println("R : ${d2.toString(16)}")
-                println(" ")
-
             }
             false -> {
-
+                d2 = FFunc(m1, subkeys[2]) xor m2
+                d1 = FFunc(d2, subkeys[3]) xor m1
+                d2 = FFunc(d1, subkeys[4]) xor d2
+                d1 = FFunc(d2, subkeys[5]) xor d1
+                d2 = FFunc(d1, subkeys[6]) xor d2
+                d1 = FFunc(d2, subkeys[7]) xor d1
+                d1 = FLFunc(d1, subkeys[8])
+                d2 = FLINVFunc(d2, subkeys[9])
+                d2 = FFunc(d1, subkeys[10]) xor d2
+                d1 = FFunc(d2, subkeys[11]) xor d1
+                d2 = FFunc(d1, subkeys[12]) xor d2
+                d1 = FFunc(d2, subkeys[13]) xor d1
+                d2 = FFunc(d1, subkeys[14]) xor d2
+                d1 = FFunc(d2, subkeys[15]) xor d1
+                d1 = FLFunc(d1, subkeys[16])
+                d2 = FLINVFunc(d2, subkeys[17])
+                d2 = FFunc(d1, subkeys[18]) xor d2
+                d1 = FFunc(d2, subkeys[19]) xor d1
+                d2 = FFunc(d1, subkeys[20]) xor d2
+                d1 = FFunc(d2, subkeys[21]) xor d1
+                d2 = FFunc(d1, subkeys[22]) xor d2
+                d1 = FFunc(d2, subkeys[23]) xor d1
+                d1 = FLFunc(d1, subkeys[24])
+                d2 = FLINVFunc(d2, subkeys[25])
+                d2 = FFunc(d1, subkeys[26]) xor d2
+                d1 = FFunc(d2, subkeys[27]) xor d1
+                d2 = FFunc(d1, subkeys[28]) xor d2
+                d1 = FFunc(d2, subkeys[29]) xor d1
+                d2 = FFunc(d1, subkeys[30]) xor d2
+                d1 = FFunc(d2, subkeys[31]) xor d1
+                d2 = d2 xor subkeys[32]
+                d1 = d1 xor subkeys[33]
             }
         }
 
         return ulongArrayOf(d2, d1)
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class)
-    fun cryptRev(D2: ULong, D1: ULong, subkeys: ULongArray) : ULongArray {
-        val revKeys = transformKeys128(subkeys)
-        val size = revKeys.size
 
-        revKeys.forEachIndexed { idx, t ->
-            println("Subkey ${idx}: ${t.toString(16)}")
-        }
+    fun cryptRev(D2: ULong, D1: ULong, subkeys: ULongArray) : ULongArray {
+        val revKeys = if (subkeys.size <= 26) transformKeys128(subkeys) else transformKeys192_256(subkeys)
+        val size = revKeys.size
 
         var d1 = D2
         var d2 = D1
@@ -408,11 +439,41 @@ class CamelliaCrypto {
                 d2 = d2 xor revKeys[24]
                 d1 = d1 xor revKeys[25]
 
-                println("R : ${d1.toString(16)}")
-                println("L : ${d2.toString(16)}")
-
             }
             false -> {
+
+                d2 = FFunc(d1, revKeys[2]) xor d2
+                d1 = FFunc(d2, revKeys[3]) xor d1
+                d2 = FFunc(d1, revKeys[4]) xor d2
+                d1 = FFunc(d2, revKeys[5]) xor d1
+                d2 = FFunc(d1, revKeys[6]) xor d2
+                d1 = FFunc(d2, revKeys[7]) xor d1
+                d1 = FLFunc(d1, revKeys[8])
+                d2 = FLINVFunc(d2, revKeys[9])
+                d2 = FFunc(d1, revKeys[10]) xor d2
+                d1 = FFunc(d2, revKeys[11]) xor d1
+                d2 = FFunc(d1, revKeys[12]) xor d2
+                d1 = FFunc(d2, revKeys[13]) xor d1
+                d2 = FFunc(d1, revKeys[14]) xor d2
+                d1 = FFunc(d2, revKeys[15]) xor d1
+                d1 = FLFunc(d1, revKeys[16])
+                d2 = FLINVFunc(d2, revKeys[17])
+                d2 = FFunc(d1, revKeys[18]) xor d2
+                d1 = FFunc(d2, revKeys[19]) xor d1
+                d2 = FFunc(d1, revKeys[20]) xor d2
+                d1 = FFunc(d2, revKeys[21]) xor d1
+                d2 = FFunc(d1, revKeys[22]) xor d2
+                d1 = FFunc(d2, revKeys[23]) xor d1
+                d1 = FLFunc(d1, revKeys[24])
+                d2 = FLINVFunc(d2, revKeys[25])
+                d2 = FFunc(d1, revKeys[26]) xor d2
+                d1 = FFunc(d2, revKeys[27]) xor d1
+                d2 = FFunc(d1, revKeys[28]) xor d2
+                d1 = FFunc(d2, revKeys[29]) xor d1
+                d2 = FFunc(d1, revKeys[30]) xor d2
+                d1 = FFunc(d2, revKeys[31]) xor d1
+                d2 = d2 xor revKeys[32]
+                d1 = d1 xor revKeys[33]
 
             }
         }
@@ -420,29 +481,115 @@ class CamelliaCrypto {
         return ulongArrayOf(d2, d1)
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class)
+
+    fun transformKeys128(subkeys: ULongArray): ULongArray {
+        val newSubkeys = ULongArray(subkeys.size)
+
+        newSubkeys[0] = subkeys[25]
+        newSubkeys[1] = subkeys[24]
+        newSubkeys[24] = subkeys[0]
+        newSubkeys[25] = subkeys[1]
+
+        for (i in 2..12) {
+            newSubkeys[i] = subkeys[25 - i]
+            newSubkeys[25 - i] = subkeys[i]
+        }
+
+        return newSubkeys
+    }
+
+    fun transformKeys192_256(subkeys: ULongArray): ULongArray {
+        val newSubkeys = ULongArray(subkeys.size)
+        newSubkeys[0] = subkeys[33]
+        newSubkeys[1] = subkeys[32]
+        newSubkeys[32] = subkeys[0]
+        newSubkeys[33] = subkeys[1]
+        for (i in 2..16) {
+            newSubkeys[i] = subkeys[33 - i]
+            newSubkeys[33 - i] = subkeys[i]
+        }
+        return newSubkeys
+    }
+
     fun encrypt(data: String, key : String) : String {
         val subkeys = generateSubkeys(key)
-        val unifiedHex = data.map {
-            it.code.toString(16).uppercase() // Convert ASCII to hex and make uppercase
-        }.joinToString("") // Join all hex values into a single string
-        val chunkedHex = unifiedHex.chunked(16).map { it.toULong(16) }.toULongArray()
+        var res: ULongArray
 
-        val res = crypt(chunkedHex[0], chunkedHex[1],subkeys)
+        val cryptVal = stringToULongChunks(data)
+        val result = mutableListOf<ULongArray>()
 
-        return(longToAsciiString(res[0],res[1]))
+        cryptVal.forEach { (left,right) ->
+            res = crypt(left,right,subkeys)
+            result.add(res)
+        }
+
+        val afterEnc = transformToPairList(result)
+        val listEnc = mutableListOf<String>()
+        afterEnc.forEach { (r,l) ->
+            listEnc.add(longToAsciiString(r,l))
+        }
+
+        val enc = listEnc.joinToString("")
+
+        return enc
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class)
+
     fun decrypt(data: String, key : String) : String {
         val subkeys = generateSubkeys(key)
+        var res: ULongArray
+        val stringToLong = stringToULongChunks(data)
+        val result = mutableListOf<ULongArray>()
 
-        val stringToLong = asciiStringToLongs(data)
+        stringToLong.forEach { (l,r) ->
+            res = cryptRev(l,r,subkeys)
+            result.add(res)
+        }
+        val afterDec = transformToPairList(result)
+        val listDec = mutableListOf<String>()
 
-        val res = cryptRev(stringToLong[0], stringToLong[1],subkeys)
+        afterDec.forEach { (l, r) ->
+            listDec.add(longToAsciiString(l,r))
+        }
+        val dec = listDec.joinToString("")
 
-        return (longToAsciiString(res[0],res[1]))
+        return dec
     }
+
+    private fun transformToPairList(data: List<ULongArray>): List<Pair<ULong, ULong>> {
+        return data.mapNotNull { array ->
+            if (array.size == 2) {
+                Pair(array[0], array[1])
+            } else {
+                null // Ignore invalid arrays
+            }
+        }
+    }
+
+    private fun stringToULongChunks(data: String): List<Pair<ULong, ULong>> {
+        require(data.isNotEmpty()) { "Input string cannot be empty." }
+
+        val chunks = data.chunked(16)
+
+        fun processChunk(chunk: String): Pair<ULong, ULong> {
+            val paddedChunk = chunk.padEnd(16)
+
+            val left = paddedChunk.substring(0, 8)
+            val right = paddedChunk.substring(8, 16)
+
+            fun toULong(subChunk: String): ULong {
+                return subChunk.fold(0UL) { acc, char ->
+                    (acc shl 8) or (char.code.toULong() and 0xFFUL)
+                }
+            }
+
+            return Pair(toULong(left), toULong(right))
+        }
+
+        return chunks.map { processChunk(it) }
+    }
+
+
 
     fun longToByte(D1: ULong, D2: ULong): Array<ByteArray> {
         val bytes = Array(2) { ByteArray(8) }
@@ -465,28 +612,9 @@ class CamelliaCrypto {
 
     fun longToAsciiString(D1: ULong, D2: ULong): String {
         val bytes = longToByte(D1, D2)
-        // Convert both byte arrays to ASCII strings
+
         val asciiString1 = byteArrayToAsciiString(bytes[0])
         val asciiString2 = byteArrayToAsciiString(bytes[1])
         return asciiString1 + asciiString2
-    }
-
-    @OptIn(ExperimentalUnsignedTypes::class)
-    fun asciiStringToLongs(asciiString: String): ULongArray {
-        require(asciiString.length == 16) { "The ASCII string must be exactly 16 characters long." }
-
-        val bytes = asciiString.map { it.code.toByte() }
-        val d1 = bytesToLong(bytes.subList(0, 8))
-        val d2 = bytesToLong(bytes.subList(8, 16))
-
-        return ulongArrayOf(d1, d2)
-    }
-
-    fun bytesToLong(byteList: List<Byte>): ULong {
-        var result = 0UL
-        for (byte in byteList) {
-            result = (result shl 8) or (byte.toULong() and 0xFFUL)
-        }
-        return result
     }
 }
