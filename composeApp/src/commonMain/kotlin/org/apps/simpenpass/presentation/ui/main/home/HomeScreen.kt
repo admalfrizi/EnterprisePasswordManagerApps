@@ -71,14 +71,14 @@ fun HomeScreen(
             homeViewModel.getUserDataStats(homeState.id!!)
         }
     )
-    val data = "Neti Rusri Yanti Abdul Mufakir"
-    val key = "Skripsi2018-NETI"
+    val data = "Adam Alfarizi Ismail"
+    val key = "An13sPr@b0w0G@nj@r"
     val enc = CamelliaCrypto().encrypt(data,key)
     val dec = CamelliaCrypto().decrypt(enc,key)
 
     LaunchedEffect(isConnected) {
         Napier.v("Encrypt : $enc")
-        Napier.v("Decrypt : $dec")
+        Napier.v("Decrypt : ${dec.trimEnd()}")
         if(isConnected){
             homeViewModel.getData()
         }
@@ -178,7 +178,7 @@ fun HomeContentView(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-//                MostUsedSection(sheetState)
+//                  MostUsedSection(sheetState)
                     GroupDataSection()
                     Spacer(
                         modifier = Modifier.height(16.dp)
