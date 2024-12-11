@@ -54,6 +54,7 @@ import resources.menu_ic
 fun HomeScreen(
     sheetState: ModalBottomSheetState,
     dataPass: MutableState<DataPass?>,
+    isDeleted: MutableState<Boolean>,
     homeViewModel: HomeViewModel = koinViewModel(),
     passDataId: MutableState<(DataPass) -> Unit>,
     navigateToFormEdit: (String) -> Unit,
@@ -70,7 +71,6 @@ fun HomeScreen(
         }
     )
 
-
     LaunchedEffect(isConnected) {
         if(isConnected){
             homeViewModel.getData()
@@ -86,7 +86,12 @@ fun HomeScreen(
     passDataId.value = { passData ->
         navigateToFormEdit(passData.id.toString())
     }
-    
+
+    if(isDeleted.value){
+        homeViewModel.getData()
+        isDeleted.value = false
+    }
+
     Scaffold(
         content = {
             Box(

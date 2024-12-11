@@ -124,6 +124,38 @@ class HomeViewModel(
         }
     }
 
+    fun deletePassData(passId: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            passRepo.deleteUserPassData(passId).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDeleted = true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         _homeState.update {
@@ -141,6 +173,7 @@ data class HomeState(
     val name: String? = null,
     val id: Int? = null,
     val passDataList : List<DataPass> = emptyList(),
+    var isDeleted: Boolean = false,
     val totalGroupJoined: Int? = null,
     val totalDataPass: Int? = null,
     val error: String? = null,

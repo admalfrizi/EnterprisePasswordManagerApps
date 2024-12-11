@@ -54,6 +54,7 @@ fun RootNavGraph(
     paddingValues: PaddingValues? = null,
     sheetState: ModalBottomSheetState,
     data: MutableState<DataPass?>,
+    isDeleted: MutableState<Boolean>,
     navigateToFormWithArgs : MutableState<(DataPass)->Unit>,
     navigateToLogout: () -> Unit,
     navigateToOtpFirst: (String) -> Unit,
@@ -86,6 +87,7 @@ fun RootNavGraph(
             HomeScreen(
                 sheetState,
                 data,
+                isDeleted,
                 passDataId = navigateToFormWithArgs,
                 navigateToFormEdit = {
                     navigateToEditPass(it)

@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.ui.group_pass.ListOptionHolder
 import org.apps.simpenpass.presentation.ui.group_pass.MethodSelection
+import org.apps.simpenpass.presentation.ui.main.home.HomeViewModel
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
@@ -57,24 +58,30 @@ fun RootBottomSheetContent(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     data: MutableState<DataPass?>,
+    homeViewModel: HomeViewModel,
     navigateToToEditForm: MutableState<(DataPass)->Unit>,
     navigateToAddGroup : () -> Unit,
     navigateToJoinGroup : () -> Unit
 ) {
-    if(checkNavString in Screen.Home.route){
-        DetailPassData(
-            scope,
-            sheetState,
-            data,
-            navigateToToEditForm = navigateToToEditForm,
-        )
-    } else if(checkNavString in Screen.Group.route){
-        AddGroupMethod(
-            scope,
-            sheetState,
-            navigateToAddGroup = navigateToAddGroup,
-            navigateToJoinGroup = navigateToJoinGroup
-        )
+
+    when(checkNavString){
+        Screen.Home.route -> {
+            DetailPassData(
+                scope,
+                sheetState,
+                data,
+                homeViewModel,
+                navigateToToEditForm = navigateToToEditForm,
+            )
+        }
+        Screen.Group.route -> {
+            AddGroupMethod(
+                scope,
+                sheetState,
+                navigateToAddGroup = navigateToAddGroup,
+                navigateToJoinGroup = navigateToJoinGroup
+            )
+        }
     }
 }
 
@@ -184,9 +191,9 @@ fun DetailPassData(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     data: MutableState<DataPass?>,
+    homeViewModel: HomeViewModel,
     navigateToToEditForm : MutableState<(DataPass)->Unit>
 ) {
-
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
@@ -267,6 +274,11 @@ fun DetailPassData(
         OptionMenuHolder(
             Res.drawable.delete_pass_data,
             "Hapus Data Password"
-        )
+        ) {
+            homeViewModel.deletePassData(data.value?.id!!)
+            scope.launch {
+                sheetState.hide()
+            }
+        }
     }
 }

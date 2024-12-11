@@ -91,7 +91,8 @@ fun FormScreen(
     val data = "Ilham Subki Wijaya"
     val key = "An13sPr@b0w0G@nj@rG1br@n1m1n"
     var encData by remember { mutableStateOf("") }
-//    val dec = CamelliaCrypto().decrypt(enc,key)
+    var dec by remember { mutableStateOf("") }
+
 
     var nmAccount by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
@@ -127,19 +128,7 @@ fun FormScreen(
         Napier.v("Encrypt : ${encData.replace(" ","")}")
     }
 
-    val formData = PassDataRequest(
-        accountName = nmAccount,
-        username = userName,
-        desc = desc,
-        email = email,
-        jenisData = jnsPass,
-        password = encData,
-        url = urlPass,
-    )
-
     bottomEdgeColor.value = secondaryColor
-
-
 
     if(sheetState.isVisible){
         bottomEdgeColor.value = Color.White
@@ -179,8 +168,9 @@ fun FormScreen(
         desc = formState.passData?.desc!!
         email = formState.passData?.email!!
         jnsPass = formState.passData?.jenisData ?: ""
-        passData = formState.passData?.password!!
         urlPass = formState.passData?.url ?: ""
+
+        dec = CamelliaCrypto().decrypt(formState.passData?.password!!,key)
     }
 
 
@@ -212,6 +202,20 @@ fun FormScreen(
                 bottomBar = {
                     BtnForm(
                         {
+                            if(dec.isNotEmpty()){
+                                encData = CamelliaCrypto().encrypt(dec,key)
+                            }
+
+                            val formData = PassDataRequest(
+                                accountName = nmAccount,
+                                username = userName,
+                                desc = desc,
+                                email = email,
+                                jenisData = jnsPass,
+                                password = encData,
+                                url = urlPass,
+                            )
+
                             if(passId.isNotEmpty() && passId != "{passId}"){
                                 formViewModel.editUserPassData(
                                     passId = passId.toInt(),
@@ -239,6 +243,8 @@ fun FormScreen(
                                 jnsPass = ""
                                 passData = ""
                                 urlPass = ""
+                                encData = ""
+                                dec = ""
                             }
                             formViewModel.resetValue()
                             navController.navigateUp()
@@ -376,16 +382,16 @@ fun FormScreen(
                                     )
                                     FormTextField(
                                         modifier = Modifier.fillMaxWidth(),
-                                        value = passData,
+                                        value = if(dec.isNotEmpty()) dec else passData,
                                         isPassword = true,
                                         labelHints = "Isi Data Password",
                                         leadingIcon = null,
                                         onValueChange = {
                                             if (formState.passData != null) {
-                                                formState.passData?.password = it
+                                                dec = it
+                                            } else {
+                                                passData = it
                                             }
-
-                                            passData = it
                                         }
                                     )
                                     Spacer(

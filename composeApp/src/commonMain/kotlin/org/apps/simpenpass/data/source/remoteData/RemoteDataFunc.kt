@@ -56,6 +56,7 @@ interface PassDataFunc {
     suspend fun listContentData(token: String, passId: Int): BaseResponse<List<AddContentPassData>>
     suspend fun updateAddContentPassData(token: String, passId: Int,updateAddContentPass: List<FormAddContentPassData>) : BaseResponse<List<AddContentPassData>>
     suspend fun deleteAddContentPassData(token: String, passId: Int,deleteAddContentPass: List<FormAddContentPassData>) : BaseResponse<List<AddContentPassData>>
+    suspend fun deleteUserPassData(token: String,passId: Int): BaseResponse<PassResponseData>
 }
 
 interface GroupPassDataFunc {

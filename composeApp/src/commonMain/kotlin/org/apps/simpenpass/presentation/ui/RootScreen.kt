@@ -27,10 +27,12 @@ import org.apps.simpenpass.presentation.components.rootComponents.RootBottomShee
 import org.apps.simpenpass.presentation.components.rootComponents.TopBarNavigationMenu
 import org.apps.simpenpass.presentation.ui.main.group.GroupViewModel
 import org.apps.simpenpass.presentation.ui.main.group.JoinGroupDialog
+import org.apps.simpenpass.presentation.ui.main.home.HomeViewModel
 import org.apps.simpenpass.screen.BottomNavMenuData
 import org.apps.simpenpass.screen.RootNavGraph
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.primaryColor
+import org.apps.simpenpass.utils.setToast
 import org.koin.compose.koinInject
 
 @Composable
@@ -43,7 +45,8 @@ fun RootScreen(
     navigateToListUserPass : () -> Unit,
     navigateToEditPass: (String) -> Unit,
     navigateToFormPass: () -> Unit,
-    groupViewModel: GroupViewModel = koinInject()
+    groupViewModel: GroupViewModel = koinInject(),
+    homeViewModel: HomeViewModel = koinInject()
 ) {
     val navController = rememberNavController()
     val routeNav = listOf(
@@ -58,6 +61,7 @@ fun RootScreen(
     val isMainScreen = checkScreenNav in routeNav.map { it.route }
     val onClick = remember { mutableStateOf<(DataPass) -> Unit>({}) }
     var isJoinDialogPopUp by remember { mutableStateOf(false) }
+    var isDeleted = remember { mutableStateOf(false) }
     val currentScreen = rememberSaveable { mutableStateOf("") }
 
     if(currentScreen.value != navController.currentDestination?.route){
@@ -79,6 +83,12 @@ fun RootScreen(
         )
     }
 
+    if(homeViewModel.homeState.value.isDeleted){
+        isDeleted.value = true
+        setToast("Data anda Telah Dihapus")
+        homeViewModel.homeState.value.isDeleted = false
+    }
+
     if(!isJoinDialogPopUp){
         groupViewModel.clearState()
     }
@@ -95,6 +105,7 @@ fun RootScreen(
                     scope,
                     sheetState,
                     dataDetail,
+                    homeViewModel,
                     onClick,
                     navigateToAddGroup = {
                         navigateToAddGroup()
@@ -128,6 +139,7 @@ fun RootScreen(
                 if(!isMainScreen) null else paddingValues,
                 sheetState,
                 dataDetail,
+                isDeleted,
                 navigateToFormWithArgs = onClick,
                 navigateToLogout,
                 navigateToOtpFirst = {

@@ -4,6 +4,7 @@ import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
 import org.apps.simpenpass.models.request.FormAddContentPassData
@@ -162,5 +163,24 @@ class PassRepository(
         }
     }.catch { error ->
         emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }
+
+    fun deleteUserPassData(
+        passId: Int
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.deleteUserPassData(token, passId)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }.onStart {
+        emit(NetworkResult.Loading())
     }
 }

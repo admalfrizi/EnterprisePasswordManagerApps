@@ -2,6 +2,7 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -175,6 +176,25 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
                 setBody(deleteAddContentPass)
             }
             return response.body<BaseResponse<List<AddContentPassData>>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun deleteUserPassData(
+        token: String,
+        passId: Int
+    ): BaseResponse<PassResponseData> {
+        try {
+            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "userPassData"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("id", passId)
+            }
+            return response.body<BaseResponse<PassResponseData>>()
 
         } catch (e: Exception){
             throw Exception(e.message)
