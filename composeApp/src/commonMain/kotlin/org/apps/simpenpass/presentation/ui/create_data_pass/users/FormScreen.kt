@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.FormAddContentPassData
@@ -70,6 +71,7 @@ import org.apps.simpenpass.presentation.components.formComponents.HeaderContaine
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
@@ -86,6 +88,10 @@ fun FormScreen(
 ) {
     val isDismiss = remember { mutableStateOf(false) }
     val formState by formViewModel.formState.collectAsState()
+    val data = "Ilham Subki Wijaya"
+    val key = "An13sPr@b0w0G@nj@rG1br@n1m1n"
+    var encData by remember { mutableStateOf("") }
+//    val dec = CamelliaCrypto().decrypt(enc,key)
 
     var nmAccount by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
@@ -115,17 +121,25 @@ fun FormScreen(
         mutableStateListOf<InsertAddContentDataPass>()
     }
 
+    if(passData.isNotEmpty() && passData.length >= 4){
+        val enc = CamelliaCrypto().encrypt(passData,key)
+        encData = enc
+        Napier.v("Encrypt : ${encData.replace(" ","")}")
+    }
+
     val formData = PassDataRequest(
         accountName = nmAccount,
         username = userName,
         desc = desc,
         email = email,
         jenisData = jnsPass,
-        password = passData,
+        password = encData,
         url = urlPass,
     )
 
     bottomEdgeColor.value = secondaryColor
+
+
 
     if(sheetState.isVisible){
         bottomEdgeColor.value = Color.White
@@ -168,6 +182,9 @@ fun FormScreen(
         passData = formState.passData?.password!!
         urlPass = formState.passData?.url ?: ""
     }
+
+
+//    Napier.v("Decrypt : $dec")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),

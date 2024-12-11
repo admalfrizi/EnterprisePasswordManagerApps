@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.ConnectionWarning
@@ -45,7 +44,6 @@ import org.apps.simpenpass.presentation.components.homeComponents.HeaderContaine
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
 import org.apps.simpenpass.presentation.components.homeComponents.UserPassDataSection
 import org.apps.simpenpass.style.secondaryColor
-import org.apps.simpenpass.utils.CamelliaCrypto
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
@@ -71,14 +69,9 @@ fun HomeScreen(
             homeViewModel.getUserDataStats(homeState.id!!)
         }
     )
-    val data = "Adam Alfarizi Ismail"
-    val key = "An13sPr@b0w0G@nj@r"
-    val enc = CamelliaCrypto().encrypt(data,key)
-    val dec = CamelliaCrypto().decrypt(enc,key)
+
 
     LaunchedEffect(isConnected) {
-        Napier.v("Encrypt : $enc")
-        Napier.v("Decrypt : $dec")
         if(isConnected){
             homeViewModel.getData()
         }

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.copyText
 import org.apps.simpenpass.utils.maskString
 import org.jetbrains.compose.resources.DrawableResource
@@ -102,9 +103,12 @@ fun DataInfoHolder(
 }
 
 fun checkData(data: String, isPassData: Boolean, showPassword: Boolean): String {
+    val key = "An13sPr@b0w0G@nj@rG1br@n1m1n"
+    val crypto = CamelliaCrypto()
+
     return if(isPassData){
         if(showPassword){
-            data
+            crypto.decrypt(data,key)
         }
         else {
             maskString(data)

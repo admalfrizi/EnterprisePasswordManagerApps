@@ -237,7 +237,10 @@ fun DetailPassData(
         DataInfoHolder(
             {
                 setToast("Data Password Telah Disalin")
-            },Res.drawable.pass_ic, data.value?.password ?: "" , isPassData = true
+            },
+            Res.drawable.pass_ic,
+            data.value?.password ?: "",
+            isPassData = true
         )
         Spacer(
             modifier = Modifier.height(16.dp)
