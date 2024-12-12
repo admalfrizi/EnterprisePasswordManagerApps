@@ -37,7 +37,8 @@ fun DataInfoHolder(
     warnCopy: () -> Unit,
     icon: DrawableResource,
     title: String,
-    isPassData : Boolean = false
+    isPassData : Boolean = false,
+    isEncrypted: Boolean = false,
 ) {
     var showPassword by remember { mutableStateOf(value = false) }
 
@@ -57,7 +58,7 @@ fun DataInfoHolder(
                 modifier = Modifier.width(19.dp)
             )
             Text(
-                checkData(title, isPassData, showPassword),
+                checkData(title, isPassData, showPassword,isEncrypted),
                 style = MaterialTheme.typography.body2,
                 color = secondaryColor,
                 modifier = Modifier.weight(1f),
@@ -102,13 +103,17 @@ fun DataInfoHolder(
     }
 }
 
-fun checkData(data: String, isPassData: Boolean, showPassword: Boolean): String {
+fun checkData(data: String, isPassData: Boolean, showPassword: Boolean, isEncrypted: Boolean): String {
     val key = "An13sPr@b0w0G@nj@rG1br@n1m1n"
     val crypto = CamelliaCrypto()
 
     return if(isPassData){
         if(showPassword){
-            crypto.decrypt(data,key)
+            if(isEncrypted){
+                crypto.decrypt(data,key)
+            } else {
+                data
+            }
         }
         else {
             maskString(data)

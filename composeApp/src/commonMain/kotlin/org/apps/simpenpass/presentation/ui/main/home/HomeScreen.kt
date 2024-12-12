@@ -229,7 +229,8 @@ fun UserDataPassHolder(dataPass: DataPass, sheetState: ModalBottomSheetState, da
                             jenisData = dataPass.jenisData,
                             password = dataPass.password,
                             url = dataPass.url,
-                            username = dataPass.username
+                            username = dataPass.username,
+                            isEncrypted = dataPass.isEncrypted
                         )
                         sheetState.show()
                     }

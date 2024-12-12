@@ -14,6 +14,8 @@ data class PassResponseData(
     val id: Int?,
     @SerialName("jenis_data")
     var jenisData: String?,
+    @SerialName("is_encrypted")
+    var isEncrypted: Boolean?,
     @SerialName("password")
     var password: String?,
     @SerialName("url")

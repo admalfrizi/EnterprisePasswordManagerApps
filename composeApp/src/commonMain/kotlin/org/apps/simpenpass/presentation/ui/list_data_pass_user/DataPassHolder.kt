@@ -46,7 +46,8 @@ fun DataPassHolder(
                 password = item.password,
                 url = item.url,
                 username = item.username,
-                addContentPass = item.addContentPass
+                addContentPass = item.addContentPass,
+                isEncrypted = item.isEncrypted
             )
 
             sheetState.show()

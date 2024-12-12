@@ -9,6 +9,8 @@ data class PassDataRequest(
     var accountName: String?,
     @SerialName("desc")
     var desc: String?,
+    @SerialName("is_encrypted")
+    var isEncrypted: Boolean?,
     @SerialName("email")
     var email: String?,
     @SerialName("jenis_data")

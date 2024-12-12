@@ -34,6 +34,8 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -101,6 +103,7 @@ fun FormScreen(
     var desc by remember { mutableStateOf("") }
 
     var isInsertData = remember { mutableStateOf(false) }
+    var isEncryptData by remember { mutableStateOf(false) }
     val addContentId = remember { mutableStateOf(0) }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
@@ -120,7 +123,7 @@ fun FormScreen(
         mutableStateListOf<InsertAddContentDataPass>()
     }
 
-    if(passData.isNotEmpty() && passData.length >= 4){
+    if(isEncryptData && passData.isNotEmpty() && passData.length >= 4){
         val enc = CamelliaCrypto().encrypt(passData,key)
         encData = enc
         Napier.v("Encrypt : ${encData.replace(" ","")}")
@@ -167,12 +170,14 @@ fun FormScreen(
         email = formState.passData?.email!!
         jnsPass = formState.passData?.jenisData ?: ""
         urlPass = formState.passData?.url ?: ""
+        isEncryptData = formState.passData?.isEncrypted!!
 
-        dec = CamelliaCrypto().decrypt(formState.passData?.password!!,key)
+        if(isEncryptData){
+            dec = CamelliaCrypto().decrypt(formState.passData?.password!!,key)
+        } else {
+            passData = if(dec.isEmpty()) formState.passData?.password!! else dec
+        }
     }
-
-
-//    Napier.v("Decrypt : $dec")
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -210,27 +215,21 @@ fun FormScreen(
                                 desc = desc,
                                 email = email,
                                 jenisData = jnsPass,
-                                password = encData,
+                                password = if(isEncryptData) encData else passData,
                                 url = urlPass,
+                                isEncrypted = isEncryptData
                             )
 
-                            if(passId.isNotEmpty() && passId != "{passId}"){
-                                formViewModel.editUserPassData(
-                                    passId = passId.toInt(),
-                                    formData,
-                                    insertAddContentDataPass,
-                                    selectedDelete,
-                                    updateListItemAddContent
-                                )
-                            } else {
-                                validatorData(
-                                    nmAccount,
-                                    insertAddContentDataPass,
-                                    passData,
-                                    formViewModel,
-                                    formData
-                                )
-                            }
+                            updateOrCreateDataPass(
+                                passId,
+                                nmAccount,
+                                passData,
+                                formViewModel,
+                                formData,
+                                insertAddContentDataPass,
+                                selectedDelete,
+                                updateListItemAddContent
+                            )
                         },
                         {
                             if(formState.passData != null){
@@ -270,6 +269,36 @@ fun FormScreen(
                                 Column(
                                     modifier = Modifier.padding(horizontal = 16.dp)
                                 ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ){
+                                        Text(
+                                            text = "Enkripsi Data",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = secondaryColor
+                                            ),
+                                        )
+                                        Switch(
+                                            checked = isEncryptData,
+                                            onCheckedChange = {
+                                                if(formState.passData != null){
+                                                    formState.passData?.isEncrypted = it
+                                                }
+
+                                                isEncryptData = it
+                                            },
+                                            colors = SwitchDefaults.colors(
+                                                checkedThumbColor = secondaryColor,
+                                                uncheckedThumbColor = Color.LightGray
+                                            )
+                                        )
+                                    }
+
+                                    Spacer(
+                                        modifier = Modifier.height(16.dp)
+                                    )
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
                                         text = "Nama Akun",
@@ -494,6 +523,38 @@ fun FormScreen(
             )
         }
     )
+}
+
+fun updateOrCreateDataPass(
+    passId : String,
+    nmAccount: String,
+    passData: String,
+    formViewModel: FormViewModel,
+    formData: PassDataRequest,
+    insertAddContentDataPass: MutableList<InsertAddContentDataPass>,
+    selectedDelete: MutableList<FormAddContentPassData>,
+    updateListItemAddContent: MutableList<FormAddContentPassData>,
+){
+    when(passId.isNotEmpty() && passId != "{passId}"){
+        true -> {
+            formViewModel.editUserPassData(
+                passId = passId.toInt(),
+                formData,
+                insertAddContentDataPass,
+                selectedDelete,
+                updateListItemAddContent
+            )
+        }
+        false -> {
+            validatorData(
+                nmAccount,
+                insertAddContentDataPass,
+                passData,
+                formViewModel,
+                formData
+            )
+        }
+    }
 }
 
 @Composable

@@ -17,6 +17,8 @@ data class DataPass(
     var password: String?,
     @SerialName("url")
     var url: String?,
+    @SerialName("is_encrypted")
+    var isEncrypted: Boolean,
     @SerialName("username")
     var username: String?
 )
