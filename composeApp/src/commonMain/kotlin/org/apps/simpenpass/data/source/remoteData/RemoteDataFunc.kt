@@ -44,6 +44,7 @@ interface UserDataFunc {
     suspend fun logout(token: String?) : BaseResponse<UserResponseData>
     suspend fun userDataStats(token: String, userId: Int): BaseResponse<UserDataStats>
     suspend fun updateUserData(token: String,userId: Int, updateUser: UpdateUserDataRequest): BaseResponse<UserData>
+    suspend fun verifyPass(token: String,userId: Int, password: String): BaseResponse<Boolean>
 }
 
 interface PassDataFunc {

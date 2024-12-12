@@ -2,8 +2,11 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -86,6 +89,28 @@ class RemoteUserSources(private val httpClient: HttpClient) : UserDataFunc {
                 setBody(updateUser)
             }
             return response.body<BaseResponse<UserData>>()
+        } catch (e: UnresolvedAddressException) {
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun verifyPass(
+        token: String,
+        userId: Int,
+        password: String
+    ): BaseResponse<Boolean> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "verifyPass"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("userId", userId)
+                setBody(MultiPartFormDataContent(
+                    formData {
+                        append("password",password)
+                    }
+                ))
+            }
+            return response.body<BaseResponse<Boolean>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
         }

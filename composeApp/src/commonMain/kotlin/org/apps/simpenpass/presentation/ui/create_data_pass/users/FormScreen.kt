@@ -88,11 +88,9 @@ fun FormScreen(
 ) {
     val isDismiss = remember { mutableStateOf(false) }
     val formState by formViewModel.formState.collectAsState()
-    val data = "Ilham Subki Wijaya"
     val key = "An13sPr@b0w0G@nj@rG1br@n1m1n"
     var encData by remember { mutableStateOf("") }
     var dec by remember { mutableStateOf("") }
-
 
     var nmAccount by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
