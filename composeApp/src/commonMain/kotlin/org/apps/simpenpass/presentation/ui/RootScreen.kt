@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.presentation.components.rootComponents.RootBottomSheetContent
@@ -94,12 +93,6 @@ fun RootScreen(
     if(!isJoinDialogPopUp){
         groupViewModel.clearState()
     }
-
-    if(homeViewModel.homeState.value.isPassVerify){
-        Napier.v("isPassVerify : ${homeViewModel.homeState.value.isPassVerify}")
-    }
-
-
 
     ModalBottomSheetLayout(
         sheetState = sheetState,

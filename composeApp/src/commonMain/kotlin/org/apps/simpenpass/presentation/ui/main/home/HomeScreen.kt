@@ -89,6 +89,7 @@ fun HomeScreen(
 
     if(isDeleted.value){
         homeViewModel.getData()
+        homeViewModel.getUserDataStats(homeState.id!!)
         isDeleted.value = false
     }
 

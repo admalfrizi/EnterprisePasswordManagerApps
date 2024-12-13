@@ -308,23 +308,22 @@ fun DetailPassData(
             Res.drawable.edit_anggota_ic,
             "Pin to Most Used",
             {
-                isPopUp.value = true
+
             }
         )
         OptionMenuHolder(
             Res.drawable.edit_data_pass,
             "Edit Data Password",
             {
+                when(data.value?.isEncrypted!!){
+                    true -> {
+                        isPopUp.value = true
+                    }
+                    false -> {
+                        navigateToToEditForm.value(data.value!!)
+                    }
+                }
 
-//                when(isEncrypted.value){
-//                    true -> {
-//
-//                    }
-//                    false -> {
-//                        navigateToToEditForm.value(data.value!!)
-//                    }
-//                }
-                navigateToToEditForm.value(data.value!!)
                 scope.launch {
                     sheetState.hide()
                 }

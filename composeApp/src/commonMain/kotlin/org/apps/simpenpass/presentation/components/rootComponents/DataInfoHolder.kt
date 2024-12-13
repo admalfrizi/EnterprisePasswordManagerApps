@@ -218,21 +218,6 @@ fun PassDataInfoHolder(
     }
 }
 
-//fun checkEncryptToShowPass(
-//    data: String,
-//    isEncrypted: Boolean,
-//    isPopUp: MutableState<Boolean>
-//) {
-//   when(isEncrypted){
-//        true -> {
-//            isPopUp.value = true
-//        }
-//        false -> {
-//            data
-//        }
-//    }
-//}
-
 fun checkPassMask(data: String, showPassword: Boolean): String {
     return if(showPassword){
         data
