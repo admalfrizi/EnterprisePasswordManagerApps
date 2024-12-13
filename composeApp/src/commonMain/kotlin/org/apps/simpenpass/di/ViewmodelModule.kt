@@ -42,7 +42,8 @@ val viewModelModule = module {
 
     viewModel {
         FormViewModel(
-            repo = get()
+            repo = get(),
+            userRepo = get()
         )
     }
 

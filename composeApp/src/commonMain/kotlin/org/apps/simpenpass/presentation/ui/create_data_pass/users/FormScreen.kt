@@ -104,6 +104,7 @@ fun FormScreen(
 
     var isInsertData = remember { mutableStateOf(false) }
     var isEncryptData by remember { mutableStateOf(false) }
+    var isPopUp = remember { mutableStateOf(false) }
     val addContentId = remember { mutableStateOf(0) }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
@@ -126,7 +127,6 @@ fun FormScreen(
     if(isEncryptData && passData.isNotEmpty() && passData.length >= 4){
         val enc = CamelliaCrypto().encrypt(passData,key)
         encData = enc
-        Napier.v("Encrypt : ${encData.replace(" ","")}")
     }
 
     bottomEdgeColor.value = secondaryColor
@@ -179,6 +179,46 @@ fun FormScreen(
         }
     }
 
+    if(isPopUp.value){
+        VerifyPassDialog(
+            onDismissRequest = {
+                isPopUp.value = false
+            },
+            formViewModel
+        )
+    }
+
+    if(formState.isPassVerify){
+        Napier.v("isPassVerifty : ${formState.isPassVerify}")
+        Napier.v("keyEnc : ${formState.encKey}")
+        val enc = CamelliaCrypto().encrypt(passData,formState.encKey!!)
+        encData = enc
+
+        val formData = PassDataRequest(
+            accountName = nmAccount,
+            username = userName,
+            desc = desc,
+            email = email,
+            jenisData = jnsPass,
+            password = encData,
+            url = urlPass,
+            isEncrypted = isEncryptData
+        )
+
+        updateOrCreateDataPass(
+            passId,
+            nmAccount,
+            passData,
+            formViewModel,
+            formData,
+            insertAddContentDataPass,
+            selectedDelete,
+            updateListItemAddContent
+        )
+
+        formState.isPassVerify = false
+    }
+
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,
@@ -209,27 +249,34 @@ fun FormScreen(
                                 encData = CamelliaCrypto().encrypt(dec,key)
                             }
 
-                            val formData = PassDataRequest(
-                                accountName = nmAccount,
-                                username = userName,
-                                desc = desc,
-                                email = email,
-                                jenisData = jnsPass,
-                                password = if(isEncryptData) encData else passData,
-                                url = urlPass,
-                                isEncrypted = isEncryptData
-                            )
+                            when(isEncryptData){
+                                true -> {
+                                    isPopUp.value = true
+                                }
+                                false -> {
+                                    val formData = PassDataRequest(
+                                        accountName = nmAccount,
+                                        username = userName,
+                                        desc = desc,
+                                        email = email,
+                                        jenisData = jnsPass,
+                                        password = passData,
+                                        url = urlPass,
+                                        isEncrypted = isEncryptData
+                                    )
 
-                            updateOrCreateDataPass(
-                                passId,
-                                nmAccount,
-                                passData,
-                                formViewModel,
-                                formData,
-                                insertAddContentDataPass,
-                                selectedDelete,
-                                updateListItemAddContent
-                            )
+                                    updateOrCreateDataPass(
+                                        passId,
+                                        nmAccount,
+                                        passData,
+                                        formViewModel,
+                                        formData,
+                                        insertAddContentDataPass,
+                                        selectedDelete,
+                                        updateListItemAddContent
+                                    )
+                                }
+                            }
                         },
                         {
                             if(formState.passData != null){

@@ -161,4 +161,24 @@ class UserRepository(
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
+
+    fun verifyPassForDecrypt(
+        password: String
+    )= flow {
+        localData.getToken.collect { token ->
+            val result = remoteUserSources.verifyPass(token, localData.getUserData().id!!,password)
+            when (result.success) {
+                true -> {
+                    emit(NetworkResult.Success(result))
+                }
+                false -> {
+                    emit(NetworkResult.Error(result.message))
+                }
+            }
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
 }

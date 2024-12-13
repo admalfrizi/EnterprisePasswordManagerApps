@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,11 +36,13 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.ui.group_pass.ListOptionHolder
 import org.apps.simpenpass.presentation.ui.group_pass.MethodSelection
+import org.apps.simpenpass.presentation.ui.main.home.EnterPasswordDialog
 import org.apps.simpenpass.presentation.ui.main.home.HomeViewModel
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.setToast
 import resources.Res
 import resources.delete_pass_data
@@ -59,17 +62,18 @@ fun RootBottomSheetContent(
     sheetState: ModalBottomSheetState,
     data: MutableState<DataPass?>,
     homeViewModel: HomeViewModel,
+    isPopUp: MutableState<Boolean>,
     navigateToToEditForm: MutableState<(DataPass)->Unit>,
     navigateToAddGroup : () -> Unit,
     navigateToJoinGroup : () -> Unit
 ) {
-
     when(checkNavString){
         Screen.Home.route -> {
             DetailPassData(
                 scope,
                 sheetState,
                 data,
+                isPopUp,
                 homeViewModel,
                 navigateToToEditForm = navigateToToEditForm,
             )
@@ -191,9 +195,42 @@ fun DetailPassData(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     data: MutableState<DataPass?>,
+    isPopUp: MutableState<Boolean>,
     homeViewModel: HomeViewModel,
     navigateToToEditForm : MutableState<(DataPass)->Unit>
 ) {
+    var encKey by remember { mutableStateOf("") }
+    var passData by remember { mutableStateOf("") }
+    var decData by remember { mutableStateOf("") }
+    var homeState = homeViewModel.homeState.collectAsState()
+
+    if(data.value?.password != null){
+        passData = data.value?.password!!
+    }
+
+    if(!sheetState.isVisible){
+        homeState.value.isPassVerify = false
+        decData = ""
+        passData = ""
+    }
+
+    if(isPopUp.value){
+        EnterPasswordDialog(
+            onDismissRequest = {
+                isPopUp.value = false
+            },
+            homeViewModel
+        )
+    }
+
+    if(homeState.value.isPassVerify){
+        data.value?.isEncrypted = false
+        encKey = homeState.value.keyEnc!!
+        decData = CamelliaCrypto().decrypt(data.value?.password!!,encKey)
+        setToast("Data Anda Telah Berhasil Di Dekripsi")
+        homeState.value.isPassVerify = false
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp)
     ) {
@@ -225,29 +262,38 @@ fun DetailPassData(
         Spacer(
             modifier = Modifier.height(10.dp)
         )
-        DataInfoHolder(
+        LatestDataInfoHolder(
             {
                 setToast("Data Username Telah Disalin")
-            },Res.drawable.user_ic,data.value?.username ?: ""
+            },
+            Res.drawable.user_ic,
+            data.value?.username ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
-        DataInfoHolder(
+        LatestDataInfoHolder(
             {
                 setToast("Data Email Telah Disalin")
-            },Res.drawable.email_ic,data.value?.email ?: ""
+            },
+            Res.drawable.email_ic,
+            data.value?.email ?: ""
         )
         Spacer(
             modifier = Modifier.height(17.dp)
         )
-        DataInfoHolder(
+        PassDataInfoHolder(
             {
-                setToast("Data Password Telah Disalin")
+                if(data.value?.isEncrypted!!){
+                    setToast("Maaf Data anda Masih Terkunci")
+                } else {
+                    setToast("Data Password Telah Disalin")
+                }
             },
+            sheetState,
             Res.drawable.pass_ic,
-            data.value?.password ?: "",
-            isPassData = true,
+            if(decData.isEmpty()) passData else decData,
+            isPopUp,
             isEncrypted = data.value?.isEncrypted == true
         )
         Spacer(
@@ -260,12 +306,24 @@ fun DetailPassData(
         )
         OptionMenuHolder(
             Res.drawable.edit_anggota_ic,
-            "Pin to Most Used"
+            "Pin to Most Used",
+            {
+                isPopUp.value = true
+            }
         )
         OptionMenuHolder(
             Res.drawable.edit_data_pass,
             "Edit Data Password",
             {
+
+//                when(isEncrypted.value){
+//                    true -> {
+//
+//                    }
+//                    false -> {
+//                        navigateToToEditForm.value(data.value!!)
+//                    }
+//                }
                 navigateToToEditForm.value(data.value!!)
                 scope.launch {
                     sheetState.hide()
@@ -283,3 +341,4 @@ fun DetailPassData(
         }
     }
 }
+

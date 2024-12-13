@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apps.simpenpass.data.repository.PassRepository
+import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
@@ -20,7 +21,8 @@ import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.NetworkResult
 
 class FormViewModel(
-    private val repo: PassRepository
+    private val repo: PassRepository,
+    private val userRepo: UserRepository
 ) : ViewModel(){
 
     private val _formState = MutableStateFlow(FormState())
@@ -223,6 +225,42 @@ class FormViewModel(
         }
     }
 
+    fun verifyPassForDecrypt(
+        password: String
+    ) {
+        viewModelScope.launch {
+            userRepo.verifyPassForDecrypt(password).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formState.update {
+                            it.copy(
+                                isLoading = false,
+                                isPassVerify = true,
+                                encKey = password
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     fun resetValue() {
         _formState.value = FormState()
     }
@@ -234,6 +272,8 @@ data class FormState(
     val listAddContentPassData: List<AddContentPassData> = emptyList(),
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
+    var isPassVerify: Boolean = false,
+    val encKey: String? = null,
     val error : String? = null,
     val msg : String? = null,
     val msgAddContentData: String? = null

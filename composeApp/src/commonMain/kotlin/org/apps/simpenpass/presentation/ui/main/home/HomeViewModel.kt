@@ -156,6 +156,42 @@ class HomeViewModel(
         }
     }
 
+    fun verifyPassForDecrypt(
+        password: String
+    ) {
+        viewModelScope.launch {
+            userRepo.verifyPassForDecrypt(password).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = false,
+                                isPassVerify = true,
+                                keyEnc = password
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     override fun onCleared() {
         super.onCleared()
         _homeState.update {
@@ -174,6 +210,8 @@ data class HomeState(
     val id: Int? = null,
     val passDataList : List<DataPass> = emptyList(),
     var isDeleted: Boolean = false,
+    var isPassVerify: Boolean = false,
+    var keyEnc: String? = null,
     val totalGroupJoined: Int? = null,
     val totalDataPass: Int? = null,
     val error: String? = null,

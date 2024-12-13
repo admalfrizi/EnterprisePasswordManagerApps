@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.presentation.components.rootComponents.RootBottomSheetContent
@@ -62,6 +63,7 @@ fun RootScreen(
     val onClick = remember { mutableStateOf<(DataPass) -> Unit>({}) }
     var isJoinDialogPopUp by remember { mutableStateOf(false) }
     var isDeleted = remember { mutableStateOf(false) }
+    var isPopUp = remember { mutableStateOf(false) }
     val currentScreen = rememberSaveable { mutableStateOf("") }
 
     if(currentScreen.value != navController.currentDestination?.route){
@@ -93,6 +95,12 @@ fun RootScreen(
         groupViewModel.clearState()
     }
 
+    if(homeViewModel.homeState.value.isPassVerify){
+        Napier.v("isPassVerify : ${homeViewModel.homeState.value.isPassVerify}")
+    }
+
+
+
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetElevation = 0.dp,
@@ -106,6 +114,7 @@ fun RootScreen(
                     sheetState,
                     dataDetail,
                     homeViewModel,
+                    isPopUp,
                     onClick,
                     navigateToAddGroup = {
                         navigateToAddGroup()

@@ -263,7 +263,6 @@ fun PassDataInfo(
             Res.drawable.pass_ic,
             data.value?.password ?: "" ,
             isPassData = true,
-            isEncrypted = data.value?.isEncrypted == true
         )
         Spacer(
             modifier = Modifier.height(17.dp)
