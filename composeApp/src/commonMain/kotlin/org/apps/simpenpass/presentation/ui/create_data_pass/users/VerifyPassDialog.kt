@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,7 +45,7 @@ fun VerifyPassDialog(
     formViewModel: FormViewModel
 ) {
     var password = remember { mutableStateOf("") }
-    var formState = formViewModel.formState.value
+    var formState = formViewModel.formState.collectAsState()
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -92,6 +93,7 @@ fun VerifyPassDialog(
                     modifier = Modifier.fillMaxWidth(),
                     value = password.value,
                     labelHints = "Masukan Password Anda",
+                    isPassword = true,
                     leadingIcon = null,
                     onValueChange = {
                         password.value = it
@@ -107,10 +109,10 @@ fun VerifyPassDialog(
                     shape = RoundedCornerShape(20.dp),
                     onClick = {
                         formViewModel.verifyPassForDecrypt(password.value)
-                        if(!formState.isLoading) onDismissRequest()
+                        if(!formState.value.isLoading) onDismissRequest()
                     }
                 ) {
-                    when(formState.isLoading){
+                    when(formState.value.isLoading){
                         true -> {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(20.dp),

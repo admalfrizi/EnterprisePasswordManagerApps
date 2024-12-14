@@ -61,7 +61,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.FormAddContentPassData
@@ -105,6 +104,7 @@ fun FormScreen(
     var isInsertData = remember { mutableStateOf(false) }
     var isEncryptData by remember { mutableStateOf(false) }
     var isPopUp = remember { mutableStateOf(false) }
+    var toDecrypt = remember { mutableStateOf(false) }
     val addContentId = remember { mutableStateOf(0) }
     val nmData = remember { mutableStateOf("") }
     val vlData = remember { mutableStateOf("") }
@@ -170,13 +170,13 @@ fun FormScreen(
         email = formState.passData?.email!!
         jnsPass = formState.passData?.jenisData ?: ""
         urlPass = formState.passData?.url ?: ""
-        isEncryptData = formState.passData?.isEncrypted!!
 
-        if(isEncryptData){
-            dec = CamelliaCrypto().decrypt(formState.passData?.password!!,key)
-        } else {
-            passData = if(dec.isEmpty()) formState.passData?.password!! else dec
+        if(formState.passData?.isEncrypted!!) {
+            toDecrypt.value = true
+            isPopUp.value = true
         }
+
+        passData = if(dec.isEmpty()) formState.passData?.password!! else dec
     }
 
     if(isPopUp.value){
@@ -188,10 +188,16 @@ fun FormScreen(
         )
     }
 
-    if(formState.isPassVerify){
-        Napier.v("isPassVerifty : ${formState.isPassVerify}")
-        Napier.v("keyEnc : ${formState.encKey}")
-        val enc = CamelliaCrypto().encrypt(passData,formState.encKey!!)
+    if(formState.isPassVerify && toDecrypt.value){
+        isPopUp.value = false
+        formState.passData?.isEncrypted = false
+        dec = CamelliaCrypto().decrypt(formState.passData?.password!!, formState.key!!)
+        formState.isPassVerify = false
+        toDecrypt.value = false
+    }
+
+    if(formState.isPassVerify && !toDecrypt.value){
+        val enc = CamelliaCrypto().encrypt(passData,formState.key!!)
         encData = enc
 
         val formData = PassDataRequest(
@@ -330,9 +336,9 @@ fun FormScreen(
                                         Switch(
                                             checked = isEncryptData,
                                             onCheckedChange = {
-                                                if(formState.passData != null){
-                                                    formState.passData?.isEncrypted = it
-                                                }
+//                                                if(formState.passData != null){
+//                                                    formState.passData?.isEncrypted = it
+//                                                }
 
                                                 isEncryptData = it
                                             },

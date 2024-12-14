@@ -202,7 +202,6 @@ fun DetailPassData(
     var encKey by remember { mutableStateOf("") }
     var passData by remember { mutableStateOf("") }
     var decData by remember { mutableStateOf("") }
-    var toEdit by remember { mutableStateOf(false) }
     var homeState = homeViewModel.homeState.collectAsState()
 
     if(data.value?.password != null){
@@ -224,17 +223,12 @@ fun DetailPassData(
         )
     }
 
-    if(homeState.value.isPassVerify && !toEdit){
+    if(homeState.value.isPassVerify){
         data.value?.isEncrypted = false
         encKey = homeState.value.keyEnc!!
         decData = CamelliaCrypto().decrypt(data.value?.password!!,encKey)
         setToast("Data Anda Telah Berhasil Di Dekripsi")
         homeState.value.isPassVerify = false
-    }
-
-    if(toEdit){
-        setToast("Ini Ke Edit Data")
-        toEdit = false
     }
 
     Column(
@@ -319,23 +313,13 @@ fun DetailPassData(
         )
         OptionMenuHolder(
             Res.drawable.edit_data_pass,
-            "Edit Data Password",
-            {
-                when(data.value?.isEncrypted!!){
-                    true -> {
-                        isPopUp.value = true
-                        toEdit = true
-                    }
-                    false -> {
-                        navigateToToEditForm.value(data.value!!)
-                    }
-                }
-
-                scope.launch {
-                    sheetState.hide()
-                }
+            "Edit Data Password"
+        ) {
+            navigateToToEditForm.value(data.value!!)
+            scope.launch {
+                sheetState.hide()
             }
-        )
+        }
         OptionMenuHolder(
             Res.drawable.delete_pass_data,
             "Hapus Data Password"

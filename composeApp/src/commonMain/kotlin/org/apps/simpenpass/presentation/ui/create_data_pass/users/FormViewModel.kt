@@ -251,7 +251,7 @@ class FormViewModel(
                             it.copy(
                                 isLoading = false,
                                 isPassVerify = true,
-                                encKey = password
+                                key = password
                             )
                         }
                     }
@@ -273,7 +273,7 @@ data class FormState(
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
     var isPassVerify: Boolean = false,
-    val encKey: String? = null,
+    val key: String? = null,
     val error : String? = null,
     val msg : String? = null,
     val msgAddContentData: String? = null
