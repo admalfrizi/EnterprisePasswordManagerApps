@@ -188,7 +188,6 @@ fun PassDataInfoHolder(
                     } else {
                         showPassword = !showPassword
                     }
-
                 }
             ){
                 if(showPassword){

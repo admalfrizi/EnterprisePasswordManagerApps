@@ -56,7 +56,8 @@ val viewModelModule = module {
 
     viewModel {
         ListDataViewModel(
-            repo = get()
+            repo = get(),
+            userRepo = get()
         )
     }
 

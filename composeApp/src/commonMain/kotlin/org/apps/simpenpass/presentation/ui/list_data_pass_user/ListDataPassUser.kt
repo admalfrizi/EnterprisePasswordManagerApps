@@ -1,6 +1,7 @@
 package org.apps.simpenpass.presentation.ui.list_data_pass_user
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
@@ -45,16 +50,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.presentation.components.EmptyWarning
+import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.rootComponents.DataInfoHolder
+import org.apps.simpenpass.presentation.components.rootComponents.PassDataInfoHolder
+import org.apps.simpenpass.style.btnColor
+import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -82,12 +97,13 @@ fun ListDataPassUser(
     var isDropdownShow by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val dataDetail = remember { mutableStateOf<DataPassWithAddContent?>(null) }
+    var isPopUp = remember { mutableStateOf(false) }
 
     bottomEdgeColor.value = Color.White
 
     ModalBottomSheetLayout(
         sheetContent = {
-            PassDataInfo(scope,sheetState,dataDetail)
+            PassDataInfo(scope,sheetState,dataDetail,isPopUp,listDataViewModel)
         },
         sheetElevation = 0.dp,
         sheetGesturesEnabled = false,
@@ -198,8 +214,42 @@ fun ListDataPassUser(
 fun PassDataInfo(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    data: MutableState<DataPassWithAddContent?>
+    data: MutableState<DataPassWithAddContent?>,
+    isPopUp: MutableState<Boolean>,
+    listDataViewModel: ListDataViewModel
 ) {
+    var encKey by remember { mutableStateOf("") }
+    var passData by remember { mutableStateOf("") }
+    var decData by remember { mutableStateOf("") }
+    var homeState = listDataViewModel.listDataState.collectAsState()
+
+    if(data.value?.password != null){
+        passData = data.value?.password!!
+    }
+
+    if(!sheetState.isVisible){
+        homeState.value.isPassVerify = false
+        decData = ""
+        passData = ""
+    }
+
+    if(isPopUp.value){
+        DecryptPassDataDialog(
+            onDismissRequest = {
+                isPopUp.value = false
+            },
+            listDataViewModel
+        )
+    }
+
+    if(homeState.value.isPassVerify){
+        data.value?.isEncrypted = false
+        encKey = homeState.value.key!!
+        decData = CamelliaCrypto().decrypt(data.value?.password!!,encKey)
+        setToast("Data Anda Telah Berhasil Di Dekripsi")
+        homeState.value.isPassVerify = false
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 36.dp),
     ) {
@@ -256,13 +306,19 @@ fun PassDataInfo(
         Spacer(
             modifier = Modifier.height(17.dp)
         )
-        DataInfoHolder(
+        PassDataInfoHolder(
             {
-                setToast("Data Password telah Disalin")
+                if(data.value?.isEncrypted!!){
+                    setToast("Maaf Data anda Masih Terkunci")
+                } else {
+                    setToast("Data Password Telah Disalin")
+                }
             },
+            sheetState,
             Res.drawable.pass_ic,
-            data.value?.password ?: "" ,
-            isPassData = true,
+            if(decData.isEmpty()) passData else decData,
+            isPopUp,
+            isEncrypted = data.value?.isEncrypted == true
         )
         Spacer(
             modifier = Modifier.height(17.dp)
@@ -356,4 +412,101 @@ fun PassDataInfo(
             }
         }
     }
+}
+
+@Composable
+fun DecryptPassDataDialog(
+    onDismissRequest: () -> Unit,
+    listDataViewModel: ListDataViewModel
+) {
+    var password = remember { mutableStateOf("") }
+    var listDataState = listDataViewModel.listDataState.collectAsState()
+
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            elevation = 0.dp,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        "Silahkan Masukan Password Anda",
+                        style = MaterialTheme.typography.h6.copy(color = secondaryColor),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
+                    )
+                    Icon(
+                        Icons.Default.Clear,
+                        "",
+                        modifier = Modifier.clickable{
+                            onDismissRequest()
+                        }.clip(CircleShape)
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                Text(
+                    "Data Password anda Telah Dikunci, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = secondaryColor
+                )
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                FormTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = password.value,
+                    labelHints = "Masukan Password Anda",
+                    leadingIcon = null,
+                    onValueChange = {
+                        password.value = it
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                Button(
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
+                    shape = RoundedCornerShape(20.dp),
+                    onClick = {
+                        listDataViewModel.verifyPassForDecrypt(password.value)
+                        if(!listDataState.value.isLoading) onDismissRequest()
+                    }
+                ) {
+                    when(listDataState.value.isLoading){
+                        true -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 3.dp,
+                                strokeCap = StrokeCap.Round
+                            )
+                        }
+                        false -> {
+                            Text(
+                                text = "Verifikasi",
+                                color = fontColor1,
+                                style = MaterialTheme.typography.button.copy(fontSize = 14.sp)
+                            )
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
 }

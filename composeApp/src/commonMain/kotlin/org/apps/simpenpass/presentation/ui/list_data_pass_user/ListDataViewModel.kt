@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassRepository
+import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.utils.NetworkResult
 
 class ListDataViewModel(
-    private val repo: PassRepository
+    private val repo: PassRepository,
+    private val userRepo: UserRepository
 ) : ViewModel() {
 
     private val _listDataState = MutableStateFlow(ListDataState())
@@ -53,10 +55,48 @@ class ListDataViewModel(
         }
     }
 
+    fun verifyPassForDecrypt(
+        password: String
+    ) {
+        viewModelScope.launch {
+            userRepo.verifyPassForDecrypt(password).flowOn(Dispatchers.IO).collect { res ->
+                when (res) {
+                    is NetworkResult.Error -> {
+                        _listDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Loading -> {
+                        _listDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Success -> {
+                        _listDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isPassVerify = true,
+                                key = password
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class ListDataState(
     val isLoading : Boolean = false,
     val data : List<DataPassWithAddContent> = emptyList(),
-    val error : String? = null
+    val error : String? = null,
+    var isPassVerify: Boolean = false,
+    val key: String? = null
 )
