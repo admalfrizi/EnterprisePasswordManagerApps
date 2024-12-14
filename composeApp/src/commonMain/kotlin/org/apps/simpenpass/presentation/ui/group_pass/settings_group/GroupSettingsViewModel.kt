@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
+import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -109,6 +110,39 @@ class GroupSettingsViewModel(
             }
         }
     }
+
+    fun getDataSecurityForGroup(groupId: Int) {
+        viewModelScope.launch {
+            repo.getGroupSecurityData(groupId).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupSettingsState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupSettingsState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupSettingsState.update {
+                            it.copy(
+                                isLoading = false,
+                                listSecurityData = res.data.data!!
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class GroupSettingsState(
@@ -117,5 +151,6 @@ data class GroupSettingsState(
     val groupId: String? = null,
     val msg : String? = null,
     val isError: Boolean = false,
-    val groupData: DtlGrupPass? = null
+    val groupData: DtlGrupPass? = null,
+    val listSecurityData: List<GroupSecurityData> = emptyList()
 )

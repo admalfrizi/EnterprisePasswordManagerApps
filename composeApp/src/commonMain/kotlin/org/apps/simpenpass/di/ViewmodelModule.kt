@@ -1,6 +1,7 @@
 package org.apps.simpenpass.di
 
 import org.apps.simpenpass.presentation.ui.add_group.AddGroupViewModel
+import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSecurityViewModel
 import org.apps.simpenpass.presentation.ui.auth.AuthViewModel
 import org.apps.simpenpass.presentation.ui.change_data_screen.ChangeDataViewModel
 import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupViewModel
@@ -86,6 +87,12 @@ val viewModelModule = module {
         FormPassGroupViewModel(
             repoPassDataGroup = get(),
             savedStateHandle = get()
+        )
+    }
+
+    viewModel {
+        AddGroupSecurityViewModel(
+            repo = get()
         )
     }
 
