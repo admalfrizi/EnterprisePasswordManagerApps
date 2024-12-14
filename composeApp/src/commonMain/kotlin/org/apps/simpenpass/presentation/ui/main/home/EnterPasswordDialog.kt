@@ -94,6 +94,7 @@ fun EnterPasswordDialog(
                     value = password.value,
                     labelHints = "Masukan Password Anda",
                     leadingIcon = null,
+                    isPassword = true,
                     onValueChange = {
                         password.value = it
                     }

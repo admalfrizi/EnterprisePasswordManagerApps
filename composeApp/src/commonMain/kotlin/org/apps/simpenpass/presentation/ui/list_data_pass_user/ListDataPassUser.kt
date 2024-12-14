@@ -469,6 +469,7 @@ fun DecryptPassDataDialog(
                     value = password.value,
                     labelHints = "Masukan Password Anda",
                     leadingIcon = null,
+                    isPassword = true,
                     onValueChange = {
                         password.value = it
                     }
