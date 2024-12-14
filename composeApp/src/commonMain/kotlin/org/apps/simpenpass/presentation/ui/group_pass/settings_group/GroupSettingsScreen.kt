@@ -28,6 +28,9 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -35,6 +38,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -114,6 +118,7 @@ fun GroupSettingsScreen(
         }
     )
     val imagesName = groupState.groupData?.groupDtl?.img_grup
+    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
 
     if(groupState.isSuccess && !groupState.isLoading){
         setToast("Data Telah Berhasil Diperbaharui !")
@@ -123,245 +128,269 @@ fun GroupSettingsScreen(
         popUpLoading(isDismiss)
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
-        backgroundColor = Color(0xFFF1F1F1),
-        topBar = {
-            TopAppBar(
-                backgroundColor = secondaryColor,
-                title = {
-                    Text(
-                        "Pengaturan Grup"
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navToBack()
-                        },
-                        content = {
-                            Image(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                "",
-                                colorFilter = ColorFilter.tint(Color.White)
-                            )
-                        }
-                    )
-                }
-
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetElevation = 0.dp,
+        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        sheetGesturesEnabled = false,
+        sheetBackgroundColor = Color.White,
+        sheetContent = {
+            ListSecurityData(
+                sheetState,
+                groupSettingsViewModel,
+                groupState
             )
         }
     ){
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
-            Box(
-                modifier = Modifier.size(99.dp)
-                    .background(color = Color(0xFF78A1D7), shape = CircleShape).clickable(
-                        interactionSource = interactionSource,
-                        indication = ripple(bounded = false)
-                    ) {
-                        launcher.launch()
+        Scaffold(
+            modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
+            backgroundColor = Color(0xFFF1F1F1),
+            topBar = {
+                TopAppBar(
+                    backgroundColor = secondaryColor,
+                    title = {
+                        Text(
+                            "Pengaturan Grup"
+                        )
                     },
-            ){
-                if(imagesName != null && imgFile.isEmpty()){
-                    AsyncImage(
-                        model = imagesName,
-                        modifier = Modifier.size(99.dp).clip(CircleShape),
-                        contentDescription = "Profile Picture",
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    when(imgFile.isNotEmpty()){
-                        true -> {
-                            AsyncImage(
-                                model = imgFile,
-                                modifier = Modifier.size(99.dp).clip(CircleShape),
-                                contentDescription = "Profile Picture",
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                        false -> {
-                            Text(
-                                profileNameInitials(groupState.groupData?.groupDtl?.nm_grup ?: "JUD"),
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 36.sp,
-                                color = Color.White,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                    }
-                }
-                Box(
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .background(color = Color(0xFF195389), shape = CircleShape)
-                        .size(24.dp)
-                ){
-                    Image(
-                        Icons.Default.Edit,
-                        "",
-                        modifier = Modifier.size(8.57.dp).align(Alignment.Center),
-                        colorFilter = ColorFilter.tint(Color.White)
-                    )
-                }
-
-            }
-            Spacer(
-                modifier = Modifier.height(15.dp)
-            )
-            Box(
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
-            ) {
-                BasicTextField(
-                    value = grupName,
-                    onValueChange = {
-                        if(groupState.groupData != null) {
-                            groupState.groupData?.groupDtl?.nm_grup = it
-                        }
-
-                        grupName = it
-                    },
-                    modifier = Modifier.padding(0.dp).onFocusChanged { focusState ->
-                        isFocused = focusState.isFocused
-                    },
-                    decorationBox = { innerTextField ->
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ){
-                                Box {
-                                    if (grupName.isEmpty()) {
-                                        Text(
-                                            text = "Isi Nama Grup Ini",
-                                            style =  MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
-                                        )
-                                    }
-                                    innerTextField()
-                                }
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                navToBack()
+                            },
+                            content = {
                                 Image(
-                                    painterResource(Res.drawable.group_ic),"", colorFilter = ColorFilter.tint(secondaryColor)
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    "",
+                                    colorFilter = ColorFilter.tint(Color.White)
                                 )
                             }
+                        )
+                    }
 
-                            Divider(
-                                color = secondaryColor,
-                                thickness = 2.dp,
-                                modifier = Modifier.padding(top = 6.dp) // Adjust the position
+                )
+            }
+        ){
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                Box(
+                    modifier = Modifier.size(99.dp)
+                        .background(color = Color(0xFF78A1D7), shape = CircleShape).clickable(
+                            interactionSource = interactionSource,
+                            indication = ripple(bounded = false)
+                        ) {
+                            launcher.launch()
+                        },
+                ){
+                    if(imagesName != null && imgFile.isEmpty()){
+                        AsyncImage(
+                            model = imagesName,
+                            modifier = Modifier.size(99.dp).clip(CircleShape),
+                            contentDescription = "Profile Picture",
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        when(imgFile.isNotEmpty()){
+                            true -> {
+                                AsyncImage(
+                                    model = imgFile,
+                                    modifier = Modifier.size(99.dp).clip(CircleShape),
+                                    contentDescription = "Profile Picture",
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            false -> {
+                                Text(
+                                    profileNameInitials(groupState.groupData?.groupDtl?.nm_grup ?: "JUD"),
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 36.sp,
+                                    color = Color.White,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                    Box(
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .background(color = Color(0xFF195389), shape = CircleShape)
+                            .size(24.dp)
+                    ){
+                        Image(
+                            Icons.Default.Edit,
+                            "",
+                            modifier = Modifier.size(8.57.dp).align(Alignment.Center),
+                            colorFilter = ColorFilter.tint(Color.White)
+                        )
+                    }
+
+                }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                Box(
+                    modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                ) {
+                    BasicTextField(
+                        value = grupName,
+                        onValueChange = {
+                            if(groupState.groupData != null) {
+                                groupState.groupData?.groupDtl?.nm_grup = it
+                            }
+
+                            grupName = it
+                        },
+                        modifier = Modifier.padding(0.dp).onFocusChanged { focusState ->
+                            isFocused = focusState.isFocused
+                        },
+                        decorationBox = { innerTextField ->
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Box {
+                                        if (grupName.isEmpty()) {
+                                            Text(
+                                                text = "Isi Nama Grup Ini",
+                                                style =  MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB))
+                                            )
+                                        }
+                                        innerTextField()
+                                    }
+                                    Image(
+                                        painterResource(Res.drawable.group_ic),"", colorFilter = ColorFilter.tint(secondaryColor)
+                                    )
+                                }
+
+                                Divider(
+                                    color = secondaryColor,
+                                    thickness = 2.dp,
+                                    modifier = Modifier.padding(top = 6.dp) // Adjust the position
+                                )
+                            }
+                        },
+                        cursorBrush = SolidColor(secondaryColor),
+                        textStyle = MaterialTheme.typography.button.copy(
+                            color = secondaryColor
+                        ),
+                        singleLine = false,
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                BasicTextField(
+                    value = desc,
+                    onValueChange = {
+                        if(groupState.groupData != null) {
+                            groupState.groupData?.groupDtl?.desc = it
+                        }
+                        desc = it
+                    },
+                    textStyle = MaterialTheme.typography.caption.copy(color = secondaryColor),
+                    singleLine = false,
+                    modifier = Modifier.fillMaxWidth().height(269.dp).padding(horizontal = 16.dp),
+                    cursorBrush = SolidColor(secondaryColor),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                        }
+                    )
+                ){
+                    TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                        border = {
+                            TextFieldDefaults.BorderBox(
+                                enabled = true,
+                                interactionSource = interactionSource,
+                                colors = TextFieldDefaults.textFieldColors(
+                                    unfocusedIndicatorColor = Color.Black,
+                                ),
+                                shape = RoundedCornerShape(9.dp),
+                                isError = false,
+                                unfocusedBorderThickness = 1.dp,
                             )
+                        },
+                        value = desc,
+                        innerTextField = it,
+                        enabled = true,
+                        singleLine = false,
+                        interactionSource = interactionSource,
+                        visualTransformation = VisualTransformation.None,
+                        placeholder = {
+                            Text(
+                                "Silahkan Tulis Deskripsi Disini....",
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB)),
+                            )
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = Color.White,
+                            backgroundColor = Color.White,
+                            unfocusedIndicatorColor = Color.Black
+                        ),
+                        contentPadding = TextFieldDefaults.textFieldWithoutLabelPadding(
+                            start = 16.dp
+                        )
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(22.dp)
+                )
+                Button(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    onClick = {
+                        groupSettingsViewModel.updateGroupData(groupState.groupData?.groupDtl?.id.toString(), AddGroupRequest(grupName,desc),imgFile,nameImg)
+                        scope.launch {
+                            keyboardController?.hide()
                         }
                     },
-                    cursorBrush = SolidColor(secondaryColor),
-                    textStyle = MaterialTheme.typography.button.copy(
-                        color = secondaryColor
-                    ),
-                    singleLine = false,
-                )
-            }
-            Spacer(
-                modifier = Modifier.height(15.dp)
-            )
-            BasicTextField(
-                value = desc,
-                onValueChange = {
-                    if(groupState.groupData != null) {
-                        groupState.groupData?.groupDtl?.desc = it
-                    }
-                    desc = it
-                },
-                textStyle = MaterialTheme.typography.caption.copy(color = secondaryColor),
-                singleLine = false,
-                modifier = Modifier.fillMaxWidth().height(269.dp).padding(horizontal = 16.dp),
-                cursorBrush = SolidColor(secondaryColor),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        keyboardController?.hide()
-                    }
-                )
-            ){
-                TextFieldDefaults.OutlinedTextFieldDecorationBox(
-                    border = {
-                        TextFieldDefaults.BorderBox(
-                            enabled = true,
-                            interactionSource = interactionSource,
-                            colors = TextFieldDefaults.textFieldColors(
-                                unfocusedIndicatorColor = Color.Black,
-                            ),
-                            shape = RoundedCornerShape(9.dp),
-                            isError = false,
-                            unfocusedBorderThickness = 1.dp,
-                        )
-                    },
-                    value = desc,
-                    innerTextField = it,
-                    enabled = true,
-                    singleLine = false,
-                    interactionSource = interactionSource,
-                    visualTransformation = VisualTransformation.None,
-                    placeholder = {
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
+                    content = {
                         Text(
-                            "Silahkan Tulis Deskripsi Disini....",
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.caption.copy(color = Color(0xFFABABAB)),
+                            "Update Grup",
+                            style = MaterialTheme.typography.h6,
+                            color = fontColor1
                         )
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        textColor = Color.White,
-                        backgroundColor = Color.White,
-                        unfocusedIndicatorColor = Color.Black
-                    ),
-                    contentPadding = TextFieldDefaults.textFieldWithoutLabelPadding(
-                        start = 16.dp
-                    )
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+                SettingsListHolder(
+                    "Edit Role Anggota",
+                    prefixTitle = "${groupState.groupData?.totalRole} Posisi",
+                    {
+                        navToEditRole(groupState.groupId!!)
+                    }
+                )
+                SettingsListHolder(
+                    "Tambahkan Keamanan Grup",
+                    onClick =  {
+
+                    }
                 )
             }
-            Spacer(
-                modifier = Modifier.height(22.dp)
-            )
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                onClick = {
-                    groupSettingsViewModel.updateGroupData(groupState.groupData?.groupDtl?.id.toString(), AddGroupRequest(grupName,desc),imgFile,nameImg)
-                    scope.launch {
-                        keyboardController?.hide()
-                    }
-                },
-                shape = RoundedCornerShape(20.dp),
-                elevation = ButtonDefaults.elevation(0.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
-                content = {
-                    Text(
-                        "Update Grup",
-                        style = MaterialTheme.typography.h6,
-                        color = fontColor1
-                    )
-                }
-            )
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
-            SettingsListHolder(
-                "Edit Role Anggota",
-                prefixTitle = "${groupState.groupData?.totalRole} Posisi",
-                {
-                    navToEditRole(groupState.groupId!!)
-                }
-            )
-            SettingsListHolder(
-                "Tambahkan Pertanyaan Keamanan Grup",
-                onClick =  {
-
-                }
-            )
         }
     }
+}
+
+@Composable
+fun ListSecurityData(
+    sheetState: ModalBottomSheetState,
+    groupSettingsViewModel: GroupSettingsViewModel,
+    groupSettingsState: GroupSettingsState
+) {
+
 }

@@ -3,11 +3,13 @@ package org.apps.simpenpass.data.source.remoteData
 import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
+import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.PassDataGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
+import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.FormAddContentPassData
@@ -25,6 +27,7 @@ import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
+import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.models.response.PassGroupResponseData
@@ -67,6 +70,7 @@ interface GroupPassDataFunc {
         imgName: String,
         imgFile: ByteArray?
     ): BaseResponse<GrupPassData>
+
     suspend fun updateGroupData(
         token: String,
         groupId: Int,
@@ -74,19 +78,50 @@ interface GroupPassDataFunc {
         imgName: String,
         imgFile: ByteArray?
     ): BaseResponse<GrupPassData>
+
     suspend fun listJoinedGroupBasedOnUser(
         token: String,
         userId: Int
     ): BaseResponse<List<GrupPassData>>
+
     suspend fun detailGroupData(
         token: String,
         groupId: Int,
         userId: Int
     ): BaseResponse<DtlGrupPass>
+
     suspend fun searchGroup(
         token: String,
         query: String
     ): BaseResponse<GrupPassData>
+
+    suspend fun getTypeSecurityGroup(
+        token: String
+    ): BaseResponse<GroupSecurityTypeResponse>
+
+    suspend fun getGroupSecurityData(
+        token: String,
+        groupId: Int
+    ): BaseResponse<GroupSecurityData>
+
+    suspend fun addGroupSecurityData(
+        token: String,
+        addGroupSecurityData: AddGroupSecurityDataRequest,
+        groupId: Int,
+    ): BaseResponse<GroupSecurityData>
+
+    suspend fun updateGroupSecurityData(
+        token: String,
+        addGroupSecurityData: AddGroupSecurityDataRequest,
+        groupId: Int,id: Int,
+    ): BaseResponse<GroupSecurityData>
+
+    suspend fun deleteGroupSecurityData(
+        token: String,
+        id: Int,
+        groupId: Int,
+    ): BaseResponse<GroupSecurityData>
+
 }
 
 interface MemberGroupDataFunc {

@@ -12,6 +12,7 @@ import org.apps.simpenpass.data.source.remoteData.RemoteGroupDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddGroupRequest
+import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleNameRequest
@@ -224,6 +225,107 @@ class GroupRepository(
         try {
             localData.getToken.collect { token ->
                 val result = remoteRolePositionGroup.updateRoleNamePosition(token,roleId,updateRoleName)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun getTypeSecurityGroupData() = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.getTypeSecurityGroup(token)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun getGroupSecurityData(
+        groupId: Int
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.getGroupSecurityData(token,groupId)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun addGroupSecurityData(
+        addGroupSecurityDataRequest: AddGroupSecurityDataRequest,
+        groupId: Int
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.addGroupSecurityData(token,addGroupSecurityDataRequest,groupId)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun updateGroupSecurityData(
+        addGroupSecurityDataRequest: AddGroupSecurityDataRequest,
+        groupId: Int,
+        id: Int
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.updateGroupSecurityData(token,addGroupSecurityDataRequest,id,groupId)
 
                 when(result.success) {
                     true -> {

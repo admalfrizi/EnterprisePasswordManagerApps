@@ -2,6 +2,7 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
@@ -16,9 +17,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
+import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.request.AddGroupRequest
+import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.utils.Constants
 
 class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassDataFunc {
@@ -140,6 +144,98 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
         }
     }
 
+    override suspend fun getTypeSecurityGroup(token: String): BaseResponse<GroupSecurityTypeResponse> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "groupSecurityType"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
 
+            return response.body<BaseResponse<GroupSecurityTypeResponse>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
 
+    override suspend fun getGroupSecurityData(
+        token: String,
+        groupId: Int
+    ): BaseResponse<GroupSecurityData> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "securityOptionData/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<GroupSecurityData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun addGroupSecurityData(
+        token: String,
+        addGroupSecurityData: AddGroupSecurityDataRequest,
+        groupId: Int
+    ): BaseResponse<GroupSecurityData> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "addSecurityOptionData/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(addGroupSecurityData)
+            }
+
+            return response.body<BaseResponse<GroupSecurityData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun updateGroupSecurityData(
+        token: String,
+        addGroupSecurityData: AddGroupSecurityDataRequest,
+        id: Int,
+        groupId: Int
+    ): BaseResponse<GroupSecurityData> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateSecurityOptionData/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("id", id)
+                setBody(addGroupSecurityData)
+            }
+
+            return response.body<BaseResponse<GroupSecurityData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun deleteGroupSecurityData(
+        token: String,
+        id: Int,
+        groupId: Int
+    ): BaseResponse<GroupSecurityData> {
+        try {
+            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "delSecurityOptionData/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("id", id)
+            }
+
+            return response.body<BaseResponse<GroupSecurityData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
 }
