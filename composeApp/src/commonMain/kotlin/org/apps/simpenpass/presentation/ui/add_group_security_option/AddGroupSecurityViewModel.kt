@@ -44,7 +44,7 @@ class AddGroupSecurityViewModel(
                     is NetworkResult.Success -> {
                         _groupSecurityDataState.update {
                             it.copy(
-                                isLoading = true,
+                                isLoading = false,
                                 listTypeSecurityData = res.data.data!!
                             )
                         }
