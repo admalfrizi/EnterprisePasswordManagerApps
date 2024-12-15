@@ -111,38 +111,7 @@ class GroupSettingsViewModel(
         }
     }
 
-    fun getDataSecurityForGroup(groupId: Int) {
-        viewModelScope.launch {
-            repo.getGroupSecurityData(groupId).flowOn(Dispatchers.IO).collect { res ->
-                when(res){
-                    is NetworkResult.Error -> {
-                        _groupSettingsState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupSettingsState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupSettingsState.update {
-                            it.copy(
-                                isLoading = false,
-                                listSecurityData = res.data.data!!
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+
 }
 
 data class GroupSettingsState(

@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,6 +82,7 @@ import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.components.profileComponents.SettingsListHolder
 import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSecurityOption
+import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSecurityViewModel
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
@@ -88,6 +90,7 @@ import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.profileNameInitials
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.delete_ic
@@ -151,8 +154,7 @@ fun GroupSettingsScreen(
             ListSecurityData(
                 scope,
                 sheetState,
-                groupSettingsViewModel,
-                groupState
+                groupState.groupId?.toInt()!!
             )
         }
     ){
@@ -406,13 +408,14 @@ fun GroupSettingsScreen(
 fun ListSecurityData(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
-    groupSettingsViewModel: GroupSettingsViewModel,
-    groupSettingsState: GroupSettingsState
+    groupId: Int,
+    groupDataSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
 ) {
     var isPopUp by remember { mutableStateOf(false) }
+    val addGroupSecurityDataState = groupDataSecurityViewModel.groupSecurityDataState.collectAsState()
 
     if(sheetState.isVisible){
-        groupSettingsViewModel.getDataSecurityForGroup(groupSettingsState.groupId?.toInt()!!)
+        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
     }
 
     if(isPopUp){
@@ -461,13 +464,13 @@ fun ListSecurityData(
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ){
-            if(groupSettingsState.isLoading){
+            if(addGroupSecurityDataState.value.isLoading){
                 item{
                     AddMemberLoading()
                 }
             }
-            if(groupSettingsState.listSecurityData.isNotEmpty() && sheetState.isVisible && !groupSettingsState.isLoading){
-                items(groupSettingsState.listSecurityData){ item ->
+            if(addGroupSecurityDataState.value.listSecurityData.isNotEmpty() && sheetState.isVisible && !addGroupSecurityDataState.value.isLoading){
+                items(addGroupSecurityDataState.value.listSecurityData){ item ->
                     Box(
                         modifier = Modifier.fillMaxWidth().background(color = Color.White)
                     ) {
@@ -518,7 +521,7 @@ fun ListSecurityData(
             }
 
 
-            if(groupSettingsState.listSecurityData.isEmpty() && !groupSettingsState.isLoading){
+            if(addGroupSecurityDataState.value.listSecurityData.isEmpty() && !addGroupSecurityDataState.value.isLoading){
                 item{
                     EmptyWarning(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

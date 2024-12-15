@@ -144,14 +144,14 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
         }
     }
 
-    override suspend fun getTypeSecurityGroup(token: String): BaseResponse<GroupSecurityTypeResponse> {
+    override suspend fun getTypeSecurityGroup(token: String): BaseResponse<List<GroupSecurityTypeResponse>> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "groupSecurityType"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
 
-            return response.body<BaseResponse<GroupSecurityTypeResponse>>()
+            return response.body<BaseResponse<List<GroupSecurityTypeResponse>>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

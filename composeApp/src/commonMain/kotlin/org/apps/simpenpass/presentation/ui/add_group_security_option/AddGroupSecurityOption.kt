@@ -4,39 +4,64 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddGroupSecurityOption(
     addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
     onDismissRequest: () -> Unit
 ) {
-//    var addGroupSecurityState by addGroupSecurityViewModel
+    var addGroupSecurityState = addGroupSecurityViewModel.groupSecurityDataState.collectAsState()
+    var expanded = remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    var type = remember { mutableStateOf("") }
+    var data = remember { mutableStateOf("") }
+    var value = remember { mutableStateOf("") }
+
+    if(addGroupSecurityState.value.listTypeSecurityData.isEmpty()){
+        addGroupSecurityViewModel.getTypeSecurityForGroup()
+    }
 
     Dialog(
         onDismissRequest = {
@@ -65,6 +90,9 @@ fun AddGroupSecurityOption(
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start
                     )
+                    Spacer(
+                        modifier = Modifier.width(40.dp)
+                    )
                     Icon(
                         Icons.Default.Clear,
                         "",
@@ -73,6 +101,93 @@ fun AddGroupSecurityOption(
                         }.clip(CircleShape)
                     )
                 }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                ExposedDropdownMenuBox(
+                    expanded = expanded.value,
+                    onExpandedChange = {
+                        expanded.value = it
+                    }
+                ){
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = type.value,
+                        onValueChange = {
+                            type.value = it
+                        },
+                        readOnly = true,
+                        placeholder = {
+                            Text(
+                                text = "Silahkan Pilih Tipe Keamanan Untuk Grup Ini" ,
+                                color = Color(0xFF9E9E9E),
+                                style = MaterialTheme.typography.subtitle1
+                            )
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            backgroundColor = Color.White,
+                            focusedBorderColor = secondaryColor,
+                            unfocusedBorderColor = Color.Black,
+                            cursorColor = Color.Transparent,
+                            textColor = Color(0xFF384A92)
+                        ),
+                        textStyle = MaterialTheme.typography.subtitle1,
+                        singleLine = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value)
+                        },
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        )
+                    )
+                    ExposedDropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                        if(addGroupSecurityState.value.listTypeSecurityData.isNotEmpty()){
+                            addGroupSecurityState.value.listTypeSecurityData.forEach { optionItem ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        type.value = optionItem.nmOption
+                                        expanded.value = false
+                                    }
+                                ) {
+                                    Text(text = optionItem.nmOption)
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                FormTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = data.value,
+                    labelHints = "Masukan Password Anda",
+                    leadingIcon = null,
+                    isPassword = true,
+                    onValueChange = {
+                        data.value = it
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                FormTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = value.value,
+                    labelHints = "Masukan Isian Data",
+                    leadingIcon = null,
+                    onValueChange = {
+                        value.value = it
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
                 Button(
                     elevation = ButtonDefaults.elevation(0.dp),
                     modifier = Modifier.fillMaxWidth().height(40.dp),

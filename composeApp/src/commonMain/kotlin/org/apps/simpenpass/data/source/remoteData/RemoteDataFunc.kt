@@ -97,7 +97,7 @@ interface GroupPassDataFunc {
 
     suspend fun getTypeSecurityGroup(
         token: String
-    ): BaseResponse<GroupSecurityTypeResponse>
+    ): BaseResponse<List<GroupSecurityTypeResponse>>
 
     suspend fun getGroupSecurityData(
         token: String,

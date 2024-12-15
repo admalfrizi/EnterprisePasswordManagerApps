@@ -2,6 +2,7 @@ package org.apps.simpenpass.presentation.components.formComponents
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -35,6 +37,7 @@ fun FormTextField(
     leadingIcon : @Composable() (() -> Unit)?
 ) {
     var showPassword by remember { mutableStateOf(value = false) }
+    val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
         singleLine = true,
@@ -64,6 +67,11 @@ fun FormTextField(
             }
         } else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = if(isPassword) KeyboardType.Password else KeyboardType.Text),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+            }
+        ),
         shape = RoundedCornerShape(10.dp),
         leadingIcon = leadingIcon,
         trailingIcon = {
