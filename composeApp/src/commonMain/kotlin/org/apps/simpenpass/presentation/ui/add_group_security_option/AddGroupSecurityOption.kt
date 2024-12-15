@@ -130,7 +130,7 @@ fun AddGroupSecurityOption(
                         readOnly = true,
                         placeholder = {
                             Text(
-                                text = "Silahkan Pilih Tipe Keamanan Untuk Grup Ini" ,
+                                text = "Silahkan Pilih Tipe Keamanan" ,
                                 color = Color(0xFF9E9E9E),
                                 style = MaterialTheme.typography.subtitle1
                             )

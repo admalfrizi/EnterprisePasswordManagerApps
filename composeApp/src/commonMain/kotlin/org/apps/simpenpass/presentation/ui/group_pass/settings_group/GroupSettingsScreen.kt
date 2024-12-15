@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -86,6 +87,7 @@ import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSec
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.maskStringAfter3Char
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.profileNameInitials
 import org.apps.simpenpass.utils.setToast
@@ -414,7 +416,7 @@ fun ListSecurityData(
     var isPopUp by remember { mutableStateOf(false) }
     val addGroupSecurityDataState = groupDataSecurityViewModel.groupSecurityDataState.collectAsState()
 
-    if(sheetState.isVisible){
+    LaunchedEffect(Unit){
         groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
     }
 
@@ -495,7 +497,7 @@ fun ListSecurityData(
                                     modifier = Modifier.height(5.dp)
                                 )
                                 Text(
-                                    item.securityValue ?: "",
+                                    if(item.typeId == 1) maskStringAfter3Char(item.securityValue!!) else item.securityValue ?: "",
                                     style = MaterialTheme.typography.subtitle1,
                                     color = secondaryColor
                                 )
@@ -522,7 +524,7 @@ fun ListSecurityData(
             }
 
 
-            if(addGroupSecurityDataState.value.listSecurityData.isEmpty()){
+            if(addGroupSecurityDataState.value.listSecurityData.isEmpty() && !addGroupSecurityDataState.value.isLoading){
                 item{
                     EmptyWarning(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

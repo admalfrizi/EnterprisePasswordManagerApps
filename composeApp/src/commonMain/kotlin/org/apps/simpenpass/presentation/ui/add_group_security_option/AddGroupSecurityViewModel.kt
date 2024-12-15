@@ -130,6 +130,6 @@ data class GroupSecurityDataState(
     val isLoading: Boolean = false,
     val msg : String? = null,
     val isError: Boolean = false,
-    val listSecurityData: List<GroupSecurityData> = emptyList(),
+    var listSecurityData: List<GroupSecurityData> = emptyList(),
     val listTypeSecurityData: List<GroupSecurityTypeResponse> = emptyList()
 )

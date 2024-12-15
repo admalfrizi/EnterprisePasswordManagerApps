@@ -47,6 +47,10 @@ fun maskString(data: String): String {
     return "*".repeat(data.length)
 }
 
+fun maskStringAfter3Char(data: String): String {
+    return data.substring(0,3) + "*".repeat(data.length -3)
+}
+
 expect fun setToast(message: String)
 expect fun copyText(text: String)
 
