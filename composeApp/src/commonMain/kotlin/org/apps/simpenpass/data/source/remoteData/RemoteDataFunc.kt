@@ -102,7 +102,7 @@ interface GroupPassDataFunc {
     suspend fun getGroupSecurityData(
         token: String,
         groupId: Int
-    ): BaseResponse<List<GroupSecurityData>>
+    ): BaseResponse<GroupSecurityData>
 
     suspend fun addGroupSecurityData(
         token: String,

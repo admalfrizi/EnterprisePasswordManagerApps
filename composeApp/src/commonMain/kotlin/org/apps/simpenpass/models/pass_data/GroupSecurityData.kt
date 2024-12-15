@@ -10,7 +10,7 @@ data class GroupSecurityData(
     @SerialName("group_id")
     val groupId: Int?,
     @SerialName("type_id")
-    val typeId: Int?,
+    var typeId: Int?,
     @SerialName("security_data")
     var securityData: String,
     @SerialName("security_value")

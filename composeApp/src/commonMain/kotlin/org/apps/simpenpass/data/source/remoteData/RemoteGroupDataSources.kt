@@ -162,14 +162,14 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
     override suspend fun getGroupSecurityData(
         token: String,
         groupId: Int
-    ): BaseResponse<List<GroupSecurityData>> {
+    ): BaseResponse<GroupSecurityData> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "securityOptionData/$groupId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
 
-            return response.body<BaseResponse<List<GroupSecurityData>>>()
+            return response.body<BaseResponse<GroupSecurityData>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

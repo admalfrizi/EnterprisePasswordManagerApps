@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -415,14 +413,30 @@ fun ListSecurityData(
 ) {
     var isPopUp by remember { mutableStateOf(false) }
     val addGroupSecurityDataState = groupDataSecurityViewModel.groupSecurityDataState.collectAsState()
+    val securityData = addGroupSecurityDataState.value.securityData
 
     LaunchedEffect(Unit){
         groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
     }
 
+    if(addGroupSecurityDataState.value.isDeleted){
+        isPopUp = false
+        setToast("Data Keamanan Telah Dihapus !")
+        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
+        addGroupSecurityDataState.value.isDeleted = false
+    }
+
+    if(addGroupSecurityDataState.value.isUpdated){
+        isPopUp = false
+        setToast("Data Keamanan Telah Diubah !")
+        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
+        addGroupSecurityDataState.value.isUpdated = false
+    }
+
     if(isPopUp){
         AddGroupSecurityOption(
             groupId,
+            groupDataSecurityViewModel,
             onDismissRequest = {
                 isPopUp = false
             },
@@ -464,75 +478,73 @@ fun ListSecurityData(
         Spacer(
             modifier = Modifier.height(16.dp)
         )
-        LazyColumn(
+        Column(
             modifier = Modifier.fillMaxWidth()
         ){
             if(addGroupSecurityDataState.value.isLoading){
-                item{
-                    AddMemberLoading()
-                }
+                AddMemberLoading()
             }
-            if(addGroupSecurityDataState.value.listSecurityData.isNotEmpty() && sheetState.isVisible && !addGroupSecurityDataState.value.isLoading){
-                items(addGroupSecurityDataState.value.listSecurityData){ item ->
-                    Box(
-                        modifier = Modifier.fillMaxWidth().background(color = Color.White)
+            if(addGroupSecurityDataState.value.securityData != null && sheetState.isVisible && !addGroupSecurityDataState.value.isLoading){
+                Box(
+                    modifier = Modifier.fillMaxWidth().background(color = Color.White)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp).fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.Start
                         ) {
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                Text(
-                                    if(item.typeId == 2) item.securityData else "Data Password",
-                                    style = MaterialTheme.typography.h6,
-                                    color = secondaryColor,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Spacer(
-                                    modifier = Modifier.height(5.dp)
-                                )
-                                Text(
-                                    if(item.typeId == 1) maskStringAfter3Char(item.securityValue!!) else item.securityValue ?: "",
-                                    style = MaterialTheme.typography.subtitle1,
-                                    color = secondaryColor
-                                )
-
-                            }
-                            Spacer(
-                                modifier = Modifier.width(16.dp)
+                            Text(
+                                if(securityData?.typeId == 2) securityData.securityData else "Data Password",
+                                style = MaterialTheme.typography.h6,
+                                color = secondaryColor,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                            IconButton(
-                                onClick = {
-
-                                },
-                                content = {
-                                    Image(
-                                        painterResource(Res.drawable.delete_ic),""
-                                    )
-                                }
+                            Spacer(
+                                modifier = Modifier.height(5.dp)
+                            )
+                            Text(
+                                if(securityData?.typeId == 1) maskStringAfter3Char(securityData.securityValue!!) else securityData?.securityValue ?: "",
+                                style = MaterialTheme.typography.subtitle1,
+                                color = secondaryColor
                             )
 
                         }
+                        Spacer(
+                            modifier = Modifier.width(16.dp)
+                        )
+                        IconButton(
+                            onClick = {
+                                groupDataSecurityViewModel.deleteAddSecurityDataForGroup(
+                                    groupId,
+                                    securityData?.id!!
+                                )
+                            },
+                            content = {
+                                Image(
+                                    painterResource(Res.drawable.delete_ic),""
+                                )
+                            }
+                        )
+
                     }
                 }
+
 
             }
 
 
-            if(addGroupSecurityDataState.value.listSecurityData.isEmpty() && !addGroupSecurityDataState.value.isLoading){
-                item{
-                    EmptyWarning(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                        warnTitle = "Tidak Ada Data Keamanan pada Grup Ini",
-                        warnText = "Tambahkan Data Keamanan untuk Mengamankan Data Password di Grup Ini",
-                        isEnableBtn = false,
-                    )
-                }
+            if(securityData == null && !addGroupSecurityDataState.value.isLoading){
+                EmptyWarning(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    warnTitle = "Tidak Ada Data Keamanan pada Grup Ini",
+                    warnText = "Tambahkan Data Keamanan untuk Mengamankan Data Password di Grup Ini",
+                    isEnableBtn = false,
+                )
             }
         }
         Spacer(
@@ -548,7 +560,7 @@ fun ListSecurityData(
             colors = ButtonDefaults.buttonColors(btnColor),
             content = {
                 Text(
-                    "Tambahkan Data Keamanan",
+                    if(securityData != null) "Ubah Data Keamanan" else "Tambahkan Data Keamanan",
                     style = MaterialTheme.typography.h6,
                     color = fontColor1
                 )

@@ -43,23 +43,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.setToast
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddGroupSecurityOption(
     groupId: Int,
-    addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
+    addGroupSecurityViewModel: AddGroupSecurityViewModel,
     onDismissRequest: () -> Unit
 ) {
     var addGroupSecurityState = addGroupSecurityViewModel.groupSecurityDataState.collectAsState()
+    val dataSecurity = addGroupSecurityState.value.securityData
     var expanded = remember { mutableStateOf(false) }
+    var toUpdate = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     var type = remember { mutableStateOf("") }
     var typeId = remember { mutableStateOf(0) }
@@ -73,6 +75,22 @@ fun AddGroupSecurityOption(
     if(typeId.value == 1){
         data.value = ""
     }
+
+    if(addGroupSecurityState.value.securityData != null){
+        val findTypeData = addGroupSecurityState.value.listTypeSecurityData.find { it.id == dataSecurity?.typeId }
+
+        toUpdate.value = true
+        value.value = dataSecurity?.securityValue!!
+        typeId.value = dataSecurity.typeId!!
+        type.value = findTypeData?.nmOption ?: ""
+
+        if(typeId.value == 2){
+            data.value = dataSecurity.securityData
+        }
+    }
+
+    Napier.v("securityData :$dataSecurity")
+    Napier.v("typeId  :${typeId.value}")
 
     Dialog(
         onDismissRequest = {
@@ -108,7 +126,15 @@ fun AddGroupSecurityOption(
                         Icons.Default.Clear,
                         "",
                         modifier = Modifier.clickable{
+                            if(dataSecurity != null){
+                                data.value = ""
+                                value.value = ""
+                                type.value = ""
+                                typeId.value = 0
+                                toUpdate.value = false
+                            }
                             onDismissRequest()
+
                         }.clip(CircleShape)
                     )
                 }
@@ -161,6 +187,11 @@ fun AddGroupSecurityOption(
                                     onClick = {
                                         type.value = optionItem.nmOption
                                         typeId.value = optionItem.id
+
+                                        if(dataSecurity != null){
+                                            dataSecurity.typeId = optionItem.id
+                                        }
+
                                         expanded.value = false
                                     }
                                 ) {
@@ -182,6 +213,11 @@ fun AddGroupSecurityOption(
                         labelHints =  "Masukan Pertanyaan Keamanan",
                         leadingIcon = null,
                         onValueChange = {
+
+                            if(dataSecurity != null){
+                                dataSecurity.securityData = it
+                            }
+
                             data.value = it
                         }
                     )
@@ -197,6 +233,10 @@ fun AddGroupSecurityOption(
                         leadingIcon = null,
                         isPassword = typeId.value == 1,
                         onValueChange = {
+                            if(dataSecurity != null){
+                                dataSecurity.securityValue = it
+                            }
+
                             value.value = it
                         }
                     )
@@ -210,7 +250,7 @@ fun AddGroupSecurityOption(
                     colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                     shape = RoundedCornerShape(20.dp),
                     onClick = {
-                        validateInsertData(addGroupSecurityViewModel,typeId.value,data.value,value.value,groupId)
+                        validateInsertData(toUpdate.value,addGroupSecurityViewModel,typeId.value,data.value,value.value,groupId,dataSecurity?.id)
                     },
                     enabled = typeId.value != 0
                 ) {
@@ -225,7 +265,7 @@ fun AddGroupSecurityOption(
                         }
                         false -> {
                             Text(
-                                text = "Tambahkan",
+                                text = if(toUpdate.value) "Ubah Data" else "Tambahkan",
                                 color = fontColor1,
                                 style = MaterialTheme.typography.button.copy(fontSize = 14.sp)
                             )
@@ -239,11 +279,13 @@ fun AddGroupSecurityOption(
 }
 
 fun validateInsertData(
+    toUpdate : Boolean,
     addGroupSecurityViewModel: AddGroupSecurityViewModel,
     typeId: Int,
     data: String,
     value: String,
-    groupId: Int
+    groupId: Int,
+    id: Int? = 0
 ){
     val formData = AddGroupSecurityDataRequest(
         typeId = typeId,
@@ -256,7 +298,14 @@ fun validateInsertData(
             if(value.isEmpty()){
                 setToast("Data Password Anda Tidak Boleh Kosong")
             } else {
-                addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
+                when(toUpdate){
+                    true -> {
+                        addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
+                    }
+                    false -> {
+                        addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
+                    }
+                }
             }
         }
         2 -> {
@@ -267,7 +316,14 @@ fun validateInsertData(
             } else if(data.isEmpty() || value.isEmpty()) {
                 setToast("Semua Data Harus Diisi !")
             } else {
-                addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
+                when(toUpdate){
+                    true -> {
+                        addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
+                    }
+                    false -> {
+                        addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
+                    }
+                }
             }
         }
     }

@@ -80,7 +80,7 @@ class AddGroupSecurityViewModel(
                         _groupSecurityDataState.update {
                             it.copy(
                                 isLoading = false,
-                                listSecurityData = res.data.data!!
+                                securityData = res.data.data
                             )
                         }
                     }
@@ -124,12 +124,90 @@ class AddGroupSecurityViewModel(
             }
         }
     }
+
+    fun updateSecurityDataForGroup(
+        addGroupSecurityDataRequest: AddGroupSecurityDataRequest,
+        groupId: Int,
+        id: Int
+    ) {
+        viewModelScope.launch {
+            repo.updateGroupSecurityData(addGroupSecurityDataRequest,groupId,id).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isUpdated = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteAddSecurityDataForGroup(
+        groupId: Int,
+        id: Int
+    ) {
+        viewModelScope.launch {
+            repo.deleteGroupSecurityData(groupId,id).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDeleted = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 data class GroupSecurityDataState(
     val isLoading: Boolean = false,
     val msg : String? = null,
     val isError: Boolean = false,
-    var listSecurityData: List<GroupSecurityData> = emptyList(),
+    var isDeleted: Boolean = false,
+    var isUpdated: Boolean = false,
+    var securityData: GroupSecurityData? = null,
     val listTypeSecurityData: List<GroupSecurityTypeResponse> = emptyList()
 )
