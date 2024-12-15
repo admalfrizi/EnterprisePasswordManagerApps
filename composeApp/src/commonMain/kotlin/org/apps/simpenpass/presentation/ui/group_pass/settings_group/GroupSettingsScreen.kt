@@ -420,9 +420,10 @@ fun ListSecurityData(
 
     if(isPopUp){
         AddGroupSecurityOption(
+            groupId,
             onDismissRequest = {
                 isPopUp = false
-            }
+            },
         )
     }
 
@@ -521,7 +522,7 @@ fun ListSecurityData(
             }
 
 
-            if(addGroupSecurityDataState.value.listSecurityData.isEmpty() && !addGroupSecurityDataState.value.isLoading){
+            if(addGroupSecurityDataState.value.listSecurityData.isEmpty()){
                 item{
                     EmptyWarning(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),

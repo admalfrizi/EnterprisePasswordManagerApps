@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
+import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -80,6 +81,42 @@ class AddGroupSecurityViewModel(
                             it.copy(
                                 isLoading = false,
                                 listSecurityData = res.data.data!!
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun addSecurityDataForGroup(
+        addGroupSecurityDataRequest: AddGroupSecurityDataRequest,
+        groupId: Int
+    ) {
+        viewModelScope.launch {
+            repo.addGroupSecurityData(addGroupSecurityDataRequest,groupId).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                msg = res.data.message
                             )
                         }
                     }

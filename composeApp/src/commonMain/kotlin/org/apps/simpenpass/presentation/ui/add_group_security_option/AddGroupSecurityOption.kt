@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
@@ -53,6 +54,7 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddGroupSecurityOption(
+    groupId: Int,
     addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
     onDismissRequest: () -> Unit
 ) {
@@ -208,7 +210,7 @@ fun AddGroupSecurityOption(
                     colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                     shape = RoundedCornerShape(20.dp),
                     onClick = {
-                        validateInsertData(typeId.value,data.value,value.value)
+                        validateInsertData(addGroupSecurityViewModel,typeId.value,data.value,value.value,groupId)
                     },
                     enabled = typeId.value != 0
                 ) {
@@ -237,16 +239,24 @@ fun AddGroupSecurityOption(
 }
 
 fun validateInsertData(
+    addGroupSecurityViewModel: AddGroupSecurityViewModel,
     typeId: Int,
     data: String,
-    value: String
+    value: String,
+    groupId: Int
 ){
+    val formData = AddGroupSecurityDataRequest(
+        typeId = typeId,
+        securityData = data,
+        securityValue = value
+    )
+
     when(typeId){
         1 -> {
             if(value.isEmpty()){
                 setToast("Data Password Anda Tidak Boleh Kosong")
             } else {
-
+                addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
             }
         }
         2 -> {
@@ -257,7 +267,7 @@ fun validateInsertData(
             } else if(data.isEmpty() || value.isEmpty()) {
                 setToast("Semua Data Harus Diisi !")
             } else {
-
+                addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
             }
         }
     }
