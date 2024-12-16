@@ -89,7 +89,6 @@ fun FormScreen(
 ) {
     val isDismiss = remember { mutableStateOf(false) }
     val formState by formViewModel.formState.collectAsState()
-    val key = "An13sPr@b0w0G@nj@rG1br@n1m1n"
     var encData by remember { mutableStateOf("") }
     var dec by remember { mutableStateOf("") }
 
@@ -122,11 +121,6 @@ fun FormScreen(
     }
     val insertAddContentDataPass = remember {
         mutableStateListOf<InsertAddContentDataPass>()
-    }
-
-    if(isEncryptData && passData.isNotEmpty() && passData.length >= 4){
-        val enc = CamelliaCrypto().encrypt(passData,key)
-        encData = enc
     }
 
     bottomEdgeColor.value = secondaryColor
@@ -251,10 +245,6 @@ fun FormScreen(
                 bottomBar = {
                     BtnForm(
                         {
-                            if(dec.isNotEmpty()){
-                                encData = CamelliaCrypto().encrypt(dec,key)
-                            }
-
                             when(isEncryptData){
                                 true -> {
                                     isPopUp.value = true
@@ -348,7 +338,6 @@ fun FormScreen(
                                             )
                                         )
                                     }
-
                                     Spacer(
                                         modifier = Modifier.height(16.dp)
                                     )

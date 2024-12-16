@@ -21,6 +21,8 @@ data class PassDataGroupRequest(
     val url: String?,
     @SerialName("desc")
     val desc: String?,
+    @SerialName("is_encrypted")
+    var isEncrypted: Boolean?,
     @SerialName("add_pass_content")
     val addPassContent: List<InsertAddContentDataPass>?
 )

@@ -86,6 +86,7 @@ val viewModelModule = module {
     viewModel {
         FormPassGroupViewModel(
             repoPassDataGroup = get(),
+            repoGroup = get(),
             savedStateHandle = get()
         )
     }

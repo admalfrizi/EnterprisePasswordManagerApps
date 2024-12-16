@@ -26,6 +26,8 @@ data class PassDataGroupByIdResponse(
     var url: String?,
     @SerialName("desc")
     var desc: String?,
+    @SerialName("is_encrypted")
+    var isEncrypted: Boolean?,
     @SerialName("add_pass_content")
     var addPassContent: List<AddContentPassDataGroup>
 )

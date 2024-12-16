@@ -156,41 +156,6 @@ class FormViewModel(
         }
     }
 
-//    fun addContentDataToDb(
-//        passId: Int,
-//        listAddContentPassData: List<InsertAddContentDataPass>
-//    ){
-//        viewModelScope.launch {
-//            repo.addContentPassData(passId,listAddContentPassData).collect { res ->
-//                when(res){
-//                    is NetworkResult.Error -> {
-//                        _formState.update {
-//                            it.copy(
-//                                isLoading = false,
-//                                error = res.error,
-//                            )
-//                        }
-//                    }
-//                    is NetworkResult.Loading -> {
-//                        _formState.update {
-//                            it.copy(
-//                                isLoading = true,
-//                            )
-//                        }
-//                    }
-//                    is NetworkResult.Success -> {
-//                        _formState.update {
-//                            it.copy(
-//                                isLoading = false,
-//                                msgAddContentData = res.data.message,
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private fun listContentPassData(
         passId: Int
     ){

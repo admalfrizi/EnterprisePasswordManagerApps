@@ -21,6 +21,7 @@ import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.utils.Constants
@@ -137,6 +138,27 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             }
 
             return response.body<BaseResponse<GrupPassData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun verifySecurityDataInGroup(
+        token: String,
+        groupId: Int,
+        formVerifySecurityData: VerifySecurityDataGroupRequest
+    ): BaseResponse<Boolean> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "verifySecurityData"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("groupId", groupId)
+                setBody(formVerifySecurityData)
+            }
+
+            return response.body<BaseResponse<Boolean>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

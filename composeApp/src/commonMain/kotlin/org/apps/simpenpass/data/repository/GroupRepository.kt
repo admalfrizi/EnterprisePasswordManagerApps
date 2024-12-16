@@ -16,6 +16,7 @@ import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleNameRequest
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupRepository(
@@ -352,6 +353,32 @@ class GroupRepository(
         try {
             localData.getToken.collect { token ->
                 val result = remoteGroupSources.deleteGroupSecurityData(token,id,groupId)
+
+                when(result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun verifySecurityData(
+        groupId: Int,
+        formVerifySecurityDataGroupRequest: VerifySecurityDataGroupRequest
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteGroupSources.verifySecurityDataInGroup(token,groupId,formVerifySecurityDataGroupRequest)
 
                 when(result.success) {
                     true -> {

@@ -25,12 +25,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -40,6 +42,8 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -49,6 +53,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,10 +62,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,6 +75,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
@@ -77,11 +85,13 @@ import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataGroupRequest
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
@@ -103,6 +113,11 @@ fun FormPassGroupScreen(
     val formPassGroupState by formPassGroupViewModel.formPassDataGroupState.collectAsStateWithLifecycle()
     var isDropdownShow by remember { mutableStateOf(false) }
     var isDialogPopup by remember { mutableStateOf(false) }
+    var isEncryptData = remember { mutableStateOf(false) }
+    var isPopUpDecrypt = remember { mutableStateOf(false) }
+    var toDecrypt = remember { mutableStateOf(false) }
+    var decData = remember { mutableStateOf("") }
+    var encData = remember { mutableStateOf("") }
 
     var nmAccount = remember { mutableStateOf("") }
     var userName = remember { mutableStateOf("") }
@@ -163,14 +178,24 @@ fun FormPassGroupScreen(
         }
     }
 
+    if(isEncryptData.value && passData.value.isNotEmpty() && passData.value.length >= 4){
+        encData.value = CamelliaCrypto().encrypt(passData.value,"dwdwd")
+    }
+
     if(formPassGroupState.passData != null){
         userName.value = formPassGroupState.passData?.username!!
         nmAccount.value = formPassGroupState.passData?.accountName!!
         desc.value = formPassGroupState.passData?.desc!!
         email.value = formPassGroupState.passData?.email ?: ""
         jnsPass.value = formPassGroupState.passData?.jenisData ?: ""
-        passData.value = formPassGroupState.passData?.password!!
         urlPass.value = formPassGroupState.passData?.url ?: ""
+
+        if(formPassGroupState.passData?.isEncrypted!!){
+            toDecrypt.value = true
+            isPopUpDecrypt.value = true
+        }
+        passData.value = if(decData.value.isEmpty()) formPassGroupState.passData?.password!! else decData.value
+
     }
 
     if(formPassGroupState.passData?.posisiId != null){
@@ -191,17 +216,15 @@ fun FormPassGroupScreen(
         }
     }
 
-    val formData = PassDataGroupRequest(
-        accountName = nmAccount.value,
-        username = userName.value,
-        desc = desc.value,
-        email = email.value,
-        jenisData = jnsPass.value,
-        password = passData.value,
-        url = urlPass.value,
-        posisiId = roleId.value,
-        addPassContent = insertAddContentPassData
-    )
+    if(isPopUpDecrypt.value){
+        VerifyKeyInGroupDialog(
+            onDismissRequest = {
+                isPopUpDecrypt.value = false
+            },
+            formPassGroupState.groupId!!,
+            formPassGroupViewModel
+        )
+    }
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -286,24 +309,54 @@ fun FormPassGroupScreen(
                 bottomBar = {
                     BtnForm(
                         {
-                            if(formPassGroupState.passDataGroupId != "-1" && formPassGroupState.passData != null){
-                                formPassGroupViewModel.updatePassData(
-                                    formPassGroupState.groupId!!,
-                                    formPassGroupState.passDataGroupId!!,
-                                    formData,
-                                    updateListItemAddContent,
-                                    selectedDelete
-                                )
+                            when(isEncryptData.value){
+                                true -> {
+                                    isPopUpDecrypt.value = true
+                                }
+                                false -> {
+                                    val formData = PassDataGroupRequest(
+                                        accountName = nmAccount.value,
+                                        username = userName.value,
+                                        desc = desc.value,
+                                        email = email.value,
+                                        jenisData = jnsPass.value,
+                                        password = passData.value,
+                                        url = urlPass.value,
+                                        posisiId = roleId.value,
+                                        isEncrypted = isEncryptData.value,
+                                        addPassContent = insertAddContentPassData
+                                    )
 
-                            } else {
-                                validatorPassData(
-                                    nmAccount.value,
-                                    passData.value,
-                                    formPassGroupViewModel,
-                                    formData,
-                                    formPassGroupState.groupId!!
-                                )
+                                    checkIsUpdateData(
+                                        formPassGroupState.groupId!!,
+                                        formPassGroupState.passDataGroupId!!,
+                                        nmAccount.value,
+                                        passData.value,
+                                        formPassGroupViewModel,
+                                        formData,
+                                        selectedDelete,
+                                        updateListItemAddContent
+                                    )
+                                }
                             }
+//                            if(formPassGroupState.passDataGroupId != "-1" && formPassGroupState.passData != null){
+//                                formPassGroupViewModel.updatePassData(
+//                                    formPassGroupState.groupId!!,
+//                                    formPassGroupState.passDataGroupId!!,
+//                                    formData,
+//                                    updateListItemAddContent,
+//                                    selectedDelete
+//                                )
+//
+//                            } else {
+//                                validatorPassData(
+//                                    nmAccount.value,
+//                                    passData.value,
+//                                    formPassGroupViewModel,
+//                                    formData,
+//                                    formPassGroupState.groupId!!
+//                                )
+//                            }
                         },
                         {
                             if(formPassGroupState.passData != null){
@@ -327,6 +380,7 @@ fun FormPassGroupScreen(
                 },
                 content = {
                    FormContentView(
+                       isEncryptData,
                        formPassGroupState,
                        isInsertData,
                        nmData,
@@ -354,6 +408,7 @@ fun FormPassGroupScreen(
 
 @Composable
 fun FormContentView(
+    isEncryptData: MutableState<Boolean>,
     formState: FormPassGroupState,
     isInsertData: MutableState<Boolean>,
     nmData: MutableState<String>,
@@ -387,6 +442,35 @@ fun FormContentView(
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(
+                            text = "Enkripsi Data",
+                            style = MaterialTheme.typography.body2.copy(
+                                color = secondaryColor
+                            ),
+                        )
+                        Switch(
+                            checked = isEncryptData.value,
+                            onCheckedChange = {
+//                                                if(formState.passData != null){
+//                                                    formState.passData?.isEncrypted = it
+//                                                }
+
+                                isEncryptData.value = it
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = secondaryColor,
+                                uncheckedThumbColor = Color.LightGray
+                            )
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier.height(16.dp)
+                    )
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = "Nama Akun",
@@ -1004,6 +1088,160 @@ fun DialogEditRoleInPassData(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun VerifyKeyInGroupDialog(
+    onDismissRequest: () -> Unit,
+    groupId: String,
+    formViewModel: FormPassGroupViewModel,
+) {
+    var securityData = remember { mutableStateOf("") }
+    var securityValue = remember { mutableStateOf("") }
+    var formState = formViewModel.formPassDataGroupState.collectAsState()
+
+    if(formState.value.dataSecurity == null){
+        formViewModel.getSecurityData()
+    }
+
+    if(formState.value.dataSecurity?.typeId == 2){
+        securityData.value = formState.value.dataSecurity?.securityData!!
+    }
+
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            elevation = 0.dp,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        "Silahkan Masukan Data Keamanan Grup",
+                        style = MaterialTheme.typography.h6.copy(color = secondaryColor),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
+                    )
+                    Icon(
+                        Icons.Default.Clear,
+                        "",
+                        modifier = Modifier.clickable{
+                            onDismissRequest()
+                        }.clip(CircleShape)
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                Text(
+                    "Data Password akan dienkripsi, Silahkan Masukan Data Kunci pada Grup Ini untuk Membuka Data Password !",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = secondaryColor
+                )
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                if(formState.value.dataSecurity?.typeId == 2) {
+                    Text(
+                        formState.value.dataSecurity?.securityData ?: "",
+                        style = MaterialTheme.typography.body1,
+                        color = secondaryColor
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+                FormTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = securityValue.value,
+                    labelHints = if(formState.value.dataSecurity?.typeId == 1) "Masukan Password Anda" else "Masukan Jawaban Pertanyaan Di Atas",
+                    isPassword = if(formState.value.dataSecurity?.typeId == 1) true else false,
+                    leadingIcon = null,
+                    onValueChange = {
+                        securityValue.value = it
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                Button(
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
+                    shape = RoundedCornerShape(20.dp),
+                    onClick = {
+                        val formVerify = VerifySecurityDataGroupRequest(
+                            securityData.value,
+                            securityValue.value
+                        )
+
+                        formViewModel.verifyPassForDecrypt(formVerify,groupId)
+                    }
+                ) {
+                    when(formState.value.isLoading){
+                        true -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 3.dp,
+                                strokeCap = StrokeCap.Round
+                            )
+                        }
+                        false -> {
+                            Text(
+                                text = "Verifikasi",
+                                color = fontColor1,
+                                style = MaterialTheme.typography.button.copy(fontSize = 14.sp)
+                            )
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+fun checkIsUpdateData(
+    groupId : String,
+    passId : String,
+    nmAccount: String,
+    passData: String,
+    formViewModel: FormPassGroupViewModel,
+    formData: PassDataGroupRequest,
+    selectedDelete: List<FormAddContentPassDataGroup>,
+    updateListItemAddContent: List<FormAddContentPassDataGroup>,
+){
+    when(passId.isNotEmpty() && passId != "{passId}"){
+        true -> {
+            formViewModel.updatePassData(
+                groupId,
+                passId,
+                formData,
+                updateListItemAddContent,
+                selectedDelete,
+            )
+        }
+        false -> {
+            validatorPassData(
+                nmAccount,
+                passData,
+                formViewModel,
+                formData,
+                groupId
+            )
         }
     }
 }

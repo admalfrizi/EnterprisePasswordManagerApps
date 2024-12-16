@@ -10,16 +10,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.models.pass_data.AddContentPassDataGroup
+import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
 import org.apps.simpenpass.models.request.PassDataGroupRequest
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.utils.NetworkResult
 
 class FormPassGroupViewModel(
     private val repoPassDataGroup: PassDataGroupRepository,
+    private val repoGroup: GroupRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _formPassGroupDataState = MutableStateFlow(FormPassGroupState())
@@ -181,6 +185,75 @@ class FormPassGroupViewModel(
             }
         }
     }
+
+    fun getSecurityData() {
+        viewModelScope.launch {
+            repoGroup.getGroupSecurityData(formPassDataGroupState.value.groupId?.toInt()!!).flowOn(
+                Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                dataSecurity = res.data.data,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun verifyPassForDecrypt(
+        formVerifySecurityDataGroupRequest: VerifySecurityDataGroupRequest,
+        groupId: String,
+    ) {
+        viewModelScope.launch {
+            repoGroup.verifySecurityData(groupId.toInt(),formVerifySecurityDataGroupRequest).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isPassVerify = true,
+                                key = formVerifySecurityDataGroupRequest.securityValue
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -192,6 +265,9 @@ data class FormPassGroupState(
     val listRoleData: List<RoleGroupData> = emptyList(),
     var isCreated: Boolean = false,
     var isUpdated: Boolean = false,
+    var isPassVerify: Boolean = false,
+    var dataSecurity: GroupSecurityData? = null,
+    val key: String? = null,
     val groupId: String? = null,
     val error : String? = null,
     val msg : String? = null,

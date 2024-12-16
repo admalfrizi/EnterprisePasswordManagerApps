@@ -23,6 +23,7 @@ import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleNameRequest
 import org.apps.simpenpass.models.request.UpdateUserDataRequest
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
@@ -94,6 +95,12 @@ interface GroupPassDataFunc {
         token: String,
         query: String
     ): BaseResponse<GrupPassData>
+
+    suspend fun verifySecurityDataInGroup(
+        token: String,
+        groupId: Int,
+        formVerifySecurityData: VerifySecurityDataGroupRequest
+    ): BaseResponse<Boolean>
 
     suspend fun getTypeSecurityGroup(
         token: String
