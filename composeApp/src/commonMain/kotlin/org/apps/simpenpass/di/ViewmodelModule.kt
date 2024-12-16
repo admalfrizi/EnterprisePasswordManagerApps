@@ -110,6 +110,7 @@ val viewModelModule = module {
     viewModel {
         PassDataDetailsViewModel(
             repoPassDataGroup = get(),
+            repoGroup = get(),
             savedStateHandle = get()
         )
     }

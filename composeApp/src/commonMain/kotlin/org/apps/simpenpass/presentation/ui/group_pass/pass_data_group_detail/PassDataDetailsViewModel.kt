@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
+import org.apps.simpenpass.models.pass_data.GroupSecurityData
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.utils.NetworkResult
 
 class PassDataDetailsViewModel(
     private val repoPassDataGroup: PassDataGroupRepository,
+    private val repoGroup : GroupRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -67,6 +71,76 @@ class PassDataDetailsViewModel(
         }
     }
 
+    fun getSecurityData() {
+        viewModelScope.launch {
+            repoGroup.getGroupSecurityData(passDataDtlState.value.groupId?.toInt()!!).flowOn(
+                Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _passDataDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                msg = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _passDataDtlState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _passDataDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                dataSecurity = res.data.data,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun verifyPassForDecrypt(
+        verifySecurityDataGroupRequest: VerifySecurityDataGroupRequest,
+    ) {
+        viewModelScope.launch {
+            repoGroup.verifySecurityData(passDataDtlState.value.groupId?.toInt()!!,verifySecurityDataGroupRequest ).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _passDataDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _passDataDtlState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _passDataDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isPassVerify = true,
+                                key = verifySecurityDataGroupRequest.securityValue
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     fun clearState(){
         _passDataDtlState.update {
             it.copy(
@@ -79,7 +153,11 @@ class PassDataDetailsViewModel(
 data class PassDataDetailsState(
     val passDataGroupId : Int? = null,
     val groupId : Int? = null,
+    val key : String? = null,
+    val msg: String? = null,
     val passData: PassDataGroupByIdResponse? = null,
-    val isLoading : Boolean? = false,
-    val isError : Boolean? = false
+    val isLoading : Boolean = false,
+    val isError : Boolean? = false,
+    var isPassVerify : Boolean = false,
+    val dataSecurity : GroupSecurityData? = null
 )

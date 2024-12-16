@@ -216,6 +216,14 @@ fun FormPassGroupScreen(
         }
     }
 
+    if(formPassGroupState.isPassVerify && toDecrypt.value){
+        isPopUpDecrypt.value = false
+        formPassGroupState.passData?.isEncrypted = false
+        decData.value = CamelliaCrypto().decrypt(formPassGroupState.passData?.password!!,formPassGroupState.key!!)
+        formPassGroupState.isPassVerify = false
+        toDecrypt.value = false
+    }
+
     if(isPopUpDecrypt.value){
         VerifyKeyInGroupDialog(
             onDismissRequest = {
@@ -224,6 +232,36 @@ fun FormPassGroupScreen(
             formPassGroupState.groupId!!,
             formPassGroupViewModel
         )
+    }
+
+    if(formPassGroupState.isPassVerify && !toDecrypt.value){
+        encData.value = CamelliaCrypto().encrypt(passData.value, formPassGroupState.key!!)
+
+        val formData = PassDataGroupRequest(
+            accountName = nmAccount.value,
+            username = userName.value,
+            desc = desc.value,
+            email = email.value,
+            jenisData = jnsPass.value,
+            password = encData.value,
+            url = urlPass.value,
+            posisiId = roleId.value,
+            isEncrypted = isEncryptData.value,
+            addPassContent = insertAddContentPassData
+        )
+
+        checkIsUpdateData(
+            formPassGroupState.groupId!!,
+            formPassGroupState.passDataGroupId!!,
+            nmAccount.value,
+            passData.value,
+            formPassGroupViewModel,
+            formData,
+            selectedDelete,
+            updateListItemAddContent
+        )
+
+        formPassGroupState.isPassVerify = false
     }
 
     ModalBottomSheetLayout(
@@ -1224,7 +1262,7 @@ fun checkIsUpdateData(
     selectedDelete: List<FormAddContentPassDataGroup>,
     updateListItemAddContent: List<FormAddContentPassDataGroup>,
 ){
-    when(passId.isNotEmpty() && passId != "{passId}"){
+    when(passId != "-1" && passId.isNotEmpty()){
         true -> {
             formViewModel.updatePassData(
                 groupId,

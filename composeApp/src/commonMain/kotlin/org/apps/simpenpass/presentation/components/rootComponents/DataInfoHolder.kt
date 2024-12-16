@@ -217,6 +217,74 @@ fun PassDataInfoHolder(
     }
 }
 
+@Composable
+fun PassDataGroupInfoHolder(
+    warnCopy: () -> Unit,
+    icon: DrawableResource,
+    passData: String,
+    isPopUp : MutableState<Boolean>,
+    isEncrypted: Boolean = false,
+) {
+    var showPassword by remember { mutableStateOf(value = false) }
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ){
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painterResource(icon),"",
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(
+                modifier = Modifier.width(19.dp)
+            )
+            Text(
+                checkPassMask(passData,showPassword),
+                style = MaterialTheme.typography.body2,
+                color = secondaryColor,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
+            IconButton(
+                onClick = {
+                    if(isEncrypted){
+                        isPopUp.value = true
+                    } else {
+                        showPassword = !showPassword
+                    }
+                }
+            ){
+                if(showPassword){
+                    Image(
+                        painterResource(Res.drawable.visibility_ic),"",
+                    )
+                } else {
+                    Image(
+                        painterResource(Res.drawable.visibility_non_ic),"",
+                    )
+                }
+            }
+            IconButton(
+                onClick = {
+                    if(!isEncrypted){
+                        copyText(passData)
+                    }
+
+                    warnCopy()
+                }
+            ){
+                Image(
+                    painterResource(Res.drawable.copy_paste),"",
+                )
+            }
+        }
+    }
+}
+
 fun checkPassMask(data: String, showPassword: Boolean): String {
     return if(showPassword){
         data
