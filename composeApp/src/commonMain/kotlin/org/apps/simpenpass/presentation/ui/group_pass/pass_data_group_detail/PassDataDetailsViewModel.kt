@@ -130,8 +130,8 @@ class PassDataDetailsViewModel(
                         _passDataDtlState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = true,
-                                key = verifySecurityDataGroupRequest.securityValue
+                                isPassVerify = res.data.data!!,
+                                key = if(res.data.data) verifySecurityDataGroupRequest.securityValue else ""
                             )
                         }
                     }
@@ -153,7 +153,7 @@ class PassDataDetailsViewModel(
 data class PassDataDetailsState(
     val passDataGroupId : Int? = null,
     val groupId : Int? = null,
-    val key : String? = null,
+    var key : String? = null,
     val msg: String? = null,
     val passData: PassDataGroupByIdResponse? = null,
     val isLoading : Boolean = false,

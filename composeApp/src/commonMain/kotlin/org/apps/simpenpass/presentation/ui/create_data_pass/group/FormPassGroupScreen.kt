@@ -226,6 +226,7 @@ fun FormPassGroupScreen(
 
     if(isPopUpDecrypt.value){
         VerifyKeyInGroupDialog(
+            navController,
             onDismissRequest = {
                 isPopUpDecrypt.value = false
             },
@@ -1132,6 +1133,7 @@ fun DialogEditRoleInPassData(
 
 @Composable
 fun VerifyKeyInGroupDialog(
+    navController: NavController,
     onDismissRequest: () -> Unit,
     groupId: String,
     formViewModel: FormPassGroupViewModel,
@@ -1175,6 +1177,9 @@ fun VerifyKeyInGroupDialog(
                         Icons.Default.Clear,
                         "",
                         modifier = Modifier.clickable{
+                            if(formState.value.passData?.isEncrypted!!){
+                                navController.navigateUp()
+                            }
                             onDismissRequest()
                         }.clip(CircleShape)
                     )

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
@@ -41,6 +42,8 @@ import org.apps.simpenpass.style.secondaryColor
 
 @Composable
 fun VerifyPassDialog(
+    toDecrypt: Boolean,
+    navController: NavController,
     onDismissRequest: () -> Unit,
     formViewModel: FormViewModel
 ) {
@@ -74,6 +77,9 @@ fun VerifyPassDialog(
                         Icons.Default.Clear,
                         "",
                         modifier = Modifier.clickable{
+                            if(formState.value.passData?.isEncrypted!!){
+                                navController.navigateUp()
+                            }
                             onDismissRequest()
                         }.clip(CircleShape)
                     )
@@ -81,11 +87,20 @@ fun VerifyPassDialog(
                 Spacer(
                     modifier = Modifier.height(15.dp)
                 )
-                Text(
-                    "Data Password akan dienkripsi, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
-                    style = MaterialTheme.typography.subtitle1,
-                    color = secondaryColor
-                )
+                if(toDecrypt){
+                    Text(
+                        "Data Password akan Diubah, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
+                        style = MaterialTheme.typography.subtitle1,
+                        color = secondaryColor
+                    )
+                } else {
+                    Text(
+                        "Data Password akan di Kunci, Silahkan Masukan Kunci untuk Mengunci Data Password Anda !",
+                        style = MaterialTheme.typography.subtitle1,
+                        color = secondaryColor
+                    )
+                }
+
                 Spacer(
                     modifier = Modifier.height(15.dp)
                 )

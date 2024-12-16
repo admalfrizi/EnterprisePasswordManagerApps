@@ -82,7 +82,7 @@ fun EnterPasswordDialog(
                     modifier = Modifier.height(15.dp)
                 )
                 Text(
-                    "Data Password anda Telah Dienkripsi, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
+                    "Data Password anda Telah Terkunci, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
                     style = MaterialTheme.typography.subtitle1,
                     color = secondaryColor
                 )
@@ -109,7 +109,6 @@ fun EnterPasswordDialog(
                     shape = RoundedCornerShape(20.dp),
                     onClick = {
                         homeViewModel.verifyPassForDecrypt(password.value)
-                        if(!homeState.value.isLoading) onDismissRequest()
                     }
                 ) {
                     when(homeState.value.isLoading){

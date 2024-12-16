@@ -175,6 +175,8 @@ fun FormScreen(
 
     if(isPopUp.value){
         VerifyPassDialog(
+            toDecrypt.value,
+            navController,
             onDismissRequest = {
                 isPopUp.value = false
             },

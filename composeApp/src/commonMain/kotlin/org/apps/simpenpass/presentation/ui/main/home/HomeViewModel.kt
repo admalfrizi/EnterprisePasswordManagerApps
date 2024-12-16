@@ -167,6 +167,7 @@ class HomeViewModel(
                             it.copy(
                                 isLoading = false,
                                 error = res.error,
+                                keyEnc = ""
                             )
                         }
                     }
@@ -181,8 +182,8 @@ class HomeViewModel(
                         _homeState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = true,
-                                keyEnc = password
+                                isPassVerify = res.data.data!!,
+                                keyEnc = if(res.data.data) password else ""
                             )
                         }
                     }

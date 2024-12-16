@@ -82,8 +82,8 @@ class ListDataViewModel(
                         _listDataState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = true,
-                                key = password
+                                isPassVerify = res.data.data!!,
+                                key = if(res.data.data) password else ""
                             )
                         }
                     }
@@ -98,5 +98,5 @@ data class ListDataState(
     val data : List<DataPassWithAddContent> = emptyList(),
     val error : String? = null,
     var isPassVerify: Boolean = false,
-    val key: String? = null
+    var key: String? = null
 )

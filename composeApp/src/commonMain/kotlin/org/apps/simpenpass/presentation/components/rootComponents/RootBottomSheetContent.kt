@@ -214,6 +214,11 @@ fun DetailPassData(
         passData = ""
     }
 
+    if(homeState.value.keyEnc == ""){
+        setToast("Data Password anda Tidak Cocok !")
+        homeState.value.keyEnc = null
+    }
+
     if(isPopUp.value){
         EnterPasswordDialog(
             onDismissRequest = {
@@ -224,6 +229,7 @@ fun DetailPassData(
     }
 
     if(homeState.value.isPassVerify){
+        isPopUp.value = false
         data.value?.isEncrypted = false
         encKey = homeState.value.keyEnc!!
         decData = CamelliaCrypto().decrypt(data.value?.password!!,encKey)

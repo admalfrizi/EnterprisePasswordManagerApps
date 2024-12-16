@@ -89,11 +89,17 @@ fun PassDataDetailsScreen(
     }
 
     if(passDataDetailsState.value.isPassVerify){
+        isPopUpToDecrypt.value = false
         passDataDetailsState.value.passData?.isEncrypted = false
         encKey = passDataDetailsState.value.key!!
         decData = CamelliaCrypto().decrypt(passDataDetailsState.value.passData?.password!!,encKey)
         setToast("Data Anda Telah Berhasil Di Dekripsi")
         passDataDetailsState.value.isPassVerify = false
+    }
+
+    if(passDataDetailsState.value.key == ""){
+        setToast("Data Password anda Tidak Cocok !")
+        passDataDetailsState.value.key = null
     }
 
     if(isPopUpToDecrypt.value){
@@ -402,7 +408,6 @@ fun VerifyKeyDataToDecrypt(
                         )
 
                         passDataDetailsViewModel.verifyPassForDecrypt(formVerify)
-                        if(!passDataDetailsState.value.isLoading) onDismissRequest()
                     }
                 ) {
                     when(passDataDetailsState.value.isLoading){

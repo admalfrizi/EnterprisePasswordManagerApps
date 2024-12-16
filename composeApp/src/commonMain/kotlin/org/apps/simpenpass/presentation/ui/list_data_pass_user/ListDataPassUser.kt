@@ -233,6 +233,11 @@ fun PassDataInfo(
         passData = ""
     }
 
+    if(homeState.value.key == ""){
+        setToast("Data Password anda Tidak Cocok !")
+        homeState.value.key = null
+    }
+
     if(isPopUp.value){
         DecryptPassDataDialog(
             onDismissRequest = {
@@ -243,6 +248,7 @@ fun PassDataInfo(
     }
 
     if(homeState.value.isPassVerify){
+        isPopUp.value = false
         data.value?.isEncrypted = false
         encKey = homeState.value.key!!
         decData = CamelliaCrypto().decrypt(data.value?.password!!,encKey)
@@ -457,7 +463,7 @@ fun DecryptPassDataDialog(
                     modifier = Modifier.height(15.dp)
                 )
                 Text(
-                    "Data Password anda Telah Dikunci, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
+                    "Data Password anda Telah Terkunci, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
                     style = MaterialTheme.typography.subtitle1,
                     color = secondaryColor
                 )
@@ -484,7 +490,6 @@ fun DecryptPassDataDialog(
                     shape = RoundedCornerShape(20.dp),
                     onClick = {
                         listDataViewModel.verifyPassForDecrypt(password.value)
-                        if(!listDataState.value.isLoading) onDismissRequest()
                     }
                 ) {
                     when(listDataState.value.isLoading){
