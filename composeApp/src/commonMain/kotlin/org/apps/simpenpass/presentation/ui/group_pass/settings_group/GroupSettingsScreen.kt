@@ -415,28 +415,16 @@ fun ListSecurityData(
     val addGroupSecurityDataState = groupDataSecurityViewModel.groupSecurityDataState.collectAsState()
     val securityData = addGroupSecurityDataState.value.securityData
 
-    LaunchedEffect(Unit){
-        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
-    }
-
-    if(addGroupSecurityDataState.value.isDeleted){
-        isPopUp = false
-        setToast("Data Keamanan Telah Dihapus !")
-        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
-        addGroupSecurityDataState.value.isDeleted = false
-    }
-
-    if(addGroupSecurityDataState.value.isUpdated){
-        isPopUp = false
-        setToast("Data Keamanan Telah Diubah !")
-        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
-        addGroupSecurityDataState.value.isUpdated = false
+    LaunchedEffect(sheetState.isVisible && !isPopUp){
+        if(!isPopUp && !addGroupSecurityDataState.value.isUpdated && !addGroupSecurityDataState.value.isDeleted){
+            groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
+        }
     }
 
     if(isPopUp){
         AddGroupSecurityOption(
             groupId,
-            groupDataSecurityViewModel,
+            securityData = securityData!!,
             onDismissRequest = {
                 isPopUp = false
             },

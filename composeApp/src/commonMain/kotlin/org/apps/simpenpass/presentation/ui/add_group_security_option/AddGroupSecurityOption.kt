@@ -43,23 +43,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import io.github.aakira.napier.Napier
+import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.setToast
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddGroupSecurityOption(
     groupId: Int,
-    addGroupSecurityViewModel: AddGroupSecurityViewModel,
+    addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
+    securityData: GroupSecurityData?,
     onDismissRequest: () -> Unit
 ) {
     var addGroupSecurityState = addGroupSecurityViewModel.groupSecurityDataState.collectAsState()
-    val dataSecurity = addGroupSecurityState.value.securityData
     var expanded = remember { mutableStateOf(false) }
     var toUpdate = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -76,21 +77,29 @@ fun AddGroupSecurityOption(
         data.value = ""
     }
 
-    if(addGroupSecurityState.value.securityData != null){
-        val findTypeData = addGroupSecurityState.value.listTypeSecurityData.find { it.id == dataSecurity?.typeId }
+    if(securityData != null){
+        val findTypeData = addGroupSecurityState.value.listTypeSecurityData.find { it.id == securityData.typeId }
 
         toUpdate.value = true
-        value.value = dataSecurity?.securityValue!!
-        typeId.value = dataSecurity.typeId!!
+        value.value = securityData.securityValue!!
+        typeId.value = securityData.typeId!!
         type.value = findTypeData?.nmOption ?: ""
 
         if(typeId.value == 2){
-            data.value = dataSecurity.securityData
+            data.value = securityData.securityData
         }
     }
+    if(addGroupSecurityState.value.isDeleted){
+        onDismissRequest()
+        setToast("Data Keamanan Telah Dihapus !")
+        addGroupSecurityState.value.isDeleted = false
+    }
 
-    Napier.v("securityData :$dataSecurity")
-    Napier.v("typeId  :${typeId.value}")
+    if(addGroupSecurityState.value.isUpdated){
+        onDismissRequest()
+        setToast("Data Keamanan Telah Diubah !")
+        addGroupSecurityState.value.isUpdated = false
+    }
 
     Dialog(
         onDismissRequest = {
@@ -126,7 +135,7 @@ fun AddGroupSecurityOption(
                         Icons.Default.Clear,
                         "",
                         modifier = Modifier.clickable{
-                            if(dataSecurity != null){
+                            if(securityData != null){
                                 data.value = ""
                                 value.value = ""
                                 type.value = ""
@@ -188,8 +197,8 @@ fun AddGroupSecurityOption(
                                         type.value = optionItem.nmOption
                                         typeId.value = optionItem.id
 
-                                        if(dataSecurity != null){
-                                            dataSecurity.typeId = optionItem.id
+                                        if(securityData != null){
+                                            securityData.typeId = optionItem.id
                                         }
 
                                         expanded.value = false
@@ -214,8 +223,8 @@ fun AddGroupSecurityOption(
                         leadingIcon = null,
                         onValueChange = {
 
-                            if(dataSecurity != null){
-                                dataSecurity.securityData = it
+                            if(securityData != null){
+                                securityData.securityData = it
                             }
 
                             data.value = it
@@ -233,8 +242,8 @@ fun AddGroupSecurityOption(
                         leadingIcon = null,
                         isPassword = typeId.value == 1,
                         onValueChange = {
-                            if(dataSecurity != null){
-                                dataSecurity.securityValue = it
+                            if(securityData != null){
+                                securityData.securityValue = it
                             }
 
                             value.value = it
@@ -250,7 +259,7 @@ fun AddGroupSecurityOption(
                     colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                     shape = RoundedCornerShape(20.dp),
                     onClick = {
-                        validateInsertData(toUpdate.value,addGroupSecurityViewModel,typeId.value,data.value,value.value,groupId,dataSecurity?.id)
+                        validateInsertData(toUpdate.value,addGroupSecurityViewModel,typeId.value,data.value,value.value,groupId,securityData?.id)
                     },
                     enabled = typeId.value != 0
                 ) {
