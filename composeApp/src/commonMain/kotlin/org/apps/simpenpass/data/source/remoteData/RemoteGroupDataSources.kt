@@ -19,6 +19,7 @@ import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.GrupPassData
+import org.apps.simpenpass.models.pass_data.ResultSearchGroup
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
@@ -129,7 +130,7 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
     override suspend fun searchGroup(
         token: String,
         query: String
-    ): BaseResponse<GrupPassData> {
+    ): BaseResponse<ResultSearchGroup> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "searchGroup"){
                 contentType(ContentType.Application.Json)
@@ -137,7 +138,7 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
 
-            return response.body<BaseResponse<GrupPassData>>()
+            return response.body<BaseResponse<ResultSearchGroup>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

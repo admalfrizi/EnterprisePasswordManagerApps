@@ -7,6 +7,7 @@ import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.PassDataGroup
+import org.apps.simpenpass.models.pass_data.ResultSearchGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
@@ -94,7 +95,7 @@ interface GroupPassDataFunc {
     suspend fun searchGroup(
         token: String,
         query: String
-    ): BaseResponse<GrupPassData>
+    ): BaseResponse<ResultSearchGroup>
 
     suspend fun verifySecurityDataInGroup(
         token: String,

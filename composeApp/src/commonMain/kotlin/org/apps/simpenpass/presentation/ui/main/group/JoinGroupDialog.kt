@@ -144,7 +144,7 @@ fun JoinGroupDialog(
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            "Total 30 Anggota",
+                            "Total ${groupState.searchGroupResult?.totalAnggotaGroup} Anggota",
                             modifier = Modifier.fillMaxWidth(),
                             style = MaterialTheme.typography.subtitle1,
                             color = secondaryColor,

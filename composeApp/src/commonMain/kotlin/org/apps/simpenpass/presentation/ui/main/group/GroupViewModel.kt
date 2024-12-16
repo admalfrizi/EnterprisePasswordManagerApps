@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.models.pass_data.GrupPassData
+import org.apps.simpenpass.models.pass_data.ResultSearchGroup
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupViewModel(
@@ -108,6 +109,7 @@ class GroupViewModel(
         }
     }
 
+
     fun clearState() {
         _groupState.value = GroupState()
     }
@@ -115,7 +117,7 @@ class GroupViewModel(
 
 data class GroupState(
     var groupData: List<GrupPassData?> = emptyList(),
-    var searchGroupResult: GrupPassData? = null,
+    var searchGroupResult: ResultSearchGroup? = null,
     var msg: String = "",
     var isError: Boolean = false,
     var isLoading: Boolean = false,
