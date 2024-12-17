@@ -26,12 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import dev.theolm.rinku.DeepLink
 import io.github.aakira.napier.Napier
@@ -134,17 +137,26 @@ fun JoinGroupDialog(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Box(
-                            modifier = Modifier
-                                .size(68.dp)
-                                .background(color = Color(0xFF78A1D7),shape = CircleShape),
+                            modifier = Modifier.size(68.dp)
+                                .background(color = Color(0xFF78A1D7),shape = CircleShape).clip(CircleShape)
                         ){
-                            Text(
-                                text = profileNameInitials(groupState.searchGroupResult!!.nm_grup),
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 24.sp,
-                                color = Color.White,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
+                            if(groupState.searchGroupResult?.img_grup != null){
+                                AsyncImage(
+                                    model = groupState.searchGroupResult?.img_grup,
+                                    modifier = Modifier.size(99.dp),
+                                    contentDescription = "Profile Picture",
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Text(
+                                    text = profileNameInitials(groupState.searchGroupResult!!.nm_grup),
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 24.sp,
+                                    color = Color.White,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+
                         }
                         Text(
                             groupState.searchGroupResult!!.nm_grup,

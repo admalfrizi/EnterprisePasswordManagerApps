@@ -124,7 +124,6 @@ class GroupRepository(
                 } else {
                     emit(NetworkResult.Error(result.message))
                 }
-                Napier.v("Data Search Group : ${result.data}")
             }
         } catch (e: UnresolvedAddressException){
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
