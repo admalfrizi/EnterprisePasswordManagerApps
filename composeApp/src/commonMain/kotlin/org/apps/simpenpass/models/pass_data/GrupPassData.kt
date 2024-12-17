@@ -26,7 +26,9 @@ data class ResultSearchGroup(
     @SerialName("deskripsi_grup")
     val desc: String? = null,
     @SerialName("total_anggota_grup")
-    val totalAnggotaGroup: String? = null
+    val totalAnggotaGroup: String? = null,
+    @SerialName("is_member_joined")
+    val isMemberJoined: Boolean? = null
 )
 
 @Serializable

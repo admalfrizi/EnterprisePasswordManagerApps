@@ -94,7 +94,8 @@ interface GroupPassDataFunc {
 
     suspend fun searchGroup(
         token: String,
-        query: String
+        query: String,
+        userId: Int
     ): BaseResponse<ResultSearchGroup>
 
     suspend fun verifySecurityDataInGroup(

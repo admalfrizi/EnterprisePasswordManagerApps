@@ -179,13 +179,14 @@ fun JoinGroupDialog(
                     Button(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         onClick = {
+
                         },
                         shape = RoundedCornerShape(20.dp),
                         elevation = ButtonDefaults.elevation(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFF1E78EE)),
                         content = {
                             Text(
-                                "Gabung Ke Grup",
+                                if(groupState.searchGroupResult?.isMemberJoined!!) "Detail Grup" else "Gabung Ke Grup",
                                 style = MaterialTheme.typography.h6,
                                 color = fontColor1
                             )

@@ -118,7 +118,7 @@ class GroupRepository(
         emit(NetworkResult.Loading())
         try {
             localData.getToken.collect { token ->
-                val result = remoteGroupSources.searchGroup(token,query)
+                val result = remoteGroupSources.searchGroup(token,query,localData.getUserData().id!!)
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 } else {

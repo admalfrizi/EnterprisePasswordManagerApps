@@ -129,10 +129,11 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
 
     override suspend fun searchGroup(
         token: String,
-        query: String
+        query: String,
+        userId: Int
     ): BaseResponse<ResultSearchGroup> {
         try {
-            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "searchGroup"){
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "searchGroup/$userId"){
                 contentType(ContentType.Application.Json)
                 parameter("query", query)
                 header(HttpHeaders.Authorization, "Bearer $token")
