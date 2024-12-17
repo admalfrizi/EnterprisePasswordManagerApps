@@ -71,6 +71,8 @@ class PassRepository(
                     false -> {
                         emit(NetworkResult.Error(result.message))
                     }
+
+                    else -> {}
                 }
             }
         } catch (e: UnresolvedAddressException){

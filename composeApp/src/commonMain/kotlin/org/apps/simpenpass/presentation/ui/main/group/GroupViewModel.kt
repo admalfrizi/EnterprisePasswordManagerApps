@@ -109,6 +109,41 @@ class GroupViewModel(
         }
     }
 
+    fun getGroupById(
+        groupId: Int
+    ) {
+        viewModelScope.launch{
+            repoGroup.getGroupById(groupId).flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                searchGroupResult = res.data.data,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     fun clearState() {
         _groupState.value = GroupState()

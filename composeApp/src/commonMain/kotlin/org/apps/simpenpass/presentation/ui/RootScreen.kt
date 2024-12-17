@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dev.theolm.rinku.DeepLink
 import org.apps.simpenpass.models.pass_data.DataPass
 import org.apps.simpenpass.presentation.components.BottomNavigationBar
 import org.apps.simpenpass.presentation.components.rootComponents.RootBottomSheetContent
@@ -37,6 +38,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun RootScreen(
+    deepLink: MutableState<DeepLink?>,
     bottomEdgeColor: MutableState<Color>,
     navigateToLogout: () -> Unit,
     navigateToOtpFirst: (String) -> Unit,
@@ -64,6 +66,7 @@ fun RootScreen(
     var isDeleted = remember { mutableStateOf(false) }
     var isPopUp = remember { mutableStateOf(false) }
     val currentScreen = rememberSaveable { mutableStateOf("") }
+    var findUrlPath = deepLink.value?.pathSegments?.find { it == "getGroupById" }
 
     if(currentScreen.value != navController.currentDestination?.route){
         currentScreen.value = navController.currentDestination?.route ?: Screen.Home.route
@@ -77,11 +80,18 @@ fun RootScreen(
 
     if(isJoinDialogPopUp){
         JoinGroupDialog(
+            deepLink,
             onDismissRequest = {
                 isJoinDialogPopUp = false
+                deepLink.value = null
+                findUrlPath = ""
             },
             groupViewModel = groupViewModel
         )
+    }
+
+    if(deepLink.value != null && findUrlPath?.isNotEmpty() == true){
+        isJoinDialogPopUp = true
     }
 
     if(homeViewModel.homeState.value.isDeleted){

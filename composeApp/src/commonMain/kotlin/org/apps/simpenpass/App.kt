@@ -28,6 +28,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil3.compose.setSingletonImageLoaderFactory
+import dev.theolm.rinku.DeepLink
+import dev.theolm.rinku.compose.ext.DeepLinkListener
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.ui.RootScreen
@@ -54,6 +56,11 @@ fun App() {
     val screenState by splashViewModel.currentScreen.collectAsState()
     val density = LocalDensity.current
     val bottomEdgeColor = remember { mutableStateOf(Color.White) }
+    var deepLink = remember { mutableStateOf<DeepLink?>(null) }
+
+    DeepLinkListener {
+        deepLink.value = it
+    }
 
     Napier.base(DebugAntilog())
 
@@ -66,6 +73,7 @@ fun App() {
 
             if(screenState != null){
                 MainNavigation(
+                    deepLink,
                     bottomEdgeColor,
                     navController,
                     density,
@@ -78,6 +86,7 @@ fun App() {
 
 @Composable
 fun MainNavigation(
+    deepLink: MutableState<DeepLink?>,
     bottomEdgeColor: MutableState<Color>,
     navController: NavHostController,
     density: Density,
@@ -95,6 +104,7 @@ fun MainNavigation(
             exitTransition = { ExitTransition.None }
         ){
             RootScreen(
+                deepLink,
                 bottomEdgeColor,
                 navigateToLogout = {
                     navController.navigate(Screen.Auth.route){

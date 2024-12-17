@@ -130,6 +130,10 @@ interface GroupPassDataFunc {
         groupId: Int,
     ): BaseResponse<GroupSecurityData>
 
+    suspend fun getGroupById(
+        token: String,
+        groupId: Int
+    ) : BaseResponse<ResultSearchGroup>
 }
 
 interface MemberGroupDataFunc {

@@ -18,6 +18,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.valentinilk.shimmer.shimmer
+import dev.theolm.rinku.DeepLink
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.groupComponents.SearchLoadingGroup
@@ -46,11 +49,18 @@ import resources.search_ic
 
 @Composable
 fun JoinGroupDialog(
+    deepLink: MutableState<DeepLink?>,
     onDismissRequest: () -> Unit,
     groupViewModel: GroupViewModel
 ) {
     var groupName by remember { mutableStateOf("") }
     val groupState by groupViewModel.groupState.collectAsState()
+
+    Napier.v("deeplink : ${deepLink.value?.pathSegments[2]}")
+
+    if(deepLink.value?.data != null){
+        groupViewModel.getGroupById(deepLink.value?.pathSegments[2]?.toInt()!!)
+    }
 
     Dialog(
         onDismissRequest = {onDismissRequest()},

@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -47,6 +48,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+
+            export(libs.rinku)
         }
     }
     
@@ -77,6 +80,8 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtime.compose)
                 implementation(libs.voyager.navigator)
                 implementation(libs.navigation.compose)
+                api(libs.rinku)
+                implementation(libs.rinku.compose.ext)
                 
 //            implementation(libs.androidx.material3)
 //            implementation(libs.androidx.material)

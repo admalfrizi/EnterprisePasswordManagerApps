@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import dev.theolm.rinku.compose.ext.Rinku
 import org.apps.simpenpass.presentation.ui.main.SplashViewModel
 import org.apps.simpenpass.utils.initializeAppContext
 import org.koin.android.ext.android.inject
@@ -24,9 +25,11 @@ class MainActivity : ComponentActivity() {
             }
         )
         setContent {
-            val context = LocalContext.current
-            initializeAppContext(context)
-            App()
+            Rinku {
+                val context = LocalContext.current
+                initializeAppContext(context)
+                App()
+            }
         }
     }
 }
