@@ -18,6 +18,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,8 +61,16 @@ fun JoinGroupDialog(
     val groupState by groupViewModel.groupState.collectAsState()
     var urlCheck = deepLink.value?.pathSegments?.find { it == "getGroupById" }
 
-    if(deepLink.value?.data != null && urlCheck?.isNotEmpty()!!){
+    LaunchedEffect(deepLink.value?.data != null && urlCheck?.isNotEmpty()!!){
+        if(deepLink.value?.data != null && urlCheck?.isNotEmpty()!!){
+            groupViewModel.getGroupById(deepLink.value?.pathSegments[2]?.toInt()!!)
+        }
+    }
+
+    if(groupState.isJoined){
         groupViewModel.getGroupById(deepLink.value?.pathSegments[2]?.toInt()!!)
+        setToast("Anda Telah Bergabung Ke Group")
+        groupState.isJoined = false
     }
 
     Dialog(
@@ -103,15 +112,6 @@ fun JoinGroupDialog(
                     )
                     Spacer(
                         modifier = Modifier.height(15.dp)
-                    )
-                }
-                if(groupState.isError){
-                    EmptyWarning(
-                        modifier = Modifier.fillMaxWidth(),
-                        warnTitle = groupState.msg,
-                        warnText = "Info Grup akan Ditampilkan Disini",
-                        isEnableBtn = false,
-                        onSelect = {}
                     )
                 }
 
@@ -182,12 +182,9 @@ fun JoinGroupDialog(
                         onClick = {
                             if(groupState.searchGroupResult?.isMemberJoined!!){
                                 navigateToDetailGroup(groupState.searchGroupResult?.id.toString())
+                                deepLink.value = null
                             } else {
                                 groupViewModel.userJoinToGroup(groupState.searchGroupResult?.id!!)
-                            }
-
-                            if(deepLink.value != null){
-                                deepLink.value = null
                             }
                         },
                         shape = RoundedCornerShape(20.dp),

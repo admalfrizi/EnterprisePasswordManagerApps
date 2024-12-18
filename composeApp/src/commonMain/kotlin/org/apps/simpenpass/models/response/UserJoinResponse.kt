@@ -12,5 +12,5 @@ data class UserJoinResponse(
     @SerialName("user_id")
     val userId: Int,
     @SerialName("is_group_admin")
-    val isGroupAdmin: Int
+    val isGroupAdmin: Boolean
 )

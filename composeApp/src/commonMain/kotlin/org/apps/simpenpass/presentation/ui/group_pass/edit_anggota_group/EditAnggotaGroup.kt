@@ -203,6 +203,7 @@ fun ScaffoldContent(
                             false -> {
                                 editAnggotaGroupViewModel.updateAdminMember(selectedItems)
                             }
+                            else -> {}
                         }
 
                     },
@@ -358,6 +359,8 @@ fun ScaffoldContent(
                                                 false -> {
                                                     selectedItems.add(UpdateAdminMemberGroupRequest(item.id,true))
                                                 }
+
+                                                else -> {}
                                             }
                                         } else {
                                             when(selectedItems.contains(UpdateAdminMemberGroupRequest(item.id, true))){
@@ -369,6 +372,8 @@ fun ScaffoldContent(
                                                     selectedItems.remove(UpdateAdminMemberGroupRequest(item.id,false))
                                                     selectedItems.add(UpdateAdminMemberGroupRequest(item.id,true))
                                                 }
+
+                                                else -> {}
                                             }
                                         }
                                     },
@@ -435,6 +440,8 @@ fun OptionMenu(
                         }
 
                     }
+
+                    else -> {}
                 }
 
                 scope.launch {
