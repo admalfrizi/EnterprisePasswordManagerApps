@@ -98,4 +98,6 @@ sealed class Screen(val route : String) {
 //
 //        const val ARG_TOKEN = "token"
     }
+
+    data object InviteUser : Screen(route = "groupPass/dtl/inviteUser")
 }

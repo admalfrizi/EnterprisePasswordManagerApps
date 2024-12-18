@@ -8,6 +8,7 @@ import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
 import org.apps.simpenpass.models.request.AddMemberRequest
+import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.user_data.LocalUserStore
@@ -105,6 +106,22 @@ class MemberGroupRepository(
         emit(NetworkResult.Loading())
         localData.getToken.collect { token ->
             val result = remoteMemberDataSources.userJoinToGroup(token, groupId,localData.getUserData().id!!)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            } else {
+                emit(NetworkResult.Error(result.message))
+            }
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun sendEmailToInvite(
+        inviteUserToJoinGroup: InviteUserToJoinGroup
+    ) = flow {
+        emit(NetworkResult.Loading())
+        localData.getToken.collect { token ->
+            val result = remoteMemberDataSources.sendEmailToInvite(token,inviteUserToJoinGroup)
             if(result.success){
                 emit(NetworkResult.Success(result))
             } else {

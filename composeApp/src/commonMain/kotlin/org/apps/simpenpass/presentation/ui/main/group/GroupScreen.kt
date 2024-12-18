@@ -59,8 +59,8 @@ fun GroupScreen(
 
 
     Scaffold(
-      backgroundColor = Color(0xFFF1F1F1),
-      content = {
+        backgroundColor = Color(0xFFF1F1F1),
+        content = {
           Column(
               modifier = Modifier.fillMaxWidth()
           ) {

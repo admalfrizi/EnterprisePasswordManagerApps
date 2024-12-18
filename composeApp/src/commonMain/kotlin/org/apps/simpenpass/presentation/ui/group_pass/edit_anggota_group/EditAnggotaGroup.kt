@@ -81,11 +81,15 @@ import resources.role_change
 fun EditAnggotaGroup(
     navController: NavController,
     editAnggotaViewModel: EditAnggotaGroupViewModel = koinViewModel(),
-    bottomEdgeColor: MutableState<Color>
+    bottomEdgeColor: MutableState<Color>,
+    navToInviteGroup: () -> Unit
 ) {
     val groupState by editAnggotaViewModel.editAnggotaState.collectAsState()
     val itemsData = groupState.listMember
     val height = getScreenHeight().value.toInt()
+    var isPopupOption = remember {
+        mutableStateOf(false)
+    }
 
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -133,12 +137,22 @@ fun EditAnggotaGroup(
         groupState.isUpdated = false
     }
 
+    if(isPopupOption.value){
+        OptionToInviteDialog(
+            onDismissRequest = {
+                isPopupOption.value = false
+            },
+            navToInviteGroup
+        )
+    }
+
     ModalBottomSheetLayout(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetState = sheetState,
         sheetBackgroundColor = Color(0xFFF1F1F1),
         sheetContent = {
             OptionMenu(
+                isPopupOption,
                 sheetState,
                 snackBarHostState,
                 scope,
@@ -391,6 +405,7 @@ fun ScaffoldContent(
 
 @Composable
 fun OptionMenu(
+    isPopOption: MutableState<Boolean>,
     sheetState: ModalBottomSheetState,
     snackbarHostState: SnackbarHostState,
     scope: CoroutineScope,
@@ -404,7 +419,7 @@ fun OptionMenu(
         )
         Box(
             modifier = Modifier.fillMaxWidth().clickable {
-
+                isPopOption.value = true
             }
         ) {
             Row(
@@ -438,7 +453,6 @@ fun OptionMenu(
                         scope.launch {
                             snackbarHostState.showSnackbar("Maaf Anda adalah Admin Grup Ini !")
                         }
-
                     }
 
                     else -> {}

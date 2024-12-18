@@ -16,6 +16,7 @@ import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.FormAddContentPassDataGroup
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
+import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.request.PassDataRequest
@@ -146,6 +147,7 @@ interface MemberGroupDataFunc {
     suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<SearchResultResponse>
     suspend fun updateAdminMemberGroup(token: String,groupId: Int ,listUpdate: List<UpdateAdminMemberGroupRequest>) : BaseResponse<List<UpdateAdminMemberResponse>>
     suspend fun userJoinToGroup(token: String,groupId: Int,userId: Int): BaseResponse<UserJoinResponse>
+    suspend fun sendEmailToInvite(token: String, inviteUserToJoinGroup: InviteUserToJoinGroup) : BaseResponse<String>
 }
 
 interface ResetPassFunc {

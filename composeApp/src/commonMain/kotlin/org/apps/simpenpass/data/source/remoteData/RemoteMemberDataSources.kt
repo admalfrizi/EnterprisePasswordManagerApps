@@ -18,6 +18,7 @@ import io.ktor.util.network.UnresolvedAddressException
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.AddMemberRequest
+import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.SearchResultResponse
@@ -127,6 +128,25 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
             }
 
             return response.body<BaseResponse<UserJoinResponse>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun sendEmailToInvite(
+        token: String,
+        inviteUserToJoinGroup: InviteUserToJoinGroup
+    ): BaseResponse<String> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "sendInviteViaEmail"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(inviteUserToJoinGroup)
+            }
+
+            return response.body<BaseResponse<String>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){
