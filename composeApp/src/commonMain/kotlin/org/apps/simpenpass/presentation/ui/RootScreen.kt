@@ -40,6 +40,7 @@ import org.koin.compose.koinInject
 fun RootScreen(
     deepLink: MutableState<DeepLink?>,
     bottomEdgeColor: MutableState<Color>,
+    navigateToDetailGroupFromPopUp: (String) -> Unit,
     navigateToLogout: () -> Unit,
     navigateToOtpFirst: (String) -> Unit,
     navigateToAddGroup: () -> Unit,
@@ -86,6 +87,7 @@ fun RootScreen(
                 deepLink.value = null
                 findUrlPath = ""
             },
+            navigateToDetailGroupFromPopUp,
             groupViewModel = groupViewModel
         )
     }

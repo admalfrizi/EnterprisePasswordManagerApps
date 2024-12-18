@@ -402,7 +402,7 @@ class GroupRepository(
     ) = flow {
         try {
             localData.getToken.collect { token ->
-                val result = remoteGroupSources.getGroupById(token,groupId)
+                val result = remoteGroupSources.getGroupById(token,groupId,localData.getUserData().id!!)
 
                 when(result.success) {
                     true -> {

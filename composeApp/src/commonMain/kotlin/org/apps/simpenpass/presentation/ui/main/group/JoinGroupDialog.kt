@@ -37,7 +37,6 @@ import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import dev.theolm.rinku.DeepLink
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.groupComponents.SearchLoadingGroup
@@ -54,14 +53,14 @@ import resources.search_ic
 fun JoinGroupDialog(
     deepLink: MutableState<DeepLink?>,
     onDismissRequest: () -> Unit,
+    navigateToDetailGroup: (String) -> Unit,
     groupViewModel: GroupViewModel
 ) {
     var groupName by remember { mutableStateOf("") }
     val groupState by groupViewModel.groupState.collectAsState()
+    var urlCheck = deepLink.value?.pathSegments?.find { it == "getGroupById" }
 
-    Napier.v("deeplink : ${deepLink.value?.pathSegments[2]}")
-
-    if(deepLink.value?.data != null){
+    if(deepLink.value?.data != null && urlCheck?.isNotEmpty()!!){
         groupViewModel.getGroupById(deepLink.value?.pathSegments[2]?.toInt()!!)
     }
 
@@ -86,24 +85,26 @@ fun JoinGroupDialog(
                 Spacer(
                     modifier = Modifier.height(15.dp)
                 )
-                FormTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = groupName,
-                    labelHints = "Cari Disini",
-                    leadingIcon = {
-                        Image(
-                            painterResource(Res.drawable.search_ic),
-                            ""
-                        )
-                    },
-                    onValueChange = {
-                        groupName = it
-                    }
-                )
-                Spacer(
-                    modifier = Modifier.height(15.dp)
-                )
 
+                if(urlCheck == null){
+                    FormTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = groupName,
+                        labelHints = "Cari Disini",
+                        leadingIcon = {
+                            Image(
+                                painterResource(Res.drawable.search_ic),
+                                ""
+                            )
+                        },
+                        onValueChange = {
+                            groupName = it
+                        }
+                    )
+                    Spacer(
+                        modifier = Modifier.height(15.dp)
+                    )
+                }
                 if(groupState.isError){
                     EmptyWarning(
                         modifier = Modifier.fillMaxWidth(),
@@ -179,7 +180,15 @@ fun JoinGroupDialog(
                     Button(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         onClick = {
+                            if(groupState.searchGroupResult?.isMemberJoined!!){
+                                navigateToDetailGroup(groupState.searchGroupResult?.id.toString())
+                            } else {
+                                groupViewModel.userJoinToGroup(groupState.searchGroupResult?.id!!)
+                            }
 
+                            if(deepLink.value != null){
+                                deepLink.value = null
+                            }
                         },
                         shape = RoundedCornerShape(20.dp),
                         elevation = ButtonDefaults.elevation(0.dp),

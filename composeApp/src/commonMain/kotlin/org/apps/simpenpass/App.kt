@@ -106,6 +106,9 @@ fun MainNavigation(
             RootScreen(
                 deepLink,
                 bottomEdgeColor,
+                navigateToDetailGroupFromPopUp = {
+                    navController.navigate(Screen.GroupPass.groupId(it))
+                },
                 navigateToLogout = {
                     navController.navigate(Screen.Auth.route){
                         popUpTo(Screen.Root.route){

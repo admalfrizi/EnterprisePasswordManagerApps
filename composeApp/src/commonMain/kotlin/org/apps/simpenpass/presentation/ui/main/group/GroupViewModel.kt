@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
+import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.ResultSearchGroup
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupViewModel(
     private val repoGroup: GroupRepository,
+    private val repoMemberGroup: MemberGroupRepository,
     private val konnection: Konnection,
 ): ViewModel() {
     private val _isConnected = MutableStateFlow(false)
@@ -144,7 +146,40 @@ class GroupViewModel(
         }
     }
 
-
+    fun userJoinToGroup(
+        groupId: Int
+    ) {
+        viewModelScope.launch {
+            repoMemberGroup.userJoinToGroup(groupId).flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupState.update {
+                            it.copy(
+                                isLoading = false,
+                                isJoined = true,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
     fun clearState() {
         _groupState.value = GroupState()
     }
@@ -156,4 +191,5 @@ data class GroupState(
     var msg: String = "",
     var isError: Boolean = false,
     var isLoading: Boolean = false,
+    var isJoined: Boolean = false,
 )

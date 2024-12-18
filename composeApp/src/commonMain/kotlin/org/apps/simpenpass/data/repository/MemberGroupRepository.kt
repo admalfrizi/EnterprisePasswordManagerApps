@@ -98,4 +98,20 @@ class MemberGroupRepository(
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
+
+    fun userJoinToGroup(
+        groupId: Int
+    ) = flow {
+        emit(NetworkResult.Loading())
+        localData.getToken.collect { token ->
+            val result = remoteMemberDataSources.userJoinToGroup(token, groupId,localData.getUserData().id!!)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            } else {
+                emit(NetworkResult.Error(result.message))
+            }
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
 }

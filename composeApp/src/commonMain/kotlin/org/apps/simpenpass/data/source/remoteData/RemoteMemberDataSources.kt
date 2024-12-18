@@ -3,6 +3,8 @@ package org.apps.simpenpass.data.source.remoteData
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -20,6 +22,7 @@ import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.models.response.UpdateAdminMemberResponse
+import org.apps.simpenpass.models.response.UserJoinResponse
 import org.apps.simpenpass.utils.Constants
 
 class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupDataFunc {
@@ -100,6 +103,30 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
             }
 
             return response.body<BaseResponse<List<UpdateAdminMemberResponse>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun userJoinToGroup(
+        token: String,
+        groupId: Int,
+        userId: Int
+    ): BaseResponse<UserJoinResponse> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "userJoinToGroup/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(MultiPartFormDataContent(
+                    formData {
+                        append("user_id", userId)
+                    }
+                ))
+            }
+
+            return response.body<BaseResponse<UserJoinResponse>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){
