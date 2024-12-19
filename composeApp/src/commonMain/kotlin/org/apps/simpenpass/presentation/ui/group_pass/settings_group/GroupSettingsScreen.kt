@@ -229,6 +229,8 @@ fun GroupSettingsScreen(
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }
+
+                            else -> {}
                         }
                     }
                     Box(
@@ -424,7 +426,7 @@ fun ListSecurityData(
     if(isPopUp){
         AddGroupSecurityOption(
             groupId,
-            securityData = securityData!!,
+            securityData = securityData,
             onDismissRequest = {
                 isPopUp = false
             },

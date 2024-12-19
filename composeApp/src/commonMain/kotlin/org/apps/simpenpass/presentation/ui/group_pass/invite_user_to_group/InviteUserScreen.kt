@@ -81,7 +81,9 @@ fun InviteUserScreen(
 ) {
     val inviteState = inviteUserViewModel.inviteUserState.collectAsState()
     val sheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true,
+        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
     val scope = rememberCoroutineScope()
     val listAddEmail = remember { mutableStateListOf<SendEmailRequest>() }

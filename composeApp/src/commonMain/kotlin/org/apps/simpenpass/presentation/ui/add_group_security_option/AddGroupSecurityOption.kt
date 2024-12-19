@@ -57,7 +57,7 @@ import org.koin.compose.koinInject
 fun AddGroupSecurityOption(
     groupId: Int,
     addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
-    securityData: GroupSecurityData?,
+    securityData: GroupSecurityData? = null,
     onDismissRequest: () -> Unit
 ) {
     var addGroupSecurityState = addGroupSecurityViewModel.groupSecurityDataState.collectAsState()
@@ -280,6 +280,7 @@ fun AddGroupSecurityOption(
                             )
                         }
 
+                        else -> {}
                     }
                 }
             }
@@ -314,6 +315,8 @@ fun validateInsertData(
                     false -> {
                         addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -332,6 +335,8 @@ fun validateInsertData(
                     false -> {
                         addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
                     }
+
+                    else -> {}
                 }
             }
         }
