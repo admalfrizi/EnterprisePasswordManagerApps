@@ -17,9 +17,11 @@ import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.data.repository.PassDataGroupRepository
 import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.pass_data.DtlGrupPass
+import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.PassDataGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupDetailsViewModel(
@@ -217,6 +219,76 @@ class GroupDetailsViewModel(
         }
     }
 
+    fun getSecurityData() {
+        viewModelScope.launch {
+            repoGroup.getGroupSecurityData(groupDtlState.value.groupId?.toInt()!!).flowOn(
+                Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                msg = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                dataSecurity = res.data.data,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun verifyPassForDecrypt(
+        verifySecurityDataGroupRequest: VerifySecurityDataGroupRequest,
+    ) {
+        viewModelScope.launch {
+            repoGroup.verifySecurityData(groupDtlState.value.groupId?.toInt()!!,verifySecurityDataGroupRequest ).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isPassVerify = res.data.data!!,
+                                key = if(res.data.data) verifySecurityDataGroupRequest.securityValue else ""
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     fun clearState() {
         _groupDtlState.value = GroupDetailsState()
     }
@@ -227,9 +299,12 @@ data class GroupDetailsState(
     val listRoleGroup: List<RoleGroupData?> = emptyList(),
     val dtlGroupData: DtlGrupPass? = null,
     val groupId: String? = null,
+    var key : String? = null,
     var msg: String = "",
     val memberGroupData: List<MemberGroupData> = emptyList(),
     var isUpdated: Boolean = false,
     var isError: Boolean = false,
     var isLoading: Boolean = false,
+    var isPassVerify : Boolean = false,
+    val dataSecurity : GroupSecurityData? = null
 )

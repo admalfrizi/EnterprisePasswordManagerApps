@@ -18,35 +18,57 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.ChipDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
+import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
 import org.apps.simpenpass.screen.Screen
+import org.apps.simpenpass.style.btnColor
+import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
+import org.apps.simpenpass.utils.copyText
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.copy_paste
+import resources.delete_ic
 import resources.edit_pass_ic
 import resources.empty_pass_ic
 import resources.pass_data_ic
@@ -60,6 +82,33 @@ fun PassDataScreen(
     groupDtlViewModel: GroupDetailsViewModel
 ) {
     val isAllData = remember { mutableStateOf(true) }
+    var isPopUp by remember { mutableStateOf(false) }
+    var passData by remember { mutableStateOf("") }
+    var encKey by remember { mutableStateOf("") }
+    var decData by remember { mutableStateOf("") }
+
+    if(isPopUp){
+        DialogToDecrypt(
+            onDismissRequest = {
+                isPopUp = false
+            },
+            groupDtlViewModel
+        )
+    }
+
+    if(groupState.isPassVerify){
+        isPopUp = false
+        encKey = groupState.key!!
+        decData = CamelliaCrypto().decrypt(passData,encKey)
+        copyText(decData)
+        setToast("Data password Telah Disalin")
+        groupState.isPassVerify = false
+    }
+
+    if(groupState.key == ""){
+        setToast("Data Password anda Tidak Cocok !")
+        groupState.key = null
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -122,19 +171,156 @@ fun PassDataScreen(
                                         )
                                     }
                                 }
-
                                 IconButton(
                                     onClick = {
-
+                                        if(data?.isEncrypted!!){
+                                            isPopUp = true
+                                            passData = data.password!!
+                                        } else {
+                                            copyText(data.password!!)
+                                            setToast("Data password telah disalin")
+                                        }
                                     }
                                 ){
                                     Image(
                                         painterResource(Res.drawable.copy_paste),""
                                     )
                                 }
+                                if(groupState.dtlGroupData?.isUserAdmin == true){
+                                    IconButton(
+                                        onClick = {
+
+                                        }
+                                    ){
+                                        Image(
+                                            painterResource(Res.drawable.delete_ic),""
+                                        )
+                                    }
+                                }
                             }
 
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DialogToDecrypt(
+    onDismissRequest: () -> Unit,
+    groupDetailsViewModel: GroupDetailsViewModel
+) {
+    var passDataDetailsState = groupDetailsViewModel.groupDtlState.collectAsState()
+    var securityData = remember { mutableStateOf("") }
+    var securityValue = remember { mutableStateOf("") }
+
+    if(passDataDetailsState.value.dataSecurity == null){
+        groupDetailsViewModel.getSecurityData()
+    }
+
+    if(passDataDetailsState.value.dataSecurity?.typeId == 2){
+        securityData.value = passDataDetailsState.value.dataSecurity?.securityData!!
+    }
+
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            elevation = 0.dp,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        "Silahkan Masukan Password Anda",
+                        style = MaterialTheme.typography.h6.copy(color = secondaryColor),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
+                    )
+                    Icon(
+                        Icons.Default.Clear,
+                        "",
+                        modifier = Modifier.clickable{
+                            onDismissRequest()
+                        }.clip(CircleShape)
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                Text(
+                    "Data Password anda Telah Terkunci, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = secondaryColor
+                )
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                if(passDataDetailsState.value.dataSecurity?.typeId == 2) {
+                    Text(
+                        passDataDetailsState.value.dataSecurity?.securityData ?: "",
+                        style = MaterialTheme.typography.body1,
+                        color = secondaryColor
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+                FormTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = securityValue.value,
+                    labelHints = if(passDataDetailsState.value.dataSecurity?.typeId == 1) "Masukan Password Anda" else "Masukan Jawaban Pertanyaan Di Atas",
+                    isPassword = passDataDetailsState.value.dataSecurity?.typeId == 1,
+                    leadingIcon = null,
+                    onValueChange = {
+                        securityValue.value = it
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                Button(
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
+                    shape = RoundedCornerShape(20.dp),
+                    onClick = {
+                        val formVerify = VerifySecurityDataGroupRequest(
+                            securityData.value,
+                            securityValue.value
+                        )
+
+                        groupDetailsViewModel.verifyPassForDecrypt(formVerify)
+                    }
+                ) {
+                    when(passDataDetailsState.value.isLoading){
+                        true -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 3.dp,
+                                strokeCap = StrokeCap.Round
+                            )
+                        }
+                        false -> {
+                            Text(
+                                text = "Verifikasi",
+                                color = fontColor1,
+                                style = MaterialTheme.typography.button.copy(fontSize = 14.sp)
+                            )
+                        }
+
+                        else -> {}
                     }
                 }
             }
