@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.MemberGroupRepository
 import org.apps.simpenpass.models.pass_data.MemberGroupData
-import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -97,41 +96,6 @@ class EditAnggotaGroupViewModel(
                                 isLoading = false,
                                 isUpdated = true,
                                 msg = res.data.message
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fun sendEmailToInvite(
-        inviteUserToJoinGroup: InviteUserToJoinGroup
-    ) {
-        viewModelScope.launch {
-            repo.sendEmailToInvite(inviteUserToJoinGroup).flowOn(Dispatchers.IO).collect { res ->
-                when(res){
-                    is NetworkResult.Error -> {
-                        _editAnggotaState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _editAnggotaState.update {
-                            it.copy(
-                                isLoading = true
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _editAnggotaState.update {
-                            it.copy(
-                                isLoading = false,
-                                isSent = true,
                             )
                         }
                     }
