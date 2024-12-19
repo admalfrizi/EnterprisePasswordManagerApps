@@ -4,6 +4,7 @@ import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
@@ -128,6 +129,23 @@ class MemberGroupRepository(
                 emit(NetworkResult.Error(result.message))
             }
         }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun findEmailUser(
+        query: String
+    ) = flow {
+        localData.getToken.collect { token ->
+            val result = remoteMemberDataSources.findEmail(token,query)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            } else {
+                emit(NetworkResult.Error(result.message))
+            }
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }

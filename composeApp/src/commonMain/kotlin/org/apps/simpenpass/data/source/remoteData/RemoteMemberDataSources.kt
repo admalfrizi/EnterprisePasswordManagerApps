@@ -19,6 +19,7 @@ import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.InviteUserToJoinGroup
+import org.apps.simpenpass.models.request.SendEmailRequest
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.SearchResultResponse
@@ -147,6 +148,25 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
             }
 
             return response.body<BaseResponse<String>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun findEmail(
+        token: String,
+        query: String
+    ): BaseResponse<SendEmailRequest> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "searchEmailUser"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("query", query)
+            }
+
+            return response.body<BaseResponse<SendEmailRequest>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){

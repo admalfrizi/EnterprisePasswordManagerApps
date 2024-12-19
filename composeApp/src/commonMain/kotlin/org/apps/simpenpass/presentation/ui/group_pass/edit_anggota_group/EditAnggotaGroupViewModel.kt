@@ -29,7 +29,6 @@ class EditAnggotaGroupViewModel(
         if(groupId != null){
             getMemberDataGroup()
         }
-
     }
 
     fun getMemberDataGroup() {
