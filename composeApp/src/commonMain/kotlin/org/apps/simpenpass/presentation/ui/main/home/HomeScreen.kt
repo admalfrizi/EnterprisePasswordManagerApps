@@ -185,6 +185,8 @@ fun HomeContentView(
                     UserPassDataSection(homeState.passDataList,homeState.totalDataPass ?: 0,dataPass,sheetState,navigateToListUserPass)
                 }
         }
+
+        else -> {}
     }
 }
 

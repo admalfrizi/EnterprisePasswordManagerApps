@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.MemberGroupRepository
+import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.SendEmailRequest
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -22,6 +23,16 @@ class InviteUserViewModel(
     val inviteUserState = _inviteUserState.asStateFlow()
 
     private val groupId = savedStateHandle.get<String>("groupId")
+
+    init {
+        if(groupId != null){
+            _inviteUserState.update {
+                it.copy(
+                    groupId = groupId.toInt()
+                )
+            }
+        }
+    }
 
     fun findEmailUser(
         query: String
@@ -58,12 +69,48 @@ class InviteUserViewModel(
             }
         }
     }
+
+    fun sendInviteToEmail(
+        inviteUserToJoinGroup: InviteUserToJoinGroup
+    ) {
+        viewModelScope.launch {
+            repoMember.sendEmailToInvite(inviteUserToJoinGroup).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _inviteUserState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _inviteUserState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _inviteUserState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class InviteUserState(
     val isLoading: Boolean = false,
-    val isSuccess: Boolean = false,
+    var isSuccess: Boolean = false,
     var isFound: Boolean = false,
+    val groupId : Int? = null,
     val msg: String? = null,
     val isError: Boolean = false,
     val findResult : SendEmailRequest? = null

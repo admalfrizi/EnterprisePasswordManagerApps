@@ -412,6 +412,8 @@ fun OverlayContent(
                                     }
                                 }
                             }
+
+                            else -> {}
                         }
                     }
                 }

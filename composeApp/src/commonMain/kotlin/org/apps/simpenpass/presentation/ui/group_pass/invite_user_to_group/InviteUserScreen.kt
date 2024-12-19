@@ -53,14 +53,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.SendEmailRequest
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -69,6 +73,7 @@ import resources.add_ic
 import resources.delete_ic
 import resources.group_add_ic
 
+@OptIn(InternalVoyagerApi::class)
 @Composable
 fun InviteUserScreen(
     navToBack: () -> Unit,
@@ -81,6 +86,25 @@ fun InviteUserScreen(
     val scope = rememberCoroutineScope()
     val listAddEmail = remember { mutableStateListOf<SendEmailRequest>() }
     var listEmailToSend = remember { mutableStateListOf<SendEmailRequest>() }
+    val isDismiss = remember { mutableStateOf(true) }
+
+    if(inviteState.value.isLoading && !sheetState.isVisible){
+        popUpLoading(isDismiss)
+    }
+
+    if(!inviteState.value.isLoading && inviteState.value.isSuccess && !sheetState.isVisible){
+        setToast("Link undangan telah terkirim")
+        inviteState.value.isSuccess = false
+    }
+
+    BackHandler(
+        enabled = sheetState.isVisible,
+        onBack = {
+            scope.launch {
+                sheetState.hide()
+            }
+        }
+    )
 
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -106,6 +130,11 @@ fun InviteUserScreen(
                     onClick = {
                         if(listEmailToSend.isEmpty()){
                             setToast("Data email kosong, silahkan diisi")
+                        } else {
+                            inviteUserViewModel.sendInviteToEmail(InviteUserToJoinGroup(
+                                groupId = inviteState.value.groupId!!,
+                                listEmailToInvite = listEmailToSend
+                            ))
                         }
                     },
                     backgroundColor = Color(0xFF1E78EE),

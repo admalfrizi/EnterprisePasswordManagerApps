@@ -377,6 +377,8 @@ fun FormPassGroupScreen(
                                         updateListItemAddContent
                                     )
                                 }
+
+                                else -> {}
                             }
 //                            if(formPassGroupState.passDataGroupId != "-1" && formPassGroupState.passData != null){
 //                                formPassGroupViewModel.updatePassData(
@@ -862,6 +864,8 @@ fun AddContentPassDataGroupForm(
                         nmData.value = ""
                         vlData.value = ""
                     }
+
+                    else -> {}
                 }
             },
             shape = RoundedCornerShape(20.dp),
@@ -1249,6 +1253,7 @@ fun VerifyKeyInGroupDialog(
                             )
                         }
 
+                        else -> {}
                     }
                 }
             }
@@ -1286,6 +1291,8 @@ fun checkIsUpdateData(
                 groupId
             )
         }
+
+        else -> {}
     }
 }
 

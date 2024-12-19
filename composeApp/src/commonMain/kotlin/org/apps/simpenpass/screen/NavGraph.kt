@@ -219,7 +219,7 @@ fun NavGraphBuilder.groupPassDetail(
                 navController,
                 bottomEdgeColor = bottomEdgeColor,
                 navToInviteGroup = {
-                    navController.navigate(Screen.InviteUser.route)
+                    navController.navigate(Screen.InviteUser.groupId(it))
                 }
             )
         }
@@ -331,6 +331,13 @@ fun NavGraphBuilder.groupPassDetail(
 
         composable(
             route = Screen.InviteUser.route,
+            arguments = listOf(
+                navArgument(Screen.InviteUser.ARG_GROUP_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
+                }
+            )
         ){
             InviteUserScreen(
                 navToBack = {

@@ -82,7 +82,7 @@ fun EditAnggotaGroup(
     navController: NavController,
     editAnggotaViewModel: EditAnggotaGroupViewModel = koinViewModel(),
     bottomEdgeColor: MutableState<Color>,
-    navToInviteGroup: () -> Unit
+    navToInviteGroup: (String) -> Unit
 ) {
     val groupState by editAnggotaViewModel.editAnggotaState.collectAsState()
     val itemsData = groupState.listMember
@@ -139,12 +139,22 @@ fun EditAnggotaGroup(
 
     if(isPopupOption.value){
         OptionToInviteDialog(
+            groupState.groupId!!,
             onDismissRequest = {
                 isPopupOption.value = false
             },
             navToInviteGroup
         )
     }
+
+    BackHandler(
+        enabled = sheetState.isVisible,
+        onBack = {
+            scope.launch {
+                sheetState.hide()
+            }
+        }
+    )
 
     ModalBottomSheetLayout(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -420,6 +430,9 @@ fun OptionMenu(
         Box(
             modifier = Modifier.fillMaxWidth().clickable {
                 isPopOption.value = true
+                scope.launch {
+                    sheetState.hide()
+                }
             }
         ) {
             Row(

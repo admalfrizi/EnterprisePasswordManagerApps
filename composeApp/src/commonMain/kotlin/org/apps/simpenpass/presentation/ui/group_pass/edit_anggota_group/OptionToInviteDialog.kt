@@ -32,6 +32,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.apps.simpenpass.presentation.ui.group_pass.MethodSelection
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.copyText
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.edit_ic
@@ -39,10 +41,10 @@ import resources.your_data_ic
 
 @Composable
 fun OptionToInviteDialog(
+    groupId: Int,
     onDismissRequest: () -> Unit,
-    navToInviteGroup: () -> Unit,
+    navToInviteGroup: (String) -> Unit,
 ) {
-
     val itemsData = listOf(
         MethodSelection(1, Res.drawable.edit_ic, " Kirim Link Melalui Email"),
         MethodSelection(2, Res.drawable.your_data_ic, "Salin Link Invite URL"),
@@ -80,8 +82,14 @@ fun OptionToInviteDialog(
                             elevation = 0.dp,
                             modifier = Modifier.fillMaxWidth().clickable {
                                 selectedOption = item.id
+
                                 if(selectedOption == 1){
-                                    navToInviteGroup()
+                                    navToInviteGroup(groupId.toString())
+                                }
+
+                                if(selectedOption == 2){
+                                    copyText("https://simpenpass-api.pro/api/getGroupById/$groupId?userId=0")
+                                    setToast("Link Undangan Telah Disalin")
                                 }
                             },
                             backgroundColor = Color.Transparent,

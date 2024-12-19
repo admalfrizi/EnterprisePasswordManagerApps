@@ -27,6 +27,11 @@ class EditAnggotaGroupViewModel(
 
     init {
         if(groupId != null){
+            _editAnggotaState.update {
+                it.copy(
+                    groupId = groupId.toInt()
+                )
+            }
             getMemberDataGroup()
         }
     }
@@ -138,6 +143,7 @@ class EditAnggotaGroupViewModel(
 
 data class EditAnggotaState(
     var msg: String = "",
+    val groupId: Int? = null,
     val listMember: List<MemberGroupData> = emptyList(),
     var isUpdated: Boolean = false,
     var isError: Boolean = false,

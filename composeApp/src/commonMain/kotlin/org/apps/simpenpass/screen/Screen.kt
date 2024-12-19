@@ -99,5 +99,11 @@ sealed class Screen(val route : String) {
 //        const val ARG_TOKEN = "token"
     }
 
-    data object InviteUser : Screen(route = "groupPass/dtl/inviteUser")
+    data object InviteUser : Screen(route = "groupPass/dtl/inviteUser/{groupId}"){
+        fun groupId(
+            groupId: String
+        ) = "groupPass/dtl/inviteUser/$groupId"
+
+        const val ARG_GROUP_ID = "groupId"
+    }
 }
