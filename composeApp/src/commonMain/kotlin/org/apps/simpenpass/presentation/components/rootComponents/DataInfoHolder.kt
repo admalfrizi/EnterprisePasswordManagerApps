@@ -225,7 +225,7 @@ fun PassDataGroupInfoHolder(
     isPopUp : MutableState<Boolean>,
     isEncrypted: Boolean = false,
 ) {
-    var showPassword by remember { mutableStateOf(value = false) }
+    var showPassword by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxWidth()

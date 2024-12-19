@@ -203,6 +203,9 @@ fun MainNavigation(
                 navigateToFormEdit = {
                     navController.navigate(Screen.FormPassData.passDataId(it))
                 },
+                navigateToFormPassData = {
+                    navController.navigate(Screen.FormPassData.route)
+                },
                 navigateBack = {
                     navController.navigateUp()
                 }

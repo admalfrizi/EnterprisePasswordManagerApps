@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.copyText
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.copy_paste
@@ -32,6 +33,8 @@ import resources.edit_pass_ic
 @Composable
 fun DataPassHolder(
     isSelectionMode: Boolean,
+    passData: MutableState<String>,
+    isPopUp: MutableState<Boolean>,
     item : DataPassWithAddContent,
     dataParse: MutableState<DataPassWithAddContent?>,
     sheetState: ModalBottomSheetState,
@@ -88,7 +91,13 @@ fun DataPassHolder(
                     }
                     IconButton(
                         onClick = {
-                            copyText(item.password!!)
+                            if(!item.isEncrypted!!){
+                                copyText(item.password!!)
+                                setToast("Data password telah disalin")
+                            } else {
+                                isPopUp.value = true
+                                passData.value = item.password!!
+                            }
                         }
                     ){
                         Image(

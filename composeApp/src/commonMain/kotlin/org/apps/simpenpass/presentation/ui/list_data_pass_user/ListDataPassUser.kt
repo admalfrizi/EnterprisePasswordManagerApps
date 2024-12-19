@@ -72,6 +72,7 @@ import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.CamelliaCrypto
+import org.apps.simpenpass.utils.copyText
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -88,6 +89,7 @@ import resources.user_ic
 fun ListDataPassUser(
     bottomEdgeColor: MutableState<Color>,
     navigateToFormEdit: (String) -> Unit,
+    navigateToFormPassData: () -> Unit,
     navigateBack: () -> Unit,
     listDataViewModel: ListDataViewModel = koinViewModel()
 ) {
@@ -109,11 +111,38 @@ fun ListDataPassUser(
     val backgroundColor by animateColorAsState(
         targetValue = if (isSelectionMode.value) Color(0xFF001530) else secondaryColor // Color changes
     )
+    var encKey by remember { mutableStateOf("") }
+    var passData = remember { mutableStateOf("") }
+    var decData by remember { mutableStateOf("") }
 
     if(state.isDeleted){
         listDataViewModel.getPassData()
         setToast("Data Password Telah Dihapus !")
         state.isDeleted = false
+    }
+
+    if(state.key == ""){
+        setToast("Data Password anda Tidak Cocok !")
+        state.key = null
+    }
+
+    if(state.isPassVerify && !sheetState.isVisible){
+        isPopUp.value = false
+        encKey = state.key!!
+        decData = CamelliaCrypto().decrypt(passData.value,encKey)
+        copyText(decData)
+        setToast("Data password telah disalin")
+        state.isPassVerify = false
+    }
+
+
+    if(isPopUp.value){
+        DecryptPassDataDialog(
+            onDismissRequest = {
+                isPopUp.value = false
+            },
+            listDataViewModel
+        )
     }
 
     LaunchedEffect(Unit){
@@ -205,6 +234,8 @@ fun ListDataPassUser(
                                     Text(text = "Tambah Data Baru")
                                 },
                                 onClick = {
+                                    navigateToFormPassData()
+                                    isDropdownShow = false
                                 }
                             )
                         }
@@ -236,6 +267,8 @@ fun ListDataPassUser(
                         items(state.data){ item ->
                             DataPassHolder(
                                 isSelectionMode.value,
+                                passData,
+                                isPopUp,
                                 item,
                                 dataDetail,
                                 sheetState,
@@ -289,16 +322,7 @@ fun PassDataInfo(
         homeState.value.key = null
     }
 
-    if(isPopUp.value){
-        DecryptPassDataDialog(
-            onDismissRequest = {
-                isPopUp.value = false
-            },
-            listDataViewModel
-        )
-    }
-
-    if(homeState.value.isPassVerify){
+    if(homeState.value.isPassVerify && sheetState.isVisible){
         isPopUp.value = false
         data.value?.isEncrypted = false
         encKey = homeState.value.key!!
