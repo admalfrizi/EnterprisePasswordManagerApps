@@ -1,5 +1,6 @@
 package org.apps.simpenpass.presentation.ui.list_data_pass_user
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -98,6 +100,25 @@ fun ListDataPassUser(
     val scope = rememberCoroutineScope()
     val dataDetail = remember { mutableStateOf<DataPassWithAddContent?>(null) }
     var isPopUp = remember { mutableStateOf(false) }
+    var isSelectionMode = remember {
+        mutableStateOf(false)
+    }
+    val resetSelectionMode = {
+        isSelectionMode.value = false
+    }
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelectionMode.value) Color(0xFF001530) else secondaryColor // Color changes
+    )
+
+    if(state.isDeleted){
+        listDataViewModel.getPassData()
+        setToast("Data Password Telah Dihapus !")
+        state.isDeleted = false
+    }
+
+    LaunchedEffect(Unit){
+        listDataViewModel.getPassData()
+    }
 
     bottomEdgeColor.value = Color.White
 
@@ -114,39 +135,58 @@ fun ListDataPassUser(
             modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing),
             topBar = {
                 TopAppBar(
-                    backgroundColor = secondaryColor,
+                    backgroundColor = backgroundColor,
                     title = {
-                        Text(
-                            "Data Password Anda"
-                        )
+                        if(isSelectionMode.value){
+                            Text("Silahkan Pilih Data untuk Dihapus !")
+                        } else {
+                            Text(
+                                "Data Password Anda"
+                            )
+                        }
+
                     },
                     elevation = 0.dp,
                     navigationIcon = {
-                        IconButton(
-                            onClick = {
-                                navigateBack()
-                            },
-                            content = {
-                                Image(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    "",
-                                    colorFilter = ColorFilter.tint(Color.White)
-                                )
-                            }
-                        )
+                        if(isSelectionMode.value){
+                            IconButton(
+                                onClick = resetSelectionMode,
+                                content = {
+                                    Image(
+                                        Icons.Default.Clear,
+                                        "",
+                                        colorFilter = ColorFilter.tint(Color.White)
+                                    )
+                                }
+                            )
+                        } else {
+                            IconButton(
+                                onClick = {
+                                    navigateBack()
+                                },
+                                content = {
+                                    Image(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        "",
+                                        colorFilter = ColorFilter.tint(Color.White)
+                                    )
+                                }
+                            )
+                        }
                     },
                     actions = {
-                        IconButton(
-                            onClick = {
-                                isDropdownShow = true
-                            },
-                            content = {
-                                Image(
-                                    painterResource(Res.drawable.menu_ic),
-                                    "",
-                                    colorFilter = ColorFilter.tint(Color.White))}
-                        )
-
+                        if(!isSelectionMode.value){
+                            IconButton(
+                                onClick = {
+                                    isDropdownShow = true
+                                },
+                                content = {
+                                    Image(
+                                        painterResource(Res.drawable.menu_ic),
+                                        "",
+                                        colorFilter = ColorFilter.tint(Color.White))}
+                            )
+                        }
                         DropdownMenu(
                             expanded = isDropdownShow,
                             onDismissRequest = { isDropdownShow = false }
@@ -156,6 +196,8 @@ fun ListDataPassUser(
                                     Text(text = "Hapus Data Password")
                                 },
                                 onClick = {
+                                    isSelectionMode.value = true
+                                    isDropdownShow = false
                                 }
                             )
                             DropdownMenuItem(
@@ -166,6 +208,7 @@ fun ListDataPassUser(
                                 }
                             )
                         }
+
                     }
                 )
             },
@@ -191,7 +234,15 @@ fun ListDataPassUser(
                 if(state.data.isNotEmpty()){
                     LazyColumn {
                         items(state.data){ item ->
-                            DataPassHolder(item, dataDetail, sheetState, scope, navigateToFormEdit)
+                            DataPassHolder(
+                                isSelectionMode.value,
+                                item,
+                                dataDetail,
+                                sheetState,
+                                scope,
+                                navigateToFormEdit,
+                                listDataViewModel
+                            )
                         }
                     }
                 }
@@ -509,6 +560,7 @@ fun DecryptPassDataDialog(
                             )
                         }
 
+                        else -> {}
                     }
                 }
             }

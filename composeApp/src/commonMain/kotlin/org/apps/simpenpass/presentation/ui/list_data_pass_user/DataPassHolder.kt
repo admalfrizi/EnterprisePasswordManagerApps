@@ -22,18 +22,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.copyText
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.copy_paste
+import resources.delete_ic
 import resources.edit_pass_ic
 
 @Composable
 fun DataPassHolder(
+    isSelectionMode: Boolean,
     item : DataPassWithAddContent,
     dataParse: MutableState<DataPassWithAddContent?>,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
-    navigateToFormEdit: (String) -> Unit
+    navigateToFormEdit: (String) -> Unit,
+    listDataViewModel: ListDataViewModel
 ) {
     Box(modifier = Modifier.fillMaxWidth().clickable {
         scope.launch {
@@ -70,26 +74,45 @@ fun DataPassHolder(
                     color = secondaryColor
                 )
             }
-            Row{
+            if(!isSelectionMode){
+                Row{
+                    IconButton(
+                        onClick = {
+                            navigateToFormEdit(item.id.toString())
+                        }
+                    ){
+                        Image(
+                            painterResource(Res.drawable.edit_pass_ic),
+                            "",
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            copyText(item.password!!)
+                        }
+                    ){
+                        Image(
+                            painterResource(Res.drawable.copy_paste),
+                            "",
+                        )
+                    }
+                }
+            }
+
+            if(isSelectionMode){
                 IconButton(
                     onClick = {
-                        navigateToFormEdit(item.id.toString())
+                        listDataViewModel.deletePassData(item.id!!)
                     }
                 ){
                     Image(
-                        painterResource(Res.drawable.edit_pass_ic),
-                        "",
-                    )
-                }
-                IconButton(
-                    onClick = {}
-                ){
-                    Image(
-                        painterResource(Res.drawable.copy_paste),
+                        painterResource(Res.drawable.delete_ic),
                         "",
                     )
                 }
             }
+
+
         }
         Divider(
             modifier = Modifier.align(Alignment.BottomCenter)

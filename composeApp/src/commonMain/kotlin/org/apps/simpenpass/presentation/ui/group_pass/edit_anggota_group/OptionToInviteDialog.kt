@@ -47,7 +47,7 @@ fun OptionToInviteDialog(
 ) {
     val itemsData = listOf(
         MethodSelection(1, Res.drawable.edit_ic, " Kirim Link Melalui Email"),
-        MethodSelection(2, Res.drawable.your_data_ic, "Salin Link Invite URL"),
+        MethodSelection(2, Res.drawable.your_data_ic, "Salin Link Undangan Ke Grup"),
     )
     var selectedOption by remember { mutableStateOf(-1) }
 
@@ -88,7 +88,7 @@ fun OptionToInviteDialog(
                                 }
 
                                 if(selectedOption == 2){
-                                    copyText("https://simpenpass-api.pro/api/getGroupById/$groupId?userId=0")
+                                    copyText("https://simpenpass-api.pro/api/getGroupById/$groupId")
                                     setToast("Link Undangan Telah Disalin")
                                 }
                             },

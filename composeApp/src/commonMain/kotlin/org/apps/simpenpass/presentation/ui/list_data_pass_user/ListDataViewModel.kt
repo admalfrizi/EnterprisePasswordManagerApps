@@ -23,7 +23,7 @@ class ListDataViewModel(
     private val _listDataState = MutableStateFlow(ListDataState())
     val listDataState = _listDataState.asStateFlow()
 
-    init {
+    fun getPassData() {
         viewModelScope.launch {
             repo.listUserPassData().flowOn(Dispatchers.IO).collectLatest { result ->
                 when(result) {
@@ -91,10 +91,43 @@ class ListDataViewModel(
             }
         }
     }
+
+    fun deletePassData(passId: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            repo.deleteUserPassData(passId).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _listDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _listDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _listDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDeleted = true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class ListDataState(
     val isLoading : Boolean = false,
+    var isDeleted : Boolean = false,
     val data : List<DataPassWithAddContent> = emptyList(),
     val error : String? = null,
     var isPassVerify: Boolean = false,
