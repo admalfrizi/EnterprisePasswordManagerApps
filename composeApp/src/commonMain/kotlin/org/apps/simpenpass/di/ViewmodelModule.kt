@@ -135,8 +135,7 @@ val viewModelModule = module {
         GroupSettingsViewModel(
             repo = get(),
             savedStateHandle = get(),
-            userRepo = get(),
-            repoPassGroup = get()
+            userRepo = get()
         )
     }
 
