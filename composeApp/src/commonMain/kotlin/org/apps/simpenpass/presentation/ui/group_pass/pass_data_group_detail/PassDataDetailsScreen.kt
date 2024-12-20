@@ -160,7 +160,24 @@ fun PassDataDetailsScreen(
                 ) {
                     item {
                         Spacer(
-                            modifier = Modifier.height(10.dp)
+                            modifier = Modifier.height(17.dp)
+                        )
+                        Text(
+                            passDataDetailsState.value.passData?.accountName!!,
+                            style = MaterialTheme.typography.h6.copy(fontSize = 20.sp),
+                            color = secondaryColor,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        Spacer(
+                            modifier = Modifier.height(6.dp)
+                        )
+                        DataInfoHolder(
+                            {},
+                            title = passDataDetailsState.value.passData?.klmpkRole ?: "",
+                            isCopyPaste = false
+                        )
+                        Spacer(
+                            modifier = Modifier.height(17.dp)
                         )
                         DataInfoHolder(
                             {
@@ -209,6 +226,9 @@ fun PassDataDetailsScreen(
                             {
                                 setToast("Data URL telah Disalin")
                             }, Res.drawable.url_link, passDataDetailsState.value.passData?.url ?: ""
+                        )
+                        Spacer(
+                            modifier = Modifier.height(17.dp)
                         )
                         Text(
                             "Deskripsi",
@@ -427,6 +447,7 @@ fun VerifyKeyDataToDecrypt(
                             )
                         }
 
+                        else -> {}
                     }
                 }
             }

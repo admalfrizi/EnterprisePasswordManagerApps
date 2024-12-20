@@ -10,8 +10,8 @@ data class PassDataGroupByIdResponse(
     val id: Int,
     @SerialName("posisi_id")
     var posisiId: Int?,
-    @SerialName("group_id")
-    val groupId: String,
+    @SerialName("klmpk_role")
+    val klmpkRole: String?,
     @SerialName("jenis_data")
     var jenisData: String?,
     @SerialName("account_name")

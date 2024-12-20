@@ -36,9 +36,11 @@ import resources.visibility_non_ic
 @Composable
 fun DataInfoHolder(
     warnCopy: () -> Unit,
-    icon: DrawableResource,
+    icon: DrawableResource? = null,
     title: String,
     isPassData : Boolean = false,
+    isLeadIcon : Boolean = true,
+    isCopyPaste: Boolean = true
 ) {
     var showPassword by remember { mutableStateOf(value = false) }
 
@@ -50,13 +52,15 @@ fun DataInfoHolder(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painterResource(icon),"",
-                modifier = Modifier.size(28.dp)
-            )
-            Spacer(
-                modifier = Modifier.width(19.dp)
-            )
+            if(isLeadIcon && icon != null){
+                Image(
+                    painterResource(icon),"",
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(
+                    modifier = Modifier.width(19.dp)
+                )
+            }
             Text(
                 checkData(title, isPassData, showPassword),
                 style = MaterialTheme.typography.body2,
@@ -87,15 +91,17 @@ fun DataInfoHolder(
                     }
                 }
             }
-            IconButton(
-                onClick = {
-                    copyText(title)
-                    warnCopy()
+            if(isCopyPaste){
+                IconButton(
+                    onClick = {
+                        copyText(title)
+                        warnCopy()
+                    }
+                ){
+                    Image(
+                        painterResource(Res.drawable.copy_paste),"",
+                    )
                 }
-            ){
-                Image(
-                    painterResource(Res.drawable.copy_paste),"",
-                )
             }
         }
     }
