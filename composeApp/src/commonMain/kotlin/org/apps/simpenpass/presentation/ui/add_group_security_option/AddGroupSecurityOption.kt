@@ -101,6 +101,12 @@ fun AddGroupSecurityOption(
         addGroupSecurityState.value.isUpdated = false
     }
 
+    if(addGroupSecurityState.value.isAdded) {
+        onDismissRequest()
+        setToast("Data Keamanan Telah Ditambahkan !")
+        addGroupSecurityState.value.isAdded = false
+    }
+
     Dialog(
         onDismissRequest = {
             onDismissRequest()

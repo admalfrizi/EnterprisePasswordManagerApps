@@ -250,6 +250,44 @@ class GroupSettingsViewModel(
             }
         }
     }
+
+    fun deleteSecurityDataForGroup(
+        groupId: Int,
+        id: Int
+    ) {
+        viewModelScope.launch {
+            repo.deleteGroupSecurityData(groupId,id).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupSettingsState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupSettingsState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupSettingsState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDeleted = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 data class GroupSettingsState(
@@ -260,6 +298,7 @@ data class GroupSettingsState(
     val msg : String? = null,
     var key : String? = null,
     val isError: Boolean = false,
+    var isDeleted: Boolean = false,
     val groupData: DtlGrupPass? = null,
     var isPassVerify : Boolean = false,
     var passDataGroup: List<GetPassDataEncrypted> = emptyList(),

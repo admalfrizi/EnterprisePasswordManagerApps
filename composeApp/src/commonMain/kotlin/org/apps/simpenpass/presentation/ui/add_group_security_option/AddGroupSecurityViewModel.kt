@@ -116,6 +116,7 @@ class AddGroupSecurityViewModel(
                         _groupSecurityDataState.update {
                             it.copy(
                                 isLoading = false,
+                                isAdded = true,
                                 msg = res.data.message
                             )
                         }
@@ -207,6 +208,7 @@ data class GroupSecurityDataState(
     val msg : String? = null,
     val isError: Boolean = false,
     var isDeleted: Boolean = false,
+    var isAdded: Boolean = false,
     var isUpdated: Boolean = false,
     var securityData: GroupSecurityData? = null,
     val listTypeSecurityData: List<GroupSecurityTypeResponse> = emptyList()

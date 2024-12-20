@@ -74,6 +74,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import coil3.compose.AsyncImage
 import com.mohamedrejeb.calf.core.LocalPlatformContext
 import com.mohamedrejeb.calf.io.getName
@@ -110,7 +112,7 @@ import resources.Res
 import resources.delete_ic
 import resources.group_ic
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, InternalVoyagerApi::class)
 @Composable
 fun GroupSettingsScreen(
     groupSettingsViewModel: GroupSettingsViewModel = koinViewModel(),
@@ -118,6 +120,7 @@ fun GroupSettingsScreen(
     navToBack : () -> Unit
 ) {
     var isDismiss = remember { mutableStateOf(false) }
+    var isDeleted = remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
     var grupName by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
@@ -127,6 +130,7 @@ fun GroupSettingsScreen(
     val scope = rememberCoroutineScope()
     var isPopUpToDecrypt = remember { mutableStateOf(false) }
     var listPassDataToDecrypt = remember { mutableListOf<UpdatePassDataToDecrypt>() }
+    var securityDataId = remember { mutableStateOf(0) }
 
     if(groupState.groupData != null){
         grupName = groupState.groupData?.groupDtl?.nm_grup!!
@@ -170,8 +174,23 @@ fun GroupSettingsScreen(
     }
 
     if(groupState.isPassVerify){
-        proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataToDecrypt,groupSettingsViewModel)
+        proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataToDecrypt,groupSettingsViewModel,securityDataId.value)
         groupState.isPassVerify = false
+    }
+
+    if(groupState.isDeleted){
+        setToast("Data Keamanan Telah Dihapus")
+        isDeleted.value = true
+        isPopUpToDecrypt.value = false
+        groupState.isDeleted = false
+    }
+
+    BackHandler(
+        enabled = sheetState.isVisible
+    ){
+        scope.launch {
+            sheetState.hide()
+        }
     }
 
     ModalBottomSheetLayout(
@@ -183,8 +202,10 @@ fun GroupSettingsScreen(
         sheetContent = {
             ListSecurityData(
                 groupState,
+                securityDataId,
                 scope,
                 isPopUpToDecrypt,
+                isDeleted,
                 sheetState,
                 groupState.groupId?.toInt()!!
             )
@@ -441,8 +462,10 @@ fun GroupSettingsScreen(
 @Composable
 fun ListSecurityData(
     groupState: GroupSettingsState,
+    securityDataId: MutableState<Int>,
     scope: CoroutineScope,
     isPopUpToDecrypt: MutableState<Boolean>,
+    isDeleted: MutableState<Boolean>,
     sheetState: ModalBottomSheetState,
     groupId: Int,
     groupDataSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
@@ -457,10 +480,12 @@ fun ListSecurityData(
         }
     }
 
+    securityDataId.value = securityData?.id ?: 0
+
     if(groupState.isDecrypted){
         groupDataSecurityViewModel.deleteSecurityDataForGroup(
             groupId,
-            securityData?.id!!
+            securityDataId.value
         )
         groupState.isDecrypted = false
     }
@@ -475,9 +500,9 @@ fun ListSecurityData(
         )
     }
 
-    if(addGroupSecurityDataState.value.isDeleted){
-        isPopUpToDecrypt.value = false
+    if(isDeleted.value){
         groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
+        isDeleted.value = false
     }
 
     Column(
@@ -739,7 +764,8 @@ fun proceedDeleteSecurityData(
     key : String,
     listPassDataEncrypted: List<GetPassDataEncrypted>,
     listUpdatePassDataToDecrypt: MutableList<UpdatePassDataToDecrypt>,
-    groupSettingsViewModel: GroupSettingsViewModel
+    groupSettingsViewModel: GroupSettingsViewModel,
+    securityDataId: Int
 ) {
     if(listPassDataEncrypted.isNotEmpty()){
         listPassDataEncrypted.forEach {
@@ -748,7 +774,10 @@ fun proceedDeleteSecurityData(
         }
         groupSettingsViewModel.sendDataPassToDecrypt(groupId, SendDataPassToDecrypt(listUpdatePassDataToDecrypt))
     } else {
-
+        groupSettingsViewModel.deleteSecurityDataForGroup(
+            groupId.toInt(),
+            securityDataId
+        )
     }
 
     Napier.v("passDataEncrypted: $listUpdatePassDataToDecrypt")
