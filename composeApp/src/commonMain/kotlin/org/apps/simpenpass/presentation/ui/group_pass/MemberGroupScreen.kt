@@ -50,10 +50,10 @@ fun MemberGroupScreen(
             EditAnggotaBtnHolder {
                 navController.navigate(Screen.EditAnggota.groupId(groupState.groupId!!))
             }
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
         }
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
         when(groupState.isLoading){
             true -> {
                 MemberGroupLoadShimmer()
@@ -70,6 +70,8 @@ fun MemberGroupScreen(
                     }
                 }
             }
+
+            else -> {}
         }
     }
 }
@@ -122,7 +124,6 @@ fun AnggotaDataHolder(item: MemberGroupData) {
                             color = Color.White,
                             modifier = Modifier.padding(horizontal = 9.5.dp, vertical = 3.5.dp)
                         )
-
                     }
                     Spacer(modifier = Modifier.height(14.dp))
                 }
