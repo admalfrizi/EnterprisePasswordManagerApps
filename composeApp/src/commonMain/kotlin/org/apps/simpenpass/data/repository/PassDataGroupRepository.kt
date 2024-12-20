@@ -209,4 +209,24 @@ class PassDataGroupRepository(
     }.catch {
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
+
+    fun deletePassDataGroup(
+        passDataGroupId: Int,
+        groupId: Int
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassDataGroupSources.deletePassDataGroup(token,passDataGroupId,groupId)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException){
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
 }

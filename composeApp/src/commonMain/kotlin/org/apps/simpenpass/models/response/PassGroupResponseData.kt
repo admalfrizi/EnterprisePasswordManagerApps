@@ -21,5 +21,7 @@ data class PassGroupResponseData(
     @SerialName("group_id")
     val groupId: Int?,
     @SerialName("username")
-    var username: String?
+    var username: String?,
+    @SerialName("is_encrypted")
+    var isEncrypted: Boolean,
 )

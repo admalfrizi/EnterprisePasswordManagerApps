@@ -110,6 +110,12 @@ fun PassDataScreen(
         groupState.key = null
     }
 
+    if(groupState.isDeleted){
+        groupDtlViewModel.getAllPassDataGroup(groupState.groupId!!)
+        setToast("Data Password Grup telah dihapus !")
+        groupState.isDeleted = false
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -189,7 +195,7 @@ fun PassDataScreen(
                                 if(groupState.dtlGroupData?.isUserAdmin == true){
                                     IconButton(
                                         onClick = {
-
+                                            groupDtlViewModel.deletePassDataGroup(data?.id!!)
                                         }
                                     ){
                                         Image(

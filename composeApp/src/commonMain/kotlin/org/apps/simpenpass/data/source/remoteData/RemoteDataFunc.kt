@@ -224,4 +224,9 @@ interface PassDataGroupFunc {
         passGroupDataId: Int,
         deleteAddContentPassData: List<FormAddContentPassDataGroup>
     ): BaseResponse<List<AddContentPassDataGroup>>
+    suspend fun deletePassDataGroup(
+        token: String,
+        passGroupDataId: Int,
+        groupId: Int
+    ): BaseResponse<PassGroupResponseData>
 }

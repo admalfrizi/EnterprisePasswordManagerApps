@@ -177,4 +177,24 @@ class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataG
             throw Exception(e.message)
         }
     }
+
+    override suspend fun deletePassDataGroup(
+        token: String,
+        passGroupDataId: Int,
+        groupId: Int
+    ): BaseResponse<PassGroupResponseData> {
+        try {
+            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "deletePassDataGroup/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("passDataGroupId",passGroupDataId)
+            }
+
+            return response.body<BaseResponse<PassGroupResponseData>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
 }

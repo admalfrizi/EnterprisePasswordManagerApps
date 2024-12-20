@@ -219,6 +219,41 @@ class GroupDetailsViewModel(
         }
     }
 
+    fun deletePassDataGroup(
+        passDataGroupId: Int
+    ) {
+        viewModelScope.launch {
+            repoPassDataGroup.deletePassDataGroup(passDataGroupId,groupId?.toInt()!!).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupDtlState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDeleted = true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun getSecurityData() {
         viewModelScope.launch {
             repoGroup.getGroupSecurityData(groupDtlState.value.groupId?.toInt()!!).flowOn(
@@ -306,5 +341,6 @@ data class GroupDetailsState(
     var isError: Boolean = false,
     var isLoading: Boolean = false,
     var isPassVerify : Boolean = false,
+    var isDeleted : Boolean = false,
     val dataSecurity : GroupSecurityData? = null
 )
