@@ -505,6 +505,13 @@ fun ListSecurityData(
         isDeleted.value = false
     }
 
+    if(addGroupSecurityDataState.value.isDeleted){
+        isPopUpToDecrypt.value = false
+        setToast("Data Keamanan Telah Dihapus")
+        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
+        addGroupSecurityDataState.value.isDeleted = false
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth().imePadding()
     ) {
