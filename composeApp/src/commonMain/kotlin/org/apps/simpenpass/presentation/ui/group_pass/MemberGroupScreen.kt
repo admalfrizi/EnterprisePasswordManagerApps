@@ -32,6 +32,8 @@ import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.MemberGroupLoadShimmer
 import org.apps.simpenpass.screen.Screen
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.copyText
+import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import resources.Res
 import resources.edit_anggota_ic
@@ -49,6 +51,16 @@ fun MemberGroupScreen(
         if(groupState.dtlGroupData?.isUserAdmin == true){
             EditAnggotaBtnHolder {
                 navController.navigate(Screen.EditAnggota.groupId(groupState.groupId!!))
+            }
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+        }
+
+        if(groupState.dtlGroupData?.isUserAdmin == false){
+            CopyLinkURLToInvite {
+                copyText("https://simpenpass-api.pro/api/getGroupById/${groupState.groupId}")
+                setToast("Link Undangan Telah Disalin")
             }
             Spacer(
                 modifier = Modifier.height(16.dp)
@@ -170,6 +182,37 @@ fun EditAnggotaBtnHolder(onClick: () -> Unit) {
             )
             Text(
                 "Tambah Anggota Baru",
+                style = MaterialTheme.typography.h6,
+                fontSize = 13.sp,
+                color = secondaryColor
+            )
+        }
+    }
+}
+
+@Composable
+fun CopyLinkURLToInvite(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
+            onClick()
+        }
+    ){
+        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier.size(55.dp).background(color = Color(0xFF78A1D7),shape = RoundedCornerShape(7.dp))
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.edit_anggota_ic),
+                    "",
+                    modifier = Modifier.padding(8.dp)
+                )
+
+            }
+            Spacer(
+                modifier = Modifier.width(28.dp)
+            )
+            Text(
+                "Salin Link URL Undangan",
                 style = MaterialTheme.typography.h6,
                 fontSize = 13.sp,
                 color = secondaryColor

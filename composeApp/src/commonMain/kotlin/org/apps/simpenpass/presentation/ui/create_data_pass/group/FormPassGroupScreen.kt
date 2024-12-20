@@ -489,7 +489,7 @@ fun FormContentView(
                         verticalAlignment = Alignment.CenterVertically
                     ){
                         Text(
-                            text = "Enkripsi Data",
+                            text = "Kunci Data Password",
                             style = MaterialTheme.typography.body2.copy(
                                 color = secondaryColor
                             ),

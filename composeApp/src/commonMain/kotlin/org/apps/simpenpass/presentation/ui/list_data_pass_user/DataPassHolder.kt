@@ -43,23 +43,24 @@ fun DataPassHolder(
     listDataViewModel: ListDataViewModel
 ) {
     Box(modifier = Modifier.fillMaxWidth().clickable {
-        scope.launch {
-            dataParse.value = DataPassWithAddContent(
-                accountName = item.accountName,
-                desc = item.desc,
-                email = item.email,
-                id = item.id,
-                jenisData = item.jenisData,
-                password = item.password,
-                url = item.url,
-                username = item.username,
-                addContentPass = item.addContentPass,
-                isEncrypted = item.isEncrypted
-            )
+        if(!isSelectionMode){
+            scope.launch {
+                dataParse.value = DataPassWithAddContent(
+                    accountName = item.accountName,
+                    desc = item.desc,
+                    email = item.email,
+                    id = item.id,
+                    jenisData = item.jenisData,
+                    password = item.password,
+                    url = item.url,
+                    username = item.username,
+                    addContentPass = item.addContentPass,
+                    isEncrypted = item.isEncrypted
+                )
 
-            sheetState.show()
+                sheetState.show()
+            }
         }
-
     }){
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 9.dp),

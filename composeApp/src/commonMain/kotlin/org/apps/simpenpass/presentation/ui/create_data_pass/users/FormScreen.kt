@@ -274,6 +274,8 @@ fun FormScreen(
                                         updateListItemAddContent
                                     )
                                 }
+
+                                else -> {}
                             }
                         },
                         {
@@ -320,7 +322,7 @@ fun FormScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ){
                                         Text(
-                                            text = "Enkripsi Data",
+                                            text = "Kunci Data Password",
                                             style = MaterialTheme.typography.body2.copy(
                                                 color = secondaryColor
                                             ),
@@ -598,6 +600,8 @@ fun updateOrCreateDataPass(
                 formData
             )
         }
+
+        else -> {}
     }
 }
 
@@ -895,6 +899,8 @@ fun AddContentDataForm(
                         nmData.value = ""
                         vlData.value = ""
                     }
+
+                    else -> {}
                 }
 
 

@@ -26,6 +26,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -46,6 +48,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,13 +62,17 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.mohamedrejeb.calf.core.LocalPlatformContext
@@ -74,17 +81,24 @@ import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
 import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
+import org.apps.simpenpass.models.request.SendDataPassToDecrypt
+import org.apps.simpenpass.models.request.UpdatePassDataToDecrypt
+import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
+import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
+import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.profileComponents.SettingsListHolder
 import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSecurityOption
 import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSecurityViewModel
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.maskStringAfter3Char
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.profileNameInitials
@@ -111,6 +125,8 @@ fun GroupSettingsScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val groupState by groupSettingsViewModel.groupSettingsState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    var isPopUpToDecrypt = remember { mutableStateOf(false) }
+    var listPassDataToDecrypt = remember { mutableListOf<UpdatePassDataToDecrypt>() }
 
     if(groupState.groupData != null){
         grupName = groupState.groupData?.groupDtl?.nm_grup!!
@@ -144,6 +160,20 @@ fun GroupSettingsScreen(
         popUpLoading(isDismiss)
     }
 
+    if(isPopUpToDecrypt.value){
+        DecryptToChangeSecurityData(
+            onDismissRequest = {
+                isPopUpToDecrypt.value = false
+            },
+            groupSettingsViewModel
+        )
+    }
+
+    if(groupState.isPassVerify){
+        proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataToDecrypt,groupSettingsViewModel)
+        groupState.isPassVerify = false
+    }
+
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetElevation = 0.dp,
@@ -152,7 +182,9 @@ fun GroupSettingsScreen(
         sheetBackgroundColor = Color.White,
         sheetContent = {
             ListSecurityData(
+                groupState,
                 scope,
+                isPopUpToDecrypt,
                 sheetState,
                 groupState.groupId?.toInt()!!
             )
@@ -408,7 +440,9 @@ fun GroupSettingsScreen(
 
 @Composable
 fun ListSecurityData(
+    groupState: GroupSettingsState,
     scope: CoroutineScope,
+    isPopUpToDecrypt: MutableState<Boolean>,
     sheetState: ModalBottomSheetState,
     groupId: Int,
     groupDataSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
@@ -423,6 +457,14 @@ fun ListSecurityData(
         }
     }
 
+    if(groupState.isDecrypted){
+        groupDataSecurityViewModel.deleteSecurityDataForGroup(
+            groupId,
+            securityData?.id!!
+        )
+        groupState.isDecrypted = false
+    }
+
     if(isPopUp){
         AddGroupSecurityOption(
             groupId,
@@ -431,6 +473,11 @@ fun ListSecurityData(
                 isPopUp = false
             },
         )
+    }
+
+    if(addGroupSecurityDataState.value.isDeleted){
+        isPopUpToDecrypt.value = false
+        groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
     }
 
     Column(
@@ -509,10 +556,8 @@ fun ListSecurityData(
                         )
                         IconButton(
                             onClick = {
-                                groupDataSecurityViewModel.deleteAddSecurityDataForGroup(
-                                    groupId,
-                                    securityData?.id!!
-                                )
+                                isPopUpToDecrypt.value = true
+
                             },
                             content = {
                                 Image(
@@ -560,4 +605,151 @@ fun ListSecurityData(
             modifier = Modifier.height(30.dp)
         )
     }
+}
+
+@Composable
+fun DecryptToChangeSecurityData(
+    onDismissRequest: () -> Unit,
+    groupDetailsViewModel: GroupSettingsViewModel
+) {
+    var passDataDetailsState = groupDetailsViewModel.groupSettingsState.collectAsState()
+    var securityData = remember { mutableStateOf("") }
+    var securityValue = remember { mutableStateOf("") }
+
+    if(passDataDetailsState.value.dataSecurity == null){
+        groupDetailsViewModel.getSecurityData()
+    }
+
+    if(passDataDetailsState.value.dataSecurity?.typeId == 2){
+        securityData.value = passDataDetailsState.value.dataSecurity?.securityData!!
+    }
+
+    LaunchedEffect(passDataDetailsState.value.passDataGroup.isEmpty()){
+        if(passDataDetailsState.value.passDataGroup.isEmpty()){
+            groupDetailsViewModel.getPassDataGroupEncrypted(passDataDetailsState.value.groupId)
+        }
+    }
+
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            elevation = 0.dp,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        "Silahkan Masukan Kunci Sebelumnya",
+                        style = MaterialTheme.typography.h6.copy(color = secondaryColor),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
+                    )
+                    Icon(
+                        Icons.Default.Clear,
+                        "",
+                        modifier = Modifier.clickable{
+                            onDismissRequest()
+                        }.clip(CircleShape)
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                Text(
+                    "Data Keamanan akan Dihapus, Silahkan Masukan Kunci untuk Bisa Membuka Semua Data Pass di Grup Ini",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = secondaryColor
+                )
+                Spacer(
+                    modifier = Modifier.height(15.dp)
+                )
+                if(passDataDetailsState.value.dataSecurity?.typeId == 2) {
+                    Text(
+                        passDataDetailsState.value.dataSecurity?.securityData ?: "",
+                        style = MaterialTheme.typography.body1,
+                        color = secondaryColor
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+                FormTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = securityValue.value,
+                    labelHints = if(passDataDetailsState.value.dataSecurity?.typeId == 1) "Masukan Password Anda" else "Masukan Jawaban Pertanyaan Di Atas",
+                    isPassword = passDataDetailsState.value.dataSecurity?.typeId == 1,
+                    leadingIcon = null,
+                    onValueChange = {
+                        securityValue.value = it
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+                Button(
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
+                    shape = RoundedCornerShape(20.dp),
+                    onClick = {
+                        val formVerify = VerifySecurityDataGroupRequest(
+                            securityData.value,
+                            securityValue.value
+                        )
+
+                        groupDetailsViewModel.verifyPassForDecrypt(formVerify)
+                    }
+                ) {
+                    when(passDataDetailsState.value.isLoading){
+                        true -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 3.dp,
+                                strokeCap = StrokeCap.Round
+                            )
+                        }
+                        false -> {
+                            Text(
+                                text = "Verifikasi",
+                                color = fontColor1,
+                                style = MaterialTheme.typography.button.copy(fontSize = 14.sp)
+                            )
+                        }
+
+                        else -> {}
+                    }
+                }
+            }
+        }
+    }
+}
+
+fun proceedDeleteSecurityData(
+    groupId: String,
+    key : String,
+    listPassDataEncrypted: List<GetPassDataEncrypted>,
+    listUpdatePassDataToDecrypt: MutableList<UpdatePassDataToDecrypt>,
+    groupSettingsViewModel: GroupSettingsViewModel
+) {
+    if(listPassDataEncrypted.isNotEmpty()){
+        listPassDataEncrypted.forEach {
+            val decData = CamelliaCrypto().decrypt(it.password,key)
+            listUpdatePassDataToDecrypt.add(UpdatePassDataToDecrypt(it.id,decData,false))
+        }
+        groupSettingsViewModel.sendDataPassToDecrypt(groupId, SendDataPassToDecrypt(listUpdatePassDataToDecrypt))
+    } else {
+
+    }
+
+    Napier.v("passDataEncrypted: $listUpdatePassDataToDecrypt")
 }

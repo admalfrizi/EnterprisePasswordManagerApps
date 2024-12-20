@@ -163,7 +163,7 @@ class AddGroupSecurityViewModel(
         }
     }
 
-    fun deleteAddSecurityDataForGroup(
+    fun deleteSecurityDataForGroup(
         groupId: Int,
         id: Int
     ) {

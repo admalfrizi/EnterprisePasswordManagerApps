@@ -21,6 +21,7 @@ import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.SendEmailRequest
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
@@ -31,6 +32,7 @@ import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
+import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
@@ -139,6 +141,17 @@ interface GroupPassDataFunc {
         groupId: Int,
         userId: Int
     ) : BaseResponse<ResultSearchGroup>
+
+    suspend fun getPassDataEncrypted(
+        token: String,
+        groupId: Int
+    ) : BaseResponse<List<GetPassDataEncrypted>>
+
+    suspend fun updateDataPassToDecrypt(
+        token: String,
+        groupId: Int,
+        sendDataPassToDecrypt: SendDataPassToDecrypt
+    ) : BaseResponse<String>
 }
 
 interface MemberGroupDataFunc {

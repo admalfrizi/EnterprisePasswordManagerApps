@@ -22,8 +22,10 @@ import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.ResultSearchGroup
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
+import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.utils.Constants
 
@@ -276,6 +278,44 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             }
 
             return response.body<BaseResponse<ResultSearchGroup>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun getPassDataEncrypted(
+        token: String,
+        groupId: Int
+    ): BaseResponse<List<GetPassDataEncrypted>> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getPassDataEncrypted/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<List<GetPassDataEncrypted>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun updateDataPassToDecrypt(
+        token: String,
+        groupId: Int,
+        sendDataPassToDecrypt: SendDataPassToDecrypt
+    ): BaseResponse<String> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateDataPassFromDecrypt/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(sendDataPassToDecrypt)
+            }
+
+            return response.body<BaseResponse<String>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){
