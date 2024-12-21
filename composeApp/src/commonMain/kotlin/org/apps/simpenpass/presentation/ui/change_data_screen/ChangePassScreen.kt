@@ -272,7 +272,7 @@ fun proceedUpdateDataPass(
     key: String
 ) {
     if(passDataList.isEmpty()){
-        validateData
+        validateData()
     } else {
         val crypto = CamelliaCrypto()
         passDataList.forEach {
