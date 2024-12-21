@@ -20,7 +20,7 @@ import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetDataPassUserEncrypted
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
@@ -208,13 +208,13 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
     override suspend fun getUserDataPassEncrypted(
         token: String,
         userId: Int
-    ): BaseResponse<List<GetPassDataEncrypted>> {
+    ): BaseResponse<GetDataPassUserEncrypted> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getUserPassDataEncrypted/$userId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
-            return response.body<BaseResponse<List<GetPassDataEncrypted>>>()
+            return response.body<BaseResponse<GetDataPassUserEncrypted>>()
 
         } catch (e: Exception){
             throw Exception(e.message)
@@ -228,7 +228,7 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
         sendUserPassDataToChangeKey: SendUserDataPassToDecrypt
     ): BaseResponse<String> {
         try {
-            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "updateDataPassWithAnotherKey"){
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "updateDataPassWithAnotherKey"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
                 setBody(sendUserPassDataToChangeKey)

@@ -33,6 +33,7 @@ import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
+import org.apps.simpenpass.models.response.GetDataPassUserEncrypted
 import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.models.response.LatestPassDataResponse
@@ -69,7 +70,7 @@ interface PassDataFunc {
     suspend fun updateAddContentPassData(token: String, passId: Int,updateAddContentPass: List<FormAddContentPassData>) : BaseResponse<List<AddContentPassData>>
     suspend fun deleteAddContentPassData(token: String, passId: Int,deleteAddContentPass: List<FormAddContentPassData>) : BaseResponse<List<AddContentPassData>>
     suspend fun deleteUserPassData(token: String,passId: Int): BaseResponse<PassResponseData>
-    suspend fun getUserDataPassEncrypted(token: String, userId: Int): BaseResponse<List<GetPassDataEncrypted>>
+    suspend fun getUserDataPassEncrypted(token: String, userId: Int): BaseResponse<GetDataPassUserEncrypted>
     suspend fun updateUserDataPassWithNewKey(token: String, sendUserPassDataToChangeKey:  SendUserDataPassToDecrypt) : BaseResponse<String>
 }
 

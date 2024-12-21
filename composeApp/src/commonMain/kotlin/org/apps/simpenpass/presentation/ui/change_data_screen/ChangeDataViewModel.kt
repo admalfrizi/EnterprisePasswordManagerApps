@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.ForgotPassRepository
 import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.data.repository.UserRepository
+import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdateUserDataRequest
 import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.models.response.SendOtpResponse
@@ -186,7 +187,40 @@ class ChangeDataViewModel(
                         _changeDataState.update {
                             it.copy(
                                 isLoading = false,
-                                userPassData = res.data.data
+                                userPassData = res.data.data?.listPassData
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendUserDataPassToDecrypt(sendDataPassToDecrypt: SendUserDataPassToDecrypt){
+        viewModelScope.launch {
+            passRepo.updateUserDataPassWithNewKey(sendDataPassToDecrypt).flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDecrypted = true,
                             )
                         }
                     }
@@ -200,14 +234,54 @@ class ChangeDataViewModel(
             userRepo.saveUserData(user)
         }
     }
+
+    fun verifyPassForDecrypt(
+        password: String
+    ) {
+        viewModelScope.launch {
+            userRepo.verifyPassForDecrypt(password).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                msg = res.error,
+                                key = ""
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _changeDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isPassVerify = res.data.data!!,
+                                key = if(res.data.data) password else ""
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 }
 
 data class ChangeDataState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val isVerify: Boolean = false,
-    val isError : Boolean = false,
+    var isDecrypted: Boolean = false,
+    var isPassVerify: Boolean = false,
+    var isError : Boolean = false,
     val userId: Int? = null,
+    var key : String? = null,
     val otpResponse: SendOtpResponse? = null,
     val updateData: LocalUserStore? = null,
     val userData: UserData? = null,
