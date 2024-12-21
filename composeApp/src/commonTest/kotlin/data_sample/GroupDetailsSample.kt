@@ -3,12 +3,18 @@ package data_sample
 class GroupDetailsSample {
     val detailGroupData = """
         {
-            "id": 2,
-            "img_grup": "1731564292.jpg",
-            "nm_grup": "Huliya Go",
-            "desc": "uohuohuogiyf",
-            "created_at": "2024-11-14T06:01:38.000000Z",
-            "updated_at": "2024-11-15T10:14:03.000000Z"
+            "group_dtl": {
+                "id": 7,
+                "img_grup": "http://simpenpass-api.pro/storage/images/groupProfile/1732813151.jpg",
+                "nm_grup": "Afk Group Pass",
+                "desc": "wdakkdbakdbawldawbda"
+            },
+            "is_user_admin": true,
+            "is_group_secure": false,
+            "is_pass_encrypted": false,
+            "total_pass_data": 1,
+            "total_role": 2,
+            "total_member": 2
         }
     """.trimIndent()
 

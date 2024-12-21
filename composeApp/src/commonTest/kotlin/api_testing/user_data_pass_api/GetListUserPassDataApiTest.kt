@@ -14,7 +14,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class GetUserPassDataApiTest {
+class GetListUserPassDataApiTest {
     private lateinit var userPassDataRemote: RemotePassDataSources
     private val listUserDataPassSample = ListUserDataPassSample()
     private val apiMockEngine = ApiMocking()
@@ -58,53 +58,4 @@ class GetUserPassDataApiTest {
 
         assertEquals(Json.decodeFromString<BaseResponse<List<DataPassWithAddContent>>>(baseResponseSample("[]")), response)
     }
-//
-//    @Test
-//    fun `get user pass data error api`() = runTest {
-//        val apiClient = apiMockEngine.setupApiMocking("null")
-//
-//        val token = "2|DKWA4gE7hi09GKIDWqJFjAL3MlZdEtOJgAAJiQ6Je0d3addc"
-//        val response = apiClient.get(Constants.BASE_API_URL+"userDataPass"){
-//            contentType(ContentType.Application.Json)
-//            parameter("userId", 2)
-//            header(HttpHeaders.Authorization, "Bearer $token")
-//        }
-//
-//        assertEquals(baseErrorResponse(500), response.bodyAsText())
-//    }
-//
-//    @Test
-//    fun `get add content user pass data api`() = runTest {
-//        val apiClient = apiMockEngine.setupApiMocking(listUserDataPassSample.listUserPassData)
-//
-//        val token = "2|DKWA4gE7hi09GKIDWqJFjAL3MlZdEtOJgAAJiQ6Je0d3addc"
-//        val response = apiClient.get(Constants.BASE_API_URL+"userDataPass"){
-//            contentType(ContentType.Application.Json)
-//            parameter("userId", 2)
-//            header(HttpHeaders.Authorization, "Bearer $token")
-//        }
-//        val convertToClassData = Json.decodeFromString<BaseResponse<List<DataPassWithAddContent>>>(response.body())
-//
-//        convertToClassData.data?.forEach {
-//            assertEquals(false, it.addContentPass!!.isEmpty())
-//        }
-//
-//    }
-//
-//    @Test
-//    fun `get add content user pass data api empty`() = runTest {
-//        val apiClient = apiMockEngine.setupApiMocking(listUserDataPassSample.listUserPassDataWithEmptyAddContent)
-//
-//        val token = "2|DKWA4gE7hi09GKIDWqJFjAL3MlZdEtOJgAAJiQ6Je0d3addc"
-//        val response = apiClient.get(Constants.BASE_API_URL+"userDataPass"){
-//            contentType(ContentType.Application.Json)
-//            parameter("userId", 2)
-//            header(HttpHeaders.Authorization, "Bearer $token")
-//        }
-//        val convertToClassData = Json.decodeFromString<BaseResponse<List<DataPassWithAddContent>>>(response.body())
-//
-//        convertToClassData.data?.forEach {
-//            assertEquals(true, it.addContentPass!!.isEmpty())
-//        }
-//    }
 }
