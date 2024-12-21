@@ -17,8 +17,10 @@ import org.apps.simpenpass.models.pass_data.AddContentPassData
 import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
+import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassResponseData
 import org.apps.simpenpass.utils.Constants
@@ -195,6 +197,43 @@ class RemotePassDataSources(private val httpClient: HttpClient) : PassDataFunc {
                 parameter("id", passId)
             }
             return response.body<BaseResponse<PassResponseData>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun getUserDataPassEncrypted(
+        token: String,
+        userId: Int
+    ): BaseResponse<List<GetPassDataEncrypted>> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getUserPassDataEncrypted/$userId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            return response.body<BaseResponse<List<GetPassDataEncrypted>>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun updateUserDataPassWithNewKey(
+        token: String,
+        sendUserPassDataToChangeKey: SendUserDataPassToDecrypt
+    ): BaseResponse<String> {
+        try {
+            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "updateDataPassWithAnotherKey"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(sendUserPassDataToChangeKey)
+            }
+            return response.body<BaseResponse<String>>()
 
         } catch (e: Exception){
             throw Exception(e.message)

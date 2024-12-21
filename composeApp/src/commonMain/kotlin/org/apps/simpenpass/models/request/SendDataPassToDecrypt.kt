@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SendDataPassToDecrypt(
     @SerialName("dataPass")
-    var dataPass : List<UpdatePassDataToDecrypt>
+    var dataPass : List<UpdatePassDataGroupToDecrypt>
 )

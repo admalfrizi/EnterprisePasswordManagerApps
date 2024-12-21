@@ -88,7 +88,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.SendDataPassToDecrypt
-import org.apps.simpenpass.models.request.UpdatePassDataToDecrypt
+import org.apps.simpenpass.models.request.UpdatePassDataGroupToDecrypt
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.presentation.components.EmptyWarning
@@ -129,7 +129,7 @@ fun GroupSettingsScreen(
     val groupState by groupSettingsViewModel.groupSettingsState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var isPopUpToDecrypt = remember { mutableStateOf(false) }
-    var listPassDataToDecrypt = remember { mutableListOf<UpdatePassDataToDecrypt>() }
+    var listPassDataToDecrypt = remember { mutableListOf<UpdatePassDataGroupToDecrypt>() }
     var securityDataId = remember { mutableStateOf(0) }
 
     if(groupState.groupData != null){
@@ -770,14 +770,14 @@ fun proceedDeleteSecurityData(
     groupId: String,
     key : String,
     listPassDataEncrypted: List<GetPassDataEncrypted>,
-    listUpdatePassDataToDecrypt: MutableList<UpdatePassDataToDecrypt>,
+    listUpdatePassDataToDecrypt: MutableList<UpdatePassDataGroupToDecrypt>,
     groupSettingsViewModel: GroupSettingsViewModel,
     securityDataId: Int
 ) {
     if(listPassDataEncrypted.isNotEmpty()){
         listPassDataEncrypted.forEach {
             val decData = CamelliaCrypto().decrypt(it.password,key)
-            listUpdatePassDataToDecrypt.add(UpdatePassDataToDecrypt(it.id,decData,false))
+            listUpdatePassDataToDecrypt.add(UpdatePassDataGroupToDecrypt(it.id,decData,false))
         }
         groupSettingsViewModel.sendDataPassToDecrypt(groupId, SendDataPassToDecrypt(listUpdatePassDataToDecrypt))
     } else {

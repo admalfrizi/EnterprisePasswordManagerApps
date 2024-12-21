@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdatePassDataToDecrypt(
+data class UpdatePassDataGroupToDecrypt(
     @SerialName("pass_group_id")
     val passGroupId : Int,
     @SerialName("password")

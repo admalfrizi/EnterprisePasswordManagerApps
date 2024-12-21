@@ -10,6 +10,7 @@ import org.apps.simpenpass.data.source.remoteData.RemotePassDataSources
 import org.apps.simpenpass.models.request.FormAddContentPassData
 import org.apps.simpenpass.models.request.InsertAddContentDataPass
 import org.apps.simpenpass.models.request.PassDataRequest
+import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.utils.NetworkResult
 
 class PassRepository(
@@ -119,20 +120,6 @@ class PassRepository(
         Napier.v("Error Data ${error.message}")
     }
 
-    fun testListUserPassData(token: String, userId: Int) = flow {
-        emit(NetworkResult.Loading())
-        try {
-            val result = remotePassSources.listUserPassData(token, userId)
-            if(result.success){
-                emit(NetworkResult.Success(result))
-            }
-        } catch (e: UnresolvedAddressException) {
-            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
-        }
-    }.catch { error ->
-        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
-    }
-
     fun getUserPassDataById(passId: Int) = flow {
         emit(NetworkResult.Loading())
         try {
@@ -173,6 +160,42 @@ class PassRepository(
         try {
             localData.getToken.collect { token ->
                 val result = remotePassSources.deleteUserPassData(token, passId)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }
+
+    fun getUserDataPassEncrypted() = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.getUserDataPassEncrypted(token, localData.getUserData().id!!)
+                if(result.success){
+                    emit(NetworkResult.Success(result))
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }
+
+    fun updateUserDataPassWithNewKey(
+        sendUserDataPassToDecrypt: SendUserDataPassToDecrypt,
+    ) = flow {
+        try {
+            localData.getToken.collect { token ->
+                val result = remotePassSources.updateUserDataPassWithNewKey(token, sendUserDataPassToDecrypt)
                 if(result.success){
                     emit(NetworkResult.Success(result))
                 }

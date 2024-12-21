@@ -28,6 +28,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.apps.simpenpass.models.request.UpdateUserPassDataToDecrypt
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
@@ -66,6 +68,17 @@ fun ChangePassScreen(
     val changeDataState by changeDataViewModel.changeDataState.collectAsState()
     val isDismiss = remember { mutableStateOf(true) }
     var isPopUp by remember { mutableStateOf(false) }
+    var listPassData = remember { mutableListOf<UpdateUserPassDataToDecrypt>() }
+
+    LaunchedEffect(Unit){
+        changeDataViewModel.getUserPassDataEncrypted()
+    }
+
+    if(changeDataState.userPassData?.isNotEmpty()!!){
+        changeDataState.userPassData?.forEach {
+            listPassData.add(UpdateUserPassDataToDecrypt(it.id,it.password, true))
+        }
+    }
 
     if(changeDataState.isLoading){
         popUpLoading(isDismiss)

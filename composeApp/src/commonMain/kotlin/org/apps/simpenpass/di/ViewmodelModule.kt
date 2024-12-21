@@ -52,7 +52,8 @@ val viewModelModule = module {
     viewModel {
         ChangeDataViewModel(
             userRepo = get(),
-            forgotPassRepo = get()
+            forgotPassRepo = get(),
+            passRepo = get()
         )
     }
 

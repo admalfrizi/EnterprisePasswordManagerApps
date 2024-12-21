@@ -23,6 +23,7 @@ import org.apps.simpenpass.models.request.PassDataRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.SendEmailRequest
+import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleNameRequest
@@ -68,6 +69,8 @@ interface PassDataFunc {
     suspend fun updateAddContentPassData(token: String, passId: Int,updateAddContentPass: List<FormAddContentPassData>) : BaseResponse<List<AddContentPassData>>
     suspend fun deleteAddContentPassData(token: String, passId: Int,deleteAddContentPass: List<FormAddContentPassData>) : BaseResponse<List<AddContentPassData>>
     suspend fun deleteUserPassData(token: String,passId: Int): BaseResponse<PassResponseData>
+    suspend fun getUserDataPassEncrypted(token: String, userId: Int): BaseResponse<List<GetPassDataEncrypted>>
+    suspend fun updateUserDataPassWithNewKey(token: String, sendUserPassDataToChangeKey:  SendUserDataPassToDecrypt) : BaseResponse<String>
 }
 
 interface GroupPassDataFunc {
