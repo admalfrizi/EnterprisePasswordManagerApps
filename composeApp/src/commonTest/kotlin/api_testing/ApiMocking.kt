@@ -1,7 +1,7 @@
 package api_testing
 
 import data_sample.baseErrorResponse
-import data_sample.baseReponseSample
+import data_sample.baseResponseSample
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -14,39 +14,61 @@ import io.ktor.utils.io.ByteReadChannel
 import kotlinx.serialization.json.Json
 
 class ApiMocking{
-    private var isSuccess: Boolean? = null
-        get() = field ?: throw IllegalStateException("Mock has not beet initialized")
+
+    private var isSuccess: Boolean? = false
+    private var isEmpty: Boolean? = false
+    private var codeError: Int? = null
 
     fun givenSuccess() {
         isSuccess = true
     }
 
-    fun givenFailure() {
-        isSuccess = false
+    fun givenFailure(errorCode: Int) {
+        codeError = errorCode
     }
 
-    fun setupApiMocking(dataResponse : String) : HttpClient{
+    fun givenEmptyData() {
+        isSuccess = true
+        isEmpty = true
+    }
+
+    fun setupApiMocking(dataResponse : String) : MockEngine {
         val engine = MockEngine { request ->
 
-            val statusCode = if (isSuccess == true) {
+            val codeError = if(isSuccess == false){
+                when(codeError){
+                    404 -> HttpStatusCode.NotFound
+                    500 -> HttpStatusCode.InternalServerError
+                    400 -> HttpStatusCode.BadRequest
+                    else -> {
+                        HttpStatusCode.fromValue(0)
+                    }
+                }
+            } else if (isSuccess == true){
                 HttpStatusCode.OK
             } else {
-                HttpStatusCode.InternalServerError
+                HttpStatusCode.fromValue(0)
             }
 
-            val responseContent = if(isSuccess == true){
-                baseReponseSample(dataResponse)
+            val checkData = if(isEmpty == true){
+                ByteReadChannel(baseResponseSample("[]"))
             } else {
-                baseErrorResponse(HttpStatusCode.InternalServerError.value)
+                ByteReadChannel(baseResponseSample(dataResponse))
             }
 
             respond(
-                content = ByteReadChannel(responseContent),
-                status = statusCode,
+                content = if(isSuccess == true) checkData else ByteReadChannel(
+                    baseErrorResponse(codeError.value)
+                ),
+                status = codeError,
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
 
+        return engine
+    }
+
+    fun setupEngine(engine : MockEngine) : HttpClient {
         return HttpClient(engine) {
             install(ContentNegotiation) {
                 json(

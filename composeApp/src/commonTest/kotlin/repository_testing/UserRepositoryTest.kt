@@ -14,11 +14,9 @@ class UserRepositoryTest  {
     @Test
     fun `get user data logged in `() = runTest {
 
-        apiMockEngine.givenSuccess()
         val result = ""
 
         assertEquals(true,result.isNotEmpty())
     }
-
 
 }

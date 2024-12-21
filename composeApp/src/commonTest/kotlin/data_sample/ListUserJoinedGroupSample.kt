@@ -4,10 +4,10 @@ class ListUserJoinedGroupSample {
 
     val data = """[
         {
-            "id": 2,
-            "img_grup": "1731564292.jpg",
-            "nm_grup": "Huliya Go",
-            "deskripsi_grup": "uohuohuogiyf"
+            "id": 6,
+            "img_grup": "http://simpenpass-api.pro/storage/images/groupProfile/1732804285.jpg",
+            "nm_grup": "Grup Itu aja",
+            "deskripsi_grup": "gergergergegwgw"
         }
     ]
     """.trimIndent()

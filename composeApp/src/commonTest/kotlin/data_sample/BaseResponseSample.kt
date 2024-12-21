@@ -1,6 +1,6 @@
 package data_sample
 
-fun baseReponseSample(dataResponse: String) : String {
+fun baseResponseSample(dataResponse: String) : String {
     val jsonContent = """{
         "success": true,
         "code": 200,
@@ -16,7 +16,7 @@ fun baseErrorResponse(code: Int): String {
     val jsonContent = """{
         "success": false,
         "code": $code,
-        "message": "Message Error",
+        "message": "Ini Adalah Kode Error $code",
         "data": null
     }
     """.trimIndent()

@@ -29,6 +29,26 @@ class GroupDetailsSample {
     """.trimIndent()
 
     val passDataGroupId = """
-        
+        {
+            "id": 3,
+            "posisi_id": 3,
+            "klmpk_role": "Dosen Sekretariat",
+            "account_name": "Test Enkripsid",
+            "username": "awfawfesfsh",
+            "email": "fesgsrhseh",
+            "password": "bnngmgwewfdsgfsdgs",
+            "jenis_data": "rdhdrhrdhd",
+            "url": "sefsegsehs",
+            "desc": "gsgsehshse",
+            "is_encrypted": false,
+            "add_pass_content": [
+                {
+                    "id": 15,
+                    "pass_group_id": 3,
+                    "nm_data": "yjytktukub",
+                    "vl_data": "ddhdrhdhr"
+                }
+            ]
+        }
     """.trimIndent()
 }
