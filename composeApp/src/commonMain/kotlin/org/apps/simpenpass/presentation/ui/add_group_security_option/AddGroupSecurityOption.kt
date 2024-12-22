@@ -29,6 +29,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,12 +44,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
+import org.apps.simpenpass.models.request.SendDataPassToDecrypt
+import org.apps.simpenpass.models.request.UpdatePassDataGroupToDecrypt
+import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.setToast
 import org.koin.compose.koinInject
 
@@ -56,6 +62,7 @@ import org.koin.compose.koinInject
 @Composable
 fun AddGroupSecurityOption(
     groupId: Int,
+    key: String,
     addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
     securityData: GroupSecurityData? = null,
     onDismissRequest: () -> Unit
@@ -72,6 +79,15 @@ fun AddGroupSecurityOption(
     if(addGroupSecurityState.value.listTypeSecurityData.isEmpty()){
         addGroupSecurityViewModel.getTypeSecurityForGroup()
     }
+
+    LaunchedEffect(addGroupSecurityState.value.passDataGroup.isEmpty()){
+        if(addGroupSecurityState.value.passDataGroup.isEmpty()){
+            addGroupSecurityViewModel.getPassDataGroupEncrypted(groupId.toString())
+        }
+    }
+
+    Napier.v("passDataGroup : ${addGroupSecurityState.value.passDataGroup}")
+    Napier.v("key : $key")
 
     if(typeId.value == 1){
         data.value = ""
@@ -105,6 +121,17 @@ fun AddGroupSecurityOption(
         onDismissRequest()
         setToast("Data Keamanan Telah Ditambahkan !")
         addGroupSecurityState.value.isAdded = false
+    }
+
+    if(addGroupSecurityState.value.isSent){
+        val formData = AddGroupSecurityDataRequest(
+            typeId = typeId.value,
+            securityData = data.value,
+            securityValue = value.value
+        )
+
+        addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,securityData?.id!!)
+        addGroupSecurityState.value.isSent = false
     }
 
     Dialog(
@@ -265,7 +292,17 @@ fun AddGroupSecurityOption(
                     colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                     shape = RoundedCornerShape(20.dp),
                     onClick = {
-                        validateInsertData(toUpdate.value,addGroupSecurityViewModel,typeId.value,data.value,value.value,groupId,securityData?.id)
+                        validateInsertData(
+                            toUpdate.value,
+                            addGroupSecurityViewModel,
+                            addGroupSecurityState.value,
+                            key,
+                            typeId.value,
+                            data.value,
+                            value.value,
+                            groupId,
+                            securityData?.id
+                        )
                     },
                     enabled = typeId.value != 0
                 ) {
@@ -297,6 +334,8 @@ fun AddGroupSecurityOption(
 fun validateInsertData(
     toUpdate : Boolean,
     addGroupSecurityViewModel: AddGroupSecurityViewModel,
+    addGroupSecurityDataState: GroupSecurityDataState,
+    key: String,
     typeId: Int,
     data: String,
     value: String,
@@ -308,6 +347,7 @@ fun validateInsertData(
         securityData = data,
         securityValue = value
     )
+    val listItemPassDataGroup = mutableListOf<UpdatePassDataGroupToDecrypt>()
 
     when(typeId){
         1 -> {
@@ -316,7 +356,17 @@ fun validateInsertData(
             } else {
                 when(toUpdate){
                     true -> {
-                        addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
+                        if(addGroupSecurityDataState.passDataGroup.isEmpty()){
+                            addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
+                        } else {
+                            decryptPassData(
+                                addGroupSecurityDataState.passDataGroup,
+                                listItemPassDataGroup,
+                                addGroupSecurityViewModel,
+                                key,
+                                groupId,
+                            )
+                        }
                     }
                     false -> {
                         addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
@@ -347,4 +397,25 @@ fun validateInsertData(
             }
         }
     }
+}
+
+fun decryptPassData(
+    passDataEnc: List<GetPassDataEncrypted>,
+    listPassData: MutableList<UpdatePassDataGroupToDecrypt>,
+    addGroupSecurityViewModel: AddGroupSecurityViewModel,
+    key: String,
+    groupId: Int,
+) {
+//    val listDataEnc = mutableListOf<UpdateUserPassDataToDecrypt>()
+    val crypto = CamelliaCrypto()
+    passDataEnc.forEach {
+        val dec = crypto.decrypt(it.password,key)
+        listPassData.add(UpdatePassDataGroupToDecrypt(it.id,dec,false))
+    }
+    addGroupSecurityViewModel.sendGroupDataPassToDecrypt(SendDataPassToDecrypt(listPassData),groupId)
+
+//    listPassData.forEach {
+//        val enc = crypto.encrypt(it.password,key)
+//        listDataEnc.add(UpdateUserPassDataToDecrypt(it.passId,it.password,true))
+//    }
 }

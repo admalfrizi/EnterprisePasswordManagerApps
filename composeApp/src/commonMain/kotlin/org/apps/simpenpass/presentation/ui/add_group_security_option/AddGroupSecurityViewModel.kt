@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
+import org.apps.simpenpass.models.request.SendDataPassToDecrypt
+import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -201,6 +203,72 @@ class AddGroupSecurityViewModel(
 
         }
     }
+
+    fun getPassDataGroupEncrypted(groupId: String?){
+        viewModelScope.launch {
+            repo.getPassDataEncrypted(groupId?.toInt()!!).flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                passDataGroup = res.data.data!!,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendGroupDataPassToDecrypt(sendDataPassToDecrypt: SendDataPassToDecrypt, groupId: Int){
+        viewModelScope.launch {
+            repo.sendDataPassToDecrypt(groupId,sendDataPassToDecrypt).flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _groupSecurityDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSent = true,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class GroupSecurityDataState(
@@ -210,6 +278,8 @@ data class GroupSecurityDataState(
     var isDeleted: Boolean = false,
     var isAdded: Boolean = false,
     var isUpdated: Boolean = false,
+    var isSent: Boolean = false,
+    var passDataGroup: List<GetPassDataEncrypted> = emptyList(),
     var securityData: GroupSecurityData? = null,
     val listTypeSecurityData: List<GroupSecurityTypeResponse> = emptyList()
 )

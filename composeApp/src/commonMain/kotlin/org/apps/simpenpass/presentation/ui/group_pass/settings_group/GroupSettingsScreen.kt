@@ -121,6 +121,8 @@ fun GroupSettingsScreen(
 ) {
     var isDismiss = remember { mutableStateOf(false) }
     var isDeleted = remember { mutableStateOf(false) }
+    var isPopUp = remember { mutableStateOf(false) }
+    var toUpdate = remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
     var grupName by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
@@ -166,6 +168,7 @@ fun GroupSettingsScreen(
 
     if(isPopUpToDecrypt.value){
         DecryptToChangeSecurityData(
+            toUpdate,
             onDismissRequest = {
                 isPopUpToDecrypt.value = false
             },
@@ -174,7 +177,16 @@ fun GroupSettingsScreen(
     }
 
     if(groupState.isPassVerify){
-        proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataToDecrypt,groupSettingsViewModel,securityDataId.value)
+        when(toUpdate.value){
+            true -> {
+                isPopUp.value = true
+                isPopUpToDecrypt.value = false
+            }
+            false -> {
+                proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataToDecrypt,groupSettingsViewModel,securityDataId.value)
+            }
+            else -> {}
+        }
         groupState.isPassVerify = false
     }
 
@@ -204,6 +216,8 @@ fun GroupSettingsScreen(
                 groupState,
                 securityDataId,
                 scope,
+                isPopUp,
+                toUpdate,
                 isPopUpToDecrypt,
                 isDeleted,
                 sheetState,
@@ -464,18 +478,19 @@ fun ListSecurityData(
     groupState: GroupSettingsState,
     securityDataId: MutableState<Int>,
     scope: CoroutineScope,
+    isPopUp: MutableState<Boolean>,
+    toUpdate: MutableState<Boolean>,
     isPopUpToDecrypt: MutableState<Boolean>,
     isDeleted: MutableState<Boolean>,
     sheetState: ModalBottomSheetState,
     groupId: Int,
     groupDataSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
 ) {
-    var isPopUp by remember { mutableStateOf(false) }
     val addGroupSecurityDataState = groupDataSecurityViewModel.groupSecurityDataState.collectAsState()
     val securityData = addGroupSecurityDataState.value.securityData
 
-    LaunchedEffect(sheetState.isVisible && !isPopUp){
-        if(!isPopUp && !addGroupSecurityDataState.value.isUpdated && !addGroupSecurityDataState.value.isDeleted){
+    LaunchedEffect(sheetState.isVisible && !isPopUp.value){
+        if(!isPopUp.value && !addGroupSecurityDataState.value.isUpdated && !addGroupSecurityDataState.value.isDeleted){
             groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
         }
     }
@@ -490,12 +505,13 @@ fun ListSecurityData(
         groupState.isDecrypted = false
     }
 
-    if(isPopUp){
+    if(isPopUp.value){
         AddGroupSecurityOption(
             groupId,
+            groupState.key!!,
             securityData = securityData,
             onDismissRequest = {
-                isPopUp = false
+                isPopUp.value = false
             },
         )
     }
@@ -620,7 +636,12 @@ fun ListSecurityData(
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
-                isPopUp = true
+                if(securityData != null){
+                    toUpdate.value = true
+                    isPopUpToDecrypt.value = true
+                } else {
+                    isPopUp.value = true
+                }
             },
             shape = RoundedCornerShape(20.dp),
             elevation = ButtonDefaults.elevation(0.dp),
@@ -641,12 +662,15 @@ fun ListSecurityData(
 
 @Composable
 fun DecryptToChangeSecurityData(
+    toUpdate: MutableState<Boolean>,
     onDismissRequest: () -> Unit,
     groupDetailsViewModel: GroupSettingsViewModel
 ) {
     var passDataDetailsState = groupDetailsViewModel.groupSettingsState.collectAsState()
     var securityData = remember { mutableStateOf("") }
     var securityValue = remember { mutableStateOf("") }
+
+    Napier.v("toUpdate : ${toUpdate.value}")
 
     if(passDataDetailsState.value.dataSecurity == null){
         groupDetailsViewModel.getSecurityData()
