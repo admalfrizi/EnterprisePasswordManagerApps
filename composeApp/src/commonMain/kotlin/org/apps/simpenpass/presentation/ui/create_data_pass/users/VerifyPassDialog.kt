@@ -144,6 +144,7 @@ fun VerifyPassDialog(
                             )
                         }
 
+                        else -> {}
                     }
                 }
             }

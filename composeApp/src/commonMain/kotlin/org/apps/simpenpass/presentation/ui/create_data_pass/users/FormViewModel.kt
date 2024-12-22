@@ -215,8 +215,8 @@ class FormViewModel(
                         _formState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = true,
-                                key = password
+                                isPassVerify = res.data.data != false,
+                                key = if(res.data.data == true) password else ""
                             )
                         }
                     }
@@ -238,7 +238,7 @@ data class FormState(
     val isCreated: Boolean = false,
     val isUpdated: Boolean = false,
     var isPassVerify: Boolean = false,
-    val key: String? = null,
+    var key: String? = null,
     val error : String? = null,
     val msg : String? = null,
     val msgAddContentData: String? = null

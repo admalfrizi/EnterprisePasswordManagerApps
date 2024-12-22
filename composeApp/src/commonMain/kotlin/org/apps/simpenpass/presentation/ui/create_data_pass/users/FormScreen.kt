@@ -221,6 +221,11 @@ fun FormScreen(
         formState.isPassVerify = false
     }
 
+    if(formState.key == ""){
+        setToast("Data password anda tidak cocok !")
+        formState.key = null
+    }
+
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,

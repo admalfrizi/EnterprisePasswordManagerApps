@@ -82,8 +82,8 @@ class ListDataViewModel(
                         _listDataState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = res.data.data!!,
-                                key = if(res.data.data) password else ""
+                                isPassVerify = res.data.data != false,
+                                key = if(res.data.data == true) password else ""
                             )
                         }
                     }
