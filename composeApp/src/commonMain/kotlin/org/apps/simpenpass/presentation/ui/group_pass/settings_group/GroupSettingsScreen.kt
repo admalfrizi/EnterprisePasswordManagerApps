@@ -83,7 +83,6 @@ import com.mohamedrejeb.calf.io.readByteArray
 import com.mohamedrejeb.calf.picker.FilePickerFileType
 import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
 import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.AddGroupRequest
@@ -806,6 +805,4 @@ fun proceedDeleteSecurityData(
             securityDataId
         )
     }
-
-    Napier.v("passDataEncrypted: $listUpdatePassDataToDecrypt")
 }
