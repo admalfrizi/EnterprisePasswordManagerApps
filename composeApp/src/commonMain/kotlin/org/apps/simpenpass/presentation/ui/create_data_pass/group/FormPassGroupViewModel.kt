@@ -219,7 +219,7 @@ class FormPassGroupViewModel(
         }
     }
 
-    fun verifyPassForDecrypt(
+    fun verifySecurityDataGroup(
         formVerifySecurityDataGroupRequest: VerifySecurityDataGroupRequest,
         groupId: String,
     ) {
@@ -245,8 +245,8 @@ class FormPassGroupViewModel(
                         _formPassGroupDataState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = true,
-                                key = formVerifySecurityDataGroupRequest.securityValue
+                                isPassVerify = res.data.data == true,
+                                key = if(res.data.data == true) formVerifySecurityDataGroupRequest.securityValue else ""
                             )
                         }
                     }

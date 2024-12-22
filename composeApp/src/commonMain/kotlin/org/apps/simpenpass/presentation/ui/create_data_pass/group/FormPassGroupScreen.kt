@@ -183,9 +183,9 @@ fun FormPassGroupScreen(
     }
 
     if(formPassGroupState.passData != null){
-        userName.value = formPassGroupState.passData?.username!!
-        nmAccount.value = formPassGroupState.passData?.accountName!!
-        desc.value = formPassGroupState.passData?.desc!!
+        userName.value = formPassGroupState.passData?.username ?: ""
+        nmAccount.value = formPassGroupState.passData?.accountName ?: ""
+        desc.value = formPassGroupState.passData?.desc ?: ""
         email.value = formPassGroupState.passData?.email ?: ""
         jnsPass.value = formPassGroupState.passData?.jenisData ?: ""
         urlPass.value = formPassGroupState.passData?.url ?: ""
@@ -235,6 +235,10 @@ fun FormPassGroupScreen(
         )
     }
 
+    if(formPassGroupState.key != null && formPassGroupState.key == ""){
+        setToast("Data keamanan grup tidak cocok !")
+    }
+
     if(formPassGroupState.isPassVerify && !toDecrypt.value){
         encData.value = CamelliaCrypto().encrypt(passData.value, formPassGroupState.key!!)
 
@@ -254,8 +258,6 @@ fun FormPassGroupScreen(
         checkIsUpdateData(
             formPassGroupState.groupId!!,
             formPassGroupState.passDataGroupId!!,
-            nmAccount.value,
-            passData.value,
             formPassGroupViewModel,
             formData,
             selectedDelete,
@@ -302,7 +304,6 @@ fun FormPassGroupScreen(
                             IconButton(
                                 onClick = {
                                     navController.navigateUp()
-//                                    groupState.clearState()
                                 },
                                 content = {
                                     Image(
@@ -335,7 +336,6 @@ fun FormPassGroupScreen(
                                         Text(text = "Edit Role Pass Group")
                                     },
                                     onClick = {
-//                                        navController.navigateUp()
                                         isDialogPopup = true
                                         isDropdownShow = false
                                     }
@@ -348,56 +348,32 @@ fun FormPassGroupScreen(
                 bottomBar = {
                     BtnForm(
                         {
-                            when(isEncryptData.value){
-                                true -> {
-                                    isPopUpDecrypt.value = true
-                                }
-                                false -> {
-                                    val formData = PassDataGroupRequest(
-                                        accountName = nmAccount.value,
-                                        username = userName.value,
-                                        desc = desc.value,
-                                        email = email.value,
-                                        jenisData = jnsPass.value,
-                                        password = passData.value,
-                                        url = urlPass.value,
-                                        posisiId = roleId.value,
-                                        isEncrypted = isEncryptData.value,
-                                        addPassContent = insertAddContentPassData
-                                    )
+                            val formData = PassDataGroupRequest(
+                                accountName = nmAccount.value,
+                                username = userName.value,
+                                desc = desc.value,
+                                email = email.value,
+                                jenisData = jnsPass.value,
+                                password = passData.value,
+                                url = urlPass.value,
+                                posisiId = roleId.value,
+                                isEncrypted = isEncryptData.value,
+                                addPassContent = insertAddContentPassData
+                            )
 
-                                    checkIsUpdateData(
-                                        formPassGroupState.groupId!!,
-                                        formPassGroupState.passDataGroupId!!,
-                                        nmAccount.value,
-                                        passData.value,
-                                        formPassGroupViewModel,
-                                        formData,
-                                        selectedDelete,
-                                        updateListItemAddContent
-                                    )
-                                }
-
-                                else -> {}
-                            }
-//                            if(formPassGroupState.passDataGroupId != "-1" && formPassGroupState.passData != null){
-//                                formPassGroupViewModel.updatePassData(
-//                                    formPassGroupState.groupId!!,
-//                                    formPassGroupState.passDataGroupId!!,
-//                                    formData,
-//                                    updateListItemAddContent,
-//                                    selectedDelete
-//                                )
-//
-//                            } else {
-//                                validatorPassData(
-//                                    nmAccount.value,
-//                                    passData.value,
-//                                    formPassGroupViewModel,
-//                                    formData,
-//                                    formPassGroupState.groupId!!
-//                                )
-//                            }
+                            validatorPassData(
+                                nmAccount.value,
+                                passData.value,
+                                roleId.value,
+                                isEncryptData.value,
+                                isPopUpDecrypt,
+                                formPassGroupViewModel,
+                                formPassGroupState,
+                                formData,
+                                formPassGroupState.groupId!!,
+                                selectedDelete,
+                                updateListItemAddContent
+                            )
                         },
                         {
                             if(formPassGroupState.passData != null){
@@ -1181,7 +1157,7 @@ fun VerifyKeyInGroupDialog(
                         Icons.Default.Clear,
                         "",
                         modifier = Modifier.clickable{
-                            if(formState.value.passData?.isEncrypted!!){
+                            if(formState.value.passData?.isEncrypted == true){
                                 navController.navigateUp()
                             }
                             onDismissRequest()
@@ -1233,7 +1209,7 @@ fun VerifyKeyInGroupDialog(
                             securityValue.value
                         )
 
-                        formViewModel.verifyPassForDecrypt(formVerify,groupId)
+                        formViewModel.verifySecurityDataGroup(formVerify,groupId)
                     }
                 ) {
                     when(formState.value.isLoading){
@@ -1265,8 +1241,6 @@ fun VerifyKeyInGroupDialog(
 fun checkIsUpdateData(
     groupId : String,
     passId : String,
-    nmAccount: String,
-    passData: String,
     formViewModel: FormPassGroupViewModel,
     formData: PassDataGroupRequest,
     selectedDelete: List<FormAddContentPassDataGroup>,
@@ -1283,13 +1257,7 @@ fun checkIsUpdateData(
             )
         }
         false -> {
-            validatorPassData(
-                nmAccount,
-                passData,
-                formViewModel,
-                formData,
-                groupId
-            )
+            formViewModel.createPassData(formData,groupId)
         }
 
         else -> {}
@@ -1315,13 +1283,36 @@ fun checkData(
 fun validatorPassData(
     accountName: String,
     pass: String,
+    roleId: Int,
+    isEncryptData: Boolean,
+    isPopUpDecrypt: MutableState<Boolean>,
     formViewModel: FormPassGroupViewModel,
+    formPassGroupState: FormPassGroupState,
     formData: PassDataGroupRequest,
-    groupId: String
+    groupId: String,
+    selectedDelete: List<FormAddContentPassDataGroup>,
+    updateListItemAddContent: List<FormAddContentPassDataGroup>
 ) {
-    if(accountName.isEmpty() && pass.isEmpty()){
+    if(roleId == -1){
+        setToast("Role untuk pass data harus di isi")
+    } else if(accountName.isEmpty() && pass.isEmpty()){
         setToast("Nama Akun dan Password Tidak Boleh Kosong")
     } else {
-        formViewModel.createPassData(formData,groupId)
+        when(isEncryptData){
+            true -> {
+                isPopUpDecrypt.value = true
+            }
+            false -> {
+                checkIsUpdateData(
+                    groupId,
+                    formPassGroupState.passDataGroupId!!,
+                    formViewModel,
+                    formData,
+                    selectedDelete,
+                    updateListItemAddContent
+                )
+            }
+            else -> {}
+        }
     }
 }
