@@ -6,18 +6,18 @@
 	<dict>
 		<key>NSAllowArbitraryLoads</key>
 		<true/>
-        <key>NSAllowsLocalNetworking</key>
-        <true/>
-        <key>NSExceptionDomains</key>
-          <dict>
-            <key>simpenpass-api.pro</key>
-            <dict>
-              <key>NSIncludesSubdomains</key>
-              <true/>
-              <key>NSExceptionAllowsInsecureHTTPLoads</key>
-              <true/>
-            </dict>
-          </dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>simpenpass-api.pro</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
