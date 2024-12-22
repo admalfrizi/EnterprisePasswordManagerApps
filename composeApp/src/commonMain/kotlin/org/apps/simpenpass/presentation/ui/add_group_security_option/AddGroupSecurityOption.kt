@@ -62,7 +62,7 @@ import org.koin.compose.koinInject
 @Composable
 fun AddGroupSecurityOption(
     groupId: Int,
-    key: String,
+    key: String? = null,
     addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
     securityData: GroupSecurityData? = null,
     onDismissRequest: () -> Unit
@@ -335,7 +335,7 @@ fun validateInsertData(
     toUpdate : Boolean,
     addGroupSecurityViewModel: AddGroupSecurityViewModel,
     addGroupSecurityDataState: GroupSecurityDataState,
-    key: String,
+    key: String? = null,
     typeId: Int,
     data: String,
     value: String,
@@ -403,16 +403,19 @@ fun decryptPassData(
     passDataEnc: List<GetPassDataEncrypted>,
     listPassData: MutableList<UpdatePassDataGroupToDecrypt>,
     addGroupSecurityViewModel: AddGroupSecurityViewModel,
-    key: String,
+    key: String? = null,
     groupId: Int,
 ) {
 //    val listDataEnc = mutableListOf<UpdateUserPassDataToDecrypt>()
     val crypto = CamelliaCrypto()
-    passDataEnc.forEach {
-        val dec = crypto.decrypt(it.password,key)
-        listPassData.add(UpdatePassDataGroupToDecrypt(it.id,dec,false))
+
+    if(key != null){
+        passDataEnc.forEach {
+            val dec = crypto.decrypt(it.password,key)
+            listPassData.add(UpdatePassDataGroupToDecrypt(it.id,dec,false))
+        }
+        addGroupSecurityViewModel.sendGroupDataPassToDecrypt(SendDataPassToDecrypt(listPassData),groupId)
     }
-    addGroupSecurityViewModel.sendGroupDataPassToDecrypt(SendDataPassToDecrypt(listPassData),groupId)
 
 //    listPassData.forEach {
 //        val enc = crypto.encrypt(it.password,key)

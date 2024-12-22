@@ -168,7 +168,6 @@ fun GroupSettingsScreen(
 
     if(isPopUpToDecrypt.value){
         DecryptToChangeSecurityData(
-            toUpdate,
             onDismissRequest = {
                 isPopUpToDecrypt.value = false
             },
@@ -508,7 +507,7 @@ fun ListSecurityData(
     if(isPopUp.value){
         AddGroupSecurityOption(
             groupId,
-            groupState.key!!,
+            groupState.key,
             securityData = securityData,
             onDismissRequest = {
                 isPopUp.value = false
@@ -662,15 +661,12 @@ fun ListSecurityData(
 
 @Composable
 fun DecryptToChangeSecurityData(
-    toUpdate: MutableState<Boolean>,
     onDismissRequest: () -> Unit,
     groupDetailsViewModel: GroupSettingsViewModel
 ) {
     var passDataDetailsState = groupDetailsViewModel.groupSettingsState.collectAsState()
     var securityData = remember { mutableStateOf("") }
     var securityValue = remember { mutableStateOf("") }
-
-    Napier.v("toUpdate : ${toUpdate.value}")
 
     if(passDataDetailsState.value.dataSecurity == null){
         groupDetailsViewModel.getSecurityData()
