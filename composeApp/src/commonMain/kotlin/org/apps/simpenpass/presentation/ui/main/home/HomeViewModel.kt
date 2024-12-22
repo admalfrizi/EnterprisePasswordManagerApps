@@ -183,8 +183,8 @@ class HomeViewModel(
                         _homeState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = res.data.data!!,
-                                keyEnc = if(res.data.data) password else ""
+                                isPassVerify = res.data.data != false,
+                                keyEnc = if(res.data.data == true) password else ""
                             )
                         }
                     }
