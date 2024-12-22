@@ -267,7 +267,7 @@ data class FormPassGroupState(
     var isUpdated: Boolean = false,
     var isPassVerify: Boolean = false,
     var dataSecurity: GroupSecurityData? = null,
-    val key: String? = null,
+    var key: String? = null,
     val groupId: String? = null,
     val error : String? = null,
     val msg : String? = null,

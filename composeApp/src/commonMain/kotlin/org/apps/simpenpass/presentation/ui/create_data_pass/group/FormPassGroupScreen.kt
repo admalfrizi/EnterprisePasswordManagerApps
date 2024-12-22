@@ -226,6 +226,7 @@ fun FormPassGroupScreen(
 
     if(isPopUpDecrypt.value){
         VerifyKeyInGroupDialog(
+            toDecrypt.value,
             navController,
             onDismissRequest = {
                 isPopUpDecrypt.value = false
@@ -237,6 +238,7 @@ fun FormPassGroupScreen(
 
     if(formPassGroupState.key != null && formPassGroupState.key == ""){
         setToast("Data keamanan grup tidak cocok !")
+        formPassGroupState.key = null
     }
 
     if(formPassGroupState.isPassVerify && !toDecrypt.value){
@@ -1113,6 +1115,7 @@ fun DialogEditRoleInPassData(
 
 @Composable
 fun VerifyKeyInGroupDialog(
+    toDecrypt: Boolean,
     navController: NavController,
     onDismissRequest: () -> Unit,
     groupId: String,
@@ -1167,11 +1170,20 @@ fun VerifyKeyInGroupDialog(
                 Spacer(
                     modifier = Modifier.height(15.dp)
                 )
-                Text(
-                    "Data Password akan dienkripsi, Silahkan Masukan Data Kunci pada Grup Ini untuk Membuka Data Password !",
-                    style = MaterialTheme.typography.subtitle1,
-                    color = secondaryColor
-                )
+                if(toDecrypt){
+                    Text(
+                        "Data Password akan diubah, Silahkan masukan data keamanan pada grup ini untuk membuka data password !",
+                        style = MaterialTheme.typography.subtitle1,
+                        color = secondaryColor
+                    )
+                } else {
+                    Text(
+                        "Data Password akan dienkripsi, Silahkan Masukan Data Kunci pada Grup Ini untuk Membuka Data Password !",
+                        style = MaterialTheme.typography.subtitle1,
+                        color = secondaryColor
+                    )
+                }
+
                 Spacer(
                     modifier = Modifier.height(15.dp)
                 )
