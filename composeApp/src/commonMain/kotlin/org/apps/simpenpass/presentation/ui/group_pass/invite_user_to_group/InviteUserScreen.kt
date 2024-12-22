@@ -71,7 +71,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.add_ic
 import resources.delete_ic
-import resources.group_add_ic
+import resources.email_invite_ic
 
 @OptIn(InternalVoyagerApi::class)
 @Composable
@@ -194,7 +194,7 @@ fun InviteUserScreen(
                                 modifier = Modifier.size(58.dp).background(color = Color(0xFF78A1D7),shape = CircleShape)
                             ){
                                 Image(
-                                    painterResource(Res.drawable.group_add_ic),
+                                    painterResource(Res.drawable.email_invite_ic),
                                     "",
                                     modifier = Modifier.padding(8.dp)
                                 )
