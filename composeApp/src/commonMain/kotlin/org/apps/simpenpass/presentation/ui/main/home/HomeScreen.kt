@@ -57,6 +57,7 @@ fun HomeScreen(
     isDeleted: MutableState<Boolean>,
     homeViewModel: HomeViewModel = koinViewModel(),
     passDataId: MutableState<(DataPass) -> Unit>,
+    navigateToGrupDtl: (String, String) -> Unit,
     navigateToFormEdit: (String) -> Unit,
     navigateToForm: () -> Unit,
     navigateToListUserPass : () -> Unit
@@ -67,6 +68,7 @@ fun HomeScreen(
         refreshing = homeState.isLoading,
         onRefresh = {
             homeViewModel.getData()
+            homeViewModel.getRecommendationPassDataGroup()
             homeViewModel.getUserDataStats(homeState.id!!)
         }
     )
@@ -74,6 +76,7 @@ fun HomeScreen(
     LaunchedEffect(isConnected) {
         if(isConnected){
             homeViewModel.getData()
+            homeViewModel.getRecommendationPassDataGroup()
         }
     }
 
@@ -90,6 +93,7 @@ fun HomeScreen(
     if(isDeleted.value){
         homeViewModel.getData()
         homeViewModel.getUserDataStats(homeState.id!!)
+        homeViewModel.getRecommendationPassDataGroup()
         isDeleted.value = false
     }
 
@@ -112,7 +116,8 @@ fun HomeScreen(
                         dataPass,
                         homeViewModel,
                         navigateToListUserPass,
-                        navigateToForm
+                        navigateToForm,
+                        navigateToGrupDtl
                     )
                     Spacer(
                         modifier = Modifier.height(11.dp)
@@ -137,7 +142,8 @@ fun HomeContentView(
     dataPass: MutableState<DataPass?>,
     homeViewModel: HomeViewModel,
     navigateToListUserPass: () -> Unit,
-    navigateToFormPass: () -> Unit
+    navigateToFormPass: () -> Unit,
+    navigateToGrupDtl: (String, String) -> Unit
 ) {
     val homeState by homeViewModel.homeState.collectAsState()
 
@@ -177,8 +183,9 @@ fun HomeContentView(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-//                  MostUsedSection(sheetState)
-                    GroupDataSection()
+                    GroupDataSection(homeState) { groupId, passDataGroupId ->
+                        navigateToGrupDtl(groupId, passDataGroupId)
+                    }
                     Spacer(
                         modifier = Modifier.height(16.dp)
                     )

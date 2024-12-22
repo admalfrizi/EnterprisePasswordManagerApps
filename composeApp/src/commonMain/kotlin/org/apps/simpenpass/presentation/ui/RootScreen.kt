@@ -44,7 +44,7 @@ fun RootScreen(
     navigateToLogout: () -> Unit,
     navigateToOtpFirst: (String) -> Unit,
     navigateToAddGroup: () -> Unit,
-    navigateToGroupDtl: (String) -> Unit,
+    navigateToGroupDtl: (String, String) -> Unit,
     navigateToListUserPass : () -> Unit,
     navigateToEditPass: (String) -> Unit,
     navigateToFormPass: () -> Unit,

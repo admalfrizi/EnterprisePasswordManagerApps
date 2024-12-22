@@ -59,7 +59,7 @@ fun RootNavGraph(
     navigateToFormWithArgs : MutableState<(DataPass)->Unit>,
     navigateToLogout: () -> Unit,
     navigateToOtpFirst: (String) -> Unit,
-    navigateToGroupDtl: (String) -> Unit,
+    navigateToGroupDtl: (String, String) -> Unit,
     navigateToListUserPass : () -> Unit,
     navigateToEditPass: (String) -> Unit,
     navigateToFormPass: () -> Unit
@@ -90,6 +90,9 @@ fun RootNavGraph(
                 data,
                 isDeleted,
                 passDataId = navigateToFormWithArgs,
+                navigateToGrupDtl = { groupId, passDataGroupId ->
+                    navigateToGroupDtl(groupId,passDataGroupId)
+                },
                 navigateToFormEdit = {
                     navigateToEditPass(it)
                 },
@@ -124,7 +127,9 @@ fun RootNavGraph(
                         }
                     } }) {
             GroupScreen(
-                navigateToGrupDtl = { navigateToGroupDtl(it) },
+                navigateToGrupDtl = { idGroup, passDataGroupId ->
+                    navigateToGroupDtl(idGroup, passDataGroupId)
+                },
                 sheetState = sheetState,
             )
         }
@@ -161,6 +166,11 @@ fun NavGraphBuilder.groupPassDetail(
         route = Screen.GroupPass.route,
         arguments = listOf(
             navArgument(Screen.GroupPass.ARG_GROUP_ID){
+                type = NavType.StringType
+                nullable = true
+                defaultValue = ""
+            },
+            navArgument(Screen.GroupPass.ARG_PASS_DATA_GROUP_ID){
                 type = NavType.StringType
                 nullable = true
                 defaultValue = ""

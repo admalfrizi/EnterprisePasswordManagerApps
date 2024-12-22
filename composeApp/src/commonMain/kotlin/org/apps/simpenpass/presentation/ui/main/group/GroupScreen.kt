@@ -38,7 +38,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun GroupScreen(
     groupViewModel: GroupViewModel = koinViewModel(),
-    navigateToGrupDtl : (String) -> Unit,
+    navigateToGrupDtl : (String, String) -> Unit,
     sheetState: ModalBottomSheetState,
 ) {
     val groupState by groupViewModel.groupState.collectAsStateWithLifecycle()
@@ -122,7 +122,7 @@ fun GroupScreen(
                           modifier = Modifier.fillMaxWidth(),
                       ) {
                           items(groupState.groupData) { item ->
-                              ListGroupHolder(item, { navigateToGrupDtl(item?.id.toString()) })
+                              ListGroupHolder(item) { navigateToGrupDtl(item?.id.toString(),"0") }
                           }
                       }
                   }

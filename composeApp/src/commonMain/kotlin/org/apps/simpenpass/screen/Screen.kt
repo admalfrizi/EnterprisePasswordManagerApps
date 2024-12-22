@@ -22,10 +22,14 @@ sealed class Screen(val route : String) {
     data object Profile : Screen(route = "profile")
     data object Group : Screen(route = "group")
 
-    data object GroupPass : Screen(route = "groupPass/dtl/{groupId}"){
-        fun groupId(groupId : String) = "groupPass/dtl/$groupId"
+    data object GroupPass : Screen(route = "groupPass/dtl/{groupId}/{passDataGroupId}"){
+        fun groupId(
+            groupId : String,
+            passDataGroupId: String
+        ) = "groupPass/dtl/$groupId/$passDataGroupId"
 
         const val ARG_GROUP_ID = "groupId"
+        const val ARG_PASS_DATA_GROUP_ID = "passDataGroupId"
     }
 
     data object FormPassData: Screen(route = "formPassData/{passId}"){

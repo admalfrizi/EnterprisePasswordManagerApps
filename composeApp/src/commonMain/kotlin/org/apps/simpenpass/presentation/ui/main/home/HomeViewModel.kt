@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.pass_data.DataPass
+import org.apps.simpenpass.models.pass_data.RecommendationPassDataGroup
 import org.apps.simpenpass.utils.NetworkResult
 
 class HomeViewModel(
@@ -193,6 +194,39 @@ class HomeViewModel(
 
     }
 
+    fun getRecommendationPassDataGroup() {
+        viewModelScope.launch {
+            userRepo.getDataPassGroupRecommendation().flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                                keyEnc = ""
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _homeState.update {
+                            it.copy(
+                                isLoading = false,
+                                passDataGroupRecommendList = res.data.data!!,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         _homeState.update {
@@ -210,6 +244,7 @@ data class HomeState(
     val name: String? = null,
     val id: Int? = null,
     val passDataList : List<DataPass> = emptyList(),
+    val passDataGroupRecommendList: List<RecommendationPassDataGroup> = emptyList(),
     var isDeleted: Boolean = false,
     var isPassVerify: Boolean = false,
     var keyEnc: String? = null,

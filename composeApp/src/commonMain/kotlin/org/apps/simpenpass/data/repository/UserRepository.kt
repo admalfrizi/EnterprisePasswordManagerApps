@@ -109,6 +109,32 @@ class UserRepository(
                     false -> {
                         emit(NetworkResult.Error(result.message))
                     }
+
+                    else -> {}
+                }
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch {
+        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+    }
+
+    fun getDataPassGroupRecommendation() = flow {
+        emit(NetworkResult.Loading())
+        try {
+            localData.getToken.collect { token ->
+                val result = remoteUserSources.dataPassGroupRecommendation(token, localData.getUserData().id!!)
+                when (result.success) {
+                    true -> {
+                        emit(NetworkResult.Success(result))
+                    }
+
+                    false -> {
+                        emit(NetworkResult.Error(result.message))
+                    }
+
+                    else -> {}
                 }
             }
         } catch (e: UnresolvedAddressException) {
@@ -131,6 +157,8 @@ class UserRepository(
                 false -> {
                     emit(NetworkResult.Error(result.message))
                 }
+
+                else -> {}
             }
         } catch (e: UnresolvedAddressException) {
             emit(NetworkResult.Error(e.message ?: "Unknown Error"))
@@ -154,6 +182,8 @@ class UserRepository(
                 false -> {
                     emit(NetworkResult.Error(result.message))
                 }
+
+                else -> {}
             }
         }
     }.onStart {
@@ -174,6 +204,8 @@ class UserRepository(
                 false -> {
                     emit(NetworkResult.Error(result.message))
                 }
+
+                else -> {}
             }
         }
     }.onStart {

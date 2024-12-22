@@ -32,6 +32,7 @@ class GroupDetailsViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val groupId = savedStateHandle.get<String>("groupId")
+    private val passDataGroupId = savedStateHandle.get<String>("passDataGroupId")
 
     private val _groupDtlState = MutableStateFlow(GroupDetailsState())
     val groupDtlState = _groupDtlState.onStart {
@@ -45,6 +46,14 @@ class GroupDetailsViewModel(
             it.copy(
                 groupId = groupId
             )
+        }
+
+        if(passDataGroupId?.isNotEmpty()!!){
+            _groupDtlState.update {
+                it.copy(
+                    passDataGroupId = passDataGroupId
+                )
+            }
         }
     }
 
@@ -334,6 +343,7 @@ data class GroupDetailsState(
     val listRoleGroup: List<RoleGroupData?> = emptyList(),
     val dtlGroupData: DtlGrupPass? = null,
     val groupId: String? = null,
+    val passDataGroupId: String? = null,
     var key : String? = null,
     var msg: String = "",
     val memberGroupData: List<MemberGroupData> = emptyList(),

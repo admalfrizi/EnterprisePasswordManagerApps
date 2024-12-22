@@ -14,6 +14,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
+import org.apps.simpenpass.models.pass_data.RecommendationPassDataGroup
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.request.UpdateUserDataRequest
@@ -111,6 +112,19 @@ class RemoteUserSources(private val httpClient: HttpClient) : UserDataFunc {
                 ))
             }
             return response.body<BaseResponse<Boolean>>()
+        } catch (e: UnresolvedAddressException) {
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun dataPassGroupRecommendation(token: String,userId: Int): BaseResponse<List<RecommendationPassDataGroup>> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "randomRecommendDataPassGroupJoined"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("userId", userId)
+            }
+            return response.body<BaseResponse<List<RecommendationPassDataGroup>>>()
         } catch (e: UnresolvedAddressException) {
             throw Exception(e.message)
         }

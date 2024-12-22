@@ -7,6 +7,7 @@ import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.pass_data.PassDataGroup
+import org.apps.simpenpass.models.pass_data.RecommendationPassDataGroup
 import org.apps.simpenpass.models.pass_data.ResultSearchGroup
 import org.apps.simpenpass.models.pass_data.RoleGroupData
 import org.apps.simpenpass.models.request.AddGroupRequest
@@ -57,6 +58,7 @@ interface UserDataFunc {
     suspend fun userDataStats(token: String, userId: Int): BaseResponse<UserDataStats>
     suspend fun updateUserData(token: String,userId: Int, updateUser: UpdateUserDataRequest): BaseResponse<UserData>
     suspend fun verifyPass(token: String,userId: Int, password: String): BaseResponse<Boolean>
+    suspend fun dataPassGroupRecommendation(token: String, userId: Int): BaseResponse<List<RecommendationPassDataGroup>>
 }
 
 interface PassDataFunc {

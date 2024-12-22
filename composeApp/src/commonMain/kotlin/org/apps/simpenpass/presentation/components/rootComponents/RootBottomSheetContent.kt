@@ -43,6 +43,7 @@ import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.CamelliaCrypto
+import org.apps.simpenpass.utils.copyText
 import org.apps.simpenpass.utils.setToast
 import resources.Res
 import resources.delete_pass_data
@@ -308,14 +309,15 @@ fun DetailPassData(
         Divider()
         OptionMenuHolder(
             Res.drawable.url_link,
-            "Copy URL"
+            "Salin Link URL",
+            {
+                copyText(data.value?.url!!)
+                setToast("Data URL Telah Disalin")
+            }
         )
         OptionMenuHolder(
             Res.drawable.edit_anggota_ic,
-            "Pin to Most Used",
-            {
-
-            }
+            "Pin to Most Used"
         )
         OptionMenuHolder(
             Res.drawable.edit_data_pass,

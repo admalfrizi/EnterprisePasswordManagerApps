@@ -107,7 +107,7 @@ fun MainNavigation(
                 deepLink,
                 bottomEdgeColor,
                 navigateToDetailGroupFromPopUp = {
-                    navController.navigate(Screen.GroupPass.groupId(it))
+                    navController.navigate(Screen.GroupPass.groupId(it,"0"))
                 },
                 navigateToLogout = {
                     navController.navigate(Screen.Auth.route){
@@ -119,8 +119,8 @@ fun MainNavigation(
                 navigateToAddGroup = {
                     navController.navigate(Screen.AddGroupPass.route)
                 },
-                navigateToGroupDtl = {
-                    navController.navigate(Screen.GroupPass.groupId(it))
+                navigateToGroupDtl = { groupId, passDataGroupId ->
+                    navController.navigate(Screen.GroupPass.groupId(groupId, passDataGroupId))
                 },
                 navigateToListUserPass = {
                     navController.navigate(Screen.ListPassDataUser.route)

@@ -35,6 +35,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -94,6 +95,12 @@ fun PassDataScreen(
             },
             groupDtlViewModel
         )
+    }
+
+    LaunchedEffect(groupState.passDataGroupId?.toInt() != 0 && groupState.passDataGroupId != null){
+        if(groupState.passDataGroupId?.toInt() != 0 && groupState.passDataGroupId != null){
+            navController.navigate(Screen.PassDataGroupDtl.passDataGroupId(groupState.passDataGroupId,groupState.groupId.toString()))
+        }
     }
 
     if(groupState.isPassVerify){
