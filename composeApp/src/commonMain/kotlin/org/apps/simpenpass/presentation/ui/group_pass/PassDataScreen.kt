@@ -99,7 +99,7 @@ fun PassDataScreen(
 
     LaunchedEffect(groupState.passDataGroupId?.toInt() != 0 && groupState.passDataGroupId != null){
         if(groupState.passDataGroupId?.toInt() != 0 && groupState.passDataGroupId != null){
-            navController.navigate(Screen.PassDataGroupDtl.passDataGroupId(groupState.passDataGroupId,groupState.groupId.toString()))
+            navController.navigate(Screen.PassDataGroupDtl.passDataGroupId(groupState.passDataGroupId!!,groupState.groupId.toString()))
         }
     }
 

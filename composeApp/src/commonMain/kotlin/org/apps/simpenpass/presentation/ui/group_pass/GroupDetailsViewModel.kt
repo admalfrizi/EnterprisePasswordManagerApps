@@ -343,7 +343,7 @@ data class GroupDetailsState(
     val listRoleGroup: List<RoleGroupData?> = emptyList(),
     val dtlGroupData: DtlGrupPass? = null,
     val groupId: String? = null,
-    val passDataGroupId: String? = null,
+    var passDataGroupId: String? = null,
     var key : String? = null,
     var msg: String = "",
     val memberGroupData: List<MemberGroupData> = emptyList(),

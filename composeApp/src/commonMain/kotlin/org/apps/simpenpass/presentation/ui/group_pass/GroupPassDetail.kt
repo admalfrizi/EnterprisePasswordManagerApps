@@ -80,17 +80,14 @@ fun GroupPassDetail(
 ) {
     val tabsName = listOf("Password", "Anggota")
     val groupState by groupViewModel.groupDtlState.collectAsStateWithLifecycle()
-
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
     val scope = rememberCoroutineScope()
-
     val itemsData = listOf(
         MethodSelection(1, Res.drawable.edit_ic, " Buat Data Baru"),
         MethodSelection(2, Res.drawable.your_data_ic, "Ambil Dari Data Anda"),
     )
-
     val snackBarHostState = remember { SnackbarHostState() }
 
     bottomEdgeColor.value = Color(0xFFF1F1F1)
