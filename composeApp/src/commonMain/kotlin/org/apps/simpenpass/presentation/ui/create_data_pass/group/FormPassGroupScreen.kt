@@ -1148,7 +1148,7 @@ fun VerifyKeyInGroupDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        "Silahkan Masukan Data Keamanan Grup",
+                        "Verifikasi Data Keamanan Grup",
                         style = MaterialTheme.typography.h6.copy(color = secondaryColor),
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start

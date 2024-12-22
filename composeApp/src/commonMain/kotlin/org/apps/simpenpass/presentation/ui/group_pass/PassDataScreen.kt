@@ -255,7 +255,7 @@ fun DialogToDecrypt(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        "Silahkan Masukan Password Anda",
+                        "Verifikasi Data Keamanan Grup",
                         style = MaterialTheme.typography.h6.copy(color = secondaryColor),
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start
@@ -272,7 +272,7 @@ fun DialogToDecrypt(
                     modifier = Modifier.height(15.dp)
                 )
                 Text(
-                    "Data Password anda Telah Terkunci, Silahkan Masukan Kunci untuk Membuka Data Password Anda !",
+                    "Data password telah terkunci, silahkan masukan kunci dari data keamanan grup untuk membuka data password",
                     style = MaterialTheme.typography.subtitle1,
                     color = secondaryColor
                 )
