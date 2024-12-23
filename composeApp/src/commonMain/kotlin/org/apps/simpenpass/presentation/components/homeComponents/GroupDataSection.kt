@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import org.apps.simpenpass.presentation.ui.main.home.HomeState
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.emailMask
 
 @Composable
 fun GroupDataSection(
@@ -76,7 +77,7 @@ fun GroupDataSection(
                             modifier = Modifier.height(4.dp)
                         )
                         Text(
-                            item.email,
+                            emailMask(item.email),
                             style = MaterialTheme.typography.subtitle1,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,

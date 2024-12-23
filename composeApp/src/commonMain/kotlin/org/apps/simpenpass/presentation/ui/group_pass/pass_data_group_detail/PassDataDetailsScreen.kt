@@ -60,6 +60,7 @@ import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.copyText
 import org.apps.simpenpass.utils.getScreenHeight
+import org.apps.simpenpass.utils.isValidEmail
 import org.apps.simpenpass.utils.setToast
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -200,7 +201,11 @@ fun PassDataDetailsScreen(
                         DataInfoHolder(
                             {
                                 setToast("Data Email telah Disalin")
-                            }, Res.drawable.email_ic, passDataDetailsState.value.passData?.email ?: ""
+                            },
+                            Res.drawable.email_ic,
+                            isEmail = isValidEmail(passDataDetailsState.value.passData?.email ?: ""),
+                            isObscureData = true,
+                            title = passDataDetailsState.value.passData?.email ?: ""
                         )
                         Spacer(
                             modifier = Modifier.height(17.dp)

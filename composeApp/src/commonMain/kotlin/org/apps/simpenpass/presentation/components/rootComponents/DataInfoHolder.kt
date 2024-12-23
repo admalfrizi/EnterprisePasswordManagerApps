@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.copyText
+import org.apps.simpenpass.utils.emailMask
 import org.apps.simpenpass.utils.maskString
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -38,11 +39,12 @@ fun DataInfoHolder(
     warnCopy: () -> Unit,
     icon: DrawableResource? = null,
     title: String,
-    isPassData : Boolean = false,
+    isObscureData : Boolean = false,
+    isEmail: Boolean = false,
     isLeadIcon : Boolean = true,
     isCopyPaste: Boolean = true
 ) {
-    var showPassword by remember { mutableStateOf(value = false) }
+    var showData by remember { mutableStateOf(value = false) }
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -62,29 +64,29 @@ fun DataInfoHolder(
                 )
             }
             Text(
-                checkData(title, isPassData, showPassword),
+                checkData(title, isObscureData,isEmail, showData),
                 style = MaterialTheme.typography.body2,
                 color = secondaryColor,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Start
             )
-            if(isPassData){
-                if(showPassword){
-                    IconButton(
-                        onClick = {
-                            showPassword = false
-                        }
-                    ){
+
+            if(isObscureData){
+                IconButton(
+                    onClick = {
+//                        if(isEncrypted){
+//                            isPopUp.value = true
+//                        } else {
+//                            showPassword = !showPassword
+//                        }
+                        showData = !showData
+                    }
+                ){
+                    if(showData){
                         Image(
                             painterResource(Res.drawable.visibility_ic),"",
                         )
-                    }
-                } else {
-                    IconButton(
-                        onClick = {
-                            showPassword = true
-                        }
-                    ){
+                    } else {
                         Image(
                             painterResource(Res.drawable.visibility_non_ic),"",
                         )
@@ -302,15 +304,17 @@ fun checkPassMask(data: String, showPassword: Boolean): String {
 
 fun checkData(
     data: String,
-    isPassData: Boolean,
-    showPassword: Boolean
+    isObscureData: Boolean,
+    isEmail: Boolean,
+    showData: Boolean
 ): String {
-    return if(isPassData){
-        if(showPassword){
-            data
-        }
-        else {
+    return if(isObscureData){
+        if(isEmail && !showData){
+            emailMask(data)
+        } else if(!showData) {
             maskString(data)
+        } else {
+            data
         }
     } else {
         data

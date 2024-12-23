@@ -47,6 +47,20 @@ fun maskString(data: String): String {
     return "*".repeat(data.length)
 }
 
+fun emailMask(email : String) : String{
+    val emailParts = email.split("@")
+    val namePart = emailParts[0]
+    val domainPart = emailParts[1]
+
+    val obscuredName = if (namePart.length > 3) {
+        namePart.substring(0, 3) + "*".repeat(namePart.length - 3)
+    } else {
+        namePart
+    }
+
+    return "$obscuredName@$domainPart"
+}
+
 fun maskStringAfter3Char(data: String): String {
     return data.substring(0,3) + "*".repeat(data.length -3)
 }
