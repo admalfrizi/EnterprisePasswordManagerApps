@@ -1,4 +1,4 @@
-package org.apps.simpenpass.presentation.ui.create_data_pass.group
+package org.apps.simpenpass.presentation.ui.form_data_pass.group
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

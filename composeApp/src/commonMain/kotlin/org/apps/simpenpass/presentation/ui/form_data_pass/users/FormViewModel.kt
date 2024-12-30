@@ -1,4 +1,4 @@
-package org.apps.simpenpass.presentation.ui.create_data_pass.users
+package org.apps.simpenpass.presentation.ui.form_data_pass.users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

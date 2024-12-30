@@ -37,7 +37,7 @@ import org.apps.simpenpass.presentation.ui.add_group.AddGroupScreen
 import org.apps.simpenpass.presentation.ui.change_data_screen.ChangeBiodataScreen
 import org.apps.simpenpass.presentation.ui.change_data_screen.ChangePassScreen
 import org.apps.simpenpass.presentation.ui.change_data_screen.OtpScreen
-import org.apps.simpenpass.presentation.ui.create_data_pass.users.FormScreen
+import org.apps.simpenpass.presentation.ui.form_data_pass.users.FormScreen
 import org.apps.simpenpass.presentation.ui.list_data_pass_user.ListDataPassUser
 import org.apps.simpenpass.presentation.ui.main.SplashViewModel
 import org.apps.simpenpass.screen.Screen

@@ -35,7 +35,7 @@ import org.apps.simpenpass.presentation.ui.auth.RecoveryPassScreen
 import org.apps.simpenpass.presentation.ui.auth.RegisterScreen
 import org.apps.simpenpass.presentation.ui.auth.SendOtpScreen
 import org.apps.simpenpass.presentation.ui.auth.VerifyOtpScreen
-import org.apps.simpenpass.presentation.ui.create_data_pass.group.FormPassGroupScreen
+import org.apps.simpenpass.presentation.ui.form_data_pass.group.FormPassGroupScreen
 import org.apps.simpenpass.presentation.ui.create_role_screen.EditRoleScreen
 import org.apps.simpenpass.presentation.ui.group_pass.GroupPassDetail
 import org.apps.simpenpass.presentation.ui.group_pass.edit_anggota_group.EditAnggotaGroup
