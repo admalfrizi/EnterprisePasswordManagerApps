@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.copyText
@@ -67,6 +68,8 @@ fun DataInfoHolder(
                 checkData(title, isObscureData,isEmail, showData),
                 style = MaterialTheme.typography.body2,
                 color = secondaryColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Start
             )

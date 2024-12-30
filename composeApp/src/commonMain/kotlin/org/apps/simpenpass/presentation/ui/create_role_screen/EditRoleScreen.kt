@@ -72,6 +72,7 @@ import org.apps.simpenpass.models.request.AddRoleRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleNameRequest
 import org.apps.simpenpass.presentation.components.CustomTextField
+import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
@@ -106,6 +107,7 @@ fun EditRoleScreen(
 
     var nameRole = remember { mutableStateOf("") }
     var isEditNameRole = remember { mutableStateOf(false) }
+    var isWarningPopUp = remember { mutableStateOf(false) }
     var roleId = remember { mutableStateOf(0) }
     var toEditRoleId = remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
@@ -146,11 +148,26 @@ fun EditRoleScreen(
         )
     }
 
+    if(isWarningPopUp.value){
+        DialogWarning(
+            dialogTitle = "Data Role Ini Akan Di Hapus !",
+            dialogText = "Jika role ini dihapus maka semua anggota yang berada di role ini akan dihapus !, anda yakin ingin menghapus role ini ?",
+            onDismissRequest = {isWarningPopUp.value = false},
+            onClick = {
+                editRoleViewModel.deleteRoleGroup(roleId.value,groupId)
+                scope.launch {
+                    sheetState.hide()
+                }
+            }
+        )
+    }
+
     ModalBottomSheetLayout(
         sheetBackgroundColor = Color(0xFFF1F1F1),
         sheetContent = {
             BottomSheetContent(
                 sheetState,
+                isWarningPopUp,
                 editRoleViewModel,
                 scope,
                 groupId,
@@ -433,7 +450,7 @@ fun OverlayContent(
                     CustomTextField(
                         interactionSource = interactionSource,
                         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().onFocusChanged { focusState -> roleFocus = focusState.isFocused },
-                        labelHints = "Nama Posisi",
+                        labelHints = "Isi untuk Nama Posisi Baru",
                         value = roleNameEdt,
                         leadingIcon = null,
                         onValueChange = { roleNameEdt = it},
@@ -444,6 +461,7 @@ fun OverlayContent(
                         modifier = Modifier.height(18.dp)
                     )
                     Button(
+                        enabled = roleNameEdt.isNotEmpty(),
                         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                         onClick = {
                             editRoleViewModel.addRoleGroup(AddRoleRequest(roleNameEdt),groupId)
@@ -554,6 +572,7 @@ fun UpdateRoleNameDialog(
 @Composable
 fun BottomSheetContent(
     sheetState: ModalBottomSheetState,
+    isWarningPopUp: MutableState<Boolean>,
     editRoleViewModel: EditRoleViewModel,
     scope: CoroutineScope,
     groupId: String,
@@ -725,10 +744,7 @@ fun BottomSheetContent(
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
-                editRoleViewModel.deleteRoleGroup(roleId.value,groupId)
-                scope.launch {
-                    sheetState.hide()
-                }
+                isWarningPopUp.value = true
             },
             shape = RoundedCornerShape(20.dp),
             elevation = ButtonDefaults.elevation(0.dp),
