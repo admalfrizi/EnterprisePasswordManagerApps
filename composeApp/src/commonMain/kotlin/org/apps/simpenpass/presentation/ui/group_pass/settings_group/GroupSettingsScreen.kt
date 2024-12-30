@@ -64,8 +64,10 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -156,6 +158,7 @@ fun GroupSettingsScreen(
     )
     val imagesName = groupState.groupData?.groupDtl?.img_grup
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+    val focusManager = LocalFocusManager.current
 
     if(groupState.isSuccess && !groupState.isLoading){
         setToast("Data Telah Berhasil Diperbaharui !")
@@ -331,13 +334,25 @@ fun GroupSettingsScreen(
                         modifier = Modifier.padding(0.dp).onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
                         },
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Text
+                        ),
                         decorationBox = { innerTextField ->
                             Column {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    horizontalArrangement = Arrangement.spacedBy(14.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ){
+                                    Image(
+                                        painterResource(Res.drawable.group_ic),"", colorFilter = ColorFilter.tint(secondaryColor)
+                                    )
                                     Box {
                                         if (grupName.isEmpty()) {
                                             Text(
@@ -347,11 +362,7 @@ fun GroupSettingsScreen(
                                         }
                                         innerTextField()
                                     }
-                                    Image(
-                                        painterResource(Res.drawable.group_ic),"", colorFilter = ColorFilter.tint(secondaryColor)
-                                    )
                                 }
-
                                 Divider(
                                     color = secondaryColor,
                                     thickness = 2.dp,
