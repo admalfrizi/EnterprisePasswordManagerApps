@@ -133,6 +133,7 @@ fun EditRoleScreen(
     if(deleteRoleState.isSuccess){
         editRoleViewModel.getListRolePositionData(groupId)
         editRoleViewModel.getMemberDataGroup(groupId)
+        isWarningPopUp.value = false
     }
 
     if(isEditNameRole.value){
@@ -151,7 +152,7 @@ fun EditRoleScreen(
     if(isWarningPopUp.value){
         DialogWarning(
             dialogTitle = "Data Role Ini Akan Di Hapus !",
-            dialogText = "Jika role ini dihapus maka semua anggota yang berada di role ini akan dihapus !, anda yakin ingin menghapus role ini ?",
+            dialogText = "Jika role ini dihapus maka semua anggota dan data password yang berkelompok pada role ini akan dihapus !, anda yakin ingin menghapus role ini ?",
             onDismissRequest = {isWarningPopUp.value = false},
             onClick = {
                 editRoleViewModel.deleteRoleGroup(roleId.value,groupId)
