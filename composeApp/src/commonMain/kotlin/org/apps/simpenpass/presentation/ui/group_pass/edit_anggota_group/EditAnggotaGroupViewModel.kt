@@ -103,6 +103,43 @@ class EditAnggotaGroupViewModel(
             }
         }
     }
+
+    fun deleteOneMemberInGroup(
+        memberId: Int,
+        groupId: Int
+    ) {
+        viewModelScope.launch {
+            repo.deleteOneMemberInGroup(memberId,groupId).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _editAnggotaState.update {
+                            it.copy(
+                                isLoading = false,
+                                isError = true,
+                                msg = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _editAnggotaState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _editAnggotaState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDeleted = true,
+                                msg = res.data.message
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class EditAnggotaState(
@@ -111,6 +148,7 @@ data class EditAnggotaState(
     val listMember: List<MemberGroupData> = emptyList(),
     var isUpdated: Boolean = false,
     var isError: Boolean = false,
+    var isDeleted: Boolean = false,
     var isLoading: Boolean = false,
     var isSent: Boolean = false,
 )

@@ -63,6 +63,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
+import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.getScreenHeight
@@ -91,6 +92,10 @@ fun EditAnggotaGroup(
         mutableStateOf(false)
     }
 
+    var isPopUpWarning = remember {
+        mutableStateOf(false)
+    }
+
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
@@ -110,6 +115,7 @@ fun EditAnggotaGroup(
     }
 
     val snackBarHostState = remember { SnackbarHostState() }
+    var memberIdDelete = remember { mutableStateOf(0) }
 
     LaunchedEffect(
         key1 = isSelectionMode,
@@ -144,6 +150,21 @@ fun EditAnggotaGroup(
                 isPopupOption.value = false
             },
             navToInviteGroup
+        )
+    }
+
+    if(isPopUpWarning.value){
+        DialogWarning(
+            dialogText = "Jika anda menghapus anggota ini, maka anggota tersebut tidak dapat lagi mengakses data password di grup ini",
+            dialogTitle = "Anda yakin ingin mengeluarkan anggota ini dari grup ?",
+            onDismissRequest = {
+                isPopUpWarning.value = false
+                memberIdDelete.value = 0
+            },
+            onClick = {
+                editAnggotaViewModel.deleteOneMemberInGroup(memberIdDelete.value, groupState.groupId!!)
+                isPopUpWarning.value = false
+            }
         )
     }
 
@@ -183,6 +204,8 @@ fun EditAnggotaGroup(
                 height,
                 isSelectionMode = isSelectionMode.value,
                 selectedItems = selectedItems,
+                isPopUpWarning = isPopUpWarning,
+                memberIdDelete = memberIdDelete,
                 resetSelectionMode = resetSelectionMode
             )
         }
@@ -200,6 +223,8 @@ fun ScaffoldContent(
     editAnggotaGroupViewModel: EditAnggotaGroupViewModel,
     height: Int,
     selectedItems: MutableList<UpdateAdminMemberGroupRequest>,
+    isPopUpWarning: MutableState<Boolean>,
+    memberIdDelete: MutableState<Int>,
     isSelectionMode: Boolean,
     resetSelectionMode: () -> Unit
 ) {
@@ -362,7 +387,8 @@ fun ScaffoldContent(
                             if(itemsData?.size != 1 && !isSelectionMode){
                                 IconButton(
                                     onClick = {
-
+                                        isPopUpWarning.value = true
+                                        memberIdDelete.value = item.id
                                     },
                                     content = {
                                         Image(

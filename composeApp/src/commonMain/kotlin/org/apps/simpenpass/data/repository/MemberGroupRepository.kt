@@ -1,6 +1,5 @@
 package org.apps.simpenpass.data.repository
 
-import io.github.aakira.napier.Napier
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -8,7 +7,6 @@ import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.localData.LocalStoreData
 import org.apps.simpenpass.data.source.remoteData.RemoteMemberDataSources
 import org.apps.simpenpass.data.source.remoteData.RemoteRolePositionGroup
-import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.request.UpdateRoleMemberGroupRequest
@@ -20,22 +18,6 @@ class MemberGroupRepository(
     private val remoteRolePositionGroup: RemoteRolePositionGroup,
     private val localData : LocalStoreData
 ) {
-    fun addUsersToJoinGroup(
-        addMemberRequest: List<AddMemberRequest>,
-        groupId: Int
-    ) = flow {
-        emit(NetworkResult.Loading())
-        localData.getToken.collect { token ->
-            val result = remoteMemberDataSources.addMemberToGroup(token, addMemberRequest, groupId)
-            if (result.success) {
-                emit(NetworkResult.Success(result))
-            }
-            Napier.v("Result Member : $result")
-        }
-    }.catch { error ->
-        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
-    }
-
     fun getMemberGroup(groupId: Int) = flow {
         emit(NetworkResult.Loading())
         try {
@@ -55,6 +37,25 @@ class MemberGroupRepository(
 
     suspend fun getUserData(): LocalUserStore {
         return localData.getUserData()
+    }
+
+    fun deleteOneMemberInGroup(
+        memberId: Int,
+        groupId: Int
+    ) = flow {
+        localData.getToken.collect { token ->
+            val result = remoteMemberDataSources.deleteOneMemberFromGroup(token, memberId,groupId)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            } else {
+                emit(NetworkResult.Error(result.message))
+            }
+        }
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+
     }
 
     fun findUsersToJoinedGroup(

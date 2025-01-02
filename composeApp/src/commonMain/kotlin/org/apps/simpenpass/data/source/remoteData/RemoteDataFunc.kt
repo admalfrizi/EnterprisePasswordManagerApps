@@ -33,6 +33,7 @@ import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.AddRoleReponse
 import org.apps.simpenpass.models.response.BaseResponse
 import org.apps.simpenpass.models.response.DataPassWithAddContent
+import org.apps.simpenpass.models.response.DeleteMemberDataResponse
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
 import org.apps.simpenpass.models.response.GetDataPassUserEncrypted
 import org.apps.simpenpass.models.response.GetPassDataEncrypted
@@ -162,7 +163,7 @@ interface GroupPassDataFunc {
 
 interface MemberGroupDataFunc {
     suspend fun addMemberToGroup(token: String, addData: List<AddMemberRequest>, groupId: Int): BaseResponse<List<AddMemberRequest>>
-    suspend fun deleteOneMemberFromGroup(token: String, userId: Int) : BaseResponse<GrupPassData>
+    suspend fun deleteOneMemberFromGroup(token: String, memberId: Int,groupId: Int) : BaseResponse<DeleteMemberDataResponse>
     suspend fun listUserJoinedInGroup(token: String, groupId: Int) : BaseResponse<List<MemberGroupData>>
     suspend fun findUsersToJoinedGroup(token: String, query: String) : BaseResponse<SearchResultResponse>
     suspend fun updateAdminMemberGroup(token: String,groupId: Int ,listUpdate: List<UpdateAdminMemberGroupRequest>) : BaseResponse<List<UpdateAdminMemberResponse>>

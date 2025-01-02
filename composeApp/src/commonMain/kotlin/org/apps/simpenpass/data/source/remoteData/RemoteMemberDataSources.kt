@@ -3,6 +3,7 @@ package org.apps.simpenpass.data.source.remoteData
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
@@ -15,13 +16,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.network.UnresolvedAddressException
-import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.models.request.AddMemberRequest
 import org.apps.simpenpass.models.request.InviteUserToJoinGroup
 import org.apps.simpenpass.models.request.SendEmailRequest
 import org.apps.simpenpass.models.request.UpdateAdminMemberGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
+import org.apps.simpenpass.models.response.DeleteMemberDataResponse
 import org.apps.simpenpass.models.response.SearchResultResponse
 import org.apps.simpenpass.models.response.UpdateAdminMemberResponse
 import org.apps.simpenpass.models.response.UserJoinResponse
@@ -51,9 +52,22 @@ class RemoteMemberDataSources(private val httpClient: HttpClient) : MemberGroupD
 
     override suspend fun deleteOneMemberFromGroup(
         token: String,
-        userId: Int
-    ): BaseResponse<GrupPassData> {
-        TODO("Not yet implemented")
+        memberId: Int,
+        groupId: Int
+    ): BaseResponse<DeleteMemberDataResponse> {
+        try {
+            val response : HttpResponse = httpClient.delete(Constants.BASE_API_URL + "deleteOneMember/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("memberId", memberId)
+            }
+
+            return response.body<BaseResponse<DeleteMemberDataResponse>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
     }
 
     override suspend fun listUserJoinedInGroup(

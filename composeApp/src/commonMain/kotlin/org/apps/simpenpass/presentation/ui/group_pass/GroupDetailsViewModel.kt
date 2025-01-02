@@ -330,7 +330,6 @@ class GroupDetailsViewModel(
                 }
             }
         }
-
     }
 
     fun clearState() {
