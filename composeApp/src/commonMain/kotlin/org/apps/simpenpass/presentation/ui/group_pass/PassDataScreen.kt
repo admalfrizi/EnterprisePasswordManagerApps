@@ -130,7 +130,9 @@ fun PassDataScreen(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        AddPassDataBtnHolder(isShowBottomSheet,scope)
+        if(groupState.dtlGroupData?.isUserAdmin == true){
+            AddPassDataBtnHolder(isShowBottomSheet,scope)
+        }
         FilterRow(groupState,groupDtlViewModel,isAllData)
         if(groupState.passDataGroup.isEmpty() && !groupState.isLoading){
             Box(
