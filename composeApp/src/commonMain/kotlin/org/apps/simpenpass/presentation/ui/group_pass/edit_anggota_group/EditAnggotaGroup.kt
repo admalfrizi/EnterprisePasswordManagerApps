@@ -168,6 +168,11 @@ fun EditAnggotaGroup(
         )
     }
 
+    if(groupState.isDeleted){
+        setToast("Data anggota telah dihapus")
+        groupState.isDeleted = false
+    }
+
     BackHandler(
         enabled = sheetState.isVisible,
         onBack = {
