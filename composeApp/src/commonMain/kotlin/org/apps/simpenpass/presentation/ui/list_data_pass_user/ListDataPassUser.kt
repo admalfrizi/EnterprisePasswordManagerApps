@@ -225,8 +225,18 @@ fun ListDataPassUser(
                                     Text(text = "Hapus Data Password")
                                 },
                                 onClick = {
-                                    isSelectionMode.value = true
+                                    when(state.data.isEmpty()){
+                                        true -> {
+                                            setToast("Data anda Kosong !")
+                                        }
+                                        false -> {
+                                            isSelectionMode.value = true
+                                        }
+                                        else -> {}
+                                    }
+
                                     isDropdownShow = false
+
                                 }
                             )
                             DropdownMenuItem(

@@ -164,33 +164,35 @@ fun HomeContentView(
                     warnTitle = "Internet Anda Telah Teputus !",
                     warnText = "Silahkan untuk memeriksa koneksi internet anda dan coba untuk refresh kembali halaman ini",
                 )
-
-
-            if(homeState.passDataList.isEmpty() && !homeState.isLoading && isConnected)
-                EmptyWarning(
-                    modifier = Modifier.fillMaxSize(),
-                    warnTitle = "Anda Belum Memiliki Data Password",
-                    warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
-                    btnTxt = "Tambahkan Password",
-                    isEnableBtn = true,
-                    onSelect = {
-                        navigateToFormPass()
-                    }
+            
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                GroupDataSection(homeState) { groupId, passDataGroupId ->
+                    navigateToGrupDtl(groupId, passDataGroupId)
+                }
+                Spacer(
+                    modifier = Modifier.height(16.dp)
                 )
-
-
-            if(homeState.passDataList.isNotEmpty() && isConnected && !homeState.isLoading)
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    GroupDataSection(homeState) { groupId, passDataGroupId ->
-                        navigateToGrupDtl(groupId, passDataGroupId)
-                    }
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
+                if(homeState.passDataList.isNotEmpty() && isConnected && !homeState.isLoading){
                     UserPassDataSection(homeState.passDataList,homeState.totalDataPass ?: 0,dataPass,sheetState,navigateToListUserPass)
                 }
+
+                if(homeState.passDataList.isEmpty() && !homeState.isLoading && isConnected)
+                    EmptyWarning(
+                        modifier = Modifier.fillMaxSize(),
+                        warnTitle = "Anda Belum Memiliki Data Password",
+                        warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
+                        btnTxt = "Tambahkan Password",
+                        isEnableBtn = true,
+                        onSelect = {
+                            navigateToFormPass()
+                        }
+                    )
+            }
+
+
+
         }
 
         else -> {}
