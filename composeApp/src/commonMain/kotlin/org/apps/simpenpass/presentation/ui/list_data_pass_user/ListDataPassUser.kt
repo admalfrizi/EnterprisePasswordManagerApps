@@ -295,7 +295,9 @@ fun ListDataPassUser(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            color = secondaryColor
+                        )
                     }
                 }
             }

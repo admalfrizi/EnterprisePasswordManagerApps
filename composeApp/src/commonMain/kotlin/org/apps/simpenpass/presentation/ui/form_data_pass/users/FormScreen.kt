@@ -160,7 +160,7 @@ fun FormScreen(
     if(formState.passData != null){
         userName = formState.passData?.username!!
         nmAccount = formState.passData?.accountName!!
-        desc = formState.passData?.desc!!
+        desc = formState.passData?.desc ?: ""
         email = formState.passData?.email!!
         jnsPass = formState.passData?.jenisData ?: ""
         urlPass = formState.passData?.url ?: ""
@@ -170,7 +170,13 @@ fun FormScreen(
             isPopUp.value = true
         }
 
-        passData = if(dec.isEmpty()) "" else dec
+        if(dec.isEmpty()) {
+            passData = formState.passData?.password!!
+        } else {
+            passData = dec
+        }
+
+//        passData = if(dec.isEmpty()) "" else dec
     }
 
     if(isPopUp.value){
