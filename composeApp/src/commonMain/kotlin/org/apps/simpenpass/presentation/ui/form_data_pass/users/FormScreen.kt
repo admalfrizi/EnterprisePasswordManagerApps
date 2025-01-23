@@ -170,10 +170,10 @@ fun FormScreen(
             isPopUp.value = true
         }
 
-        if(dec.isEmpty()) {
-            passData = formState.passData?.password!!
+        passData = if(dec.isEmpty()) {
+            formState.passData?.password!!
         } else {
-            passData = dec
+            dec
         }
 
 //        passData = if(dec.isEmpty()) "" else dec
