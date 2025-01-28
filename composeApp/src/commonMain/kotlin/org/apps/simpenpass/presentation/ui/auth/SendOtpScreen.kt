@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -20,11 +21,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -77,28 +75,13 @@ fun SendOtpScreen(
         }
     }
 
-
     Box(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars).fillMaxSize().background(
             authScreenBgColor
         )
     ) {
-        IconButton(
-            modifier = Modifier.align(Alignment.TopStart),
-            onClick = {
-                navBack()
-            },
-            content = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
-            }
-        )
-
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()).align(Alignment.Center),
+            modifier = Modifier.verticalScroll(rememberScrollState()).align(Alignment.Center).imePadding(),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
@@ -150,6 +133,20 @@ fun SendOtpScreen(
                 }){
                 Text(
                     text = "Kirim Kode",
+                    color = fontColor1,
+                    style = MaterialTheme.typography.button
+                )
+            }
+            Button(
+                elevation = ButtonDefaults.elevation(0.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth().height(40.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    navBack()
+                }){
+                Text(
+                    text = "Balik ke Halaman Login",
                     color = fontColor1,
                     style = MaterialTheme.typography.button
                 )

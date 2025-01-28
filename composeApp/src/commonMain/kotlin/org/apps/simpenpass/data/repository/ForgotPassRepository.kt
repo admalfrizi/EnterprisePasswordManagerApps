@@ -1,13 +1,16 @@
 package org.apps.simpenpass.data.repository
 
 import io.github.aakira.napier.Napier
+import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import org.apps.simpenpass.data.source.remoteData.RemoteResetPassSources
+import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.utils.NetworkResult
 
 class ForgotPassRepository(
-    private val remoteResetPassSources: RemoteResetPassSources
+    private val remoteResetPassSources: RemoteResetPassSources,
 )  {
     fun sendOtp(email : String) = flow {
         emit(NetworkResult.Loading())
@@ -52,5 +55,39 @@ class ForgotPassRepository(
     }.catch {
         emit(NetworkResult.Error(it.message.toString()))
         Napier.v("error reset pass : ${it.message}")
+    }
+
+    fun getUserDataPassEncrypted(
+        userId: Int
+    ) = flow {
+        try {
+            val result = remoteResetPassSources.getUserDataPassEncrypted(userId)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }
+
+    fun updateUserDataPassWithNewKey(
+        sendUserDataPassToDecrypt: SendUserDataPassToDecrypt,
+    ) = flow {
+        try {
+            val result = remoteResetPassSources.updateUserDataPassWithDecrypt(sendUserDataPassToDecrypt)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }.onStart {
+        emit(NetworkResult.Loading())
     }
 }

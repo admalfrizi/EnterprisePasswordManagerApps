@@ -365,7 +365,7 @@ fun NavGraphBuilder.authNavGraph(
 ) {
     navigation(
         route = Screen.Auth.route,
-        startDestination = Screen.Login.route
+        startDestination = Screen.RecoveryPass.token("fpmafpamwfpawfawfa","2")
     ){
         composable(route = Screen.Login.route){
             AuthScreen(navController,bottomEdgeColor = bottomEdgeColor)
@@ -402,7 +402,7 @@ fun NavGraphBuilder.authNavGraph(
                     navController.navigateUp()
                 },
                 navToResetPass = { token ->
-                    navController.navigate(Screen.RecoveryPass.token(token)){
+                    navController.navigate(Screen.RecoveryPass.token(token,userId)){
                         popUpTo(Screen.VerifyOtp.route){
                             inclusive = true
                         }
@@ -418,13 +418,20 @@ fun NavGraphBuilder.authNavGraph(
                     type = NavType.StringType
                     nullable = true
                     defaultValue = ""
+                },
+                navArgument(Screen.RecoveryPass.ARG_USER_ID){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""
                 }
             )
         ){
             val token = it.arguments?.getString(Screen.RecoveryPass.ARG_TOKEN)
+            val userId = it.arguments?.getString(Screen.RecoveryPass.ARG_USER_ID)
 
             RecoveryPassScreen(
                 token = token!!,
+                userId = userId?.toInt()!!,
                 navBack = {
                     navController.navigateUp()
                 },

@@ -2,15 +2,20 @@ package org.apps.simpenpass.presentation.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.data.repository.ForgotPassRepository
 import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
+import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
+import org.apps.simpenpass.models.response.GetPassDataEncrypted
 import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.utils.NetworkResult
@@ -178,6 +183,109 @@ class AuthViewModel(
         }
     }
 
+    fun verifyPassForDecrypt(
+        password: String
+    ) {
+        viewModelScope.launch {
+            userRepo.verifyPassForDecrypt(password).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                message = res.error,
+                                key = ""
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                isVerify = res.data.data!!,
+                                key = if(res.data.data) password else ""
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    fun getUserPassDataEncrypted(userId: Int){
+        viewModelScope.launch {
+            forgotPassRepo.getUserDataPassEncrypted(userId).flowOn(Dispatchers.IO).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                message = res.error
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Loading -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+
+                    is NetworkResult.Success -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                userPassData = res.data.data?.listPassData
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendUserDataPassToDecrypt(sendDataPassToDecrypt: SendUserDataPassToDecrypt){
+        viewModelScope.launch {
+            forgotPassRepo.updateUserDataPassWithNewKey(sendDataPassToDecrypt).flowOn(Dispatchers.IO).collect { res ->
+                when(res) {
+                    is NetworkResult.Error -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                message = res.error
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = true,
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _authState.update {
+                            it.copy(
+                                isLoading = false,
+                                isDecrypt = true,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun resetPassword(password: String, token: String){
         viewModelScope.launch {
             forgotPassRepo.resetPassword(password, token).collect { result ->
@@ -218,12 +326,15 @@ data class AuthState (
     val isRegistered: Boolean = false,
     val isLoggedIn: Boolean = false,
     val isSendOtp: Boolean = false,
-    val isVerify: Boolean = false,
+    var isVerify: Boolean = false,
+    var isDecrypt: Boolean = false,
     val isResetPass: Boolean = false,
     val userData: UserData? = null,
     val otpResponse: SendOtpResponse? = null,
+    val userPassData: List<GetPassDataEncrypted>? = emptyList(),
     val token: String? = null,
     val resetPassTokens: String? = null,
     var error: String? = null,
+    var key: String? = null,
     val message: String? = null
 )

@@ -176,6 +176,10 @@ interface ResetPassFunc {
     suspend fun sendOtp(email: String) : BaseResponse<SendOtpResponse>
     suspend fun verifyOtp(otp: Int,isResetPass: Boolean, userId: Int) : BaseResponse<VerifyOtpResponse>
     suspend fun resetPassword(password: String, token: String) : BaseResponse<String>
+    suspend fun getUserDataPassEncrypted(userId: Int) : BaseResponse<GetDataPassUserEncrypted>
+    suspend fun updateUserDataPassWithDecrypt(
+        sendUserPassDataToChangeKey: SendUserDataPassToDecrypt
+    ): BaseResponse<String>
 }
 
 interface RolePositionFunc {

@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdateUserPassDataToDecrypt
 import org.apps.simpenpass.models.response.GetPassDataEncrypted
@@ -336,7 +335,7 @@ fun PasswordToUpdatePassDataNewKeyDialog(
         changeDataViewModel.getUserPassDataEncrypted()
     }
 
-    Napier.v("listUserPassData : ${changeDataState.userPassData}")
+//    Napier.v("listUserPassData : ${changeDataState.userPassData}")
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -427,7 +426,6 @@ fun PasswordToUpdatePassDataNewKeyDialog(
             }
         }
     }
-
 }
 
 fun validateData(
