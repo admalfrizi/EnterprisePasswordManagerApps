@@ -1,6 +1,5 @@
 package org.apps.simpenpass.presentation.ui.auth
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,38 +12,41 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +58,9 @@ import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.setToast
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.collections.forEachIndexed
+import kotlin.collections.indices
+import kotlin.text.isEmpty
 
 @Composable
 fun VerifyOtpScreen(
@@ -64,9 +69,12 @@ fun VerifyOtpScreen(
     userId: String,
     authViewModel: AuthViewModel = koinViewModel()
 ) {
-    var otp by remember { mutableStateOf("") }
+    var otp = remember { mutableStateListOf<String>("","","","") }
     val authState by authViewModel.authState.collectAsState()
     val isDismiss = remember { mutableStateOf(true) }
+    val focusRequesters = List(4) { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     if(authState.isVerify && !authState.isLoading && authState.resetPassTokens != null) {
         navToResetPass(authState.resetPassTokens!!)
@@ -133,46 +141,80 @@ fun VerifyOtpScreen(
             Spacer(
                 modifier = Modifier.height(37.dp)
             )
-            BasicTextField(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                value = TextFieldValue(otp, selection = TextRange(otp.length)),
-                onValueChange = { valueNum ->
-                    if(valueNum.text.length <= 4) {
-                        otp = valueNum.text
-                    }
-                },
-                singleLine = true,
-                cursorBrush = SolidColor(secondaryColor),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                decorationBox = {
-                    Row(
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        repeat(4) { index ->
-                            val otpData = when {
-                                index >= otp.length -> ""
-                                else -> otp[index].toString()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(13.dp)
+            ){
+                otp.forEachIndexed { index, value ->
+                    OutlinedTextField(
+                        modifier = Modifier.focusRequester(focusRequesters[index])
+                            .weight(1f)
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.key == androidx.compose.ui.input.key.Key.Backspace) {
+                                    if (otp[index].isEmpty() && index > 0) {
+                                        otp[index] = ""
+                                        focusRequesters[index - 1].requestFocus()
+                                    } else {
+                                        otp[index] = ""
+                                    }
+                                    true
+                                } else {
+                                    false
+                                }
+                            },
+                        singleLine = true,
+                        maxLines = 1,
+                        value = value,
+                        onValueChange = { otpVl ->
+                            if(otpVl.length == 4) {
+                                for(i in otp.indices){
+                                    otp[i] = if(i < otpVl.length && otpVl[i].isDigit()) otpVl[i].toString() else ""
+                                }
+                                keyboardController?.hide()
+                            } else if(otpVl.length <= 1){
+                                otp[index] = otpVl
+                                if(otpVl.isNotEmpty()){
+                                    if(index < 4 - 1){
+                                        focusRequesters[index + 1].requestFocus()
+                                    } else {
+                                        keyboardController?.hide()
+                                    }
+                                }
+                            } else {
+                                if(index < 4 - 1) focusRequesters[index].requestFocus()
                             }
-                            Card(
-                                elevation = 0.dp,
-                                modifier = Modifier.size(76.dp).weight(1f),
-                                border = BorderStroke(width = 1.dp, color = Color.Transparent),
-                                shape = RoundedCornerShape(13.dp),
-                                backgroundColor = Color.White
-                            ) {
-                                Text(
-                                    otpData,
-                                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.h2,
-                                    color = secondaryColor
-                                )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = if (index == 4 - 1) ImeAction.Done else ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                if (index < 4 - 1) {
+                                    focusRequesters[index + 1].requestFocus()
+                                }
+                            },
+                            onDone = {
+                                keyboardController?.hide()
+                                focusManager.clearFocus()
                             }
-                            Spacer(modifier = Modifier.width(if(index != 3) 13.dp else 0.dp))
-                        }
-                    }
+                        ),
+                        textStyle = MaterialTheme.typography.h2.copy(
+                            fontSize = 38.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            textColor = secondaryColor,
+                            focusedBorderColor = btnColor,
+                            backgroundColor = Color.White,
+                            cursorColor = secondaryColor
+                        ),
+                        shape = RoundedCornerShape(13.dp)
+                    )
                 }
-            )
+            }
             Spacer(
                 modifier = Modifier.height(58.dp)
             )
@@ -182,7 +224,7 @@ fun VerifyOtpScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    authViewModel.verifyOtp(otp, userId)
+                    authViewModel.verifyOtp(otp.joinToString(""), userId)
                 }
             ){
                 Text(
