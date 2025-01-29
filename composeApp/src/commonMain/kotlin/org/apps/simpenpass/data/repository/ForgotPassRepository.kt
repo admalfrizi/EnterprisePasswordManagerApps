@@ -90,4 +90,22 @@ class ForgotPassRepository(
     }.onStart {
         emit(NetworkResult.Loading())
     }
+
+    fun verifyOldPassword(
+        userId: Int,
+        oldPass: String
+    ) = flow {
+        try {
+            val result = remoteResetPassSources.verifyOldPassword(userId,oldPass)
+            if(result.success){
+                emit(NetworkResult.Success(result))
+            }
+        } catch (e: UnresolvedAddressException) {
+            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+        }
+    }.catch { error ->
+        emit(NetworkResult.Error(error.message ?: "Unknown Error"))
+    }.onStart {
+        emit(NetworkResult.Loading())
+    }
 }

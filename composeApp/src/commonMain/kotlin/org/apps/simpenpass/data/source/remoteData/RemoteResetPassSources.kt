@@ -2,7 +2,10 @@ package org.apps.simpenpass.data.source.remoteData
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -89,6 +92,29 @@ class RemoteResetPassSources(
                 setBody(sendUserPassDataToChangeKey)
             }
             return response.body<BaseResponse<String>>()
+
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
+    override suspend fun verifyOldPassword(
+        userId: Int,
+        oldPass: String
+    ): BaseResponse<Boolean> {
+        try {
+            val response : HttpResponse = httpClient.post(Constants.BASE_API_URL + "verifyOldPass"){
+                contentType(ContentType.Application.Json)
+                parameter("userId",userId)
+                setBody(MultiPartFormDataContent(
+                    formData {
+                        append("oldPassword",oldPass)
+                    }
+                ))
+            }
+            return response.body<BaseResponse<Boolean>>()
 
         } catch (e: Exception){
             throw Exception(e.message)

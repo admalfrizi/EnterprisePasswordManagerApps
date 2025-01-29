@@ -97,6 +97,7 @@ fun RecoveryPassScreen(
     if(isValidated.value){
         DialogForOldPasswordToDecrypt(
             { isValidated.value = false },
+            userId,
             authViewModel,
             authState
         )
@@ -242,6 +243,7 @@ fun RecoveryPassScreen(
 @Composable
 fun DialogForOldPasswordToDecrypt(
     onDismissRequest: () -> Unit,
+    userId: Int,
     authViewModel: AuthViewModel,
     authState: AuthState
 ) {
@@ -309,7 +311,7 @@ fun DialogForOldPasswordToDecrypt(
                     shape = RoundedCornerShape(20.dp),
                     enabled = password.value.isNotEmpty(),
                     onClick = {
-                        authViewModel.verifyPassForDecrypt(password.value)
+                        authViewModel.verifyPassForDecrypt(userId,password.value)
                     }
                 ) {
                     when(authState.isLoading){

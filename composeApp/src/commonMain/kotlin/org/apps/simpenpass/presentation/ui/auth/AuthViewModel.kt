@@ -184,10 +184,11 @@ class AuthViewModel(
     }
 
     fun verifyPassForDecrypt(
+        userId: Int,
         password: String
     ) {
         viewModelScope.launch {
-            userRepo.verifyPassForDecrypt(password).flowOn(Dispatchers.IO).collect { res ->
+            forgotPassRepo.verifyOldPassword(userId,password).flowOn(Dispatchers.IO).collect { res ->
                 when(res){
                     is NetworkResult.Error -> {
                         _authState.update {

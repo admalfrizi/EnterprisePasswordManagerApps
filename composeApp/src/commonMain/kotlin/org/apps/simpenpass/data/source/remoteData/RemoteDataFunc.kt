@@ -180,6 +180,7 @@ interface ResetPassFunc {
     suspend fun updateUserDataPassWithDecrypt(
         sendUserPassDataToChangeKey: SendUserDataPassToDecrypt
     ): BaseResponse<String>
+    suspend fun verifyOldPassword(userId: Int, oldPass: String) : BaseResponse<Boolean>
 }
 
 interface RolePositionFunc {
