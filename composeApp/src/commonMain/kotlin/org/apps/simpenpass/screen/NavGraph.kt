@@ -365,7 +365,7 @@ fun NavGraphBuilder.authNavGraph(
 ) {
     navigation(
         route = Screen.Auth.route,
-        startDestination = Screen.RecoveryPass.token("fpmafpamwfpawfawfa","2")
+        startDestination = Screen.Login.route
     ){
         composable(route = Screen.Login.route){
             AuthScreen(navController,bottomEdgeColor = bottomEdgeColor)

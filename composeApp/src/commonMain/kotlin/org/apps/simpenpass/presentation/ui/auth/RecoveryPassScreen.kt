@@ -110,9 +110,9 @@ fun RecoveryPassScreen(
                 listPassData.add(UpdateUserPassDataToDecrypt(it.id,dec,false))
             }
             authViewModel.sendUserDataPassToDecrypt(SendUserDataPassToDecrypt(listPassData))
+        } else {
+            authViewModel.resetPassword(password = newPassword, token = token)
         }
-
-
 
         authState.isVerify = false
     }
