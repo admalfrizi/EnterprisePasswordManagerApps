@@ -461,35 +461,38 @@ fun FormContentView(
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Text(
-                            text = "Kunci Data Password",
-                            style = MaterialTheme.typography.body2.copy(
-                                color = secondaryColor
-                            ),
-                        )
-                        Switch(
-                            checked = isEncryptData.value,
-                            onCheckedChange = {
+                    if(formState.isSecure){
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Text(
+                                text = "Kunci Data Password",
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = secondaryColor
+                                ),
+                            )
+                            Switch(
+                                checked = isEncryptData.value,
+                                onCheckedChange = {
 //                                                if(formState.passData != null){
 //                                                    formState.passData?.isEncrypted = it
 //                                                }
 
-                                isEncryptData.value = it
-                            },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = secondaryColor,
-                                uncheckedThumbColor = Color.LightGray
+                                    isEncryptData.value = it
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = secondaryColor,
+                                    uncheckedThumbColor = Color.LightGray
+                                )
                             )
+                        }
+                        Spacer(
+                            modifier = Modifier.height(16.dp)
                         )
                     }
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
+
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = "Nama Akun",

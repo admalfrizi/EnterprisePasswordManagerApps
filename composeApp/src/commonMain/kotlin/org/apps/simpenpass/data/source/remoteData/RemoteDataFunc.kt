@@ -159,6 +159,11 @@ interface GroupPassDataFunc {
         groupId: Int,
         sendDataPassToDecrypt: SendDataPassToDecrypt
     ) : BaseResponse<String>
+
+    suspend fun checkGroupIsSecure(
+        token: String,
+        groupId: Int
+    ): BaseResponse<Boolean>
 }
 
 interface MemberGroupDataFunc {

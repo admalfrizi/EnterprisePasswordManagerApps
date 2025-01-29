@@ -322,4 +322,23 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
             throw Exception(e.message)
         }
     }
+
+    override suspend fun checkGroupIsSecure(
+        token: String,
+        groupId: Int
+    ): BaseResponse<Boolean> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "checkGroupSecure"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("groupId",groupId)
+            }
+
+            return response.body<BaseResponse<Boolean>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
 }

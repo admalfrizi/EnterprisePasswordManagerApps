@@ -20,6 +20,7 @@ import org.apps.simpenpass.models.request.PassDataGroupRequest
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
 import org.apps.simpenpass.utils.NetworkResult
+import kotlin.text.toInt
 
 class FormPassGroupViewModel(
     private val repoPassDataGroup: PassDataGroupRepository,
@@ -33,6 +34,7 @@ class FormPassGroupViewModel(
     private val groupId = savedStateHandle.get<String>("groupId")
 
     init {
+        checkGroupIsSecure(groupId?.toInt()!!)
         _formPassGroupDataState.update {
             it.copy(
                 passDataGroupId = passDataGroupId,
@@ -254,6 +256,40 @@ class FormPassGroupViewModel(
             }
         }
     }
+
+    fun checkGroupIsSecure(
+        groupId: Int,
+    ) {
+        viewModelScope.launch {
+            repoGroup.checkGroupIsSecure(groupId).collect { res ->
+                when(res){
+                    is NetworkResult.Error -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = res.error,
+                            )
+                        }
+                    }
+                    is NetworkResult.Loading -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is NetworkResult.Success -> {
+                        _formPassGroupDataState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSecure = res.data.data!!,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -266,6 +302,7 @@ data class FormPassGroupState(
     var isCreated: Boolean = false,
     var isUpdated: Boolean = false,
     var isPassVerify: Boolean = false,
+    val isSecure: Boolean = false,
     var dataSecurity: GroupSecurityData? = null,
     var key: String? = null,
     val groupId: String? = null,
