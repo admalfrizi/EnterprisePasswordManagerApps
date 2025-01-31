@@ -134,8 +134,6 @@ fun AddGroupSecurityOption(
         addGroupSecurityState.value.isSent = false
     }
 
-    Napier.v("securityData = ${securityData?.securityData}")
-
     Dialog(
         onDismissRequest = {
             onDismissRequest()

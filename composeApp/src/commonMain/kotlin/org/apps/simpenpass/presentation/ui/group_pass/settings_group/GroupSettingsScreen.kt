@@ -160,6 +160,7 @@ fun GroupSettingsScreen(
     val imagesName = groupState.groupData?.groupDtl?.img_grup
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val focusManager = LocalFocusManager.current
+    val isDeleteMode = remember { mutableStateOf(false) }
 
     if(groupState.isSuccess && !groupState.isLoading){
         setToast("Data Telah Berhasil Diperbaharui !")
@@ -173,8 +174,10 @@ fun GroupSettingsScreen(
         DecryptToChangeSecurityData(
             onDismissRequest = {
                 isPopUpToDecrypt.value = false
+                isDeleteMode.value = false
             },
-            groupSettingsViewModel
+            groupSettingsViewModel,
+            isDeleteMode
         )
     }
 
@@ -222,6 +225,7 @@ fun GroupSettingsScreen(
                 toUpdate,
                 isPopUpToDecrypt,
                 isDeleted,
+                isDeleteMode,
                 sheetState,
                 groupState.groupId?.toInt()!!
             )
@@ -492,6 +496,7 @@ fun ListSecurityData(
     toUpdate: MutableState<Boolean>,
     isPopUpToDecrypt: MutableState<Boolean>,
     isDeleted: MutableState<Boolean>,
+    isDeleteMode: MutableState<Boolean>,
     sheetState: ModalBottomSheetState,
     groupId: Int,
     groupDataSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
@@ -615,7 +620,7 @@ fun ListSecurityData(
                         IconButton(
                             onClick = {
                                 isPopUpToDecrypt.value = true
-
+                                isDeleteMode.value = true
                             },
                             content = {
                                 Image(
@@ -673,7 +678,8 @@ fun ListSecurityData(
 @Composable
 fun DecryptToChangeSecurityData(
     onDismissRequest: () -> Unit,
-    groupDetailsViewModel: GroupSettingsViewModel
+    groupDetailsViewModel: GroupSettingsViewModel,
+    isDeleteMode: MutableState<Boolean>
 ) {
     var passDataDetailsState = groupDetailsViewModel.groupSettingsState.collectAsState()
     var securityData = remember { mutableStateOf("") }
@@ -728,7 +734,7 @@ fun DecryptToChangeSecurityData(
                     modifier = Modifier.height(15.dp)
                 )
                 Text(
-                    "Data Keamanan akan Dihapus, Silahkan Masukan Kunci untuk Bisa Membuka Semua Data Pass di Grup Ini",
+                    "Data Keamanan akan ${if(isDeleteMode.value == false) "diubah" else "Dihapus"}, Silahkan Masukan Kunci untuk Bisa Membuka Semua Data Pass di Grup Ini",
                     style = MaterialTheme.typography.subtitle1,
                     color = secondaryColor
                 )
