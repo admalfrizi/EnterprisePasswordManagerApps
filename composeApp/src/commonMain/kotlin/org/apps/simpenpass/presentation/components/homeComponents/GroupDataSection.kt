@@ -36,64 +36,66 @@ fun GroupDataSection(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            "Dari Grup Anda",
-            style = MaterialTheme.typography.body2,
-            color = secondaryColor,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        )
-        Spacer(
-            modifier = Modifier.height(11.dp)
-        )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().heightIn(
-                max = checkDataForHeight(homeState)
-            ),
-            horizontalArrangement = Arrangement.spacedBy(11.dp),
-            verticalArrangement = Arrangement.spacedBy(11.dp),
-            userScrollEnabled = false
-        ){
-            items(homeState.passDataGroupRecommendList){ item ->
-                Card(
-                    modifier = Modifier.width(166.dp).weight(1f).clickable {
-                        navigateToGrupDtl(item.groupId.toString(),item.id.toString())
-                    },
-                    backgroundColor = Color(0xFF192E49),
-                    shape = RoundedCornerShape(10.dp),
-                    elevation = 0.dp
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 11.dp),
+        if(homeState.passDataGroupRecommendList.isNotEmpty()){
+            Text(
+                "Dari Grup Anda",
+                style = MaterialTheme.typography.body2,
+                color = secondaryColor,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            )
+            Spacer(
+                modifier = Modifier.height(11.dp)
+            )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().heightIn(
+                    max = checkDataForHeight(homeState)
+                ),
+                horizontalArrangement = Arrangement.spacedBy(11.dp),
+                verticalArrangement = Arrangement.spacedBy(11.dp),
+                userScrollEnabled = false
+            ){
+                items(homeState.passDataGroupRecommendList){ item ->
+                    Card(
+                        modifier = Modifier.width(166.dp).weight(1f).clickable {
+                            navigateToGrupDtl(item.groupId.toString(),item.id.toString())
+                        },
+                        backgroundColor = Color(0xFF192E49),
+                        shape = RoundedCornerShape(10.dp),
+                        elevation = 0.dp
                     ) {
-                        Text(
-                            item.accountName,
-                            style = MaterialTheme.typography.body1,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = fontColor1
-                        )
-                        Spacer(
-                            modifier = Modifier.height(4.dp)
-                        )
-                        Text(
-                            emailMask(item.email),
-                            style = MaterialTheme.typography.subtitle1,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = fontColor1
-                        )
-                        Spacer(
-                            modifier = Modifier.height(18.dp)
-                        )
-                        Text(
-                            item.originGroup,
-                            style = MaterialTheme.typography.subtitle1,
-                            color = fontColor1,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontSize = 10.sp
-                        )
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 11.dp),
+                        ) {
+                            Text(
+                                item.accountName,
+                                style = MaterialTheme.typography.body1,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = fontColor1
+                            )
+                            Spacer(
+                                modifier = Modifier.height(4.dp)
+                            )
+                            Text(
+                                emailMask(item.email),
+                                style = MaterialTheme.typography.subtitle1,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = fontColor1
+                            )
+                            Spacer(
+                                modifier = Modifier.height(18.dp)
+                            )
+                            Text(
+                                item.originGroup,
+                                style = MaterialTheme.typography.subtitle1,
+                                color = fontColor1,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontSize = 10.sp
+                            )
+                        }
                     }
                 }
             }

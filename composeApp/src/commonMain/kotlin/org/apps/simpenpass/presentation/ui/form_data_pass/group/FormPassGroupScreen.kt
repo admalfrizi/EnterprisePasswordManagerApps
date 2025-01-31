@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -78,6 +79,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import network.chaintech.sdpcomposemultiplatform.ssp
@@ -90,6 +92,7 @@ import org.apps.simpenpass.presentation.components.formComponents.BtnForm
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
+import org.apps.simpenpass.style.primaryColor
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.CamelliaCrypto
 import org.apps.simpenpass.utils.popUpLoading
@@ -112,6 +115,7 @@ fun FormPassGroupScreen(
     val isDismiss = remember { mutableStateOf(false) }
     val formPassGroupState by formPassGroupViewModel.formPassDataGroupState.collectAsStateWithLifecycle()
     var isDropdownShow by remember { mutableStateOf(false) }
+    var isWarning by remember { mutableStateOf(false) }
     var isDialogPopup by remember { mutableStateOf(false) }
     var isEncryptData = remember { mutableStateOf(false) }
     var isPopUpDecrypt = remember { mutableStateOf(false) }
@@ -269,6 +273,45 @@ fun FormPassGroupScreen(
         formPassGroupState.isPassVerify = false
     }
 
+    if(formPassGroupState.listRoleData.isEmpty() && isWarning == true){
+        AlertDialog(
+            onDismissRequest = {
+                isWarning = false
+            },
+            shape = RoundedCornerShape(20.dp),
+            title = {
+                Text(
+                    "Data Role pada Grup Kosong !",
+                    style = MaterialTheme.typography.h6,
+                    color = primaryColor
+                )
+            },
+            text = {
+                Text(
+                    "Silahkan tambahkan data posisi agar data password bisa dikelompokkan ke posisi tertentu ",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = primaryColor
+                )
+            },
+            buttons = {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(end = 24.dp, bottom = 19.dp),
+                    horizontalArrangement = Arrangement.End
+                ){
+                    Text(
+                        "Ok",
+                        modifier = Modifier.clickable { isWarning = false },
+                        style = MaterialTheme.typography.subtitle2,
+                        color = primaryColor
+                    )
+                }
+
+            },
+        )
+    }
+
+    Napier.v("passId = ${formPassGroupState.passDataGroupId}")
+
     ModalBottomSheetLayout(
         modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         sheetState = sheetState,
@@ -297,7 +340,7 @@ fun FormPassGroupScreen(
                         backgroundColor = secondaryColor,
                         title = {
                             Text(
-                                "Buat Data Pass Grup",
+                                if(formPassGroupState.passDataGroupId?.toInt() != -1) "Ubah Data Pass Grup" else "Buat Data Pass Grup",
                                 style = MaterialTheme.typography.h6,
                                 color = fontColor1
                             )
@@ -338,7 +381,11 @@ fun FormPassGroupScreen(
                                         Text(text = "Edit Role Pass Group")
                                     },
                                     onClick = {
-                                        isDialogPopup = true
+                                        if(formPassGroupState.listRoleData.isEmpty()){
+                                            isWarning = true
+                                        } else {
+                                            isDialogPopup = true
+                                        }
                                         isDropdownShow = false
                                     }
                                 )

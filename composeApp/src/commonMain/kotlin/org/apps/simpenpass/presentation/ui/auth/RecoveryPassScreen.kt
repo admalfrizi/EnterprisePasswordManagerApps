@@ -249,6 +249,10 @@ fun DialogForOldPasswordToDecrypt(
 ) {
     var password = remember { mutableStateOf("") }
 
+    if(authState.isError){
+        setToast("Maaf Data Password Lama Salah !")
+    }
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false)

@@ -320,7 +320,9 @@ fun FormScreen(
                             verticalArrangement = Arrangement.Top
                         ) {
                             item {
-                                HeaderContainer()
+                                HeaderContainer(
+                                    passId
+                                )
                                 Spacer(
                                     modifier = Modifier.height(15.dp)
                                 )

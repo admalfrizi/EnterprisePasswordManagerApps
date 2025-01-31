@@ -102,6 +102,7 @@ import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.CamelliaCrypto
+import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.maskStringAfter3Char
 import org.apps.simpenpass.utils.popUpLoading
 import org.apps.simpenpass.utils.profileNameInitials
@@ -273,7 +274,7 @@ fun GroupSettingsScreen(
                 ){
                     if(imagesName != null && imgFile.isEmpty()){
                         AsyncImage(
-                            model = imagesName,
+                            model = Constants.IMAGE_URL + imagesName,
                             modifier = Modifier.size(99.dp).clip(CircleShape),
                             contentDescription = "Profile Picture",
                             contentScale = ContentScale.Crop

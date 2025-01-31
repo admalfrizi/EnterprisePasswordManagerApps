@@ -61,6 +61,7 @@ import org.apps.simpenpass.presentation.components.groupDtlComponents.GroupDtlLo
 import org.apps.simpenpass.presentation.components.groupDtlComponents.OptionAddData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.TopBarDtl
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -177,7 +178,7 @@ fun ContentView(
                     ){
                         if(imagesName != null){
                             AsyncImage(
-                                model = imagesName,
+                                model = Constants.IMAGE_URL + imagesName,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .blur(20.dp),
@@ -204,7 +205,7 @@ fun ContentView(
                             ){
                                 if(imagesName != null){
                                     AsyncImage(
-                                        model = imagesName,
+                                        model = Constants.IMAGE_URL + imagesName,
                                         modifier = Modifier.size(99.dp),
                                         contentDescription = "Profile Picture",
                                         contentScale = ContentScale.Crop

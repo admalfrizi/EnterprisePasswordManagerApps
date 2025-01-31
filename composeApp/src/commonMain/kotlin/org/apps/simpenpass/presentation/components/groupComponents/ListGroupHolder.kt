@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import org.apps.simpenpass.models.pass_data.GrupPassData
 import org.apps.simpenpass.style.secondaryColor
+import org.apps.simpenpass.utils.Constants
 import org.apps.simpenpass.utils.profileNameInitials
 
 @Composable
@@ -50,7 +51,7 @@ fun ListGroupHolder(
                 ){
                     if(item?.img_grup != null){
                         AsyncImage(
-                            model = item.img_grup,
+                            model = Constants.IMAGE_URL + item.img_grup,
                             modifier = Modifier.size(99.dp),
                             contentDescription = "Profile Picture",
                             contentScale = ContentScale.Crop

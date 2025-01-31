@@ -194,6 +194,7 @@ class AuthViewModel(
                         _authState.update {
                             it.copy(
                                 isLoading = false,
+                                isError = true,
                                 message = res.error,
                                 key = ""
                             )
@@ -330,6 +331,7 @@ data class AuthState (
     var isVerify: Boolean = false,
     var isDecrypt: Boolean = false,
     val isResetPass: Boolean = false,
+    val isError: Boolean = false,
     val userData: UserData? = null,
     val otpResponse: SendOtpResponse? = null,
     val userPassData: List<GetPassDataEncrypted>? = emptyList(),
