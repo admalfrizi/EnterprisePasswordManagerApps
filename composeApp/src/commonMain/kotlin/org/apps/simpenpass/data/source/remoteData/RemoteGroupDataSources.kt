@@ -290,7 +290,7 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
         groupId: Int
     ): BaseResponse<List<GetPassDataEncrypted>> {
         try {
-            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getPassDataEncrypted/$groupId"){
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getPassDataGroupEncrypted/$groupId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }

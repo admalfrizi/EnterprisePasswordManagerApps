@@ -96,8 +96,9 @@ import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.profileComponents.SettingsListHolder
-import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSecurityOption
 import org.apps.simpenpass.presentation.ui.add_group_security_option.AddGroupSecurityViewModel
+import org.apps.simpenpass.presentation.ui.add_group_security_option.FormGroupSecurityOption
+import org.apps.simpenpass.presentation.ui.add_group_security_option.decryptPassData
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
@@ -134,6 +135,7 @@ fun GroupSettingsScreen(
     val scope = rememberCoroutineScope()
     var isPopUpToDecrypt = remember { mutableStateOf(false) }
     var listPassDataToDecrypt = remember { mutableListOf<UpdatePassDataGroupToDecrypt>() }
+    var listPassDataToEncrypt = remember { mutableListOf<UpdatePassDataGroupToDecrypt>() }
     var securityDataId = remember { mutableStateOf(0) }
 
     if(groupState.groupData != null){
@@ -184,8 +186,16 @@ fun GroupSettingsScreen(
     if(groupState.isPassVerify){
         when(toUpdate.value){
             true -> {
-                isPopUp.value = true
                 isPopUpToDecrypt.value = false
+                if(groupState.passDataGroup.isNotEmpty()){
+                    val listDecData = decryptPassData(
+                        groupState.passDataGroup,
+                        listPassDataToDecrypt,
+                        groupState.key
+                    )
+
+                    groupSettingsViewModel.sendDataPassToDecrypt(groupState.groupId!!, SendDataPassToDecrypt(listDecData))
+                }
             }
             false -> {
                 proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataToDecrypt,groupSettingsViewModel,securityDataId.value)
@@ -512,7 +522,7 @@ fun ListSecurityData(
 
     securityDataId.value = securityData?.id ?: 0
 
-    if(groupState.isDecrypted){
+    if(groupState.isDecrypted && !toUpdate.value){
         groupDataSecurityViewModel.deleteSecurityDataForGroup(
             groupId,
             securityDataId.value
@@ -521,9 +531,12 @@ fun ListSecurityData(
     }
 
     if(isPopUp.value){
-        AddGroupSecurityOption(
+        FormGroupSecurityOption(
             groupId,
             groupState.key,
+            groupState,
+            isPopUpToDecrypt,
+            toUpdate,
             securityData = securityData,
             onDismissRequest = {
                 isPopUp.value = false
@@ -653,10 +666,9 @@ fun ListSecurityData(
             onClick = {
                 if(securityData != null){
                     toUpdate.value = true
-                    isPopUpToDecrypt.value = true
-                } else {
-                    isPopUp.value = true
                 }
+
+                isPopUp.value = true
             },
             shape = RoundedCornerShape(20.dp),
             elevation = ButtonDefaults.elevation(0.dp),
@@ -717,7 +729,7 @@ fun DecryptToChangeSecurityData(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        "Silahkan Masukan Kunci Sebelumnya",
+                        if(isDeleteMode.value == false) "Masukan Data Keamanan Sebelumnya" else "Konfirmasi Data Keamanan Sebelumnya",
                         style = MaterialTheme.typography.h6.copy(color = secondaryColor),
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start

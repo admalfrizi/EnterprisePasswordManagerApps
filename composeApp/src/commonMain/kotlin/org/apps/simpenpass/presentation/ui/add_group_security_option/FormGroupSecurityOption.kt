@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,13 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
-import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdatePassDataGroupToDecrypt
 import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
+import org.apps.simpenpass.presentation.ui.group_pass.settings_group.GroupSettingsState
 import org.apps.simpenpass.style.btnColor
 import org.apps.simpenpass.style.fontColor1
 import org.apps.simpenpass.style.secondaryColor
@@ -60,16 +61,18 @@ import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AddGroupSecurityOption(
+fun FormGroupSecurityOption(
     groupId: Int,
     key: String? = null,
+    groupState: GroupSettingsState,
+    isPopupToDecrypt: MutableState<Boolean>,
+    toUpdate: MutableState<Boolean>,
     addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
     securityData: GroupSecurityData? = null,
     onDismissRequest: () -> Unit
 ) {
     var addGroupSecurityState = addGroupSecurityViewModel.groupSecurityDataState.collectAsState()
     var expanded = remember { mutableStateOf(false) }
-    var toUpdate = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     var type = remember { mutableStateOf("") }
     var typeId = remember { mutableStateOf(0) }
@@ -86,8 +89,6 @@ fun AddGroupSecurityOption(
         }
     }
 
-    Napier.v("passDataGroup : ${addGroupSecurityState.value.passDataGroup}")
-    Napier.v("key : $key")
 
     if(typeId.value == 1){
         data.value = ""
@@ -96,7 +97,6 @@ fun AddGroupSecurityOption(
     if(securityData != null){
         val findTypeData = addGroupSecurityState.value.listTypeSecurityData.find { it.id == securityData.typeId }
 
-        toUpdate.value = true
         value.value = securityData.securityValue!!
         typeId.value = securityData.typeId!!
         type.value = findTypeData?.nmOption ?: ""
@@ -105,6 +105,7 @@ fun AddGroupSecurityOption(
             data.value = securityData.securityData
         }
     }
+
     if(addGroupSecurityState.value.isDeleted){
         onDismissRequest()
         setToast("Data Keamanan Telah Dihapus !")
@@ -112,8 +113,16 @@ fun AddGroupSecurityOption(
     }
 
     if(addGroupSecurityState.value.isUpdated){
-        onDismissRequest()
-        setToast("Data Keamanan Telah Diubah !")
+        DialogWarning(
+            dialogText = "Apakah anda ingin mengunci kembali data pass yang sudah dibuka ?",
+            dialogTitle = "Data keamanan grup ini sukses diubah !",
+            onDismissRequest = {
+                onDismissRequest()
+            },
+            onClick = {
+
+            }
+        )
         addGroupSecurityState.value.isUpdated = false
     }
 
@@ -123,7 +132,7 @@ fun AddGroupSecurityOption(
         addGroupSecurityState.value.isAdded = false
     }
 
-    if(addGroupSecurityState.value.isSent){
+    if(groupState.isDecrypted){
         val formData = AddGroupSecurityDataRequest(
             typeId = typeId.value,
             securityData = data.value,
@@ -131,8 +140,9 @@ fun AddGroupSecurityOption(
         )
 
         addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,securityData?.id!!)
-        addGroupSecurityState.value.isSent = false
+        groupState.isDecrypted = false
     }
+
 
     Dialog(
         onDismissRequest = {
@@ -294,9 +304,9 @@ fun AddGroupSecurityOption(
                     onClick = {
                         validateInsertData(
                             toUpdate.value,
+                            isPopupToDecrypt,
                             addGroupSecurityViewModel,
                             addGroupSecurityState.value,
-                            key,
                             typeId.value,
                             data.value,
                             value.value,
@@ -333,9 +343,9 @@ fun AddGroupSecurityOption(
 
 fun validateInsertData(
     toUpdate : Boolean,
+    isPopupToDecrypt: MutableState<Boolean>,
     addGroupSecurityViewModel: AddGroupSecurityViewModel,
     addGroupSecurityDataState: GroupSecurityDataState,
-    key: String? = null,
     typeId: Int,
     data: String,
     value: String,
@@ -347,7 +357,6 @@ fun validateInsertData(
         securityData = data,
         securityValue = value
     )
-    val listItemPassDataGroup = mutableListOf<UpdatePassDataGroupToDecrypt>()
 
     when(typeId){
         1 -> {
@@ -356,17 +365,7 @@ fun validateInsertData(
             } else {
                 when(toUpdate){
                     true -> {
-                        if(addGroupSecurityDataState.passDataGroup.isEmpty()){
-                            addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
-                        } else {
-                            decryptPassData(
-                                addGroupSecurityDataState.passDataGroup,
-                                listItemPassDataGroup,
-                                addGroupSecurityViewModel,
-                                key,
-                                groupId,
-                            )
-                        }
+                        isPopupToDecrypt.value = true
                     }
                     false -> {
                         addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
@@ -386,7 +385,8 @@ fun validateInsertData(
             } else {
                 when(toUpdate){
                     true -> {
-                        addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
+                        isPopupToDecrypt.value = true
+//                        addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
                     }
                     false -> {
                         addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
@@ -402,11 +402,8 @@ fun validateInsertData(
 fun decryptPassData(
     passDataEnc: List<GetPassDataEncrypted>,
     listPassData: MutableList<UpdatePassDataGroupToDecrypt>,
-    addGroupSecurityViewModel: AddGroupSecurityViewModel,
     key: String? = null,
-    groupId: Int,
-) {
-//    val listDataEnc = mutableListOf<UpdateUserPassDataToDecrypt>()
+) : MutableList<UpdatePassDataGroupToDecrypt>{
     val crypto = CamelliaCrypto()
 
     if(key != null){
@@ -414,11 +411,25 @@ fun decryptPassData(
             val dec = crypto.decrypt(it.password,key)
             listPassData.add(UpdatePassDataGroupToDecrypt(it.id,dec,false))
         }
-        addGroupSecurityViewModel.sendGroupDataPassToDecrypt(SendDataPassToDecrypt(listPassData),groupId)
     }
 
-//    listPassData.forEach {
-//        val enc = crypto.encrypt(it.password,key)
-//        listDataEnc.add(UpdateUserPassDataToDecrypt(it.passId,it.password,true))
-//    }
+    return listPassData
 }
+
+fun encryptPassData(
+    passDataEnc: MutableList<UpdatePassDataGroupToDecrypt>,
+    listPassData: MutableList<UpdatePassDataGroupToDecrypt>,
+    key: String? = null,
+) : MutableList<UpdatePassDataGroupToDecrypt>{
+    val crypto = CamelliaCrypto()
+
+    if(key != null){
+        listPassData.forEach {
+            val enc = crypto.encrypt(it.password,key)
+            passDataEnc.add(UpdatePassDataGroupToDecrypt(it.passGroupId,enc,false))
+        }
+    }
+
+    return passDataEnc
+}
+
