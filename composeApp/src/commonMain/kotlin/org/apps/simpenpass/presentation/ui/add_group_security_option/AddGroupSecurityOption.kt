@@ -134,6 +134,8 @@ fun AddGroupSecurityOption(
         addGroupSecurityState.value.isSent = false
     }
 
+    Napier.v("securityData = ${securityData?.securityData}")
+
     Dialog(
         onDismissRequest = {
             onDismissRequest()
@@ -156,7 +158,7 @@ fun AddGroupSecurityOption(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        "Masukan Data Keamanan untuk Grup Ini !",
+                        if(securityData != null) "Ubah Data Keamanan Grup Ini !" else "Masukan Data Keamanan untuk Grup Ini !",
                         style = MaterialTheme.typography.h6.copy(color = secondaryColor),
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start

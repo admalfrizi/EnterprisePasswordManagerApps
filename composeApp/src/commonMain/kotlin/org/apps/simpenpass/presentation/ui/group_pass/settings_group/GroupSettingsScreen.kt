@@ -291,7 +291,7 @@ fun GroupSettingsScreen(
                             }
                             false -> {
                                 Text(
-                                    profileNameInitials(groupState.groupData?.groupDtl?.nm_grup ?: "JUD"),
+                                    if(groupState.groupData?.groupDtl?.nm_grup != null)profileNameInitials(groupState.groupData?.groupDtl?.nm_grup!!) else "",
                                     style = MaterialTheme.typography.body1,
                                     fontSize = 36.sp,
                                     color = Color.White,
