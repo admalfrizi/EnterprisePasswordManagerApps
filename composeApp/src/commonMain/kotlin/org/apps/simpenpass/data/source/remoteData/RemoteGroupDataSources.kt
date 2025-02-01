@@ -303,6 +303,24 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
         }
     }
 
+    override suspend fun getPassDataDecrypted(
+        token: String,
+        groupId: Int
+    ): BaseResponse<List<GetPassDataGroup>> {
+        try {
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getPassDataGroupDecrypted/$groupId"){
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return response.body<BaseResponse<List<GetPassDataGroup>>>()
+        } catch (e: Exception){
+            throw Exception(e.message)
+        } catch (e: UnresolvedAddressException){
+            throw Exception(e.message)
+        }
+    }
+
     override suspend fun updateDataPassToDecrypt(
         token: String,
         groupId: Int,

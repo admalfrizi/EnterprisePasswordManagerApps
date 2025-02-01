@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import io.github.aakira.napier.Napier
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.UpdatePassDataGroupToDecrypt
@@ -72,6 +73,7 @@ fun FormGroupSecurityOption(
 ) {
     var addGroupSecurityState = addGroupSecurityViewModel.groupSecurityDataState.collectAsState()
     var expanded = remember { mutableStateOf(false) }
+    var toEncrypted = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     var type = remember { mutableStateOf("") }
     var typeId = remember { mutableStateOf(0) }
@@ -112,9 +114,15 @@ fun FormGroupSecurityOption(
                 onDismissRequest()
             },
             onClick = {
-
+//                 encryptPassData(
+//                    groupId,
+//                    addGroupSecurityState.value,
+//                    addGroupSecurityViewModel,
+//                    value.value
+//                )
             }
         )
+        Napier.v("data value : ${value.value}")
         addGroupSecurityState.value.isUpdated = false
     }
 
@@ -414,19 +422,24 @@ fun decryptPassData(
 }
 
 fun encryptPassData(
+    groupId: Int,
+    addGroupSecurityDataState: GroupSecurityDataState,
+    addGroupSecurityViewModel: AddGroupSecurityViewModel,
     passDataEnc: MutableList<UpdatePassDataGroupToDecrypt>,
-    listPassData: MutableList<UpdatePassDataGroupToDecrypt>,
     key: String? = null,
-) : MutableList<UpdatePassDataGroupToDecrypt>{
+) {
     val crypto = CamelliaCrypto()
 
+    addGroupSecurityViewModel.getPassDataGroupDecrypted(groupId.toString())
+
+    Napier.v("list dec data : ${addGroupSecurityDataState.passDataGroupDec}")
+
     if(key != null){
-        listPassData.forEach {
+        addGroupSecurityDataState.passDataGroupDec.forEach {
             val enc = crypto.encrypt(it.password,key)
-            passDataEnc.add(UpdatePassDataGroupToDecrypt(it.passGroupId,enc,false))
+            passDataEnc.add(UpdatePassDataGroupToDecrypt(it.id,enc,true))
         }
     }
 
-    return passDataEnc
 }
 

@@ -135,7 +135,7 @@ fun GroupSettingsScreen(
     val scope = rememberCoroutineScope()
     var isPopUpToDecrypt = remember { mutableStateOf(false) }
     var listPassDataToDecrypt = remember { mutableListOf<UpdatePassDataGroupToDecrypt>() }
-    var listPassDataEncrypted = remember { mutableListOf<GetPassDataGroup>() }
+    var listPassDataEncrypted = remember { mutableListOf<UpdatePassDataGroupToDecrypt>() }
     var securityDataId = remember { mutableStateOf(0) }
 
     if(groupState.groupData != null){
@@ -480,7 +480,7 @@ fun GroupSettingsScreen(
 @Composable
 fun ListSecurityData(
     groupState: GroupSettingsState,
-    listPassDataEncrypted: MutableList<UpdatePassDataGroupToDecrypt>,
+    listPassDataDec: MutableList<UpdatePassDataGroupToDecrypt>,
     securityDataId: MutableState<Int>,
     scope: CoroutineScope,
     isPopUp: MutableState<Boolean>,
@@ -539,7 +539,7 @@ fun ListSecurityData(
                 if(addGroupSecurityDataState.value.passDataGroup.isNotEmpty()){
                     val listDecData = decryptPassData(
                         addGroupSecurityDataState.value.passDataGroup,
-                        listPassDataEncrypted,
+                        listPassDataDec,
                         groupState.key
                     )
 
@@ -547,7 +547,7 @@ fun ListSecurityData(
                 }
             }
             false -> {
-                proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataEncrypted,groupSettingsViewModel,securityDataId.value)
+                proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataDec,groupSettingsViewModel,securityDataId.value)
             }
             else -> {}
         }
