@@ -36,7 +36,7 @@ import org.apps.simpenpass.models.response.DataPassWithAddContent
 import org.apps.simpenpass.models.response.DeleteMemberDataResponse
 import org.apps.simpenpass.models.response.DetailRoleGroupResponse
 import org.apps.simpenpass.models.response.GetDataPassUserEncrypted
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.models.response.LatestPassDataResponse
 import org.apps.simpenpass.models.response.PassDataGroupByIdResponse
@@ -152,7 +152,7 @@ interface GroupPassDataFunc {
     suspend fun getPassDataEncrypted(
         token: String,
         groupId: Int
-    ) : BaseResponse<List<GetPassDataEncrypted>>
+    ) : BaseResponse<List<GetPassDataGroup>>
 
     suspend fun updateDataPassToDecrypt(
         token: String,

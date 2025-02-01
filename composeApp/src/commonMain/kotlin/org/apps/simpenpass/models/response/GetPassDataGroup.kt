@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GetPassDataEncrypted(
+data class GetPassDataGroup(
     @SerialName("id")
     val id: Int,
     @SerialName("account_name")

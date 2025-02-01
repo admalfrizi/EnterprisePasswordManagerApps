@@ -29,7 +29,6 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +47,7 @@ import androidx.compose.ui.window.DialogProperties
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.UpdatePassDataGroupToDecrypt
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.ui.group_pass.settings_group.GroupSettingsState
@@ -63,8 +62,8 @@ import org.koin.compose.koinInject
 @Composable
 fun FormGroupSecurityOption(
     groupId: Int,
-    key: String? = null,
     groupState: GroupSettingsState,
+    listPassData: List<GetPassDataGroup>,
     isPopupToDecrypt: MutableState<Boolean>,
     toUpdate: MutableState<Boolean>,
     addGroupSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
@@ -82,13 +81,6 @@ fun FormGroupSecurityOption(
     if(addGroupSecurityState.value.listTypeSecurityData.isEmpty()){
         addGroupSecurityViewModel.getTypeSecurityForGroup()
     }
-
-    LaunchedEffect(addGroupSecurityState.value.passDataGroup.isEmpty()){
-        if(addGroupSecurityState.value.passDataGroup.isEmpty()){
-            addGroupSecurityViewModel.getPassDataGroupEncrypted(groupId.toString())
-        }
-    }
-
 
     if(typeId.value == 1){
         data.value = ""
@@ -142,7 +134,6 @@ fun FormGroupSecurityOption(
         addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,securityData?.id!!)
         groupState.isDecrypted = false
     }
-
 
     Dialog(
         onDismissRequest = {
@@ -307,6 +298,7 @@ fun FormGroupSecurityOption(
                             isPopupToDecrypt,
                             addGroupSecurityViewModel,
                             addGroupSecurityState.value,
+                            listPassData,
                             typeId.value,
                             data.value,
                             value.value,
@@ -346,6 +338,7 @@ fun validateInsertData(
     isPopupToDecrypt: MutableState<Boolean>,
     addGroupSecurityViewModel: AddGroupSecurityViewModel,
     addGroupSecurityDataState: GroupSecurityDataState,
+    listPassData: List<GetPassDataGroup>,
     typeId: Int,
     data: String,
     value: String,
@@ -365,7 +358,11 @@ fun validateInsertData(
             } else {
                 when(toUpdate){
                     true -> {
-                        isPopupToDecrypt.value = true
+                        if(listPassData.isEmpty()){
+                            addGroupSecurityViewModel.updateSecurityDataForGroup(formData,groupId,id!!)
+                        } else {
+                            isPopupToDecrypt.value = true
+                        }
                     }
                     false -> {
                         addGroupSecurityViewModel.addSecurityDataForGroup(formData,groupId)
@@ -400,7 +397,7 @@ fun validateInsertData(
 }
 
 fun decryptPassData(
-    passDataEnc: List<GetPassDataEncrypted>,
+    passDataEnc: List<GetPassDataGroup>,
     listPassData: MutableList<UpdatePassDataGroupToDecrypt>,
     key: String? = null,
 ) : MutableList<UpdatePassDataGroupToDecrypt>{

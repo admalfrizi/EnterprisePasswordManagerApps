@@ -91,7 +91,7 @@ import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdatePassDataGroupToDecrypt
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
@@ -135,7 +135,7 @@ fun GroupSettingsScreen(
     val scope = rememberCoroutineScope()
     var isPopUpToDecrypt = remember { mutableStateOf(false) }
     var listPassDataToDecrypt = remember { mutableListOf<UpdatePassDataGroupToDecrypt>() }
-    var listPassDataToEncrypt = remember { mutableListOf<UpdatePassDataGroupToDecrypt>() }
+    var listPassDataEncrypted = remember { mutableListOf<GetPassDataGroup>() }
     var securityDataId = remember { mutableStateOf(0) }
 
     if(groupState.groupData != null){
@@ -183,28 +183,6 @@ fun GroupSettingsScreen(
         )
     }
 
-    if(groupState.isPassVerify){
-        when(toUpdate.value){
-            true -> {
-                isPopUpToDecrypt.value = false
-                if(groupState.passDataGroup.isNotEmpty()){
-                    val listDecData = decryptPassData(
-                        groupState.passDataGroup,
-                        listPassDataToDecrypt,
-                        groupState.key
-                    )
-
-                    groupSettingsViewModel.sendDataPassToDecrypt(groupState.groupId!!, SendDataPassToDecrypt(listDecData))
-                }
-            }
-            false -> {
-                proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataToDecrypt,groupSettingsViewModel,securityDataId.value)
-            }
-            else -> {}
-        }
-        groupState.isPassVerify = false
-    }
-
     if(groupState.isDeleted){
         setToast("Data Keamanan Telah Dihapus")
         isDeleted.value = true
@@ -229,6 +207,7 @@ fun GroupSettingsScreen(
         sheetContent = {
             ListSecurityData(
                 groupState,
+                listPassDataToDecrypt,
                 securityDataId,
                 scope,
                 isPopUp,
@@ -237,7 +216,8 @@ fun GroupSettingsScreen(
                 isDeleted,
                 isDeleteMode,
                 sheetState,
-                groupState.groupId?.toInt()!!
+                groupState.groupId?.toInt()!!,
+                groupSettingsViewModel = groupSettingsViewModel
             )
         }
     ){
@@ -500,6 +480,7 @@ fun GroupSettingsScreen(
 @Composable
 fun ListSecurityData(
     groupState: GroupSettingsState,
+    listPassDataEncrypted: MutableList<UpdatePassDataGroupToDecrypt>,
     securityDataId: MutableState<Int>,
     scope: CoroutineScope,
     isPopUp: MutableState<Boolean>,
@@ -510,6 +491,7 @@ fun ListSecurityData(
     sheetState: ModalBottomSheetState,
     groupId: Int,
     groupDataSecurityViewModel: AddGroupSecurityViewModel = koinInject(),
+    groupSettingsViewModel: GroupSettingsViewModel
 ) {
     val addGroupSecurityDataState = groupDataSecurityViewModel.groupSecurityDataState.collectAsState()
     val securityData = addGroupSecurityDataState.value.securityData
@@ -517,6 +499,12 @@ fun ListSecurityData(
     LaunchedEffect(sheetState.isVisible && !isPopUp.value){
         if(!isPopUp.value && !addGroupSecurityDataState.value.isUpdated && !addGroupSecurityDataState.value.isDeleted){
             groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
+        }
+    }
+
+    LaunchedEffect(addGroupSecurityDataState.value.passDataGroup.isEmpty()){
+        if(addGroupSecurityDataState.value.passDataGroup.isEmpty()){
+            groupDataSecurityViewModel.getPassDataGroupEncrypted(groupState.groupId)
         }
     }
 
@@ -533,8 +521,8 @@ fun ListSecurityData(
     if(isPopUp.value){
         FormGroupSecurityOption(
             groupId,
-            groupState.key,
             groupState,
+            addGroupSecurityDataState.value.passDataGroup,
             isPopUpToDecrypt,
             toUpdate,
             securityData = securityData,
@@ -542,6 +530,28 @@ fun ListSecurityData(
                 isPopUp.value = false
             },
         )
+    }
+
+    if(groupState.isPassVerify){
+        when(toUpdate.value){
+            true -> {
+                isPopUpToDecrypt.value = false
+                if(addGroupSecurityDataState.value.passDataGroup.isNotEmpty()){
+                    val listDecData = decryptPassData(
+                        addGroupSecurityDataState.value.passDataGroup,
+                        listPassDataEncrypted,
+                        groupState.key
+                    )
+
+                    groupSettingsViewModel.sendDataPassToDecrypt(groupState.groupId!!, SendDataPassToDecrypt(listDecData))
+                }
+            }
+            false -> {
+                proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataEncrypted,groupSettingsViewModel,securityDataId.value)
+            }
+            else -> {}
+        }
+        groupState.isPassVerify = false
     }
 
     if(isDeleted.value){
@@ -705,12 +715,6 @@ fun DecryptToChangeSecurityData(
         securityData.value = passDataDetailsState.value.dataSecurity?.securityData!!
     }
 
-    LaunchedEffect(passDataDetailsState.value.passDataGroup.isEmpty()){
-        if(passDataDetailsState.value.passDataGroup.isEmpty()){
-            groupDetailsViewModel.getPassDataGroupEncrypted(passDataDetailsState.value.groupId)
-        }
-    }
-
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -818,7 +822,7 @@ fun DecryptToChangeSecurityData(
 fun proceedDeleteSecurityData(
     groupId: String,
     key : String,
-    listPassDataEncrypted: List<GetPassDataEncrypted>,
+    listPassDataEncrypted: List<GetPassDataGroup>,
     listUpdatePassDataToDecrypt: MutableList<UpdatePassDataGroupToDecrypt>,
     groupSettingsViewModel: GroupSettingsViewModel,
     securityDataId: Int

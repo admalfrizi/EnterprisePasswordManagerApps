@@ -14,7 +14,7 @@ import org.apps.simpenpass.data.repository.PassRepository
 import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdateUserDataRequest
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.user_data.LocalUserStore
 import org.apps.simpenpass.models.user_data.UserData
@@ -285,7 +285,7 @@ data class ChangeDataState(
     val otpResponse: SendOtpResponse? = null,
     val updateData: LocalUserStore? = null,
     val userData: UserData? = null,
-    val userPassData: List<GetPassDataEncrypted>? = emptyList(),
+    val userPassData: List<GetPassDataGroup>? = emptyList(),
     val resetPassTokens: String? = null,
     val msg: String? = null
 )

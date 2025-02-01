@@ -52,7 +52,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdateUserPassDataToDecrypt
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.presentation.components.CustomTextField
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.style.btnColor
@@ -265,7 +265,7 @@ fun ChangePassScreen(
 
 fun proceedUpdateDataPass(
     validateData: () -> Unit,
-    passDataList: List<GetPassDataEncrypted>,
+    passDataList: List<GetPassDataGroup>,
     listPassData: MutableList<UpdateUserPassDataToDecrypt>,
     changeDataViewModel: ChangeDataViewModel,
     key: String

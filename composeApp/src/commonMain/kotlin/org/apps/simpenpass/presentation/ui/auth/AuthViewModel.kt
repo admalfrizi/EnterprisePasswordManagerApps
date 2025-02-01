@@ -15,7 +15,7 @@ import org.apps.simpenpass.data.repository.UserRepository
 import org.apps.simpenpass.models.request.LoginRequest
 import org.apps.simpenpass.models.request.RegisterRequest
 import org.apps.simpenpass.models.request.SendUserDataPassToDecrypt
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.models.response.SendOtpResponse
 import org.apps.simpenpass.models.user_data.UserData
 import org.apps.simpenpass.utils.NetworkResult
@@ -334,7 +334,7 @@ data class AuthState (
     val isError: Boolean = false,
     val userData: UserData? = null,
     val otpResponse: SendOtpResponse? = null,
-    val userPassData: List<GetPassDataEncrypted>? = emptyList(),
+    val userPassData: List<GetPassDataGroup>? = emptyList(),
     val token: String? = null,
     val resetPassTokens: String? = null,
     var error: String? = null,

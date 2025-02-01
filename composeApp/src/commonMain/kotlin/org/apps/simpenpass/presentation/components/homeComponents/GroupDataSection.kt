@@ -78,7 +78,7 @@ fun GroupDataSection(
                                 modifier = Modifier.height(4.dp)
                             )
                             Text(
-                                emailMask(item.email),
+                                "",
                                 style = MaterialTheme.typography.subtitle1,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,

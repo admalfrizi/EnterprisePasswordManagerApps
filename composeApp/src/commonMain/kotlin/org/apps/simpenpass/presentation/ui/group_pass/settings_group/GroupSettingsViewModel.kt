@@ -17,7 +17,7 @@ import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupRequest
 import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.utils.NetworkResult
 
 class GroupSettingsViewModel(
@@ -301,7 +301,7 @@ data class GroupSettingsState(
     var isDeleted: Boolean = false,
     val groupData: DtlGrupPass? = null,
     var isPassVerify : Boolean = false,
-    var passDataGroup: List<GetPassDataEncrypted> = emptyList(),
+    var passDataGroup: List<GetPassDataGroup> = emptyList(),
     val dataSecurity : GroupSecurityData? = null,
     val listSecurityData: List<GroupSecurityData> = emptyList()
 )

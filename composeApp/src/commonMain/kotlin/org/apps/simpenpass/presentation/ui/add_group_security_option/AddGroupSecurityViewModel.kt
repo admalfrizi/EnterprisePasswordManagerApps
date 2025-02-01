@@ -13,7 +13,7 @@ import org.apps.simpenpass.data.repository.GroupRepository
 import org.apps.simpenpass.models.pass_data.GroupSecurityData
 import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.SendDataPassToDecrypt
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.utils.NetworkResult
 
@@ -279,7 +279,7 @@ data class GroupSecurityDataState(
     var isAdded: Boolean = false,
     var isUpdated: Boolean = false,
     var isSent: Boolean = false,
-    var passDataGroup: List<GetPassDataEncrypted> = emptyList(),
+    var passDataGroup: List<GetPassDataGroup> = emptyList(),
     var securityData: GroupSecurityData? = null,
     val listTypeSecurityData: List<GroupSecurityTypeResponse> = emptyList()
 )

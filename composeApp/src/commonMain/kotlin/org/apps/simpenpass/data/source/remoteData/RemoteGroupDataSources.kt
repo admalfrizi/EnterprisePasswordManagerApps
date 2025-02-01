@@ -25,7 +25,7 @@ import org.apps.simpenpass.models.request.AddGroupSecurityDataRequest
 import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.BaseResponse
-import org.apps.simpenpass.models.response.GetPassDataEncrypted
+import org.apps.simpenpass.models.response.GetPassDataGroup
 import org.apps.simpenpass.models.response.GroupSecurityTypeResponse
 import org.apps.simpenpass.utils.Constants
 
@@ -288,14 +288,14 @@ class RemoteGroupDataSources(private val httpClient: HttpClient) : GroupPassData
     override suspend fun getPassDataEncrypted(
         token: String,
         groupId: Int
-    ): BaseResponse<List<GetPassDataEncrypted>> {
+    ): BaseResponse<List<GetPassDataGroup>> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getPassDataGroupEncrypted/$groupId"){
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
             }
 
-            return response.body<BaseResponse<List<GetPassDataEncrypted>>>()
+            return response.body<BaseResponse<List<GetPassDataGroup>>>()
         } catch (e: Exception){
             throw Exception(e.message)
         } catch (e: UnresolvedAddressException){
