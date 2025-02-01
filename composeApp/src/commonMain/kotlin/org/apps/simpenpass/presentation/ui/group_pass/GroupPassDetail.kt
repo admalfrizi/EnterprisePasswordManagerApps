@@ -153,7 +153,7 @@ fun ContentView(
         }
     }
 
-    if(groupState.dtlGroupData != null){
+    if(groupState.dtlGroupData != null) {
         isUserAdmin = groupState.dtlGroupData.isUserAdmin
     }
 

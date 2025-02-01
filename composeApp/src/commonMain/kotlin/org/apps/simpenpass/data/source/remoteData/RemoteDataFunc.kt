@@ -154,10 +154,10 @@ interface GroupPassDataFunc {
         groupId: Int
     ) : BaseResponse<List<GetPassDataGroup>>
 
-    suspend fun getPassDataDecrypted(
-        token: String,
-        groupId: Int
-    ) : BaseResponse<List<GetPassDataGroup>>
+//    suspend fun getPassDataDecrypted(
+//        token: String,
+//        groupId: Int
+//    ) : BaseResponse<List<GetPassDataGroup>>
 
     suspend fun updateDataPassToDecrypt(
         token: String,

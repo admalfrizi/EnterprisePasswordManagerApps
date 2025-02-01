@@ -73,7 +73,6 @@ fun FormGroupSecurityOption(
 ) {
     var addGroupSecurityState = addGroupSecurityViewModel.groupSecurityDataState.collectAsState()
     var expanded = remember { mutableStateOf(false) }
-    var toEncrypted = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     var type = remember { mutableStateOf("") }
     var typeId = remember { mutableStateOf(0) }
@@ -108,18 +107,14 @@ fun FormGroupSecurityOption(
 
     if(addGroupSecurityState.value.isUpdated){
         DialogWarning(
-            dialogText = "Apakah anda ingin mengunci kembali data pass yang sudah dibuka ?",
-            dialogTitle = "Data keamanan grup ini sukses diubah !",
+            dialogText = "Data keamanan grup telah diperbarui, sehingga seluruh data akun digrup telah dibuka. Anda diwajibkan untuk mengamankan kembali data tersebut.",
+            dialogTitle = "Data keamanan grup berhasil diubah !",
             onDismissRequest = {
                 onDismissRequest()
             },
+            isCancelBtn = false,
             onClick = {
-//                 encryptPassData(
-//                    groupId,
-//                    addGroupSecurityState.value,
-//                    addGroupSecurityViewModel,
-//                    value.value
-//                )
+                onDismissRequest()
             }
         )
         Napier.v("data value : ${value.value}")
@@ -305,7 +300,6 @@ fun FormGroupSecurityOption(
                             toUpdate.value,
                             isPopupToDecrypt,
                             addGroupSecurityViewModel,
-                            addGroupSecurityState.value,
                             listPassData,
                             typeId.value,
                             data.value,
@@ -345,7 +339,6 @@ fun validateInsertData(
     toUpdate : Boolean,
     isPopupToDecrypt: MutableState<Boolean>,
     addGroupSecurityViewModel: AddGroupSecurityViewModel,
-    addGroupSecurityDataState: GroupSecurityDataState,
     listPassData: List<GetPassDataGroup>,
     typeId: Int,
     data: String,
@@ -409,8 +402,8 @@ fun decryptPassData(
     listPassData: MutableList<UpdatePassDataGroupToDecrypt>,
     key: String? = null,
 ) : MutableList<UpdatePassDataGroupToDecrypt>{
-    val crypto = CamelliaCrypto()
 
+    val crypto = CamelliaCrypto()
     if(key != null){
         passDataEnc.forEach {
             val dec = crypto.decrypt(it.password,key)
@@ -419,27 +412,5 @@ fun decryptPassData(
     }
 
     return listPassData
-}
-
-fun encryptPassData(
-    groupId: Int,
-    addGroupSecurityDataState: GroupSecurityDataState,
-    addGroupSecurityViewModel: AddGroupSecurityViewModel,
-    passDataEnc: MutableList<UpdatePassDataGroupToDecrypt>,
-    key: String? = null,
-) {
-    val crypto = CamelliaCrypto()
-
-    addGroupSecurityViewModel.getPassDataGroupDecrypted(groupId.toString())
-
-    Napier.v("list dec data : ${addGroupSecurityDataState.passDataGroupDec}")
-
-    if(key != null){
-        addGroupSecurityDataState.passDataGroupDec.forEach {
-            val enc = crypto.encrypt(it.password,key)
-            passDataEnc.add(UpdatePassDataGroupToDecrypt(it.id,enc,true))
-        }
-    }
-
 }
 

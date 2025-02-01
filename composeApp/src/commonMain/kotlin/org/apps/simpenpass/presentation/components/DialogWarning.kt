@@ -9,11 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +22,7 @@ fun DialogWarning(
     dialogText: String,
     dialogTitle : String,
     onDismissRequest: () -> Unit,
+    isCancelBtn: Boolean = true,
     onClick: () -> Unit
 ) {
     AlertDialog(
@@ -48,15 +46,17 @@ fun DialogWarning(
                 modifier = Modifier.fillMaxWidth().padding(end = 24.dp, bottom = 19.dp),
                 horizontalArrangement = Arrangement.End
             ){
-                Text(
-                    "Tidak",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = Color(0xFFAF1E20),
-                    modifier = Modifier.clickable { onDismissRequest() },
-                )
-                Spacer(
-                    modifier = Modifier.width(21.dp)
-                )
+                if(isCancelBtn){
+                    Text(
+                        "Tidak",
+                        style = MaterialTheme.typography.subtitle2,
+                        color = Color(0xFFAF1E20),
+                        modifier = Modifier.clickable { onDismissRequest() },
+                    )
+                    Spacer(
+                        modifier = Modifier.width(21.dp)
+                    )
+                }
                 Text(
                     "Ya",
                     modifier = Modifier.clickable { onClick() },

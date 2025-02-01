@@ -49,6 +49,8 @@ class GroupRepository(
                     false -> {
                         emit(NetworkResult.Error(result.message))
                     }
+
+                    else -> {}
                 }
             }
         }catch (e: UnresolvedAddressException){
@@ -169,6 +171,8 @@ class GroupRepository(
                     false -> {
                         emit(NetworkResult.Error(result.message))
                     }
+
+                    else -> {}
                 }
             }
         } catch (e: UnresolvedAddressException){
@@ -310,6 +314,8 @@ class GroupRepository(
                     false -> {
                         emit(NetworkResult.Error(result.message))
                     }
+
+                    else -> {}
                 }
             }
         } catch (e: UnresolvedAddressException){
@@ -337,6 +343,8 @@ class GroupRepository(
                     false -> {
                         emit(NetworkResult.Error(result.message))
                     }
+
+                    else -> {}
                 }
             }
         } catch (e: UnresolvedAddressException){
@@ -456,32 +464,32 @@ class GroupRepository(
         emit(NetworkResult.Error(it.message ?: "Unknown Error"))
     }
 
-    fun getPassDataDecrypted(
-        groupId: Int
-    ) = flow {
-        try {
-            localData.getToken.collect { token ->
-                val result = remoteGroupSources.getPassDataDecrypted(token,groupId)
-
-                when(result.success) {
-                    true -> {
-                        emit(NetworkResult.Success(result))
-                    }
-                    false -> {
-                        emit(NetworkResult.Error(result.message))
-                    }
-
-                    else -> {}
-                }
-            }
-        } catch (e: UnresolvedAddressException){
-            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
-        }
-    }.onStart {
-        emit(NetworkResult.Loading())
-    }.catch {
-        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
-    }
+//    fun getPassDataDecrypted(
+//        groupId: Int
+//    ) = flow {
+//        try {
+//            localData.getToken.collect { token ->
+//                val result = remoteGroupSources.getPassDataDecrypted(token,groupId)
+//
+//                when(result.success) {
+//                    true -> {
+//                        emit(NetworkResult.Success(result))
+//                    }
+//                    false -> {
+//                        emit(NetworkResult.Error(result.message))
+//                    }
+//
+//                    else -> {}
+//                }
+//            }
+//        } catch (e: UnresolvedAddressException){
+//            emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+//        }
+//    }.onStart {
+//        emit(NetworkResult.Loading())
+//    }.catch {
+//        emit(NetworkResult.Error(it.message ?: "Unknown Error"))
+//    }
 
     fun sendDataPassToDecrypt(
         groupId: Int,

@@ -237,38 +237,38 @@ class AddGroupSecurityViewModel(
         }
     }
 
-    fun getPassDataGroupDecrypted(groupId: String?){
-        viewModelScope.launch {
-            repo.getPassDataDecrypted(groupId?.toInt()!!).flowOn(Dispatchers.IO).collect { res ->
-                when(res) {
-                    is NetworkResult.Error -> {
-                        _groupSecurityDataState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                msg = res.error
-                            )
-                        }
-                    }
-                    is NetworkResult.Loading -> {
-                        _groupSecurityDataState.update {
-                            it.copy(
-                                isLoading = true,
-                            )
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        _groupSecurityDataState.update {
-                            it.copy(
-                                isLoading = false,
-                                passDataGroupDec = res.data.data!!,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    fun getPassDataGroupDecrypted(groupId: String?){
+//        viewModelScope.launch {
+//            repo.getPassDataDecrypted(groupId?.toInt()!!).flowOn(Dispatchers.IO).collect { res ->
+//                when(res) {
+//                    is NetworkResult.Error -> {
+//                        _groupSecurityDataState.update {
+//                            it.copy(
+//                                isLoading = false,
+//                                isError = true,
+//                                msg = res.error
+//                            )
+//                        }
+//                    }
+//                    is NetworkResult.Loading -> {
+//                        _groupSecurityDataState.update {
+//                            it.copy(
+//                                isLoading = true,
+//                            )
+//                        }
+//                    }
+//                    is NetworkResult.Success -> {
+//                        _groupSecurityDataState.update {
+//                            it.copy(
+//                                isLoading = false,
+//                                passDataGroupDec = res.data.data!!,
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     fun sendGroupDataPassToDecrypt(sendDataPassToDecrypt: SendDataPassToDecrypt, groupId: Int){
         viewModelScope.launch {
@@ -313,7 +313,6 @@ data class GroupSecurityDataState(
     var isUpdated: Boolean = false,
     var isSent: Boolean = false,
     var passDataGroup: List<GetPassDataGroup> = emptyList(),
-    var passDataGroupDec: List<GetPassDataGroup> = emptyList(),
     var securityData: GroupSecurityData? = null,
     val listTypeSecurityData: List<GroupSecurityTypeResponse> = emptyList()
 )

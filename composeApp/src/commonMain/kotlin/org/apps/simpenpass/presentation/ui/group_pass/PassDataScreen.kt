@@ -130,10 +130,136 @@ fun PassDataScreen(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        if(groupState.dtlGroupData?.isUserAdmin == true){
-            AddPassDataBtnHolder(isShowBottomSheet,scope)
+        when (groupState.dtlGroupData?.isUserAdmin == true){
+            true -> {
+                AddPassDataBtnHolder(isShowBottomSheet,scope)
+                FilterRow(groupState,groupDtlViewModel,isAllData)
+                if(groupState.passDataGroup.isNotEmpty() && !groupState.isLoading){
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(groupState.passDataGroup){ data ->
+                            Box(
+                                modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
+                                    navController.navigate(Screen.PassDataGroupDtl.passDataGroupId(data?.id.toString(),groupState.groupId.toString()))
+                                }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column {
+                                        Text(
+                                            data?.accountName!!,
+                                            style = MaterialTheme.typography.body1,
+                                            color = secondaryColor
+                                        )
+                                        Spacer(modifier = Modifier.height(7.dp))
+                                        Text(
+                                            data.email ?: "",
+                                            style = MaterialTheme.typography.subtitle1,
+                                            color = secondaryColor
+                                        )
+                                    }
+                                    Row {
+                                        IconButton(
+                                            onClick = {
+                                                navController.navigate(Screen.FormPassGroup.passData(data?.id.toString(),groupState.groupId!!))
+                                            }
+                                        ){
+                                            Image(
+                                                painterResource(Res.drawable.edit_pass_ic),""
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                if(data?.isEncrypted!!){
+                                                    isPopUp = true
+                                                    passData = data.password!!
+                                                } else {
+                                                    copyText(data.password!!)
+                                                    setToast("Data password telah disalin")
+                                                }
+                                            }
+                                        ){
+                                            Image(
+                                                painterResource(Res.drawable.copy_paste),""
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                groupDtlViewModel.deletePassDataGroup(data?.id!!)
+                                            }
+                                        ){
+                                            Image(
+                                                painterResource(Res.drawable.delete_ic),""
+                                            )
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            false -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(groupState.passDataGroup){ data ->
+                        Box(
+                            modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
+                                navController.navigate(Screen.PassDataGroupDtl.passDataGroupId(data?.id.toString(),groupState.groupId.toString()))
+                            }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        data?.accountName!!,
+                                        style = MaterialTheme.typography.body1,
+                                        color = secondaryColor
+                                    )
+                                    Spacer(modifier = Modifier.height(7.dp))
+                                    Text(
+                                        data.email ?: "",
+                                        style = MaterialTheme.typography.subtitle1,
+                                        color = secondaryColor
+                                    )
+                                }
+                                Row {
+                                    IconButton(
+                                        onClick = {
+                                            if(data?.isEncrypted!!){
+                                                isPopUp = true
+                                                passData = data.password!!
+                                            } else {
+                                                copyText(data.password!!)
+                                                setToast("Data password telah disalin")
+                                            }
+                                        }
+                                    ){
+                                        Image(
+                                            painterResource(Res.drawable.copy_paste),""
+                                        )
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            else -> {
+
+            }
         }
-        FilterRow(groupState,groupDtlViewModel,isAllData)
+
         if(groupState.passDataGroup.isEmpty() && !groupState.isLoading){
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -148,80 +274,6 @@ fun PassDataScreen(
             HomeLoadingShimmer()
             HomeLoadingShimmer()
             HomeLoadingShimmer()
-        }
-
-        if(groupState.passDataGroup.isNotEmpty() && !groupState.isLoading){
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(groupState.passDataGroup){ data ->
-                    Box(
-                        modifier = Modifier.fillMaxWidth().background(Color.White).clickable {
-                            navController.navigate(Screen.PassDataGroupDtl.passDataGroupId(data?.id.toString(),groupState.groupId.toString()))
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp).fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column {
-                                Text(
-                                    data?.accountName!!,
-                                    style = MaterialTheme.typography.body1,
-                                    color = secondaryColor
-                                )
-                                Spacer(modifier = Modifier.height(7.dp))
-                                Text(
-                                    data.email ?: "",
-                                    style = MaterialTheme.typography.subtitle1,
-                                    color = secondaryColor
-                                )
-                            }
-                            Row {
-                                if(groupState.dtlGroupData?.isUserAdmin == true){
-                                    IconButton(
-                                        onClick = {
-                                            navController.navigate(Screen.FormPassGroup.passData(data?.id.toString(),groupState.groupId!!))
-                                        }
-                                    ){
-                                        Image(
-                                            painterResource(Res.drawable.edit_pass_ic),""
-                                        )
-                                    }
-                                }
-                                IconButton(
-                                    onClick = {
-                                        if(data?.isEncrypted!!){
-                                            isPopUp = true
-                                            passData = data.password!!
-                                        } else {
-                                            copyText(data.password!!)
-                                            setToast("Data password telah disalin")
-                                        }
-                                    }
-                                ){
-                                    Image(
-                                        painterResource(Res.drawable.copy_paste),""
-                                    )
-                                }
-                                if(groupState.dtlGroupData?.isUserAdmin == true){
-                                    IconButton(
-                                        onClick = {
-                                            groupDtlViewModel.deletePassDataGroup(data?.id!!)
-                                        }
-                                    ){
-                                        Image(
-                                            painterResource(Res.drawable.delete_ic),""
-                                        )
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
         }
     }
 }

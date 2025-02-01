@@ -654,10 +654,7 @@ fun ListSecurityData(
 
                     }
                 }
-
-
             }
-
 
             if(securityData == null && !addGroupSecurityDataState.value.isLoading){
                 EmptyWarning(
