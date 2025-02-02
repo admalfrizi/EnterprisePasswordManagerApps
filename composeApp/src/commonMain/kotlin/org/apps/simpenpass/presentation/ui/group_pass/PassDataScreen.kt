@@ -440,11 +440,13 @@ fun FilterRow(
     if(listRole.isNotEmpty()){
         LazyRow(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
+                Spacer(
+                    modifier = Modifier.width(16.dp)
+                )
                 Box(modifier = Modifier.fillMaxWidth()){
                     FilterChip(
                         onClick = {

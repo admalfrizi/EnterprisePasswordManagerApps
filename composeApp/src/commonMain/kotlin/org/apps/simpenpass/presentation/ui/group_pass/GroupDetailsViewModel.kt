@@ -38,7 +38,7 @@ class GroupDetailsViewModel(
     val groupDtlState = _groupDtlState.onStart {
         getDetailGroup(groupId!!)
         getRoleGroupList(groupId)
-//        getAllPassDataGroup(groupId)
+        getAllPassDataGroup(groupId)
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),_groupDtlState.value)
 
     init {

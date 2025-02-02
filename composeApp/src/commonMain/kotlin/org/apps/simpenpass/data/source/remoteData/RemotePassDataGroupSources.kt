@@ -24,12 +24,13 @@ import org.apps.simpenpass.models.response.PassGroupResponseData
 import org.apps.simpenpass.utils.Constants
 
 class RemotePassDataGroupSources(private val httpClient: HttpClient) : PassDataGroupFunc {
-    override suspend fun listGroupPassword(token: String,groupId: Int): BaseResponse<List<PassDataGroup>> {
+    override suspend fun listGroupPassword(token: String,groupId: Int,userId: Int): BaseResponse<List<PassDataGroup>> {
         try {
             val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "allPassGroupData/$groupId")
             {
                 contentType(ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token")
+                parameter("userId", userId)
             }
             return response.body<BaseResponse<List<PassDataGroup>>>()
         } catch (e: Exception){

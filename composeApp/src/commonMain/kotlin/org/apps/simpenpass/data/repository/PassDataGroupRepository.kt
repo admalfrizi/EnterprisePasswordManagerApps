@@ -21,7 +21,7 @@ class PassDataGroupRepository(
     ) = flow {
         try {
             localData.getToken.collect { token ->
-                val result = remotePassDataGroupSources.listGroupPassword(token, groupId)
+                val result = remotePassDataGroupSources.listGroupPassword(token, groupId, localData.getUserData().id!!)
 
                 when (result.success) {
                     true -> {
