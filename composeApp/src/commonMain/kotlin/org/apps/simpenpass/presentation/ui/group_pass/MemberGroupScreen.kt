@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import org.apps.simpenpass.models.pass_data.DtlGrupPass
 import org.apps.simpenpass.models.pass_data.MemberGroupData
 import org.apps.simpenpass.presentation.components.groupDtlComponents.MemberGroupLoadShimmer
 import org.apps.simpenpass.screen.Screen
@@ -77,7 +78,7 @@ fun MemberGroupScreen(
                 if(memberData.isNotEmpty()){
                     LazyColumn {
                         items(memberData){ item ->
-                            AnggotaDataHolder(item)
+                            AnggotaDataHolder(item,groupState.dtlGroupData!!)
                         }
                     }
                 }
@@ -89,7 +90,7 @@ fun MemberGroupScreen(
 }
 
 @Composable
-fun AnggotaDataHolder(item: MemberGroupData) {
+fun AnggotaDataHolder(item: MemberGroupData,dtlGrupPass: DtlGrupPass) {
     Box(modifier = Modifier.fillMaxWidth().background(color = Color.White)){
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 11.dp),
@@ -139,20 +140,21 @@ fun AnggotaDataHolder(item: MemberGroupData) {
                     }
                     Spacer(modifier = Modifier.height(14.dp))
                 }
-                Row(modifier = Modifier.padding(vertical = if(item.isGroupAdmin) 0.dp  else 19.dp)) {
-                    Image(
-                        painterResource(Res.drawable.whatsapp_ic),
-                        "",
-                        modifier = Modifier.clickable {  }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Image(
-                        painterResource(Res.drawable.email_ic),
-                        "",
-                        modifier = Modifier.clickable {  }
-                    )
+                if(dtlGrupPass.isUserAdmin){
+                    Row(modifier = Modifier.padding(vertical = if(item.isGroupAdmin) 0.dp  else 19.dp)) {
+                        Image(
+                            painterResource(Res.drawable.whatsapp_ic),
+                            "",
+                            modifier = Modifier.clickable {  }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Image(
+                            painterResource(Res.drawable.email_ic),
+                            "",
+                            modifier = Modifier.clickable {  }
+                        )
+                    }
                 }
-
             }
         }
 
