@@ -21,6 +21,7 @@ import org.apps.simpenpass.style.primaryColor
 fun DialogWarning(
     dialogText: String,
     dialogTitle : String,
+    titleBtn: String? = null,
     onDismissRequest: () -> Unit,
     isCancelBtn: Boolean = true,
     onClick: () -> Unit
@@ -58,7 +59,7 @@ fun DialogWarning(
                     )
                 }
                 Text(
-                    "Ya",
+                    if(titleBtn.isNullOrBlank()) "Ya" else titleBtn,
                     modifier = Modifier.clickable { onClick() },
                     style = MaterialTheme.typography.subtitle2,
                     color = primaryColor

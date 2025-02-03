@@ -174,8 +174,8 @@ class GroupSettingsViewModel(
                         _groupSettingsState.update {
                             it.copy(
                                 isLoading = false,
-                                isPassVerify = res.data.data!!,
-                                key = if(res.data.data) verifySecurityDataGroupRequest.securityValue else ""
+                                isPassVerify = if(res.data.data != true) false else true,
+                                key = if(res.data.data!!) verifySecurityDataGroupRequest.securityValue else ""
                             )
                         }
                     }
@@ -297,7 +297,7 @@ data class GroupSettingsState(
     val groupId: String? = null,
     val msg : String? = null,
     var key : String? = null,
-    val isError: Boolean = false,
+    var isError: Boolean = false,
     var isDeleted: Boolean = false,
     val groupData: DtlGrupPass? = null,
     var isPassVerify : Boolean = false,

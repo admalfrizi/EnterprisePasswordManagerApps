@@ -92,6 +92,7 @@ import org.apps.simpenpass.models.request.SendDataPassToDecrypt
 import org.apps.simpenpass.models.request.UpdatePassDataGroupToDecrypt
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
 import org.apps.simpenpass.models.response.GetPassDataGroup
+import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.EmptyWarning
 import org.apps.simpenpass.presentation.components.addGroupComponents.AddMemberLoading
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
@@ -125,6 +126,7 @@ fun GroupSettingsScreen(
     var isDismiss = remember { mutableStateOf(false) }
     var isDeleted = remember { mutableStateOf(false) }
     var isPopUp = remember { mutableStateOf(false) }
+    var isPopUpDelete = remember { mutableStateOf(false) }
     var toUpdate = remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
     var grupName by remember { mutableStateOf("") }
@@ -184,10 +186,32 @@ fun GroupSettingsScreen(
     }
 
     if(groupState.isDeleted){
-        setToast("Data Keamanan Telah Dihapus")
+        isPopUpDelete.value = true
         isDeleted.value = true
         isPopUpToDecrypt.value = false
         groupState.isDeleted = false
+    }
+
+    if(isPopUpDelete.value){
+        DialogWarning(
+            dialogText = "Data keamanan grup telah dihapus, sehingga seluruh data akun digrup telah dibuka.",
+            dialogTitle = "Data keamanan grup telah dihapus !",
+            onDismissRequest = {
+                isPopUpDelete.value = false
+            },
+            isCancelBtn = false,
+            onClick = {
+                isPopUpDelete.value = false
+            },
+            titleBtn = "OK"
+        )
+    }
+
+
+
+    if(!groupState.isPassVerify && groupState.key?.isEmpty() == true) {
+        setToast("Data keamanan yang dimasukan salah !")
+        groupState.key = null
     }
 
     BackHandler(
@@ -211,6 +235,7 @@ fun GroupSettingsScreen(
                 securityDataId,
                 scope,
                 isPopUp,
+                isPopUpDelete,
                 toUpdate,
                 isPopUpToDecrypt,
                 isDeleted,
@@ -484,6 +509,7 @@ fun ListSecurityData(
     securityDataId: MutableState<Int>,
     scope: CoroutineScope,
     isPopUp: MutableState<Boolean>,
+    isPopUpDelete : MutableState<Boolean>,
     toUpdate: MutableState<Boolean>,
     isPopUpToDecrypt: MutableState<Boolean>,
     isDeleted: MutableState<Boolean>,
@@ -547,7 +573,7 @@ fun ListSecurityData(
                 }
             }
             false -> {
-                proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,groupState.passDataGroup,listPassDataDec,groupSettingsViewModel,securityDataId.value)
+                proceedDeleteSecurityData(groupState.groupId!!,groupState.key!!,addGroupSecurityDataState.value.passDataGroup,listPassDataDec,groupSettingsViewModel,securityDataId.value)
             }
             else -> {}
         }
@@ -559,9 +585,9 @@ fun ListSecurityData(
         isDeleted.value = false
     }
 
-    if(addGroupSecurityDataState.value.isDeleted){
+    if(addGroupSecurityDataState.value.isDeleted) {
         isPopUpToDecrypt.value = false
-        setToast("Data Keamanan Telah Dihapus")
+        isPopUpDelete.value = true
         groupDataSecurityViewModel.getDataSecurityForGroup(groupId)
         addGroupSecurityDataState.value.isDeleted = false
     }
