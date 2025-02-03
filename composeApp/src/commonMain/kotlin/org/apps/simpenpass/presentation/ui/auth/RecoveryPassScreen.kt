@@ -94,7 +94,7 @@ fun RecoveryPassScreen(
         setToast("Password Berhasil Diubah !")
     }
 
-    if(isValidated.value){
+    if(isValidated.value && authState.userPassData?.isNotEmpty()!!){
         DialogForOldPasswordToDecrypt(
             { isValidated.value = false },
             userId,
@@ -103,18 +103,17 @@ fun RecoveryPassScreen(
         )
     }
 
-    if(authState.isVerify){
-        if(authState.userPassData?.isNotEmpty() == true){
-            val crypto = CamelliaCrypto()
-            authState.userPassData?.forEach {
-                val dec = crypto.decrypt(it.password,authState.key!!)
-                listPassData.add(UpdateUserPassDataToDecrypt(it.id,dec,false))
-            }
-            authViewModel.sendUserDataPassToDecrypt(SendUserDataPassToDecrypt(listPassData))
-        } else {
-            authViewModel.resetPassword(password = newPassword, token = token)
-        }
+    if(isValidated.value && authState.userPassData?.isEmpty() == true){
+        authViewModel.resetPassword(password = newPassword, token = token)
+    }
 
+    if(authState.isVerify){
+        val crypto = CamelliaCrypto()
+        authState.userPassData?.forEach {
+            val dec = crypto.decrypt(it.password,authState.key!!)
+            listPassData.add(UpdateUserPassDataToDecrypt(it.id,dec,false))
+        }
+        authViewModel.sendUserDataPassToDecrypt(SendUserDataPassToDecrypt(listPassData))
         authState.isVerify = false
     }
 
