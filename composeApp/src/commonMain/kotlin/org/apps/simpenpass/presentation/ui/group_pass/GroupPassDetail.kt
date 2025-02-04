@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -227,6 +228,8 @@ fun ContentView(
                                 Text(
                                     groupState.dtlGroupData.groupDtl.nm_grup,
                                     style = MaterialTheme.typography.button,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
                                     color = secondaryColor
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))

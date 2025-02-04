@@ -54,9 +54,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.valentinilk.shimmer.shimmer
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.apps.simpenpass.models.request.VerifySecurityDataGroupRequest
+import org.apps.simpenpass.presentation.components.DialogWarning
 import org.apps.simpenpass.presentation.components.formComponents.FormTextField
 import org.apps.simpenpass.presentation.components.homeComponents.HomeLoadingShimmer
 import org.apps.simpenpass.screen.Screen
@@ -84,9 +86,11 @@ fun PassDataScreen(
 ) {
     val isAllData = remember { mutableStateOf(true) }
     var isPopUp by remember { mutableStateOf(false) }
+    var isPopUpDelete by remember { mutableStateOf(false) }
     var passData by remember { mutableStateOf("") }
     var encKey by remember { mutableStateOf("") }
     var decData by remember { mutableStateOf("") }
+    var passId by remember { mutableStateOf(-1) }
 
     if(isPopUp){
         DialogToDecrypt(
@@ -125,6 +129,21 @@ fun PassDataScreen(
         groupDtlViewModel.getAllPassDataGroup(groupState.groupId!!)
         setToast("Data Password Grup telah dihapus !")
         groupState.isDeleted = false
+    }
+
+    if(isPopUpDelete){
+        Napier.v("yakin ingin dihapus : $passId")
+        DialogWarning(
+            dialogText = "Jika data password dihapus, anggota grup tidak bisa mengakses data ini. Apakah ingin dihapus ?",
+            dialogTitle = "Data Password akan dihapus !",
+            onDismissRequest = {
+                isPopUpDelete = false
+            },
+            onClick = {
+                groupDtlViewModel.deletePassDataGroup(passId)
+                isPopUpDelete = false
+            }
+        )
     }
 
     Column(
@@ -189,7 +208,8 @@ fun PassDataScreen(
                                         }
                                         IconButton(
                                             onClick = {
-                                                groupDtlViewModel.deletePassDataGroup(data?.id!!)
+                                                isPopUpDelete = true
+                                                passId = data?.id!!
                                             }
                                         ){
                                             Image(

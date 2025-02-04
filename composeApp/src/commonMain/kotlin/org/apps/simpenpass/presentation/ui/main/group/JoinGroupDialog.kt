@@ -67,8 +67,14 @@ fun JoinGroupDialog(
         }
     }
 
-    if(groupState.isJoined){
+    if(groupState.isJoined && deepLink.value?.data?.isEmpty() == true){
         groupViewModel.getGroupById(deepLink.value?.pathSegments[2]?.toInt()!!)
+        setToast("Anda Telah Bergabung Ke Group")
+        groupState.isJoined = false
+    }
+
+    if(groupState.isJoined){
+        groupViewModel.getGroupById(groupState.searchGroupResult?.id!!)
         setToast("Anda Telah Bergabung Ke Group")
         groupState.isJoined = false
     }

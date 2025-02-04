@@ -207,8 +207,6 @@ fun GroupSettingsScreen(
         )
     }
 
-
-
     if(!groupState.isPassVerify && groupState.key?.isEmpty() == true) {
         setToast("Data keamanan yang dimasukan salah !")
         groupState.key = null
