@@ -151,8 +151,8 @@ fun EditRoleScreen(
 
     if(isWarningPopUp.value){
         DialogWarning(
-            dialogTitle = "Data Role Ini Akan Di Hapus !",
-            dialogText = "Jika role ini dihapus maka semua anggota dan data password yang berkelompok pada role ini akan dihapus !, anda yakin ingin menghapus role ini ?",
+            dialogTitle = "Data Posisi Akan Di Hapus !",
+            dialogText = "Jika dihapus maka semua anggota dan data akun password yang berkelompok pada posisi ini akan terpisah, anda yakin ingin menghapus posisi ini ?",
             onDismissRequest = {isWarningPopUp.value = false},
             onClick = {
                 editRoleViewModel.deleteRoleGroup(roleId.value,groupId)
@@ -511,7 +511,7 @@ fun UpdateRoleNameDialog(
                 modifier = Modifier.padding(24.dp)
             ){
                 Text(
-                    "Edit Nama Posisi",
+                    "Ubah Nama Posisi",
                     style = MaterialTheme.typography.h6.copy(color = secondaryColor),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Start
@@ -522,7 +522,7 @@ fun UpdateRoleNameDialog(
                 FormTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = nameRole.value,
-                    labelHints = "Update Nama Role Disini...",
+                    labelHints = "Update Nama Posisi Disini...",
                     leadingIcon = null,
                     onValueChange = {
                         nameRole.value = it
@@ -752,7 +752,7 @@ fun BottomSheetContent(
             colors = ButtonDefaults.buttonColors(Color.Red),
             content = {
                 Text(
-                    "Hapus Role Ini",
+                    "Hapus Posisi Ini",
                     style = MaterialTheme.typography.h6,
                     color = fontColor1
                 )
@@ -787,7 +787,7 @@ fun EditRoleMemberPopUp(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Ubah Posisi Anggota",
+                        if(posisiId.value == -1) "Tambahkan Posisi pada Anggota" else "Ubah Posisi pada Anggota",
                         style = MaterialTheme.typography.h6.copy(color = secondaryColor),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start
