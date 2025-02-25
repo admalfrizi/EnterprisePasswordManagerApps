@@ -171,7 +171,11 @@ fun FormScreen(
         }
 
         passData = if(dec.isEmpty()) {
-            formState.passData?.password!!
+            if(formState.passData?.isEncrypted == false){
+                formState.passData?.password!!
+            } else {
+                ""
+            }
         } else {
             dec
         }

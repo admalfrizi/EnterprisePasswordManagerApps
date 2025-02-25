@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -91,6 +92,10 @@ fun ChangePassScreen(
 
     if(changeDataState.isSuccess){
         isPopUp = true
+    }
+
+    LaunchedEffect(Unit){
+        changeDataViewModel.getUserPassDataEncrypted()
     }
 
     if(isPopUpDecrypt){
@@ -250,7 +255,17 @@ fun ChangePassScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = btnColor),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    isPopUpDecrypt = true
+                    if(changeDataState.userPassData?.isEmpty() == true){
+                        validateData(
+                            newPassword,
+                            cPassword,
+                            token,
+                            isValidated,
+                            changeDataViewModel
+                        )
+                    } else {
+                        isPopUpDecrypt = true
+                    }
                 }
             ){
                 Text(
@@ -331,12 +346,6 @@ fun PasswordToUpdatePassDataNewKeyDialog(
 ) {
     var password = remember { mutableStateOf("") }
 
-    if(changeDataState.userPassData?.isEmpty()!!){
-        changeDataViewModel.getUserPassDataEncrypted()
-    }
-
-//    Napier.v("listUserPassData : ${changeDataState.userPassData}")
-
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -371,7 +380,7 @@ fun PasswordToUpdatePassDataNewKeyDialog(
                 Spacer(
                     modifier = Modifier.height(15.dp)
                 )
-                if(changeDataState.userPassData.isNotEmpty()){
+                if(changeDataState.userPassData?.isNotEmpty() == true){
                     Text(
                         "Ada data password yang masih terkunci, Silahkan masukan kunci lama anda untuk membuka data password anda !",
                         style = MaterialTheme.typography.subtitle1,
