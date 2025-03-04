@@ -28,8 +28,10 @@ class GroupDetailsSample {
                 "username": "fzfszsf",
                 "email": "cfcgcesr",
                 "password": "vyftrsrwawfzf",
+                "jenis_data": "Sistem Admin",
                 "url": "fcgdsfwaewr",
-                "desc": "butfyrdtrdtesr"
+                "desc": "butfyrdtrdtesr",
+                "is_encrypted": true
             }
         ]
     """.trimIndent()

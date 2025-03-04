@@ -6,7 +6,7 @@ import kotlin.test.assertNotSame
 
 class EncryptionTest {
     private val camelliaCrypto = CamelliaCrypto()
-    private val data = "Adam Alfarizi Ismail"
+    private val data = "MalamPenuhKemenangan"
 
     @Test
     fun `encryption test with key 128 bit`() {

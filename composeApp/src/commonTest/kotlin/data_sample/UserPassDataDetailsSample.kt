@@ -1,5 +1,7 @@
 package data_sample
 
+import org.apps.simpenpass.models.request.PassDataRequest
+
 class UserPassDataDetailsSample {
     val detailsUserPassData = """{
         "id": 27,
@@ -14,4 +16,15 @@ class UserPassDataDetailsSample {
         "is_encrypted": false
     }
     """.trimIndent()
+
+    val createPassData = PassDataRequest(
+        "Akun Dinus",
+        "ini adalah akun buat admin udinus",
+         false,
+         "erno@mhs.dinus.ac.id",
+         "Admin Udinus",
+         "poiklmnjuhb",
+        "dinus.ac.id",
+        "renodekorack"
+    )
 }
