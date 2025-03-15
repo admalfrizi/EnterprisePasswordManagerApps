@@ -380,7 +380,7 @@ fun EmailAddForm(
                                 modifier = Modifier.height(5.dp)
                             )
                             Text(
-                                item.userId.toString(),
+                                if(item.userId != 0) item.userId.toString() else "Tidak Terdaftar Pada Sistem",
                                 style = MaterialTheme.typography.subtitle1.copy(
                                     color = secondaryColor
                                 )
@@ -436,6 +436,7 @@ fun EmailAddForm(
                             sheetState.hide()
                         }
                     },
+                    enabled = listAddEmail.isNotEmpty(),
                     shape = RoundedCornerShape(20.dp),
                     elevation = ButtonDefaults.elevation(0.dp),
                     colors = ButtonDefaults.buttonColors(Color(0xFF81BFDA)),
