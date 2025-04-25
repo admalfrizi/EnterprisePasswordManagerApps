@@ -239,15 +239,18 @@ fun ListDataPassUser(
 
                                 }
                             )
-                            DropdownMenuItem(
-                                content = {
-                                    Text(text = "Tambah Data Baru")
-                                },
-                                onClick = {
-                                    navigateToFormPassData()
-                                    isDropdownShow = false
-                                }
-                            )
+                            if(state.data.isNotEmpty()){
+                                DropdownMenuItem(
+                                    content = {
+                                        Text(text = "Tambah Data Baru")
+                                    },
+                                    onClick = {
+                                        navigateToFormPassData()
+                                        isDropdownShow = false
+                                    }
+                                )
+                            }
+
                         }
 
                     }
@@ -266,7 +269,7 @@ fun ListDataPassUser(
                             isEnableBtn = true,
                             btnTxt = "Buat Data Password Baru",
                             onSelect = {
-
+                                navigateToFormPassData()
                             }
                         )
                     }

@@ -71,7 +71,7 @@ class RemoteResetPassSources(
         userId: Int
     ): BaseResponse<GetDataPassUserEncrypted> {
         try {
-            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getPassDataEncrypted/$userId"){
+            val response : HttpResponse = httpClient.get(Constants.BASE_API_URL + "getPassDataUserEncrypted/$userId"){
                 contentType(ContentType.Application.Json)
             }
             return response.body<BaseResponse<GetDataPassUserEncrypted>>()

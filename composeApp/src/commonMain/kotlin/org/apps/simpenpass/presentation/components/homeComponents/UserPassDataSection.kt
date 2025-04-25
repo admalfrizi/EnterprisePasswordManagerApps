@@ -44,10 +44,15 @@ fun UserPassDataSection(
         Spacer(
             modifier = Modifier.height(11.dp)
         )
+
+
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth().heightIn(max = (latestListData.size * 86).dp),
             userScrollEnabled = false
         ) {
+
+
             items(latestListData) { dataPass ->
                 UserDataPassHolder(dataPass, sheetState,data)
             }

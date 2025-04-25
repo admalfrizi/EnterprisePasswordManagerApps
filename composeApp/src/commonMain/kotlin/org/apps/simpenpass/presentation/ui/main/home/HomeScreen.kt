@@ -175,12 +175,18 @@ fun HomeContentView(
                     modifier = Modifier.height(16.dp)
                 )
                 if(homeState.passDataList.isNotEmpty() && isConnected && !homeState.isLoading){
-                    UserPassDataSection(homeState.passDataList,homeState.totalDataPass ?: 0,dataPass,sheetState,navigateToListUserPass)
+                    UserPassDataSection(
+                        homeState.passDataList,
+                        homeState.totalDataPass ?: 0,
+                        dataPass,
+                        sheetState,
+                        navigateToListUserPass
+                    )
                 }
 
                 if(homeState.passDataList.isEmpty() && !homeState.isLoading && isConnected)
                     EmptyWarning(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth(),
                         warnTitle = "Anda Belum Memiliki Data Password",
                         warnText = "Silahkan Tambahkan Data Password Anda melalui Tombol Dibawah",
                         btnTxt = "Tambahkan Password",
@@ -189,8 +195,8 @@ fun HomeContentView(
                             navigateToFormPass()
                         }
                     )
-            }
 
+            }
 
 
         }
