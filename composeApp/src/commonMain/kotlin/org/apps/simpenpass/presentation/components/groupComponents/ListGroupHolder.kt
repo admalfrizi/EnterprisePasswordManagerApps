@@ -84,15 +84,6 @@ fun ListGroupHolder(
                         style = MaterialTheme.typography.subtitle1,
                         color = secondaryColor
                     )
-                    Spacer(
-                        modifier = Modifier.height(13.dp)
-                    )
-                    Text(
-                        "Waktu",
-                        style = MaterialTheme.typography.subtitle1,
-                        color = secondaryColor,
-                        fontSize = 10.sp
-                    )
                 }
 
             }

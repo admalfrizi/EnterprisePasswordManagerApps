@@ -47,7 +47,6 @@ import org.apps.simpenpass.utils.copyText
 import org.apps.simpenpass.utils.setToast
 import resources.Res
 import resources.delete_pass_data
-import resources.edit_anggota_ic
 import resources.edit_data_pass
 import resources.edit_ic
 import resources.email_ic
@@ -314,10 +313,6 @@ fun DetailPassData(
                 copyText(data.value?.url!!)
                 setToast("Data URL Telah Disalin")
             }
-        )
-        OptionMenuHolder(
-            Res.drawable.edit_anggota_ic,
-            "Pin to Most Used"
         )
         OptionMenuHolder(
             Res.drawable.edit_data_pass,

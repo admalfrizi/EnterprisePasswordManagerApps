@@ -59,12 +59,14 @@ import org.apps.simpenpass.style.linkColor
 import org.apps.simpenpass.style.secondaryColor
 import org.apps.simpenpass.utils.isValidEmail
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import resources.Res
 import resources.email_ic
 import resources.user_password_auth
 
 @Composable
+@Preview
 fun AuthScreen(
     navHostController: NavHostController,
     authViewModel: AuthViewModel = koinViewModel(),

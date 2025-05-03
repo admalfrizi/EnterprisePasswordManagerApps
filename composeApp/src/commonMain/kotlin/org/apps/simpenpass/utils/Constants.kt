@@ -1,7 +1,7 @@
 package org.apps.simpenpass.utils
 
 object Constants {
-    private const val HOST = "192.168.67.38"
+    private const val HOST = "192.168.51.93"
     private const val URL_PATH = "simpenpass-api/public"
     const val BASE_API_URL = "http://$HOST/$URL_PATH/api/"
     const val BASE_URL = "http://$HOST/$URL_PATH"
